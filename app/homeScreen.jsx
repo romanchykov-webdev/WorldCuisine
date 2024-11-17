@@ -1,13 +1,33 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity} from 'react-native';
 import {BellIcon} from "react-native-heroicons/outline";
 import {hp} from "../constants/responsiveScreen";
 import {StatusBar} from "expo-status-bar";
 import {MagnifyingGlassIcon} from "react-native-heroicons/mini";
-import {shadowBoxBlack, shadowBoxNone, shadowTextNone} from "../constants/shadow";
+import {shadowBoxBlack} from "../constants/shadow";
 import Categories from "../components/Categories";
+import {getCategories} from "../api";
+import Recipes from "../components/Rrecipes";
 
 const HomeScreen = () => {
+
+    const [activeCategory, setActiveCategory] = useState('')
+    // console.log('activeCategory',activeCategory)
+
+    const [categories, setCategories] = useState([])
+
+    useEffect(()=>{
+
+        // Вызов функции getCategories и присваивание данных в состояние
+        const fetchCategories=async()=>{
+            const data=await getCategories()
+            // console.log('data',data.categories)
+            setCategories(data.categories)
+        }
+
+        fetchCategories()
+    },[])
+
     return (
         <View className="flex-1">
             <StatusBar style='darck'/>
@@ -64,9 +84,16 @@ const HomeScreen = () => {
                 </View>
 
                 {/*    categories*/}
-                <View>
-                    <Categories/>
-                </View>
+                {
+                    categories.length>0 &&(
+                        <Categories categories={categories} activeCategory={activeCategory} setActiveCategory={setActiveCategory}/>
+                    )
+                }
+
+            {/*    recipes*/}
+                <Recipes categories={categories.length}/>
+
+
 
             </ScrollView>
 

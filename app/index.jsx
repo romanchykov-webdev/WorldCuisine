@@ -22,6 +22,7 @@ const WelcomeScreen = () => {
         setTimeout(() => ring1Padding.value = withSpring(ring1Padding.value + hp(5)), 100)
         setTimeout(() => ring2Padding.value = withSpring(ring2Padding.value + hp(5.5)), 300)
 
+        // setTimeout(() => router.replace('/homeScreen'), 3000)
         setTimeout(() => router.push('/homeScreen'), 3000)
 
     }, []);
@@ -52,13 +53,13 @@ const WelcomeScreen = () => {
             <View className="flex items-center justify-center gap-y-2">
                 <Animated.Text
                     entering={FadeInRight.delay(1200).duration(300).springify()}
-                    style={[{fontSize: hp(7)}, shadowText]}
+                    style={[{fontSize: hp(7)}, shadowText()]}
                     className="font-bold text-white tracking-widest text-6xl">
                     Food
                 </Animated.Text>
                 <Animated.Text
                     entering={FadeInLeft.delay(1400).duration(300).springify()}
-                    style={[{fontSize: hp(2)}, shadowText]}
+                    style={[{fontSize: hp(2)}, shadowText()]}
                     className="font-bold text-white tracking-widest text-lg mb-10">
                     Food is always right
                 </Animated.Text>
