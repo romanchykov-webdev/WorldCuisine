@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, Text,  TouchableOpacity, ActivityIndicator} from 'react-native';
+import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 import {hp} from "../constants/responsiveScreen";
 import {shadowBoxBlack, shadowText} from "../constants/shadow";
 
@@ -12,9 +12,10 @@ import {Image} from 'expo-image'
 
 // gradient
 import {LinearGradient} from 'expo-linear-gradient';
-import Loading from "./loading";
+import LoadingComponent from "./loadingComponent";
+import {useRouter} from "expo-router";
 
-const Recipes = ({categories,recipes}) => {
+const Recipes = ({categories, recipes}) => {
 
     // console.log('Recipes',recipes)
 
@@ -41,23 +42,23 @@ const Recipes = ({categories,recipes}) => {
                 // categories.lenght === 0 ||
                 recipes.length == 0
                     ? (
-                        <Loading size="large" color="gray" />
+                        <LoadingComponent size="large" color="gray"/>
                     )
                     : (
-                    <MasonryList
-                        // data={mealData}
-                        data={recipes}
-                        keyExtractor={(item) => item.idMeal}
-                        numColumns={2}
-                        style={{gap: 10}}
-                        showsVerticalScrollIndicator={false}
-                        renderItem={({item, i}) => <CardItem item={item} index={i}/>}
-                        // refreshing={isLoadingNext}
-                        // onRefresh={() => refetch({first: ITEM_CNT})}
-                        onEndReachedThreshold={0.1}
-                        // onEndReached={() => loadNext(ITEM_CNT)}
-                    />
-                )
+                        <MasonryList
+                            // data={mealData}
+                            data={recipes}
+                            keyExtractor={(item) => item.idMeal}
+                            numColumns={2}
+                            style={{gap: 10}}
+                            showsVerticalScrollIndicator={false}
+                            renderItem={({item, i}) => <CardItem item={item} index={i}/>}
+                            // refreshing={isLoadingNext}
+                            // onRefresh={() => refetch({first: ITEM_CNT})}
+                            onEndReachedThreshold={0.1}
+                            // onEndReached={() => loadNext(ITEM_CNT)}
+                        />
+                    )
             }
 
         </View>
@@ -66,25 +67,29 @@ const Recipes = ({categories,recipes}) => {
 
 const CardItem = ({item, index}) => {
     // console.log('index', index)
-
+    const router = useRouter()
 
 
     const isEven = index % 3 === 0;
     const imageHeight = isEven ? hp(25) : hp(35);
 
-    const loadingImage=()=>{
+    const loadingImage = () => {
         // console.log('loading')
     }
 
     return (
         <Animated.View
-            entering={FadeInDown.delay((index+4)*200).springify().damping(30)}
+            entering={FadeInDown.delay((index + 4) * 200).springify().damping(30)}
             // key={index}
             key={item.idMeal}
             className="flex justify-center mb-[10] gap-y-1  p-[2]"
             style={[shadowBoxBlack({offset: {width: 1, height: 1}, opacity: 1, radius: 3})]}
         >
             <TouchableOpacity
+                onPress={()=>router.push({
+                    pathname: '/RecipeDetailsScreen',
+                    params: {id:item.idMeal},
+                })}
                 style={{width: '100%'}}
                 className="rounded-full relative items-center"
             >
