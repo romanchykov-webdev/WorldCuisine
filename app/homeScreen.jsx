@@ -6,27 +6,52 @@ import {StatusBar} from "expo-status-bar";
 import {MagnifyingGlassIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../constants/shadow";
 import Categories from "../components/Categories";
-import {getCategories} from "../api";
+import {getCategories, getRecipes} from "../api";
 import Recipes from "../components/Rrecipes";
 
 const HomeScreen = () => {
 
-    const [activeCategory, setActiveCategory] = useState('')
+    const [activeCategory, setActiveCategory] = useState('Beef')
     // console.log('activeCategory',activeCategory)
 
     const [categories, setCategories] = useState([])
+    // Вызов функции getCategories и присваивание данных в состояние
+    const fetchCategories=async()=>{
+        const data=await getCategories()
+        // console.log('data',data.categories)
+        setCategories(data.categories)
+    }
+
+    // Вызов функции fetchRecipes и присваивание данных в состояние
+    const [recipes, setRecipes] = useState([])
+    const fetchRecipes=async()=>{
+        const data=await getRecipes(activeCategory)
+        // console.log('data',data)
+        setRecipes(data)
+    }
+
 
     useEffect(()=>{
 
-        // Вызов функции getCategories и присваивание данных в состояние
-        const fetchCategories=async()=>{
-            const data=await getCategories()
-            // console.log('data',data.categories)
-            setCategories(data.categories)
-        }
-
         fetchCategories()
+        fetchRecipes()
+
     },[])
+
+
+    const handleChangeCategory=(category)=>{
+        // setRecipes([])
+        // console.log('activeCategory',activeCategory)
+        // console.log('recipes',recipes)
+        setTimeout(()=>{
+            fetchRecipes(category)
+        },1000)
+
+        setActiveCategory(category)
+        setRecipes([])
+
+    }
+
 
     return (
         <View className="flex-1">
@@ -84,14 +109,18 @@ const HomeScreen = () => {
                 </View>
 
                 {/*    categories*/}
-                {
-                    categories.length>0 &&(
-                        <Categories categories={categories} activeCategory={activeCategory} setActiveCategory={setActiveCategory}/>
-                    )
-                }
+
+
+                        <Categories
+                            categories={categories}
+                            activeCategory={activeCategory}
+                            setActiveCategory={setActiveCategory}
+                            handleChangeCategory={handleChangeCategory}
+                        />
+
 
             {/*    recipes*/}
-                <Recipes categories={categories.length}/>
+                <Recipes categories={categories.length} recipes={recipes}/>
 
 
 

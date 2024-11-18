@@ -1,8 +1,10 @@
 import React, {useEffect} from 'react';
-import {View, Image, Text, ScrollView, ActivityIndicator} from 'react-native';
+import {View,  Text, ScrollView, ActivityIndicator} from 'react-native';
 import {StatusBar} from "expo-status-bar";
 import {hp} from "../constants/responsiveScreen";
 import {shadowText} from "../constants/shadow";
+
+import { Image } from 'expo-image';
 
 import Animated, {FadeInDown, FadeInLeft, FadeInRight, useSharedValue, withSpring} from 'react-native-reanimated'
 import {useRouter} from "expo-router";
@@ -44,6 +46,8 @@ const WelcomeScreen = () => {
                     <Image
                         source={require('../assets/img/logoBig2.png')}
                         style={{width: hp(20), height: hp(20)}}
+                        contentFit="cover"
+                        transition={1000}
                     />
                 </Animated.View>
 
