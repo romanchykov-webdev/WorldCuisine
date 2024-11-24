@@ -12,6 +12,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{headerShown:false}} />
         <Stack.Screen name="homeScreen" options={{headerShown:false}} />
         <Stack.Screen name="RecipeDetailsScreen" options={{headerShown:false}} />
+        <Stack.Screen name="ProfileScreen" options={{headerShown:false}} />
       </Stack>
 
   );
