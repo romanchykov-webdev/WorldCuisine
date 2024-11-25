@@ -13,6 +13,7 @@ export default function RootLayout() {
         <Stack.Screen name="homeScreen" options={{headerShown:false}} />
         <Stack.Screen name="RecipeDetailsScreen" options={{headerShown:false}} />
         <Stack.Screen name="ProfileScreen" options={{headerShown:false}} />
+        <Stack.Screen name="ChangeLangScreen" options={{headerShown:false, presentation: "modal",}} />
       </Stack>
 
   );
