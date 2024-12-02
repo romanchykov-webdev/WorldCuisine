@@ -7,7 +7,7 @@ import {useRouter} from "expo-router";
 
 const HeaderComponent = ({isAuth}) => {
 
-    const router=useRouter();
+    const router = useRouter();
 
     return (
         <View>
@@ -17,22 +17,50 @@ const HeaderComponent = ({isAuth}) => {
                 <Text className="text-neutral-700"
                       style={{fontSize: 24}}
                 >Ratatouille</Text>
-                <View style={shadowBoxBlack({offset : {width: 2, height: 2}, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
-                    opacity : 0.3, // Прозрачность тени (по умолчанию 30%)
-                    radius : 5,})}
-            >
-                    {isAuth &&
-                        <TouchableOpacity
-                            onPress={() => router.push('/ProfileScreen')}
+                <View style={shadowBoxBlack({
+                    offset: {width: 2, height: 2}, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
+                    opacity: 0.3, // Прозрачность тени (по умолчанию 30%)
+                    radius: 5,
+                })}
+                >
+                    {isAuth
+                        ? (
+                            <TouchableOpacity
+                                onPress={() => router.push('/ProfileScreen')}
 
-                        >
-                            <Image
-                                source={require('../assets/img/user_icon.png')}
-                                className="rounded-full border-[1px] border-neutral-500"
-                                style={{width: hp(5), height: hp(5)}}
-                                resizeMode="cover"
-                            />
-                        </TouchableOpacity>
+                            >
+                                <Image
+                                    source={require('../assets/img/user_icon.png')}
+                                    className="rounded-full border-[1px] border-neutral-500"
+                                    style={{width: hp(5), height: hp(5)}}
+                                    resizeMode="cover"
+                                />
+                            </TouchableOpacity>
+                        )
+                        : (
+                            <View className="flex-row">
+
+                                {/*    login*/}
+                                <TouchableOpacity
+                                    onPress={() => router.push('(auth)/LogInScreen')}
+                                >
+                                    <Text>LogIn</Text>
+                                </TouchableOpacity>
+
+                                <Text> / </Text>
+
+                                {/*    sign Up*/}
+                                <TouchableOpacity
+                                    onPress={() => router.push('(auth)/RegistrationScreen')}
+                                >
+                                    <Text>SignUp</Text>
+                                </TouchableOpacity>
+
+
+                            </View>
+
+                        )
+
                     }
                 </View>
 

@@ -14,6 +14,8 @@ export default function RootLayout() {
         <Stack.Screen name="RecipeDetailsScreen" options={{headerShown:false}} />
         <Stack.Screen name="ProfileScreen" options={{headerShown:false}} />
         <Stack.Screen name="ChangeLangScreen" options={{headerShown:false, presentation: "modal",}} />
+        <Stack.Screen name="(auth)/LogInScreen" options={{headerShown:false}} />
+        <Stack.Screen name="(auth)/RegistrationScreen" options={{headerShown:false}} />
       </Stack>
 
   );

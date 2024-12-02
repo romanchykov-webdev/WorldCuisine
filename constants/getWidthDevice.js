@@ -11,4 +11,4 @@ export const getDeviceType = (width) => {
 // Пример использования:
 const screenWidth = window.innerWidth; // Получаем ширину экрана в браузере
 const deviceType = getDeviceType(screenWidth);
-console.log(`Your device is: ${deviceType}`);
+// console.log(`Your device is: ${deviceType}`);
