@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, SafeAreaView} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity,Alert} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
 import {getRecipeDish} from "../api";
 
@@ -16,10 +16,51 @@ import ButtonLike from "../components/ButtonLike";
 import {ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon} from "react-native-heroicons/mini";
 
 import YouTubeIframe from 'react-native-youtube-iframe'
+import {ChatBubbleOvalLeftIcon, StarIcon} from "react-native-heroicons/outline";
+import RatingComponents from "../components/RatingComponents";
+
+// for rating
+import StarRating, {StarRatingDisplay} from 'react-native-star-rating-widget';
+import {calculateRating} from "../constants/ratingHalper";
+import CommentsComponent from "../components/CommentsComponent";
 
 const RecipeDetailsScreen = () => {
 
     const {id} = useLocalSearchParams();
+    const ratings = [1, 2, 4, 5, 2, 4, 5, 1, 3, 5, 2];
+    const comments = ['ok', 'wery bast', 'naise', 'kryto']
+
+
+    // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+    let rating = calculateRating(ratings);
+    const handleStarPress = (starIndex) => {
+        // console.log('Star pressed:', starIndex); // Индекс звезды
+        // setChangeRating(starIndex); // Установить рейтинг
+        ratings.push(starIndex);
+        // Alert.alert('Rating',`You have rated this recipe: ${starIndex}`)
+
+
+        //update rating to the item on dataBAse
+    };
+    // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    // scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    const scrollViewRef = useRef(null);
+    const commentsRef = useRef(null);
+
+    const scrollToComments = () => {
+        commentsRef.current?.measureLayout(
+            scrollViewRef.current.getNativeScrollRef(),
+            (x, y) => {
+                scrollViewRef.current.scrollTo({y, animated: true}); // Плавный скролл
+            }
+        );
+    };
+    // scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 
 
     const [loading, setLoading] = useState(false)
@@ -70,7 +111,7 @@ const RecipeDetailsScreen = () => {
         const regex = /[?&]v=([^&]+)/;
         const match = url.match(regex);
 
-        if(match && match[1]){
+        if (match && match[1]) {
             return match[1]
         }
         return null
@@ -78,8 +119,10 @@ const RecipeDetailsScreen = () => {
     }
     // get video id
 
+
     return (
         <ScrollView
+            ref={scrollViewRef} //for scroll
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white'}}
         >
@@ -135,8 +178,46 @@ const RecipeDetailsScreen = () => {
                                     <ButtonLike/>
 
                                 </Animated.View>
+
+                                {/*    rating and comments*/}
+                                <Animated.View
+                                    entering={FadeInDown.duration(400).delay(500)}
+                                    className="absolute flex-row justify-between bottom-[20] pl-5 pr-5  w-full
+                                    {/*bg-red-500*/}
+                                    ">
+                                    {/*    StarIcon*/}
+                                    <View className="items-center justify-center flex-row w-[60] h-[60] rounded-full"
+                                          style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
+                                    >
+                                        <StarIcon size={45} color='gold'/>
+                                        <Text style={{fontSize: 8}} className="text-neutral-700 absolute">
+                                            {rating}
+                                        </Text>
+                                    </View>
+
+                                    {/*    comments*/}
+                                    <View className="items-center justify-center flex-row w-[60] h-[60] rounded-full"
+                                          style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
+                                    >
+                                        <TouchableOpacity
+                                            className="items-center justify-center flex-row"
+                                            onPress={scrollToComments}
+                                        >
+                                            <ChatBubbleOvalLeftIcon size={45} color='gray'/>
+                                            <Text style={{fontSize: 8}} className="text-neutral-700 absolute">
+                                                {comments.length}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
+
+
+                                </Animated.View>
                             </View>
                             {/* top image button back and like end*/}
+
+
+                            <RatingComponents  rating={rating} handleStarPress={handleStarPress}/>
+
 
                             {/*    dish and description*/}
                             <Animated.View
@@ -347,6 +428,12 @@ const RecipeDetailsScreen = () => {
                                 )
                             }
                             {/*    recipe video end*/}
+
+                            {/*accordion comments*/}
+                            <View ref={commentsRef}>
+                                <CommentsComponent comments={comments}/>
+                            </View>
+
 
                         </View> //end block
 
