@@ -89,7 +89,7 @@ const ProfileScreen = () => {
 
             if (orders) {
                 setOrders(orders);
-                // console.log(JSON.stringify(orders,null, 2));
+                console.log(JSON.stringify(orders,null, 2));
             }
         } catch (err) {
             console.log(err)
@@ -97,32 +97,50 @@ const ProfileScreen = () => {
         }
     }
 
-    // subscribe event new  order
-    const channel = supabase
-        .channel('event_create_new_order')
-        .on(
-            'postgres_changes',
-            {
-                event: '*',
-                schema: 'public',
-                table: 'orders'
-            },
-            (event) => {
-                // console.log('subscribe',event)
-                const {new: newOrder} = event;
+    // increment
+    const incrementValues=async () => {
+        try {
 
-                orders.value=orders.value.map(order => {
-                    if(order.id === newOrder.id){
-                        return{
-                            ...order,
-                            ...newOrder
-                        }
-                    }
-                    return order;
-                });
+            const {data,error} = await supabase.rpc('increment',{row_id:'3a5547e9-6e87-4ef9-a23e-bfa2db3cffc3'})
+
+            if(data){
+                console.log('success')
+                console.log('data',data)
             }
-        )
-        .subscribe()
+
+        }catch (error) {
+            console.log('error',error)
+        }
+    }
+    // incrementValues()
+    // increment
+
+    // subscribe event new  order
+    // const channel = supabase
+    //     .channel('event_create_new_order')
+    //     .on(
+    //         'postgres_changes',
+    //         {
+    //             event: '*',
+    //             schema: 'public',
+    //             table: 'orders'
+    //         },
+    //         (event) => {
+    //             // console.log('subscribe',event)
+    //             const {new: newOrder} = event;
+    //
+    //             orders.value=orders.value.map(order => {
+    //                 if(order.id === newOrder.id){
+    //                     return{
+    //                         ...order,
+    //                         ...newOrder
+    //                     }
+    //                 }
+    //                 return order;
+    //             });
+    //         }
+    //     )
+    //     .subscribe()
     // subscribe event new  order
     fetchOrders()
 
@@ -246,7 +264,8 @@ const ProfileScreen = () => {
                     {
                         orders?.map((order) => {
                             return (
-                                <View key={order.id} className="flex-row">
+                                <View key={order.id} className="flex-1 flex-row flex-wrap bg-red-500 mb-5">
+                                    <Text>views: {order.views} : </Text>
                                     <Text>{order.address} : </Text>
                                     <Text>{order.city} : </Text>
                                     <Text>{order.name} : </Text>
