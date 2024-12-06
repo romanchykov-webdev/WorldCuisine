@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
@@ -8,133 +8,233 @@ import {
     TouchableOpacity,
     ScrollView,
     Alert,
-    ActivityIndicator
+    ActivityIndicator,
+    Platform,
+    KeyboardAvoidingView,
 } from 'react-native';
-import {supabase} from "../../constants/supabase";
 import {useRouter} from "expo-router";
 import ButtonBack from "../../components/ButtonBack";
+import {hp} from "../../constants/responsiveScreen";
+import InputComponent from "../../components/ImputComponent";
+
+import {EnvelopeIcon, EyeIcon, EyeSlashIcon, UserCircleIcon} from "react-native-heroicons/outline";
+import {shadowBoxBlack} from "../../constants/shadow";
+import ChangeLangScreen from "../ChangeLangScreen";
 
 const RegistrationScreen = () => {
 
     const router = useRouter();
 
+    const [lang, setLang] = useState('en'); // Язык по умолчанию
+
+    // Для переключения видимости пароля
+    const [secureTextEntry, setSecureTextEntry] = useState(false)
+
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
+        userName: '',
         email: '',
         password: '',
+        repeatPassword: '',
     });
+
+    useEffect(() => {
+
+
+    }, [form.password, form.repeatPassword, form.userName, form.email]);
 
 
     const submitting = async () => {
 
-        if (!form.email || !form.password) {
-            Alert.alert('Sign Up', "Please fill all the fields!")
+        if (form.password !== form.repeatPassword) {
+            Alert.alert('Sign Up', "Enter two identical passwords!")
             return;
         }
 
         setLoading(true);
+        console.log('userName', form.userName)
+        console.log('email', form.email)
+        console.log('password', form.password)
+        console.log('repeatPassword', form.repeatPassword)
+        if (!form.email || !form.password || !form.repeatPassword || !form.userName) {
+            Alert.alert('Sign Up', "Please fill all the fields!")
+            setLoading(false);
+            return;
+        }
+        //
+        // setLoading(true);
+        //
+        // let email = form.email.trim();
+        // let password = form.password.trim();
 
-        let email = form.email.trim();
-        let password = form.password.trim();
 
-        let {data: {session}, error} = await supabase.auth.signUp({
-            email: email,
-            password: password
-        })
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000)
 
-        // if error
-        if (error) Alert.alert('Sign Up', error.message)
-
-
-        setLoading(false);
-        // setTimeout(()=>{
-        //     setLoading(false);
-        // },1000)c
-        console.log('session', session)
-
-        // console.log('email', form.email);
-        // console.log('password', form.password);
     }
-
+    // console.log('email',form.email);
     return (
-        <SafeAreaView className="flex-1  mx-5 "
-
+        <SafeAreaView
+            className="flex-1  mx-5 "
+            // style={{ flex: 1, marginHorizontal: 16 }}
         >
-            <ScrollView
-                keyboardDismissMode='on-drag'
-                contentContainerStyle={{justifyContent: 'center', flex: 1}}
-
+            <KeyboardAvoidingView
+                style={{flex: 1}}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <View className="w-full mt-[-100px]  justify-center">
+                <ScrollView
+                    keyboardDismissMode='on-drag'
+                    // contentContainerStyle={{flex: 1}}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: 'center',
+                        paddingBottom: 20, // добавить немного отступа снизу
+                    }}
 
-                    <View>
-                        <ButtonBack/>
+                >
+
+                    <View className=" h-full">
+
+                        <View className="mb-10">
+                            <ButtonBack/>
+                        </View>
+
+                        {/*welcome text*/}
+                        <View className="mb-5">
+                            <Text className="font-bold tracking-widest text-neutral-700"
+                                  style={{fontSize: hp(4)}}
+                            >Let`s,</Text>
+                            <Text className="font-bold tracking-widest text-neutral-700"
+                                  style={{fontSize: hp(4)}}
+                            >Get Started</Text>
+
+                        </View>
+
+                        {/*    form log in*/}
+                        <View className="gap-5">
+                            <Text
+                                className="text-neutral-500"
+                                style={{fontSize: hp(1.2)}}
+                            >
+                                Please fill the details to create an account
+                            </Text>
+
+                            {/*user name*/}
+                            <InputComponent
+                                icon={<UserCircleIcon size={30} color={'grey'}/>}
+                                placeholder="User name"
+                                value={form.userName}
+                                onChangeText={value => {
+                                    setForm({...form, userName: value})
+                                }}
+                            />
+
+                            {/*email*/}
+                            <InputComponent
+                                icon={<EnvelopeIcon size={30} color={'grey'}/>}
+                                placeholder="Email"
+                                value={form.email}
+                                onChangeText={value => {
+                                    setForm({...form, email: value})
+                                }}
+                            />
+
+                            {/*password*/}
+                            <InputComponent
+                                icon={
+                                    <TouchableOpacity
+                                        onPress={() => setSecureTextEntry(prev => !prev)}
+                                    >
+                                        {
+                                            secureTextEntry
+                                                ? <EyeSlashIcon size={30} color={'grey'}/>
+                                                : <EyeIcon size={30} color={'grey'}/>
+                                        }
+                                    </TouchableOpacity>
+                                }
+                                placeholder="Password"
+                                value={form.password}
+                                onChangeText={value => {
+                                    setForm({...form, password: value})
+                                }}
+                                secureTextEntry={secureTextEntry}
+                            />
+                            {/* repeat password*/}
+                            <InputComponent
+                                icon={
+                                    <TouchableOpacity
+                                        onPress={() => setSecureTextEntry(prev => !prev)}
+                                    >
+                                        {
+                                            secureTextEntry
+                                                ? <EyeSlashIcon size={30} color={'grey'}/>
+                                                : <EyeIcon size={30} color={'grey'}/>
+                                        }
+                                    </TouchableOpacity>
+                                }
+                                placeholder="Please repeat password"
+                                value={form.repeatPassword}
+                                onChangeText={value => {
+                                    setForm({...form, repeatPassword: value})
+                                }}
+                                secureTextEntry={secureTextEntry}
+                            />
+
+                            <TouchableOpacity
+                                // onPress={() => router.push('/ChangeLangScreen')}
+                                onPress={() => router.push({ pathname: '/ChangeLangScreen', params: { currentLang: lang } })}
+                                style={shadowBoxBlack({
+                                    offset: {width: 0, height: 1},
+                                    radius: 2,
+                                    elevation: 2,
+                                })}
+                                className="p-5 mb-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"
+                            >
+                                <Text>Change language App</Text>
+                            </TouchableOpacity>
+
+                            {/*button submitting sign Up*/}
+                            <TouchableOpacity
+                                style={shadowBoxBlack({
+                                    offset: {width: 0, height: 1},
+                                    radius: 2,
+                                    elevation: 2,
+                                })}
+                                onPress={submitting}
+                                className=" px-10 p-5 rounded-full items-center mb-5
+                            bg-green-500
+                            "
+                            >
+                                {
+                                    loading
+                                        ? <ActivityIndicator size={30} color={'white'}/>
+                                        : <Text className="text-xl font-bold text-neutral-700">Sign Up</Text>
+                                }
+
+                            </TouchableOpacity>
+
+
+                            <View className=" w-full flex-row justify-center items-center">
+                                <Text className=" text-xs text-neutral-500">
+                                    Already have an account,
+                                </Text>
+                                <Text
+                                    onPress={() => router.push("/(auth)/LogInScreen")}
+                                    className="text-amber-500 items-center justify-center ml-2 font-bold"
+                                >Log In</Text>
+                            </View>
+
+                        </View>
+
                     </View>
 
-                    <Text className="text-3xl mb-10 text-center">Registration</Text>
-
-                    {/* email*/}
-                    <View className="mb-5">
-                        <Text className="text-center">Enter your email</Text>
-                        <TextInput
-                            value={form.email}
-                            onChangeText={(value) => setForm({...form, email: value})}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            className="p-5 border-[1px] border-neutral-700 rounded-full"
-                            placeholder="Enter your email"
-                            placeholderTextColor='gray'
-                        />
-                    </View>
-
-                    {/* password*/}
-                    <View className="mb-5">
-                        <Text className="text-center">Enter your email</Text>
-                        <TextInput
-                            value={form.password}
-                            onChangeText={(value) => setForm({...form, password: value})}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            className="p-5 border-[1px] border-neutral-700 rounded-full"
-                            placeholder="Enter your password"
-                            placeholderTextColor='gray'
-                        />
-                    </View>
-
-                    <View>
-                        <TouchableOpacity
-                            onPress={submitting}
-                            className="p-5 items-center rounded-full border-[1px] border-neutral-700 "
-                        >
-                            {
-                                loading
-                                    ? (
-                                        <ActivityIndicator size={45} color='green'/>
-                                    )
-                                    : (
-                                        <Text>Sign Up</Text>
-                                    )
-                            }
-
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="mt-5 ">
-                        <TouchableOpacity
-                            onPress={() => router.replace('(auth)/LogInScreen')}
-                        >
-                            <Text className="text-blue-500 text-3xl">log in</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-            </ScrollView>
-
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default RegistrationScreen;

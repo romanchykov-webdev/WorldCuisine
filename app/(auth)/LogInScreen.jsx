@@ -8,15 +8,23 @@ import {
     TouchableOpacity,
     ScrollView,
     Alert,
-    ActivityIndicator
+    ActivityIndicator, Platform,
+    KeyboardAvoidingView,
 } from 'react-native';
-import {supabase} from "../../constants/supabase";
 import {useRouter} from "expo-router";
 import ButtonBack from "../../components/ButtonBack";
+import {hp} from "../../constants/responsiveScreen";
+import InputComponent from "../../components/ImputComponent";
+
+import {EnvelopeIcon, EyeIcon, EyeSlashIcon} from "react-native-heroicons/outline";
+import {shadowBoxBlack} from "../../constants/shadow";
 
 const LogInScreen = () => {
 
     const router = useRouter();
+
+    // Для переключения видимости пароля
+    const [secureTextEntry, setSecureTextEntry] = useState(true)
 
     const [loading, setLoading] = useState(false);
 
@@ -28,117 +36,139 @@ const LogInScreen = () => {
 
     const submitting = async () => {
 
+        setLoading(true);
+        console.log('email', form.email)
+        console.log('password', form.password)
         if (!form.email || !form.password) {
-            Alert.alert('Sign Up', "Please fill all the fields!")
+            Alert.alert('Log In', "Please fill all the fields!")
             return;
         }
-
-        setLoading(true);
-
-        let email = form.email.trim();
-        let password = form.password.trim();
-
-        let { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: password
-        })
-
-        // if error
-        if (error) Alert.alert('Log in', error.message)
+        //
+        // setLoading(true);
+        //
+        // let email = form.email.trim();
+        // let password = form.password.trim();
 
 
-        setLoading(false);
-        // setTimeout(()=>{
-        //     setLoading(false);
-        // },1000)c
-        // console.log('data', data.session.user.aud)
-        console.log('data', data)
+        setTimeout(() => {
+            setLoading(false);
+        }, 1000)
 
-        if(data.session.user.aud==='authenticated'){
-            router.push('/homeScreen');
-        }
-        // console.log('email', form.email);
-        // console.log('password', form.password);
     }
-
+    // console.log('email',form.email);
     return (
         <SafeAreaView className="flex-1  mx-5 "
 
         >
-            <ScrollView
-                keyboardDismissMode='on-drag'
-                contentContainerStyle={{justifyContent: 'center', flex: 1}}
-
+            <KeyboardAvoidingView
+                style={{flex: 1}}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                <View className="w-full mt-[-100px]  justify-center">
+                <ScrollView
+                    keyboardDismissMode='on-drag'
+                    // contentContainerStyle={{flex: 1}}
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: 'center',
+                        paddingBottom: 20, // добавить немного отступа снизу
+                    }}
+                >
+                    <View className=" h-full">
 
-                    <View>
-                        <ButtonBack/>
+                        <View className="mb-10">
+                            <ButtonBack/>
+                        </View>
+
+                        {/*welcome text*/}
+                        <View className="mb-5">
+                            <Text className="font-bold tracking-widest text-neutral-700"
+                                  style={{fontSize: hp(4)}}
+                            >Hey,</Text>
+                            <Text className="font-bold tracking-widest text-neutral-700"
+                                  style={{fontSize: hp(4)}}
+                            >Welcome Back</Text>
+                        </View>
+
+                        {/*    form log in*/}
+                        <View className="gap-5">
+                            <Text
+                                className="text-neutral-500"
+                                style={{fontSize: hp(1.5)}}
+                            >
+                                Please login to continue
+                            </Text>
+
+
+                            {/*email*/}
+                            <InputComponent
+                                icon={<EnvelopeIcon size={30} color={'grey'}/>}
+                                placeholder="Enter your email"
+                                value={form.email}
+                                onChangeText={value => {
+                                    setForm({...form, email: value})
+                                }}
+                            />
+
+                            {/*password*/}
+                            <InputComponent
+                                icon={
+                                    <TouchableOpacity
+                                        onPress={() => setSecureTextEntry(prev => !prev)}
+                                    >
+                                        {
+                                            secureTextEntry
+                                                ? <EyeSlashIcon size={30} color={'grey'}/>
+                                                : <EyeIcon size={30} color={'grey'}/>
+                                        }
+                                    </TouchableOpacity>
+                                }
+                                placeholder="Enter your password"
+                                value={form.password}
+                                onChangeText={value => {
+                                    setForm({...form, password: value})
+                                }}
+                                secureTextEntry={secureTextEntry}
+                            />
+
+                            <TouchableOpacity
+                                style={shadowBoxBlack({
+                                    offset: {width: 0, height: 1},
+                                    radius: 2,
+                                    elevation: 2,
+                                })}
+                                onPress={submitting}
+                                className=" px-10 p-5 rounded-full items-center mb-5
+                            bg-green-500
+                            "
+                            >
+                                {
+                                    loading
+                                        ? <ActivityIndicator size={30} color={'white'}/>
+                                        : <Text className="text-xl font-bold text-neutral-700">Log In</Text>
+                                }
+
+                            </TouchableOpacity>
+
+
+                            <View className=" w-full flex-row justify-center items-center">
+                                <Text className=" text-xs text-neutral-500">
+                                    If you don't have an account,
+                                </Text>
+                                <Text
+                                    onPress={() => router.push("/(auth)/RegistrationScreen")}
+                                    className="text-amber-500 items-center justify-center ml-2 font-bold"
+                                >Sign Up</Text>
+                            </View>
+
+                        </View>
+
                     </View>
-
-                    <Text className="text-3xl mb-10 text-center">Log In</Text>
-
-                    {/* email*/}
-                    <View className="mb-5">
-                        <Text className="text-center">Enter your email</Text>
-                        <TextInput
-                            value={form.email}
-                            onChangeText={(value) => setForm({...form, email: value})}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            className="p-5 border-[1px] border-neutral-700 rounded-full"
-                            placeholder="Enter your email"
-                            placeholderTextColor='gray'
-                        />
-                    </View>
-
-                    {/* password*/}
-                    <View className="mb-5">
-                        <Text className="text-center">Enter your email</Text>
-                        <TextInput
-                            value={form.password}
-                            onChangeText={(value) => setForm({...form, password: value})}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            className="p-5 border-[1px] border-neutral-700 rounded-full"
-                            placeholder="Enter your password"
-                            placeholderTextColor='gray'
-                        />
-                    </View>
-
-                    <View>
-                        <TouchableOpacity
-                            onPress={submitting}
-                            className="p-5 items-center rounded-full border-[1px] border-neutral-700 "
-                        >
-                            {
-                                loading
-                                    ? (
-                                        <ActivityIndicator size={45} color='green'/>
-                                    )
-                                    : (
-                                        <Text>Login</Text>
-                                    )
-                            }
-
-                        </TouchableOpacity>
-                    </View>
-
-                    <View className="mt-5 ">
-                        <TouchableOpacity
-                            onPress={() => router.replace('(auth)/RegistrationScreen')}
-                        >
-                            <Text className="text-blue-500 text-3xl">Sign Up</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
 
         </SafeAreaView>
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default LogInScreen;

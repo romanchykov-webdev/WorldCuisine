@@ -9,6 +9,8 @@ const HeaderComponent = ({isAuth}) => {
 
     const router = useRouter();
 
+    // console.log('home component isAuth',isAuth)
+
     return (
         <View>
 
@@ -17,15 +19,16 @@ const HeaderComponent = ({isAuth}) => {
                 <Text className="text-neutral-700"
                       style={{fontSize: 24}}
                 >Ratatouille</Text>
-                <View style={shadowBoxBlack({
-                    offset: {width: 2, height: 2}, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
-                    opacity: 0.3, // Прозрачность тени (по умолчанию 30%)
-                    radius: 5,
-                })}
+                <View
                 >
                     {isAuth
                         ? (
                             <TouchableOpacity
+                                style={shadowBoxBlack({
+                                    offset: {width: 2, height: 2}, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
+                                    opacity: 0.3, // Прозрачность тени (по умолчанию 30%)
+                                    radius: 5,
+                                })}
                                 onPress={() => router.push('/ProfileScreen')}
 
                             >
@@ -40,22 +43,14 @@ const HeaderComponent = ({isAuth}) => {
                         : (
                             <View className="flex-row">
 
-                                {/*    login*/}
+                            {/*    sign to settings*/}
                                 <TouchableOpacity
-                                    onPress={() => router.push('(auth)/LogInScreen')}
+                                    onPress={() => router.push('/ProfileScreen')}
+                                    className="p-2"
                                 >
-                                    <Text>LogIn</Text>
+                                    <Cog6ToothIcon size={hp(3)} color="gray"/>
                                 </TouchableOpacity>
-
-                                <Text> / </Text>
-
-                                {/*    sign Up*/}
-                                <TouchableOpacity
-                                    onPress={() => router.push('(auth)/RegistrationScreen')}
-                                >
-                                    <Text>SignUp</Text>
-                                </TouchableOpacity>
-
+                                
 
                             </View>
 

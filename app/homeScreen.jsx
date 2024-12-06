@@ -16,7 +16,7 @@ import HeaderComponent from "../components/HeaderComponent";
 import {categoryData} from '../constants/fakeData'
 
 const HomeScreen = () => {
-    const isAuth = true
+    const isAuth = false
 
     const router = useRouter();
 
