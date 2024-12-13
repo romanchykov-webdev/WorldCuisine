@@ -18,6 +18,7 @@ import InputComponent from "../../components/ImputComponent";
 
 import {EnvelopeIcon, EyeIcon, EyeSlashIcon} from "react-native-heroicons/outline";
 import {shadowBoxBlack} from "../../constants/shadow";
+import {supabase} from "../../lib/supabase";
 
 const LogInScreen = () => {
 
@@ -36,13 +37,33 @@ const LogInScreen = () => {
 
     const submitting = async () => {
 
+        let email = form.email.trim();
+        let password = form.password.trim();
+
         setLoading(true);
-        console.log('email', form.email)
-        console.log('password', form.password)
-        if (!form.email || !form.password) {
+        console.log('email', email)
+        console.log('password', password)
+        if (!email || !password) {
             Alert.alert('Log In', "Please fill all the fields!")
             return;
         }
+
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+        })
+
+        console.log('error',error)
+
+        if (error) Alert.alert('LogIn',error.message)
+        setLoading(false)
+
+        setForm({
+            email: '',
+            password: '',
+        })
+
         //
         // setLoading(true);
         //

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Alert} from 'react-native';
 import {useRouter} from "expo-router";
 import ButtonBack from "../components/ButtonBack";
 
@@ -16,11 +16,56 @@ import {
     HeartIcon,
     BellIcon
 } from "react-native-heroicons/mini";
+import {useAuth} from "../contexts/AuthContext";
+import {supabase} from "../lib/supabase";
+import SelectCustom from "../components/SelectCustom";
+import LanguagesWrapper from "../components/LanguagesWrapper";
+import ThemeWrapper from "../components/ThemeWrapper";
 
 const ProfileScreen = () => {
+    const {setAuth,user,setUserData}=useAuth();
 
-    const isAuth = false
+    const [isAuth, setIsAuth] = useState(null)
 
+    const [lang, setLang] = useState('')
+    const [theme, setTheme] = useState('')
+    const [avatar, setAvatar] = useState('')
+
+
+
+    // const getAvatar=async()=>{
+    //
+    //     const {data:users,error}=await supabase
+    //         .from('users')
+    //         .select('avatar')
+    //         .eq('id',user.id)
+    //
+    //     if (error) {
+    //         console.error("Error fetching avatar:", error);
+    //         Alert.alert("Error", "Failed to fetch avatar.");
+    //         return;
+    //     }
+    //     setAvatar(users[0].avatar)
+    //     // console.log('users',users)
+    // }
+
+
+
+    // console.log('setAuth ProfileScreen',setAuth)
+    // console.log('identities ProfileScreen',user.identities)
+
+    const userData=user?.user_metadata
+    // console.log('ProfileScreen userData:',userData)
+
+    useEffect(() => {
+        if(user !== null){
+            setIsAuth(true)
+            setLang(userData?.lang)
+            setTheme(userData?.theme)
+
+        }
+
+    },[user])
 
     const router = useRouter();
 
@@ -30,8 +75,15 @@ const ProfileScreen = () => {
     }
 
     // log out
-    const handleLogUot = () => {
+    const handleLogUot = async () => {
         console.log('log out')
+        setAuth(null)
+
+        const {error}=await supabase.auth.signOut();
+        if(error){
+            Alert.alert('Sign Out',"Error signing out!");
+        }
+
     }
 
 
@@ -81,7 +133,8 @@ const ProfileScreen = () => {
                                 <View className="relative">
                                     <View style={shadowBoxBlack()}>
                                         <Image
-                                            source={require('../assets/img/user_icon.png')}
+                                            // source={require('../assets/img/user_icon.png')}
+                                            source={{uri:avatar}}
                                             style={{width: wp(50), height: wp(50), borderRadius: '50%', marginBottom: 10}}
                                             contentFit="cover"
                                             transition={1000}
@@ -100,18 +153,26 @@ const ProfileScreen = () => {
                                 </View>
 
                                 {/*userName*/}
-                                <Text>user name</Text>
+                                <Text className="capitalize">{userData?.user_name}</Text>
                             </View>
 
                             {/*change lang app*/}
-                            <View className="flex-row items-center mb-10">
-                                <TouchableOpactrueity
-                                    onPress={() => router.push('/ChangeLangScreen')}
-                                    style={shadowBoxBlack()}
-                                    className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"
-                                >
-                                    <Text>Change language App</Text>
-                                </TouchableOpactrueity>
+                            {/*<View className="flex-row items-center mb-10">*/}
+                            {/*    <TouchableOpacity*/}
+                            {/*        onPress={() => router.push('/ChangeLangScreen')}*/}
+                            {/*        style={shadowBoxBlack()}*/}
+                            {/*        className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
+                            {/*    >*/}
+                            {/*        <Text>Change language App</Text>*/}
+                            {/*    </TouchableOpacity>*/}
+                            {/*</View>*/}
+                           <View className="mb-5">
+                               <LanguagesWrapper lang={lang} setLang={setLang}/>
+                           </View>
+
+                            {/*theme*/}
+                            <View className="mb-5">
+                                <ThemeWrapper setTheme={setTheme} theme={theme}/>
                             </View>
 
                             {/*   update profile   may posts may like  may rating*/}
@@ -200,13 +261,13 @@ const ProfileScreen = () => {
                                     </TouchableOpacity>
                                 </View>
 
-                                <TouchableOpacity
-                                    onPress={() => router.push('/ChangeLangScreen')}
-                                    style={shadowBoxBlack()}
-                                    className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"
-                                >
-                                    <Text>Change language App</Text>
-                                </TouchableOpacity>
+                                {/*<TouchableOpacity*/}
+                                {/*    onPress={() => router.push('/ChangeLangScreen')}*/}
+                                {/*    style={shadowBoxBlack()}*/}
+                                {/*    className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
+                                {/*>*/}
+                                {/*    <Text>Change language App</Text>*/}
+                                {/*</TouchableOpacity>*/}
                             </View>
                         </ScrollView>
 

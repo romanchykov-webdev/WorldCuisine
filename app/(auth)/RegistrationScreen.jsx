@@ -20,15 +20,26 @@ import InputComponent from "../../components/ImputComponent";
 import {EnvelopeIcon, EyeIcon, EyeSlashIcon, UserCircleIcon} from "react-native-heroicons/outline";
 import {shadowBoxBlack} from "../../constants/shadow";
 import ChangeLangScreen from "../ChangeLangScreen";
+import {supabase} from "../../lib/supabase";
+import {useSearchParams} from "expo-router/build/hooks";
+import SelectCustom from "../../components/SelectCustom";
+import LanguagesWrapper from "../../components/LanguagesWrapper";
+import ThemeWrapper from "../../components/ThemeWrapper";
 
 const RegistrationScreen = () => {
 
     const router = useRouter();
 
-    const [lang, setLang] = useState('en'); // Язык по умолчанию
+    // change lang
+    const [lang, setLang] = useState('En'); // Устанавливаем язык
+    // console.log('lang', lang);
+
+    // change theme
+    const [theme, setTheme] = useState('Auto')
+    // console.log('theme', theme);
 
     // Для переключения видимости пароля
-    const [secureTextEntry, setSecureTextEntry] = useState(false)
+    const [secureTextEntry, setSecureTextEntry] = useState(true)
 
     const [loading, setLoading] = useState(false);
 
@@ -42,36 +53,75 @@ const RegistrationScreen = () => {
     useEffect(() => {
 
 
-    }, [form.password, form.repeatPassword, form.userName, form.email]);
+    }, [form.password, form.repeatPassword, form.userName, form.email,lang,theme]);
+
 
 
     const submitting = async () => {
+        let email = form.email.trim();
+        let userName = form.userName.trim();
+        let password = form.password.trim();
+        let repeatPassword = form.repeatPassword.trim();
 
-        if (form.password !== form.repeatPassword) {
+        if (password !== repeatPassword) {
             Alert.alert('Sign Up', "Enter two identical passwords!")
             return;
         }
 
         setLoading(true);
-        console.log('userName', form.userName)
-        console.log('email', form.email)
-        console.log('password', form.password)
-        console.log('repeatPassword', form.repeatPassword)
-        if (!form.email || !form.password || !form.repeatPassword || !form.userName) {
+        // console.log('userName', form.userName)
+        // console.log('email', form.email)
+        // console.log('password', form.password)
+        // console.log('repeatPassword', form.repeatPassword)
+
+
+        if (!email || !password || !repeatPassword || !userName) {
             Alert.alert('Sign Up', "Please fill all the fields!")
             setLoading(false);
             return;
         }
-        //
-        // setLoading(true);
-        //
-        // let email = form.email.trim();
-        // let password = form.password.trim();
 
 
-        setTimeout(() => {
+
+
+        try {
+            const {
+                data: {session},
+                error,
+            } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        user_name: userName,
+                        lang: lang,
+                        theme: theme,
+                    },
+                },
+            })
+
+
+
+            if (error) throw error;
+
+            setForm({
+                userName: '',
+                email: '',
+                password: '',
+                repeatPassword: '',
+            })
+            setLang('En')
+            setTheme('Auto')
+
+            // console.log('session', session)
+        } catch (error) {
+            Alert.alert('Sign Up', error.message);
+        } finally {
             setLoading(false);
-        }, 1000)
+            setLang('En')
+            setTheme('Auto')
+        }
+
 
     }
     // console.log('email',form.email);
@@ -112,7 +162,7 @@ const RegistrationScreen = () => {
 
                         </View>
 
-                        {/*    form log in*/}
+                        {/*    form sign up*/}
                         <View className="gap-5">
                             <Text
                                 className="text-neutral-500"
@@ -182,18 +232,28 @@ const RegistrationScreen = () => {
                                 secureTextEntry={secureTextEntry}
                             />
 
-                            <TouchableOpacity
-                                // onPress={() => router.push('/ChangeLangScreen')}
-                                onPress={() => router.push({ pathname: '/ChangeLangScreen', params: { currentLang: lang } })}
-                                style={shadowBoxBlack({
-                                    offset: {width: 0, height: 1},
-                                    radius: 2,
-                                    elevation: 2,
-                                })}
-                                className="p-5 mb-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"
-                            >
-                                <Text>Change language App</Text>
-                            </TouchableOpacity>
+                            {/*<TouchableOpacity*/}
+                            {/*    // onPress={() => router.push('/ChangeLangScreen')}*/}
+                            {/*    onPress={() => router.push({*/}
+                            {/*        pathname: '/ChangeLangScreen',*/}
+                            {/*        params: { currentLang: lang },*/}
+                            {/*    })}*/}
+                            {/*    style={shadowBoxBlack({*/}
+                            {/*        offset: {width: 0, height: 1},*/}
+                            {/*        radius: 2,*/}
+                            {/*        elevation: 2,*/}
+                            {/*    })}*/}
+                            {/*    className="p-5 mb-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
+                            {/*>*/}
+                            {/*    <Text>Change language App</Text>*/}
+                            {/*</TouchableOpacity>*/}
+
+                            {/*Select lang*/}
+                            <LanguagesWrapper setLang={setLang} lang={lang}/>
+
+                            {/*theme wrapper*/}
+                            <ThemeWrapper setTheme={setTheme} theme={theme}/>
+
 
                             {/*button submitting sign Up*/}
                             <TouchableOpacity

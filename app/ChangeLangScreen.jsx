@@ -1,9 +1,14 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
-import {shadowBoxBlack} from "../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite} from "../constants/shadow";
 import {changeLanguage} from "i18next";
+import ButtonBack from "../components/ButtonBack";
+import {ArrowUturnLeftIcon} from "react-native-heroicons/outline";
+import {useRouter} from "expo-router";
 
 const ChangeLangScreen = () => {
+
+    const router=useRouter()
 
     // Список языков с их названиями
     const languageNames = {
@@ -19,22 +24,43 @@ const ChangeLangScreen = () => {
 
     const changeLanguage=async (item)=>{
         setLang(item)
+        // console.log('ChangeLangScreen lang',item)
 
 
 
     }
+
+    const handleBack = (selectedLang) => {
+        // console.log('selectedLang',selectedLang)
+        router.replace({ pathname: '/(auth)/RegistrationScreen', params: { lang: selectedLang } });
+    };
 
     return (
         <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{gap: 20, padding: 20}}
         >
+            <View>
+                <TouchableOpacity
+                    onPress={() => handleBack(lang)}
+                    className="w-[50] h-[50] justify-center items-center bg-white rounded-full"
+                    style={shadowBoxWhite()}
+                >
+                    <ArrowUturnLeftIcon size={30} color='gray'/>
+
+
+                </TouchableOpacity>
+            </View>
             {
                 languages.map((item, index) => {
                     return (
                         <TouchableOpacity
                             key={index}
-                            onPress={()=>changeLanguage(item)}
+                            // onPress={()=>changeLanguage(item)}
+                            onPress={() => {
+                                changeLanguage(item); // Обновляем локальный язык
+                                handleBack(item); // Возвращаемся с выбранным языком
+                            }}
                             style={shadowBoxBlack({
                                 offset: {width: 0, height: 1},
                                 radius: 2,

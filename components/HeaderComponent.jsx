@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {hp} from "../constants/responsiveScreen";
 import {Cog6ToothIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../constants/shadow";
 import {useRouter} from "expo-router";
+import {useAuth} from "../contexts/AuthContext";
 
-const HeaderComponent = ({isAuth}) => {
+const HeaderComponent = ({isAuth,user}) => {
+
+
 
     const router = useRouter();
+
+
+    // console.log('user HeaderComponent',user)
 
     // console.log('home component isAuth',isAuth)
 
@@ -16,9 +22,16 @@ const HeaderComponent = ({isAuth}) => {
 
 
             <View className="flex-row  justify-between items-center mb-5">
-                <Text className="text-neutral-700"
-                      style={{fontSize: 24}}
-                >Ratatouille</Text>
+                <View className="flex-row items-center">
+                    <Image
+                        source={require('../assets/img/ratatouille.png')}
+                        className="w-[25] h-[25] rounded-full mr-1"
+                        resizeMode="cover"
+                    />
+                    <Text className="text-neutral-700"
+                          style={{fontSize: 24}}
+                    >Ratatouille</Text>
+                </View>
                 <View
                 >
                     {isAuth
@@ -64,7 +77,7 @@ const HeaderComponent = ({isAuth}) => {
                 {/*</TouchableOpacity>*/}
 
             </View>
-            {isAuth && <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">Hello, Serioga!</Text>
+            {isAuth && <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">Hello, {user?.user_name}!</Text>
             }
 
         </View>

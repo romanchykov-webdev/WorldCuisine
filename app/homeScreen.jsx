@@ -14,9 +14,18 @@ import HeaderComponent from "../components/HeaderComponent";
 
 // import kategory
 import {categoryData} from '../constants/fakeData'
+import {useAuth} from "../contexts/AuthContext";
 
 const HomeScreen = () => {
-    const isAuth = false
+    const{user,setAuth,setUserData} = useAuth();
+    const [isAuth, setIsAuth] = useState(null)
+
+    useEffect(() => {
+        if(user){
+            setIsAuth(true)
+        }
+    },[])
+
 
     const router = useRouter();
 
@@ -73,7 +82,7 @@ const HomeScreen = () => {
             >
 
                 {/*avatar snd ball*/}
-                <HeaderComponent isAuth={isAuth}/>
+                <HeaderComponent isAuth={isAuth} user={user?.user_metadata}/>
 
 
                 {/*    greetings and punchline*/}
