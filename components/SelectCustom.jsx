@@ -1,14 +1,18 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {shadowBoxBlack} from "../constants/shadow";
 import {ChevronDownIcon, ChevronUpIcon} from "react-native-heroicons/outline";
 
 const SelectCustom = ({title, items, defaultValue, setItems}) => {
     const [isOpen, setIsOpen] = useState(false); // Состояние для управления раскрытием списка
-    const [selectedValue, setSelectedValue] = useState(defaultValue);
+    const [selectedValue, setSelectedValue] = useState();
 
+    useEffect(() => {
+        setSelectedValue(defaultValue);
+    },[selectedValue])
 
     // animated hi
+    // console.log('SelectCustom selectedValue',selectedValue)
 
     const handleSelect = (key) => {
         setSelectedValue(key); // Устанавливаем выбранное значение

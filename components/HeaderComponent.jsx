@@ -5,6 +5,7 @@ import {Cog6ToothIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../constants/shadow";
 import {useRouter} from "expo-router";
 import {useAuth} from "../contexts/AuthContext";
+import AvatarCustom from "./AvatarCustom";
 
 const HeaderComponent = ({isAuth,user}) => {
 
@@ -45,11 +46,17 @@ const HeaderComponent = ({isAuth,user}) => {
                                 onPress={() => router.push('/ProfileScreen')}
 
                             >
-                                <Image
-                                    source={require('../assets/img/user_icon.png')}
-                                    className="rounded-full border-[1px] border-neutral-500"
-                                    style={{width: hp(5), height: hp(5)}}
-                                    resizeMode="cover"
+                                {/*<Image*/}
+                                {/*    source={require('../assets/img/user_icon.png')}*/}
+                                {/*    className="rounded-full border-[1px] border-neutral-500"*/}
+                                {/*    style={{width: hp(5), height: hp(5)}}*/}
+                                {/*    resizeMode="cover"*/}
+                                {/*/>*/}
+                                <AvatarCustom
+                                    uri={user?.avatar}
+                                    size={hp(4.3)}
+                                    style={{borderWidth:0.2}}
+                                    rounded={50}
                                 />
                             </TouchableOpacity>
                         )
@@ -77,7 +84,11 @@ const HeaderComponent = ({isAuth,user}) => {
                 {/*</TouchableOpacity>*/}
 
             </View>
-            {isAuth && <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">Hello, {user?.user_name}!</Text>
+            {isAuth && 
+                <View className="flex-row">
+                    <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">Hello, </Text>
+                    <Text style={{fontSize: hp(1.7)}} className="text-neutral-700 capitalize">{user?.user_name} !</Text>
+                </View>
             }
 
         </View>

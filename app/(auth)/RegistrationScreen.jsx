@@ -96,6 +96,7 @@ const RegistrationScreen = () => {
                         user_name: userName,
                         lang: lang,
                         theme: theme,
+                        avatar:null
                     },
                 },
             })

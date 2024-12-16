@@ -5,6 +5,7 @@ import SelectCustom from "./SelectCustom";
 const LanguagesWrapper = ({setLang,lang}) => {
 
     // setLang={setLang} lang={lang}
+    // console.log('LanguagesWrapper lang',lang)
     // Список языков с их названиями
     const languageNames = {
         En: 'English',

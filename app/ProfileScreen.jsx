@@ -4,7 +4,7 @@ import {useRouter} from "expo-router";
 import ButtonBack from "../components/ButtonBack";
 
 import {Image} from 'expo-image'
-import {wp} from "../constants/responsiveScreen";
+import {hp, wp} from "../constants/responsiveScreen";
 import {shadowBoxBlack} from "../constants/shadow";
 
 
@@ -21,71 +21,79 @@ import {supabase} from "../lib/supabase";
 import SelectCustom from "../components/SelectCustom";
 import LanguagesWrapper from "../components/LanguagesWrapper";
 import ThemeWrapper from "../components/ThemeWrapper";
+import AvatarCustom from "../components/AvatarCustom";
+import {logOut} from "../service/userService";
+
 
 const ProfileScreen = () => {
-    const {setAuth,user,setUserData}=useAuth();
+    const {setAuth, user, setUserData} = useAuth();
+
+
+
+    // console.log('Profile user',user)
 
     const [isAuth, setIsAuth] = useState(null)
+    useEffect(() => {
 
-    const [lang, setLang] = useState('')
-    const [theme, setTheme] = useState('')
-    const [avatar, setAvatar] = useState('')
-
-
-
-    // const getAvatar=async()=>{
-    //
-    //     const {data:users,error}=await supabase
-    //         .from('users')
-    //         .select('avatar')
-    //         .eq('id',user.id)
-    //
-    //     if (error) {
-    //         console.error("Error fetching avatar:", error);
-    //         Alert.alert("Error", "Failed to fetch avatar.");
-    //         return;
-    //     }
-    //     setAvatar(users[0].avatar)
-    //     // console.log('users',users)
-    // }
-
+        if(user){
+            setIsAuth(true)
+        }else{
+            setIsAuth(false)
+        }
+    },[user])
 
 
     // console.log('setAuth ProfileScreen',setAuth)
     // console.log('identities ProfileScreen',user.identities)
 
-    const userData=user?.user_metadata
+
+
     // console.log('ProfileScreen userData:',userData)
 
-    useEffect(() => {
-        if(user !== null){
-            setIsAuth(true)
-            setLang(userData?.lang)
-            setTheme(userData?.theme)
 
-        }
-
-    },[user])
 
     const router = useRouter();
 
     // change avatar
-    const changeAvatar = async () => {
-        console.log('changeAvatar')
+    const updateProfile = async () => {
+        // console.log('updateProfile')
+        router.push('/(main)/editProfile')
     }
 
-    // log out
+    // // log out
+    // const logOut = async () => {
+    //     setAuth(null)
+    //
+    //     const {error} = await supabase.auth.signOut();
+    //     if (error) {
+    //         Alert.alert('Sign Out', "Error signing out!");
+    //     }
+    //     router.replace('/homeScreen')
+    // }
     const handleLogUot = async () => {
         console.log('log out')
-        setAuth(null)
 
-        const {error}=await supabase.auth.signOut();
-        if(error){
-            Alert.alert('Sign Out',"Error signing out!");
-        }
+
+        Alert.alert('Confirm', 'Are you sure you want to log out?', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('modal cancelled'),
+                style: 'cancel'
+            },
+            {
+                text: 'LogOut',
+                onPress: () => logOut({setAuth, router}),
+                style: 'destructive'
+            }
+        ]);
 
     }
 
+    // rename userName
+
+
+
+    // console.log('newUserName Input',newUserName)
 
     const handleMyPost = () => {
         console.log('handleMyPost')
@@ -100,8 +108,8 @@ const ProfileScreen = () => {
 
     return (
         <SafeAreaView
-        contentContainerStyle={{flex:1}}
-        // className="bg-red-500"
+            contentContainerStyle={{flex: 1}}
+            // className="bg-red-500"
         >
             {
                 isAuth
@@ -116,6 +124,8 @@ const ProfileScreen = () => {
                                     <ButtonBack/>
                                 </View>
 
+                                <Text style={{fontSize:hp(2)}}>Profile</Text>
+
                                 <TouchableOpacity
                                     onPress={handleLogUot}
                                     style={shadowBoxBlack()}
@@ -127,23 +137,29 @@ const ProfileScreen = () => {
 
 
                             {/*    avatar and user name*/}
-                            <View className=" gap-y-5 items-center mb-5">
+                            <View className=" gap-y-5 items-center mb-5 ">
 
                                 {/*avatar*/}
-                                <View className="relative">
+                                <View className="relative ">
                                     <View style={shadowBoxBlack()}>
-                                        <Image
-                                            // source={require('../assets/img/user_icon.png')}
-                                            source={{uri:avatar}}
-                                            style={{width: wp(50), height: wp(50), borderRadius: '50%', marginBottom: 10}}
-                                            contentFit="cover"
-                                            transition={1000}
-                                            // onLoad={loadingImage}
+                                        {/*<Image*/}
+                                        {/*    source={require('../assets/img/user_icon.png')}*/}
+                                        {/*    // source={avatarSource}*/}
+                                        {/*    style={{width: wp(50), height: wp(50), borderRadius: '50%', marginBottom: 10}}*/}
+                                        {/*    contentFit="cover"*/}
+                                        {/*    transition={1000}*/}
+                                        {/*    // onLoad={loadingImage}*/}
+                                        {/*/>*/}
+                                        <AvatarCustom
+                                            uri={user?.avatar}
+                                            size={wp(50)}
+                                            style={{borderWidth: 0.2}}
+                                            rounded={150}
                                         />
                                     </View>
-                                    <View className="absolute bottom-10 right-5" style={shadowBoxBlack()}>
+                                    <View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
                                         <TouchableOpacity
-                                            onPress={changeAvatar}
+                                            onPress={updateProfile}
                                             className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
                                         >
 
@@ -153,7 +169,9 @@ const ProfileScreen = () => {
                                 </View>
 
                                 {/*userName*/}
-                                <Text className="capitalize">{userData?.user_name}</Text>
+                                <Text>{user?.user_name}</Text>
+
+
                             </View>
 
                             {/*change lang app*/}
@@ -166,14 +184,10 @@ const ProfileScreen = () => {
                             {/*        <Text>Change language App</Text>*/}
                             {/*    </TouchableOpacity>*/}
                             {/*</View>*/}
-                           <View className="mb-5">
-                               <LanguagesWrapper lang={lang} setLang={setLang}/>
-                           </View>
 
-                            {/*theme*/}
-                            <View className="mb-5">
-                                <ThemeWrapper setTheme={setTheme} theme={theme}/>
-                            </View>
+                            {/*    )*/}
+                            {/*}*/}
+
 
                             {/*   update profile   may posts may like  may rating*/}
                             <View className="flex-row mb-5 items-center justify-around">
@@ -217,7 +231,7 @@ const ProfileScreen = () => {
 
                         <ScrollView
                             showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{paddingHorizontal: 20,flex:1}}
+                            contentContainerStyle={{paddingHorizontal: 20, flex: 1}}
                             className="h-full"
                         >
                             {/*button go tu back*/}
@@ -227,7 +241,6 @@ const ProfileScreen = () => {
 
                                 <ButtonBack/>
                             </View>
-
 
 
                             {/*change lang*/}
@@ -250,7 +263,7 @@ const ProfileScreen = () => {
                                         <Text>Log In</Text>
                                     </TouchableOpacity>
 
-                                {/*    sign Up*/}
+                                    {/*    sign Up*/}
 
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/RegistrationScreen')}
