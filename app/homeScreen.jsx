@@ -14,9 +14,21 @@ import HeaderComponent from "../components/HeaderComponent";
 
 // import kategory
 import {categoryData} from '../constants/fakeData'
+import {useAuth} from "../contexts/AuthContext";
 
 const HomeScreen = () => {
-    const isAuth = true
+    const{user,setAuth,setUserData} = useAuth();
+    const [isAuth, setIsAuth] = useState(null)
+    console.log('homescreen user',user)
+
+    useEffect(() => {
+        if (user && !isAuth) {
+            setIsAuth(true);
+        } else if (!user && isAuth) {
+            setIsAuth(false);
+        }
+    }, [user, isAuth]);
+
 
     const router = useRouter();
 
@@ -44,7 +56,7 @@ const HomeScreen = () => {
     useEffect(() => {
 
         // fetchCategories()
-        fetchRecipes()
+         fetchRecipes()
 
     }, [])
 
@@ -73,7 +85,7 @@ const HomeScreen = () => {
             >
 
                 {/*avatar snd ball*/}
-                <HeaderComponent isAuth={isAuth}/>
+                <HeaderComponent isAuth={isAuth} user={user}/>
 
 
                 {/*    greetings and punchline*/}
