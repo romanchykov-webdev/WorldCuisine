@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {hp} from "../constants/responsiveScreen";
 import {Image} from 'expo-image'
 import {getUserImageSrc} from "../service/imageServices";
@@ -10,6 +10,7 @@ const AvatarCustom = ({
                           style = {},
                           rounded = 'rounded-full'
                       }) => {
+    // console.log('AvatarCustom uri',uri)
     return (
         <Image
             source={getUserImageSrc(uri)}

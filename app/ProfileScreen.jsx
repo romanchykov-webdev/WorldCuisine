@@ -30,7 +30,7 @@ const ProfileScreen = () => {
 
 
 
-    // console.log('Profile user',user)
+    console.log('Profile user',user)
 
     const [isAuth, setIsAuth] = useState(null)
     useEffect(() => {

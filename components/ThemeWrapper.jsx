@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import SelectCustom from "./SelectCustom";
+import {CogIcon} from "react-native-heroicons/outline";
 
 // translate
 import i18n from '../lang/i18n'
@@ -16,7 +17,7 @@ const ThemeWrapper = ({theme, setTheme}) => {
     }
 
   return (
-    <SelectCustom title={i18n.t('Theme App:')} items={themesValue} defaultValue={theme} setItems={setTheme}/>
+    <SelectCustom title={i18n.t('Theme App:')} items={themesValue} defaultValue={theme} setItems={setTheme} icon={CogIcon}/>
 
     // <SelectCustom title={'Change language:'} items={languageNames} defaultValue={lang} setItems={setLang} />
   );

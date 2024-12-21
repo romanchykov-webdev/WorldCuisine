@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import SelectCustom from "./SelectCustom";
+import {LanguageIcon} from "react-native-heroicons/outline";
 
 // translate
 import i18n from '../lang/i18n'
@@ -21,9 +22,10 @@ const LanguagesWrapper = ({setLang,lang}) => {
     // const languagesValues = Object.values(languageNames); // Массив ключей (кодов языков)
 
   return (
-    <SelectCustom title={i18n.t('Language App:')} items={languageNames} defaultValue={lang}
+    <SelectCustom title={i18n.t('Language App:')} items={languageNames} defaultValue={lang} icon={LanguageIcon}
                   // setItems={setLang}
                   setItems={(selectedLang) => {
+                      console.log('selectedLang',selectedLang)
                       setLang(selectedLang);
                       i18n.locale = selectedLang; // Обновляем i18n.locale
                   }}

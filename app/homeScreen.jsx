@@ -19,7 +19,7 @@ import {useAuth} from "../contexts/AuthContext";
 const HomeScreen = () => {
     const{user,setAuth,setUserData} = useAuth();
     const [isAuth, setIsAuth] = useState(null)
-    console.log('homescreen user',user)
+    // console.log('homescreen user',user)
 
     useEffect(() => {
         if (user && !isAuth) {

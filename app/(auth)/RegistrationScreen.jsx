@@ -38,11 +38,11 @@ const RegistrationScreen = () => {
     const router = useRouter();
 
     // change lang
-    const [lang, setLang] = useState('En'); // Устанавливаем язык
+    const [lang, setLang] = useState('en'); // Устанавливаем язык
     // console.log('lang', lang);
 
     // change theme
-    const [theme, setTheme] = useState('Auto')
+    const [theme, setTheme] = useState('auto')
     // console.log('theme', theme);
 
     // Для переключения видимости пароля
