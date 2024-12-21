@@ -15,6 +15,7 @@ const SelectCustom = ({title, items, defaultValue, setItems}) => {
     // console.log('SelectCustom selectedValue',selectedValue)
 
     const handleSelect = (key) => {
+        // console.log('handleSelect', key);
         setSelectedValue(key); // Устанавливаем выбранное значение
         setItems(key); // Вызываем функцию для обновления значения в родительском компоненте
         setIsOpen(false); // Закрываем выпадающий список

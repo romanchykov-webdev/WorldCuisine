@@ -7,12 +7,16 @@ import {supabase} from "../lib/supabase";
 import {AuthProvider, useAuth} from "../contexts/AuthContext";
 import {getUserData} from "../service/userService";
 
+//translate
+// import i18n from'../i18n'
+
 
 const _layout = () => {
     return (
         <AuthProvider>
             <RootLayout/>
         </AuthProvider>
+
     )
 }
 
@@ -79,21 +83,20 @@ const RootLayout = () => {
 
 
     return (
-        <Stack>
+            <Stack>
 
-            <Stack.Screen name="index" options={{headerShown: false}}/>
-            <Stack.Screen name="(main)/welcome" options={{headerShown: false}}/>
+                <Stack.Screen name="index" options={{headerShown: false}}/>
+                <Stack.Screen name="(main)/welcome" options={{headerShown: false}}/>
 
-            <Stack.Screen name="homeScreen" options={{headerShown: false}}/>
-            <Stack.Screen name="RecipeDetailsScreen" options={{headerShown: false}}/>
-            <Stack.Screen name="ProfileScreen" options={{headerShown: false}}/>
-            <Stack.Screen name="ChangeLangScreen" options={{headerShown: false, presentation: "modal"}}/>
-            <Stack.Screen name="(auth)/LogInScreen" options={{headerShown: false}}/>
-            <Stack.Screen name="(auth)/RegistrationScreen" options={{headerShown: false}}/>
-            <Stack.Screen name="(main)/editProfile" options={{headerShown: false}}/>
+                <Stack.Screen name="homeScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="RecipeDetailsScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="ProfileScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="(auth)/LogInScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="(auth)/RegistrationScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="(main)/editProfile" options={{headerShown: false}}/>
 
 
-        </Stack>
+            </Stack>
 
     );
 }

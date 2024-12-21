@@ -164,8 +164,9 @@ const EditProfile = () => {
     //     : getUserImageSrc(user?.avatar);
     // console.log('editprofile imageSource',imageSource)
 
-    const handleDeleteProfile = async () => {
+    const DeleteAccount = async () => {
         try {
+
             // Удаление пользователя
             const res = await deleteUser(userData?.id);
             if (!res.success) {
@@ -184,6 +185,22 @@ const EditProfile = () => {
             console.error("Error deleting user or logging out:", error);
             Alert.alert("Error", "Something went wrong!");
         }
+    }
+
+    const handleDeleteProfile = async () => {
+        Alert.alert('Confirm', 'Are you sure you want to DELETE ACCOUNT?', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('modal cancelled'),
+                style: 'cancel'
+            },
+            {
+                text: 'DELETE',
+                onPress: () => DeleteAccount(),
+                style: 'destructive'
+            }
+        ]);
+
     };
 
 

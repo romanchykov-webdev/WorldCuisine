@@ -1,0 +1,20 @@
+{
+  "---SIGNUP---": "---SIGNUP---",
+  "Let`s,": "Vamos,",
+  "Get Started": "Comienza ahora",
+  "Please fill the details to create an account": "Por favor, rellene los detalles para crear una cuenta",
+  "User name": "Nombre de usuario",
+  "Email": "Correo electrónico",
+  "Password": "Contraseña",
+  "Please repeat password": "Repita la contraseña",
+  "Sign Up": "Registrarse",
+  "Already have an account,": "Ya tienes una cuenta?",
+  "Log In": "Iniciar sesión",
+  "---SIGNUP-END---": "---SIGNUP-END---",
+  "---LanguagesWrapper---": "---LanguagesWrapper---",
+  "Language App:": "Idioma de la aplicación:",
+  "---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
+  "---ThemeWrapper:---": "---ThemeWrapper:---",
+  "Theme App:": "Tema de la aplicación:",
+  "---ThemeWrapper-END---": "---ThemeWrapper-END---"
+}

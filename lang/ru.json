@@ -1,0 +1,20 @@
+{
+  "---SIGNUP---": "---SIGNUP---",
+  "Let`s,": "Давайте,",
+  "Get Started": "Hачните сейчас",
+  "Please fill the details to create an account": "Пожалуйста, заполните данные, чтобы создать учетную запись",
+  "User name": "Имя пользователя",
+  "Email": "Электронная почта",
+  "Password": "Пароль",
+  "Please repeat password": "Повторите пароль.",
+  "Sign Up": "Зарегистрироваться",
+  "Already have an account,": "У вас уже есть аккаунт,",
+  "Log In": "Авторизоваться",
+  "---SIGNUP-END---": "---SIGNUP-END---",
+  "---LanguagesWrapper---": "---LanguagesWrapper---",
+  "Language App:": "Язык Приложения:",
+  "---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
+  "---ThemeWrapper:---": "---ThemeWrapper:---",
+  "Theme App:": "Тема приложения:",
+  "---ThemeWrapper-END---": "---ThemeWrapper-END---"
+}

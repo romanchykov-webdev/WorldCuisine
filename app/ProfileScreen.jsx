@@ -175,18 +175,6 @@ const ProfileScreen = () => {
                             </View>
 
                             {/*change lang app*/}
-                            {/*<View className="flex-row items-center mb-10">*/}
-                            {/*    <TouchableOpacity*/}
-                            {/*        onPress={() => router.push('/ChangeLangScreen')}*/}
-                            {/*        style={shadowBoxBlack()}*/}
-                            {/*        className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
-                            {/*    >*/}
-                            {/*        <Text>Change language App</Text>*/}
-                            {/*    </TouchableOpacity>*/}
-                            {/*</View>*/}
-
-                            {/*    )*/}
-                            {/*}*/}
 
 
                             {/*   update profile   may posts may like  may rating*/}
