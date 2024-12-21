@@ -82,7 +82,7 @@ const EditProfile = () => {
             // Сжимаем изображение перед использованием
             const compressedImage = await compressImage(result.assets[0].uri, 0.5, 200, 200);
             setUser({ ...user, avatar: compressedImage });
-            console.log('Compressed image:', compressedImage);
+            // console.log('Compressed image:', compressedImage);
             // setUser({...user, avatar: result.assets[0]});
             // console.log('user avatar update', user)
         } else {
@@ -98,12 +98,12 @@ const EditProfile = () => {
 
         let userData = {...user}
         let {user_name, lang, theme, avatar} = userData
-        console.log('user avatar',currentUser?.avatar)
+        // console.log('user avatar',currentUser?.avatar)
 
         //upload user avatar
         if (typeof avatar == 'object') {
             //     upload image
-            console.log('upload avatar handleSubmit', avatar)
+            // console.log('upload avatar handleSubmit', avatar)
             let imageRes = await uploadFile('profiles', avatar?.uri, true, currentUser?.avatar);
             if (imageRes.success) {
                 userData.avatar = imageRes.data;
@@ -112,7 +112,7 @@ const EditProfile = () => {
             }
         }
 
-        console.log('before submit', userData);
+        // console.log('before submit', userData);
 
         const res = await updateUser(currentUser?.id, userData)
 

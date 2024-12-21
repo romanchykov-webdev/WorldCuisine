@@ -16,14 +16,24 @@ import HeaderComponent from "../components/HeaderComponent";
 import {categoryData} from '../constants/fakeData'
 import {useAuth} from "../contexts/AuthContext";
 
+// for tarnslate
+// translate
+import i18n from '../lang/i18n'
+
 const HomeScreen = () => {
     const{user,setAuth,setUserData} = useAuth();
     const [isAuth, setIsAuth] = useState(null)
     // console.log('homescreen user',user)
 
+    const changeLanguage = (newLocale) => {
+        i18n.locale = newLocale;
+        // Здесь можно обновить состояние компонента, чтобы интерфейс обновился
+    };
+
     useEffect(() => {
         if (user && !isAuth) {
             setIsAuth(true);
+            changeLanguage(user.lang)
         } else if (!user && isAuth) {
             setIsAuth(false);
         }
@@ -74,7 +84,7 @@ const HomeScreen = () => {
 
     }
 
-
+    // {i18n.t('User name')}
     return (
         <View className="flex-1">
             <StatusBar style='darck'/>
@@ -94,10 +104,10 @@ const HomeScreen = () => {
 
                     <View>
                         <Text style={{fontSize: hp(3)}} className="font-semibold text-neutral-700">
-                            Make your own food,
+                            {i18n.t('Make your own food')},
                         </Text>
                         <Text style={{fontSize: hp(3)}} className="font-semibold text-neutral-700">
-                            stay at <Text className="text-amber-500">home</Text>
+                            {i18n.t('stay at')} <Text className="text-amber-500">{i18n.t('home')}</Text>
                         </Text>
                     </View>
                 </View>

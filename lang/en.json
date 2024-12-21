@@ -16,5 +16,11 @@
   "---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
   "---ThemeWrapper:---": "---ThemeWrapper:---",
   "Theme App:": "Theme App:",
-  "---ThemeWrapper-END---": "---ThemeWrapper-END---"
+  "---ThemeWrapper-END---": "---ThemeWrapper-END---",
+  "---HOME_SCREEN---":   "---HOME_SCREEN---",
+  "Hello": "Hello",
+  "Make your own food": "Make your own food",
+  "stay at": "stay at",
+  "home": "home",
+  "---HOME_SCREEN-END---": "---HOME_SCREEN-END---"
 }

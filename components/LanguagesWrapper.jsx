@@ -25,7 +25,7 @@ const LanguagesWrapper = ({setLang,lang}) => {
     <SelectCustom title={i18n.t('Language App:')} items={languageNames} defaultValue={lang} icon={LanguageIcon}
                   // setItems={setLang}
                   setItems={(selectedLang) => {
-                      console.log('selectedLang',selectedLang)
+                      console.log('LanguagesWrapper selectedLang',selectedLang)
                       setLang(selectedLang);
                       i18n.locale = selectedLang; // Обновляем i18n.locale
                   }}

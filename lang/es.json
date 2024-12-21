@@ -16,5 +16,11 @@
   "---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
   "---ThemeWrapper:---": "---ThemeWrapper:---",
   "Theme App:": "Tema de la aplicación:",
-  "---ThemeWrapper-END---": "---ThemeWrapper-END---"
+  "---ThemeWrapper-END---": "---ThemeWrapper-END---",
+  "---HOME_SCREEN---":   "---HOME_SCREEN---",
+  "Hello": "Hola",
+  "Make your own food": "Haz tu propia comida",
+  "stay at": "quedarse en",
+  "home": "casa",
+  "---HOME_SCREEN-END---": "---HOME_SCREEN-END---"
 }

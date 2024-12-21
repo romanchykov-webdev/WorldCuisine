@@ -22,9 +22,18 @@ const i18n = new I18n(translations);
 
 // Установите язык устройства как текущий язык приложения
 // i18n.locale = getLocales()[0].languageCode || 'en';
-i18n.locale = 'en';
+// i18n.locale = 'en';
+//
+// // Включите fallback для пропущенных ключей
+// i18n.enableFallback = true;
 
-// Включите fallback для пропущенных ключей
+// Получаем язык устройства
+const deviceLocale = getLocales()[0]?.languageCode || 'en';  // Используем fallback на 'en' если язык не определен
+
+// Устанавливаем язык устройства как текущий язык приложения
+i18n.locale = deviceLocale;
+
+// Включаем fallback для пропущенных ключей
 i18n.enableFallback = true;
 
 export default i18n;

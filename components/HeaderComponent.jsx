@@ -7,6 +7,9 @@ import {useRouter} from "expo-router";
 import {useAuth} from "../contexts/AuthContext";
 import AvatarCustom from "./AvatarCustom";
 
+// for translate
+import i18n from '../lang/i18n'
+
 const HeaderComponent = ({isAuth,user}) => {
 
 
@@ -86,7 +89,7 @@ const HeaderComponent = ({isAuth,user}) => {
             </View>
             {isAuth && 
                 <View className="flex-row">
-                    <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">Hello, </Text>
+                    <Text style={{fontSize: hp(1.7)}} className="text-neutral-700">{i18n.t('Hello')}, </Text>
                     <Text style={{fontSize: hp(1.7)}} className="text-neutral-700 capitalize">{user?.user_name} !</Text>
                 </View>
             }

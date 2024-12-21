@@ -39,7 +39,7 @@ export const deleteFile = async (filePath) => {
             return { success: false, msg: 'Could not delete media' };
         }
 
-        console.log('File deleted successfully:', filePath);
+        // console.log('File deleted successfully:', filePath);
         return { success: true, msg: `File deleted: ${filePath}` };
     } catch (error) {
         console.log('File delete error:', error);
@@ -86,9 +86,9 @@ export const uploadFile = async (folderName, fileUri, isImage = true,oldFilePath
     try {
 
         // Удаляем старый файл, если передан путь
-        console.log('uploadFile oldFilePath',oldFilePath)
+        // console.log('uploadFile oldFilePath',oldFilePath)
         if (oldFilePath) {
-            console.log('Deleting old file:', oldFilePath);
+            // console.log('Deleting old file:', oldFilePath);
             await deleteFile(oldFilePath);
         }
         // after
@@ -114,7 +114,7 @@ export const uploadFile = async (folderName, fileUri, isImage = true,oldFilePath
             return {success: false, msg: 'Could not upload media'};
         }
 
-        console.log('data upload avatar to storage', data);
+        // console.log('data upload avatar to storage', data);
         return {success: true, data: data.path};
 
     } catch (error) {

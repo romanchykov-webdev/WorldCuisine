@@ -16,5 +16,11 @@
   "---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
   "---ThemeWrapper:---": "---ThemeWrapper:---",
   "Theme App:": "Тема програми:",
-  "---ThemeWrapper-END---": "---ThemeWrapper-END---"
+  "---ThemeWrapper-END---": "---ThemeWrapper-END---",
+  "---HOME_SCREEN---":   "---HOME_SCREEN---",
+  "Hello": "Привіт",
+  "Make your own food": "Готуйте власну їжу",
+  "stay at": "залишайся",
+  "home": "вдома",
+  "---HOME_SCREEN-END---": "---HOME_SCREEN-END---"
 }

@@ -36,7 +36,7 @@ export const logOut = async ({setAuth,router}) => {
 
 //update user data
 export const updateUser = async (userId, data) => {
-    console.log('userService updateUser', userId, data)
+    // console.log('userService updateUser', userId, data)
     try {
 
         const {error} = await supabase

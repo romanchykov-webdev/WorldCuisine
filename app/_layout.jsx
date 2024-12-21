@@ -33,7 +33,7 @@ const RootLayout = () => {
 
 
         const {data: authListener} = supabase.auth.onAuthStateChange(async (_event, session) => {
-            console.log('session:', session);
+            // console.log('session:', session);
 
             if (session) {
                 setAuth(session?.user);
