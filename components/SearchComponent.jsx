@@ -4,6 +4,9 @@ import {shadowBoxBlack} from "../constants/shadow";
 import {hp} from "../constants/responsiveScreen";
 import {MagnifyingGlassIcon} from "react-native-heroicons/mini";
 
+// translate
+import i18n from '../lang/i18n'
+
 const SearchComponent = () => {
   return (
       <View
@@ -12,7 +15,7 @@ const SearchComponent = () => {
       >
           <View className="flex-row items-center rounded-full bg-transparent">
               <TextInput
-                  placeholder="Search any food"
+                  placeholder={i18n.t("Search any food")}
                   placeholderTextColor="gray"
                   style={[{fontSize: hp(1.7)}]}
                   className="flex-1 text-base tracking-wider p-3 mb-1"

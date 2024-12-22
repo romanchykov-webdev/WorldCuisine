@@ -7,10 +7,13 @@ import {shadowBoxBlack, shadowText} from "../constants/shadow";
 import {Image}from "expo-image"
 
 import Animated, {FadeInDown, FadeInUp} from "react-native-reanimated";
+import AvatarCustom from "./AvatarCustom";
 
-const Categories = ({categories, activeCategory, setActiveCategory,handleChangeCategory}) => {
+const Categories = ({categories, activeCategory, setActiveCategory,handleChangeCategory,langApp}) => {
 
     // console.log('categories',categories)
+    // console.log('categories langApp',langApp)
+    // console.log('categories categories',categories)
     return (
 
             <ScrollView
@@ -24,6 +27,9 @@ const Categories = ({categories, activeCategory, setActiveCategory,handleChangeC
 
                         let isActive = category.strCategory === activeCategory;
                         let isActiveCategory = isActive ? 'bg-amber-400' : 'bg-black/10'
+
+                        // Находим название категории в зависимости от выбранного языка
+                        const categoryTitle = category.title.find(item => item.lang === langApp)?.name || category.strCategory;
 
                         return (
                             <Animated.View
@@ -41,13 +47,19 @@ const Categories = ({categories, activeCategory, setActiveCategory,handleChangeC
                                         // className="rounded-full p-[6] bg-neutral-300"
                                         className={`rounded-full p-[6] ${isActiveCategory}`}
                                     >
-                                        <Image
-                                            // source={{uri: category.strCategoryThumb}}
-                                            source={category.strCategoryThumb}
-                                            style={{width: hp(6), height: hp(6),borderRadius:'100%'}}
-                                            // className="rounded-full overflow-hidden"
-                                            contentFit="cover"
-                                            transition={1000}
+                                        {/*<Image*/}
+                                        {/*    // source={{uri: category.strCategoryThumb}}*/}
+                                        {/*    source={category.strCategoryThumb}*/}
+                                        {/*    style={{width: hp(6), height: hp(6),borderRadius:'100%'}}*/}
+                                        {/*    // className="rounded-full overflow-hidden"*/}
+                                        {/*    contentFit="cover"*/}
+                                        {/*    transition={1000}*/}
+                                        {/*/>*/}
+                                        <AvatarCustom
+                                            uri={category.strCategoryThumb}
+                                            size={hp(6)}
+                                            style={{borderWidth:0.2}}
+                                            rounded={50}
                                         />
                                     </View>
                                     <Text
@@ -57,7 +69,11 @@ const Categories = ({categories, activeCategory, setActiveCategory,handleChangeC
                                                 radius: 0.5,
                                             })
                                         ]}
-                                        className="text-neutral-900 text-center ">{category.strCategory}</Text>
+                                        className="text-neutral-900 text-center ">
+                                        {/*{category.strCategory}*/}
+                                        {categoryTitle}
+                                    </Text>
+
                                 </TouchableOpacity>
                             </Animated.View>
                         )

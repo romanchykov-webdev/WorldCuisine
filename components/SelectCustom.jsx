@@ -3,18 +3,30 @@ import {View, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {shadowBoxBlack} from "../constants/shadow";
 import {ChevronDownIcon, ChevronUpIcon} from "react-native-heroicons/outline";
 
-const SelectCustom = ({title, items, defaultValue, setItems}) => {
+const SelectCustom = ({title, items, defaultValue, setItems,icon}) => {
     const [isOpen, setIsOpen] = useState(false); // Состояние для управления раскрытием списка
-    const [selectedValue, setSelectedValue] = useState();
+    const [selectedValue, setSelectedValue] = useState(defaultValue);
 
-    useEffect(() => {
-        setSelectedValue(defaultValue);
-    },[selectedValue])
+    // console.log('SelectCustom defaultValue',defaultValue)
+
+    // useEffect(() => {
+    //     setSelectedValue(defaultValue);
+    //     setItems(defaultValue)
+    // },[selectedValue])
+
+    // console.log('SelectCustom defaultValue:',defaultValue)
+    // console.log('SelectCustom items:',defaultValue)
 
     // animated hi
     // console.log('SelectCustom selectedValue',selectedValue)
 
+    useEffect(()=>{
+        setItems(defaultValue)
+        setSelectedValue(defaultValue)
+    },[defaultValue])
+
     const handleSelect = (key) => {
+        // console.log('handleSelect', key);
         setSelectedValue(key); // Устанавливаем выбранное значение
         setItems(key); // Вызываем функцию для обновления значения в родительском компоненте
         setIsOpen(false); // Закрываем выпадающий список
@@ -41,17 +53,26 @@ const SelectCustom = ({title, items, defaultValue, setItems}) => {
                 <View
                     style={styles.header}
                 >
+                    <View
+                    style={styles.iconWrapper}
+                    >
+                        {icon && React.createElement(icon, { size: 24, color: 'grey' })}
+                    </View>
                     <Text style={styles.headerText}>
                         {`${title} `}
                     </Text>
-                    <Text>
-                        {items[selectedValue]}
-                    </Text>
-                    {
-                        isOpen
-                            ? (<ChevronUpIcon size={30} color={'grey'}/>)
-                            : (<ChevronDownIcon size={30} color={'grey'}/>)
-                    }
+                   <View style={styles.textValueWrapper}>
+                       <Text >
+                           {items[selectedValue]}
+                       </Text>
+                   </View>
+                    <View style={styles.chevronWrapper}>
+                        {
+                            isOpen
+                                ? (<ChevronUpIcon size={30} color={'grey'}/>)
+                                : (<ChevronDownIcon size={30} color={'grey'}/>)
+                        }
+                    </View>
 
 
                 </View>
@@ -91,14 +112,28 @@ const styles = StyleSheet.create({
         // display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
 
+    },
+    iconWrapper:{
+        // backgroundColor:'red',
+        marginRight:5
     },
     headerText: {
         fontWeight: 'bold',
         color: '#333',
     },
+    textValueWrapper:{
+        // backgroundColor:'red',
+        flex:1,
+        alignItems: 'center'
+    },
+    chevronWrapper:{
+       marginLeft:'auto',
+        // backgroundColor:'red',
+    },
     dropdown: {
+
         marginTop: 5,
         backgroundColor: 'white',
         borderRadius: 10,
