@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Alert} from 'react-native';
+import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert} from 'react-native';
 import {useRouter} from "expo-router";
 import ButtonBack from "../components/ButtonBack";
 
-import {Image} from 'expo-image'
 import {hp, wp} from "../constants/responsiveScreen";
 import {shadowBoxBlack} from "../constants/shadow";
 
@@ -12,17 +11,16 @@ import {
     PencilSquareIcon,
     ArrowLeftEndOnRectangleIcon,
     CreditCardIcon,
-    StarIcon,
     HeartIcon,
     BellIcon
 } from "react-native-heroicons/mini";
 import {useAuth} from "../contexts/AuthContext";
-import {supabase} from "../lib/supabase";
-import SelectCustom from "../components/SelectCustom";
-import LanguagesWrapper from "../components/LanguagesWrapper";
-import ThemeWrapper from "../components/ThemeWrapper";
+
 import AvatarCustom from "../components/AvatarCustom";
 import {logOut} from "../service/userService";
+
+// translate
+import i18n from '../lang/i18n'
 
 
 const ProfileScreen = () => {
@@ -124,7 +122,9 @@ const ProfileScreen = () => {
                                     <ButtonBack/>
                                 </View>
 
-                                <Text style={{fontSize:hp(2)}}>Profile</Text>
+                                <Text style={{fontSize:hp(2)}}>
+                                    {i18n.t('Profile')}
+                                </Text>
 
                                 <TouchableOpacity
                                     onPress={handleLogUot}

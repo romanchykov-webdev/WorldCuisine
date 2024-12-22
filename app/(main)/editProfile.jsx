@@ -9,7 +9,6 @@ import {
     TextInput,
     ActivityIndicator, Alert
 } from 'react-native';
-import RenameComponent from "../../components/profile/RenameComponent";
 import {useAuth} from "../../contexts/AuthContext";
 import {useRouter} from "expo-router";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
@@ -17,7 +16,6 @@ import ThemeWrapper from "../../components/ThemeWrapper";
 import {shadowBoxBlack} from "../../constants/shadow";
 import {hp, wp} from "../../constants/responsiveScreen";
 import ButtonBack from "../../components/ButtonBack";
-import AvatarCustom from "../../components/AvatarCustom";
 import {CameraIcon} from "react-native-heroicons/mini";
 import {deleteUser, logOut, updateUser} from "../../service/userService";
 import * as ImagePicker from 'expo-image-picker';
@@ -28,6 +26,9 @@ import { compressImage } from "../../lib/imageUtils";
 
 
 import {Image} from 'expo-image'
+
+// translate
+import i18n from '../../lang/i18n'
 
 const EditProfile = () => {
     const {user: currentUser, setAuth, setUserData} = useAuth()
@@ -123,17 +124,6 @@ const EditProfile = () => {
             setUserData({...currentUser, ...userData})
         }
 
-        // setTimeout(() => {
-        //     setLoading(false)
-        //     router.back()
-        // }, 2000)
-
-        // console.log('EditProfile handleSubmit avatar', typeof avatar)
-        // console.log('EditProfile handleSubmit avatar', avatar)
-        // console.log('EditProfile handleSubmit user_name', user_name)
-        // console.log('EditProfile handleSubmit lang', lang)
-        // console.log('EditProfile handleSubmit theme', theme)
-
 
         setLoading(false)
 
@@ -141,65 +131,8 @@ const EditProfile = () => {
         // console.log('submit userData avatar',userData?.avatar)
     }
 
-    // console.log('edit profile userData',userData)
-
-    // const [image, setImage] = useState(null);
-    //
-    // const [lang, setLang] = useState(user.lang)
-    // const [theme, setTheme] = useState(user.theme)
-    // const [name, setName] = useState(user.name)
-    // // const [avatar, setAvatar] = useState('')
-
-    const [buttonUpdate, setButtonUpdate] = useState(false)
-    // console.log('Type of user.lang:',user.lang);
-    // console.log('Type of lang:', lang);
-    // useEffect(() => {
-    //     if (
-    //         user.lang && lang &&
-    //         user.theme && theme &&
-    //         user.name &&
-    //         user.lang !== lang ||
-    //         user.theme !== theme
-    //     ) {
-    //         setButtonUpdate(true);
-    //     }else{
-    //         setButtonUpdate(false);
-    //     }
-    // },[lang,theme,user])
-
-    // useEffect(() => {
-    //     if (user !== null) {
-    //         // setIsAuth(true)
-    //         // console.log('user not null')
-    //         setLang(userData?.lang)
-    //         setTheme(userData?.theme)
-    //         setName(userData?.user_name)
-    //
-    //
-    //     } else {
-    //         // user.avatar
-    //
-    //         setLang('')
-    //         setTheme('')
-    //     }
-    //
-    // }, [user])
 
 
-    // on submit
-
-
-    const handleRename = (currentName) => {
-        console.log('ok')
-    }
-
-
-    // let imageSource = user?.avatar && typeof user.avatar === 'object' ? user.avatar : getUserImageSrc(user?.avatar);
-    // let imageSource=currentUser?.avatar && typeof  currentUser.avatar ==='object' ? currentUser.avatar :getUserImageSrc(currentUser?.avatar);
-    // let imageSource = user?.avatar && typeof user.avatar.uri === 'object'
-    //     ? user.avatar.uri
-    //     : getUserImageSrc(user?.avatar);
-    // console.log('editprofile imageSource', imageSource)
 
     const DeleteAccount = async () => {
         try {
@@ -257,7 +190,9 @@ const EditProfile = () => {
                     <View className="absolute left-0">
                         <ButtonBack/>
                     </View>
-                    <Text style={{fontSize: hp(2)}}>EditProfile works!</Text>
+                    <Text style={{fontSize: hp(2)}}>
+                        {i18n.t('Edit Profile')} !
+                    </Text>
                 </View>
 
                 {/*avatar*/}
@@ -328,7 +263,7 @@ const EditProfile = () => {
                             : (
 
                                 <Text className="text-neutral-700 text-xl">
-                                    Update yor Profile
+                                    {i18n.t('Update your Profile')}
                                 </Text>
                             )
                     }
@@ -349,7 +284,7 @@ const EditProfile = () => {
                             : (
 
                                 <Text className="text-neutral-700 text-xl">
-                                    Delete Profile
+                                    {i18n.t('Delete your Profile')} ?
                                 </Text>
                             )
                     }

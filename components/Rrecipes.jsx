@@ -19,6 +19,9 @@ import LoadingComponent from "./loadingComponent";
 import {useRouter} from "expo-router";
 import {getDeviceType} from "../constants/getWidthDevice";
 
+// translate
+import i18n from '../lang/i18n'
+
 const Recipes = ({categories, recipes}) => {
 
     const [column, setColumn] = useState(0)
@@ -45,7 +48,7 @@ const Recipes = ({categories, recipes}) => {
                 ]}
                 className="font-semibold text-neutral-700 mb-2"
             >
-                Recipes
+                {i18n.t('Recipes')}
             </Text>
 
             {/*    masonry*/}
