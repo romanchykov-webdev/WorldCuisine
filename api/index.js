@@ -15,6 +15,7 @@ export const getCategories = async () => {
     }
 }
 export const getRecipes = async (category) => {
+    // console.log('getRecipes', category)
     try {
 
         const response = await axios.get(`https://themealdb.com/api/json/v1/1/filter.php?c=${category}`);

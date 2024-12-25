@@ -118,7 +118,7 @@ const RecipeDetailsScreen = () => {
 
     }
     // get video id
-
+    console.log('RecipeDetailsScreen recipeDish',recipeDish)
 
     return (
         <ScrollView

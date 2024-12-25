@@ -16,7 +16,7 @@ const HeaderComponent = ({isAuth,user}) => {
 
     const router = useRouter();
 
-
+    // console.log('HeaderComponent user',user)
     // console.log('user HeaderComponent',user)
 
     // console.log('home component isAuth',isAuth)

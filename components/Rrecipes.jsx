@@ -83,6 +83,7 @@ const Recipes = ({categories, recipes}) => {
 
 const CardItem = ({item, index}) => {
     // console.log('index', index)
+    // console.log('CardItem item', item)
     const router = useRouter()
 
 

@@ -23,24 +23,36 @@ import LoadingComponent from "../components/loadingComponent";
 
 const HomeScreen = () => {
     const {user, setAuth, setUserData} = useAuth();
+    const router = useRouter();
+
     const [isAuth, setIsAuth] = useState(null)
     const [isRefreshing, setIsRefreshing] = useState(false);  // Состояние для отслеживания процесса обновления
     const [isLoading, setIsLoading] = useState(false);  // Состояние для отслеживания загрузки данных
+
+    const [activeCategory, setActiveCategory] = useState('Beef')
+
 
     const [categories, setCategories] = useState([])
     // console.log('homescreen user',user)
 
     const changeLanguage = (newLocale) => {
-        i18n.locale = newLocale;
+        if (newLocale) {
+            i18n.locale = newLocale;
+            console.log('homescreen newLocale', newLocale)
+        } else {
+            i18n.locale = 'en'
+            console.log('homescreen newLocale else i18n undefine', newLocale)
+        }
+
         // Здесь можно обновить состояние компонента, чтобы интерфейс обновился
     };
 
     useEffect(() => {
-        if (user && !isAuth) {
+        if (user) {
             setIsAuth(true);
             changeLanguage(user.lang)
 
-        } else if (!user && isAuth) {
+        } else if (!user && !isAuth) {
             setIsAuth(false);
         }
     }, [user, isAuth]);
@@ -53,14 +65,10 @@ const HomeScreen = () => {
     }
 
 
-    const router = useRouter();
-
-    const [activeCategory, setActiveCategory] = useState('Beef')
-
-
     // Вызов функции fetchRecipes и присваивание данных в состояние
     const [recipes, setRecipes] = useState([])
     const fetchRecipes = async () => {
+        console.log('active category', activeCategory);
         const data = await getRecipes(activeCategory)
         // console.log('data',data)
         setRecipes(data)
@@ -70,9 +78,41 @@ const HomeScreen = () => {
     useEffect(() => {
 
         getAllCategories()
-        fetchRecipes()
+        // fetchRecipes()
 
     }, [])
+
+
+    // const handleChangeCategory = (category) => {
+    const handleChangeCategory = (category) => {
+
+
+        setActiveCategory(category);
+        setRecipes([]);  // Очищаем рецепты при смене категории
+
+        fetchRecipes(activeCategory);
+
+    }
+// Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
+    useEffect(() => {
+        fetchRecipes(activeCategory)
+
+    }, [activeCategory]); // Следим за изменением activeCategory
+
+    // Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
+    // useEffect(() => {
+    //     const fetchRecipes = async () => {
+    //         console.log('active category', activeCategory);
+    //         // const data = await getRecipes(activeCategory); // Получаем рецепты для актуальной категории
+    //         const data = await getRecipes(activeCategory); // Получаем рецепты для актуальной категории
+    //         setRecipes(data);
+    //     };
+    //
+    //     if (activeCategory) {
+    //         // console.log("activeCategory", activeCategory);
+    //         fetchRecipes(); // Загружаем рецепты при изменении категории
+    //     }
+    // }, [activeCategory]); // Следим за изменением activeCategory
 
     // Функция для обновления данных при свайпе вниз
     const onRefresh = async () => {
@@ -87,20 +127,7 @@ const HomeScreen = () => {
         }, 1000)
     };
 
-    const handleChangeCategory = (category) => {
-        // setRecipes([])
-        // console.log('activeCategory',activeCategory)
-        // console.log('recipes',recipes)
-        setTimeout(() => {
-            fetchRecipes(category)
-        }, 1000)
 
-        setActiveCategory(category)
-        setRecipes([])
-
-    }
-
-    // {i18n.t('User name')}
     return (
         <View className="flex-1">
             <StatusBar style='darck'/>
