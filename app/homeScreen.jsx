@@ -7,7 +7,6 @@ import {MagnifyingGlassIcon, Cog6ToothIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../constants/shadow";
 import Categories from "../components/Categories";
 import {getCategories, getRecipes} from "../api";
-import Recipes from "../components/Rrecipes";
 import {useRouter} from "expo-router";
 import SearchComponent from "../components/SearchComponent";
 import HeaderComponent from "../components/HeaderComponent";
@@ -18,8 +17,9 @@ import {useAuth} from "../contexts/AuthContext";
 
 // translate
 import i18n from '../lang/i18n'
-import {getCategoriesMyDB} from "../service/getDataFromDB";
+import {getCategoriesMyDB, getRecipesMyDB} from "../service/getDataFromDB";
 import LoadingComponent from "../components/loadingComponent";
+import Recipes from "../components/Rrecipes";
 
 const HomeScreen = () => {
     const {user, setAuth, setUserData} = useAuth();
@@ -32,7 +32,7 @@ const HomeScreen = () => {
     const [activeCategory, setActiveCategory] = useState('Beef')
 
 
-    const [categories, setCategories] = useState([])
+    const [categories, setCategories] = useState(null)
     // console.log('homescreen user',user)
 
     const changeLanguage = (newLocale) => {
@@ -69,9 +69,10 @@ const HomeScreen = () => {
     const [recipes, setRecipes] = useState([])
     const fetchRecipes = async () => {
         console.log('active category', activeCategory);
-        const data = await getRecipes(activeCategory)
-        // console.log('data',data)
-        setRecipes(data)
+        // const data = await getRecipes(activeCategory)
+        const recipesMyDB = await getRecipesMyDB(activeCategory)
+        // console.log('fetchRecipes data',recipesMyDB)
+        setRecipes(recipesMyDB.data)
     }
 
 
@@ -126,7 +127,7 @@ const HomeScreen = () => {
             setIsLoading(false);  // Завершаем процесс загрузки
         }, 1000)
     };
-
+    console.log('homescreen categories',categories)
 
     return (
         <View className="flex-1">
@@ -193,7 +194,7 @@ const HomeScreen = () => {
                                                 activeCategory={activeCategory}
                                                 setActiveCategory={setActiveCategory}
                                                 handleChangeCategory={handleChangeCategory}
-                                                langApp={user.lang}
+                                                langApp={user?.lang ?? 'en'}
                                             />
                                         )
                                         : (
@@ -206,7 +207,12 @@ const HomeScreen = () => {
                                 {
                                     categories
                                         ? (
-                                            <Recipes categories={categories.length} recipes={recipes}/>
+
+                                            <Recipes
+                                                categories={categories.length}
+                                                recipes={recipes}
+                                                langApp={user?.lang ?? 'en'}
+                                            />
                                         )
                                         : (
                                             <LoadingComponent size={'small'} color='grey'/>

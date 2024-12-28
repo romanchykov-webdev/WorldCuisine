@@ -94,6 +94,53 @@ export const mealData = [
     }
 ]
 
+const shortDesc = [
+    {
+        "id": "a33cfb58-231b-449c-b222-ee4440c4aeaf",
+        "created_at": "2024-12-25 14:04:25.808736+00",
+        "publishedId": "1b17d89f-441f-490e-bde8-d05453cc7493",
+        "publishedUser": {
+            "avatar":"profiles/1734794651552.png",
+            "username":"serioga",
+            "userId":"1b17d89f-441f-490e-bde8-d05453cc7493"
+        },
+        "category": "Beef",
+        "categoryId": "b009c610-2b13-40eb-87cb-a5837a26c7b2",
+        "imageHeader": "uploads_image/recipesImages/Beef/Beef%20and%20Mustard%20Pie.jpg",
+        "title": {
+            "strTitle": "Beef and Mustard Pie",
+            "lang": [
+                {
+                    "lang": "en",
+                    "name": "Beef and Mustard Pie"
+                },
+                {
+                    "lang": "ru",
+                    "name": "Пирог с говядиной и горчицей"
+                },
+                {
+                    "lang": "es",
+                    "name": "Pastel de carne y mostaza"
+                },
+                {
+                    "lang": "it",
+                    "name": "Torta di manzo e senape"
+                },
+                {
+                    "lang": "ua",
+                    "name": "Пиріг з яловичиною та гірчицею"
+                }
+            ]
+        },
+        "rating": 4.5,
+        "likes": 10,
+        "comments": 0,
+        "video": true,   //of false
+        "tags": ["British", "Pie", "Beef", "Main Course"], //array
+        "fullRecipeId": "e3cf0a69-9ed9-4af4-9412-780ace57defd",  //id full description recipe
+    }
+]
+
 const recipes = {
     'Dessert': [
         {
@@ -356,19 +403,48 @@ const recipes = {
     'Beef': [
         {
             "id": 'sssd-sf76sds-sdfsdf67sdf-fs',
-            "publishedId":"1b17d89f-441f-490e-bde8-d05453cc7493",
-            "category":"Beef",
-            "categoryId":"b009c610-2b13-40eb-87cb-a5837a26c7b2",
+            "publishedId": "1b17d89f-441f-490e-bde8-d05453cc7493",
+            "publishedUser": {
+                "avatar":"profiles/1734794651552.png",
+                "username":"serioga",
+                "userId":"1b17d89f-441f-490e-bde8-d05453cc7493"
+            },
+            "category": "Beef",
+            "categoryId": "b009c610-2b13-40eb-87cb-a5837a26c7b2",
             'imageHeader': "https://www.themealdb.com/images/media/meals/sytuqu1511553755.jpg",
             "area": "British",
-            "title": "Beef and Mustard Pie",
+
+            "title": {
+                "lang": [
+                    {
+                        "lang": "en",
+                        "name": "Beef and Mustard Pie"
+                    },
+                    {
+                        "lang": "ru",
+                        "name": "Пирог с говядиной и горчицей"
+                    },
+                    {
+                        "lang": "es",
+                        "name": "Pastel de carne y mostaza"
+                    },
+                    {
+                        "lang": "it",
+                        "name": "Torta di manzo e senape"
+                    },
+                    {
+                        "lang": "ua",
+                        "name": "Пиріг з яловичиною та гірчицею"
+                    }
+                ]
+            },
             "rating": {
                 "totalScore": 45,
                 "numberOfRatings": 10,
                 "averageScore": 4.5
             },
             "likes": 10,
-            "comments":0,
+            "comments": 0,
             "recipeMetrics": {
                 "time": {
                     "value": 35,

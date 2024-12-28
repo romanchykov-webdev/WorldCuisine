@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity,Alert} from 'react-native';
+import {View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
 import {getRecipeDish} from "../api";
 
@@ -23,16 +23,26 @@ import RatingComponents from "../components/RatingComponents";
 import StarRating, {StarRatingDisplay} from 'react-native-star-rating-widget';
 import {calculateRating} from "../constants/ratingHalper";
 import CommentsComponent from "../components/CommentsComponent";
+import {getRecipesDescriptionMyDB} from "../service/getDataFromDB";
+import AvatarCustom from "../components/AvatarCustom";
+import {useAuth} from "../contexts/AuthContext";
 
 const RecipeDetailsScreen = () => {
 
-    const {id} = useLocalSearchParams();
+    const {user, setAuth, setUserData} = useAuth();
+
+    console.log('RecipeDetailsScreen setAuth',user);
+
+    const {id, tableCategory} = useLocalSearchParams();
+
+    // console.log('RecipeDetailsScreen id ',id)
+    // console.log('RecipeDetailsScreen tableCategory ',tableCategory)
+
     const ratings = [1, 2, 4, 5, 2, 4, 5, 1, 3, 5, 2];
     const comments = ['ok', 'wery bast', 'naise', 'kryto']
 
 
     // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
 
 
     let rating = calculateRating(ratings);
@@ -62,7 +72,6 @@ const RecipeDetailsScreen = () => {
     // scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
-
     const [loading, setLoading] = useState(false)
 
     const [recipeDish, setRecipeDish] = useState([])
@@ -70,22 +79,24 @@ const RecipeDetailsScreen = () => {
     // console.log('recipeDish', recipeDish);
 
 
-    const fetchRecipeDish = async (id) => {
-        // console.log('id', id);
-        setLoading(true)
-        const response = await getRecipeDish(id)
-        // console.log('fetchRecipesDish',response)
-        if (response && response) {
-            setRecipeDish(response)
-        }
-        // setTimeout(() => {
-        setLoading(false)
-        // }, 400)
 
-    }
     useEffect(() => {
-        fetchRecipeDish(id)
-    }, [])
+        const fetchRecipeDish = async () => {
+            try {
+                // console.log('Fetching with ID:', id, 'and tableCategory:', tableCategory);
+                setLoading(true);
+                const response = await getRecipesDescriptionMyDB(id);
+                // console.log('API Response:', response);
+                setRecipeDish(response?.data[0] || []);
+            } catch (error) {
+                console.error('Error fetching recipe:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRecipeDish();
+    }, [id]);
     // console.log('recipeDish', recipeDish);
 
 
@@ -118,8 +129,8 @@ const RecipeDetailsScreen = () => {
 
     }
     // get video id
-    console.log('RecipeDetailsScreen recipeDish',recipeDish)
-
+    // console.log('RecipeDetailsScreen recipeDish',JSON.stringify(recipeDish,null,2))
+    // console.log('recipeDish.imageHeader',recipeDish.imageHeader)
     return (
         <ScrollView
             ref={scrollViewRef} //for scroll
@@ -132,7 +143,7 @@ const RecipeDetailsScreen = () => {
                     ? (<LoadingComponent size="large" color="gray"/>)
                     : (
 
-                        <View className="gap-y-5">
+                        <View className="gap-y-5" key={id}>
 
                             {/* top image button back and like*/}
                             <View className="flex-row justify-center relative" style={shadowBoxBlack()}>
@@ -140,10 +151,21 @@ const RecipeDetailsScreen = () => {
                                 <Animated.View
                                     entering={FadeInUp.duration(400).delay(100)}
                                 >
-                                    <Image
-                                        source={{uri: recipeDish?.strMealThumb}}
-                                        contentFit="cover"
-                                        transition={1000}
+                                    {/*<Image*/}
+                                    {/*    source={{uri: recipeDish?.strMealThumb}}*/}
+                                    {/*    contentFit="cover"*/}
+                                    {/*    transition={1000}*/}
+                                    {/*    style={{*/}
+                                    {/*        width: wp(98),*/}
+                                    {/*        height: hp(50),*/}
+                                    {/*        borderRadius: 40,*/}
+                                    {/*        marginTop: wp(1),*/}
+                                    {/*        borderWidth: 0.5,*/}
+                                    {/*        borderColor: 'gray'*/}
+                                    {/*    }}*/}
+                                    {/*/>*/}
+                                    <AvatarCustom
+                                        uri={recipeDish.imageHeader}
                                         style={{
                                             width: wp(98),
                                             height: hp(50),
@@ -216,7 +238,7 @@ const RecipeDetailsScreen = () => {
                             {/* top image button back and like end*/}
 
 
-                            <RatingComponents  rating={rating} handleStarPress={handleStarPress}/>
+                            <RatingComponents rating={rating} handleStarPress={handleStarPress}/>
 
 
                             {/*    dish and description*/}

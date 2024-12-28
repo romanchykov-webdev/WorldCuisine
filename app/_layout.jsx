@@ -49,7 +49,7 @@ const RootLayout = () => {
             }
 
             setTimeout(() => {
-                // setIsLoading(false); // Загрузка завершена
+                setIsLoading(false); // Загрузка завершена
             }, 2000)
 
         });
