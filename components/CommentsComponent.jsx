@@ -5,7 +5,9 @@ import {hp} from "../constants/responsiveScreen";
 import {PaperAirplaneIcon} from "react-native-heroicons/mini";
 import LoadingComponent from "./loadingComponent";
 
-const CommentsComponent = ({comments}) => {
+const CommentsComponent = ({comments,user}) => {
+
+    // console.log('CommentsComponent user',user)
 
     const [commentsAll, setCommentsAll] = useState(comments)
     const [inputText, setInputText] = useState('')
@@ -44,33 +46,38 @@ const CommentsComponent = ({comments}) => {
         >
 
             {/*input */}
-            <View
-                // style={shadowBoxBlack()}
-                className="flex-row items-center p-2 rounded-[10] mb-5 bg-black/5 ">
-                <TextInput
-                    placeholder="Your comment"
-                    placeholderTextColor="gray"
-                    multiline={true}
-                    value={inputText}
-                    onChangeText={value => changeText(value)}
-                    style={[{fontSize: hp(1.7)}]}
-                    className="flex-1 text-base tracking-wider p-5 mb-1 bg-white rounded-[10]"
-                />
-                <TouchableOpacity
-                    onPress={addNewComment}
-                    className="bg-white rounded-full p-5 ml-2 к"
-                    style={{transform: [{rotate: '-45deg'}]}}
-                >
-                    {
-                        loading
-                            ? (
-                                <ActivityIndicator/>
-                            )
-                            : (<PaperAirplaneIcon size={hp(2.5)} color="blue"/>)
-                    }
+            {
+                user!==null &&(
+                    <View
+                        // style={shadowBoxBlack()}
+                        className="flex-row items-center p-2 rounded-[10] mb-5 bg-black/5 ">
+                        <TextInput
+                            placeholder="Your comment"
+                            placeholderTextColor="gray"
+                            multiline={true}
+                            value={inputText}
+                            onChangeText={value => changeText(value)}
+                            style={[{fontSize: hp(1.7)}]}
+                            className="flex-1 text-base tracking-wider p-5 mb-1 bg-white rounded-[10]"
+                        />
+                        <TouchableOpacity
+                            onPress={addNewComment}
+                            className="bg-white rounded-full p-5 ml-2 к"
+                            style={{transform: [{rotate: '-45deg'}]}}
+                        >
+                            {
+                                loading
+                                    ? (
+                                        <ActivityIndicator/>
+                                    )
+                                    : (<PaperAirplaneIcon size={hp(2.5)} color="blue"/>)
+                            }
 
-                </TouchableOpacity>
-            </View>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+
 
             {/*    comments*/}
             <View className="gap-y-2">

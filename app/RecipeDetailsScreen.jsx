@@ -20,36 +20,85 @@ import {ChatBubbleOvalLeftIcon, StarIcon} from "react-native-heroicons/outline";
 import RatingComponents from "../components/RatingComponents";
 
 // for rating
-import StarRating, {StarRatingDisplay} from 'react-native-star-rating-widget';
+// import StarRating, {StarRatingDisplay} from 'react-native-star-rating-widget';
 import {calculateRating} from "../constants/ratingHalper";
 import CommentsComponent from "../components/CommentsComponent";
 import {getRecipesDescriptionMyDB} from "../service/getDataFromDB";
 import AvatarCustom from "../components/AvatarCustom";
 import {useAuth} from "../contexts/AuthContext";
 
+// translate
+import i18n from '../lang/i18n'
+import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
+
 const RecipeDetailsScreen = () => {
+
+
+
+    const { language:langDev } = useAuth();
+    i18n.locale = langDev; // Устанавливаем текущий язык
+    // console.log('RecipeDetailsScreen langDev',langDev)
+
+    const [loading, setLoading] = useState(false)
+
+    const [recipeDish, setRecipeDish] = useState(null)
+
+    // Когда блок попадет в видимую область
+    const [isCommentsVisible, setIsCommentsVisible] = useState(false);
+    const [hasLayoutBeenMeasured, setHasLayoutBeenMeasured] = useState(false); // Флаг для отслеживания измерений
+
+    // Плавный запрос на сервер, когда компонент становится видимым
+    const handleVisibilityChange = (event) => {
+        const { layout } = event.nativeEvent;
+        const { height } = layout;
+
+        // Проверяем, что блок с комментариями стал видимым и что проверка еще не была выполнена
+        if (height > 0 && !isCommentsVisible && !hasLayoutBeenMeasured) {
+            setIsCommentsVisible(true);
+            setHasLayoutBeenMeasured(true); // Помечаем, что проверка уже была выполнена
+            console.log('block Comments is visible');
+        }
+    };
+
+    // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
 
     const {user, setAuth, setUserData} = useAuth();
 
-    console.log('RecipeDetailsScreen setAuth',user);
+    // console.log('RecipeDetailsScreen setAuth',user);
 
-    const {id, tableCategory} = useLocalSearchParams();
+    const {id} = useLocalSearchParams();
+
+    const [rating, setRating] = useState('0')
 
     // console.log('RecipeDetailsScreen id ',id)
-    // console.log('RecipeDetailsScreen tableCategory ',tableCategory)
+    // console.log('RecipeDetailsScreen langApp ',langApp)
 
-    const ratings = [1, 2, 4, 5, 2, 4, 5, 1, 3, 5, 2];
     const comments = ['ok', 'wery bast', 'naise', 'kryto']
 
 
     // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
-    let rating = calculateRating(ratings);
+    useEffect(() => {
+    if (recipeDish?.rating?.averageScore !== undefined) {
+        const averageScoreString = recipeDish.rating.averageScore.toString();
+        setRating(averageScoreString); // Устанавливаем строковое значение
+        // console.log('recipeDish.rating.averageScore (as string):', averageScoreString);
+        // console.log('rating (as string):', rating);
+    }
+    },[recipeDish])
+
+
+    // let rating = recipeDish?.rating?.averageScore;
+
     const handleStarPress = (starIndex) => {
         // console.log('Star pressed:', starIndex); // Индекс звезды
         // setChangeRating(starIndex); // Установить рейтинг
-        ratings.push(starIndex);
+
+        // ratings.push(starIndex);
+
+        //add rating to db
+
         // Alert.alert('Rating',`You have rated this recipe: ${starIndex}`)
 
 
@@ -62,22 +111,23 @@ const RecipeDetailsScreen = () => {
     const commentsRef = useRef(null);
 
     const scrollToComments = () => {
+
+
         commentsRef.current?.measureLayout(
             scrollViewRef.current.getNativeScrollRef(),
             (x, y) => {
                 scrollViewRef.current.scrollTo({y, animated: true}); // Плавный скролл
             }
         );
+
+
     };
     // scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
-    const [loading, setLoading] = useState(false)
 
-    const [recipeDish, setRecipeDish] = useState([])
     // console.log('id', id);
     // console.log('recipeDish', recipeDish);
-
 
 
     useEffect(() => {
@@ -87,11 +137,17 @@ const RecipeDetailsScreen = () => {
                 setLoading(true);
                 const response = await getRecipesDescriptionMyDB(id);
                 // console.log('API Response:', response);
-                setRecipeDish(response?.data[0] || []);
+                setRecipeDish(response?.data[0] || null);
+
+                setTimeout(()=>{
+                    setLoading(false);
+                },1000)
             } catch (error) {
                 console.error('Error fetching recipe:', error);
             } finally {
-                setLoading(false);
+                setTimeout(()=>{
+                    setLoading(false);
+                },1000)
             }
         };
 
@@ -100,21 +156,7 @@ const RecipeDetailsScreen = () => {
     // console.log('recipeDish', recipeDish);
 
 
-    // get ingredients
-    const ingredientsIndexes = (recipeDish) => {
-        if (!recipeDish) return [];
 
-        let indexes = [];
-        for (let i = 1; i <= 20; i++) {
-            if (recipeDish['strIngredient' + i]) {
-                indexes.push(i)
-            }
-        }
-        // console.log('indexes', indexes)
-        return indexes;
-    }
-    // ingredientsIndexes(recipeDish)
-    // get ingredients
 
 
     // get video id
@@ -135,12 +177,17 @@ const RecipeDetailsScreen = () => {
         <ScrollView
             ref={scrollViewRef} //for scroll
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white'}}
+            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white' }}
         >
             <StatusBar style='light'/>
             {
-                loading || recipeDish.length === 0
-                    ? (<LoadingComponent size="large" color="gray"/>)
+                loading || recipeDish === null
+
+                    ? (
+                        <View style={{height:hp(100)}}>
+                            <LoadingComponent size="large" color="green"/>
+                        </View>
+                    )
                     : (
 
                         <View className="gap-y-5" key={id}>
@@ -197,7 +244,7 @@ const RecipeDetailsScreen = () => {
                                     ">
                                     <ButtonBack/>
 
-                                    <ButtonLike/>
+                                    <ButtonLike user={user ?? null}/>
 
                                 </Animated.View>
 
@@ -227,7 +274,7 @@ const RecipeDetailsScreen = () => {
                                         >
                                             <ChatBubbleOvalLeftIcon size={45} color='gray'/>
                                             <Text style={{fontSize: 8}} className="text-neutral-700 absolute">
-                                                {comments.length}
+                                                {recipeDish?.comments}
                                             </Text>
                                         </TouchableOpacity>
                                     </View>
@@ -238,7 +285,7 @@ const RecipeDetailsScreen = () => {
                             {/* top image button back and like end*/}
 
 
-                            <RatingComponents rating={rating} handleStarPress={handleStarPress}/>
+                            <RatingComponents rating={rating} handleStarPress={handleStarPress} user={user ?? null}/>
 
 
                             {/*    dish and description*/}
@@ -250,10 +297,16 @@ const RecipeDetailsScreen = () => {
                                 <View className="gap-y-2">
                                     <Text style={[{fontSize: hp(2.7)}, shadowTextSmall()]}
                                           className="font-bold  text-neutral-700">
-                                        {recipeDish?.strMeal}
+                                        {/*{recipeDish?.strMeal}*/}
+                                        {
+                                            recipeDish?.title?.lang.find(it=>it.lang===langDev)?.name || recipeDish?.title?.strTitle
+                                        }
                                     </Text>
                                     <Text style={{fontSize: hp(1.8)}} className="font-medium text-neutral-500">
-                                        {recipeDish?.strArea}
+                                        {/*{recipeDish?.strArea}*/}
+                                        {
+                                            recipeDish?.area
+                                        }
                                     </Text>
                                 </View>
 
@@ -280,10 +333,13 @@ const RecipeDetailsScreen = () => {
                                     {/*    descriptions*/}
                                     <View className="flex items-center py-2 gap-y-1">
                                         <Text style={{fontSize: hp(2)}} className="font-bold  text-neutral-700">
-                                            35
+                                            {/*35*/}
+                                            {
+                                                recipeDish?.recipeMetrics?.time?.value
+                                            }
                                         </Text>
                                         <Text style={{fontSize: hp(1.2)}} className="font-bold  text-neutral-500">
-                                            Mins
+                                            {i18n.t('Mins')}
                                         </Text>
                                     </View>
 
@@ -304,12 +360,14 @@ const RecipeDetailsScreen = () => {
                                     {/*    descriptions*/}
                                     <View className="flex items-center py-2 gap-y-1">
                                         <Text style={{fontSize: hp(2)}} className="font-bold  text-neutral-700">
-                                            3
+                                            {
+                                                recipeDish?.recipeMetrics?.persons?.value
+                                            }
                                         </Text>
                                         <Text style={{fontSize: hp(1.2)}} className="font-bold  text-neutral-500
                                         {/*bg-red-500*/}
                                         ">
-                                            Person
+                                            {i18n.t('Person')}
                                         </Text>
                                     </View>
 
@@ -330,12 +388,14 @@ const RecipeDetailsScreen = () => {
                                     {/*    descriptions*/}
                                     <View className="flex items-center py-2 gap-y-1">
                                         <Text style={{fontSize: hp(2)}} className="font-bold  text-neutral-700">
-                                            103
+                                            {
+                                                recipeDish?.recipeMetrics?.calories?.value
+                                            }
                                         </Text>
                                         <Text style={{fontSize: hp(1.2)}} className="font-bold  text-neutral-500
                                         {/*bg-red-500*/}
                                         ">
-                                            Cal
+                                            {i18n.t('Cal')}
                                         </Text>
                                     </View>
 
@@ -361,7 +421,8 @@ const RecipeDetailsScreen = () => {
                                         <Text style={{fontSize: hp(1.2)}} className="font-bold  text-neutral-500
                                         {/*bg-red-500*/}
                                         ">
-                                            Easy
+                                            {i18n.t(`${recipeDish?.recipeMetrics?.difficulty?.value}`)}
+                                            {/*{recipeDish?.recipeMetrics?.difficulty?.value}*/}
                                         </Text>
                                     </View>
 
@@ -378,31 +439,41 @@ const RecipeDetailsScreen = () => {
                                     style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
                                     className="font-bold px-4 text-neutral-700"
                                 >
-                                    Ingredients
+                                    {i18n.t('Ingredients')}
                                 </Text>
 
                                 {/*    */}
                                 <View className="gap-y-2">
-                                    {
-                                        ingredientsIndexes(recipeDish).map(i => {
-                                            return (
-                                                <View key={i} className="flex-row gap-x-4 items-center">
-                                                    <View style={{height: hp(1.5), width: hp(1.5)}}
-                                                          className="bg-amber-300 rounded-full"
-                                                    />
-                                                    <View className="flex-row gap-x-2">
-                                                        <Text
-                                                            style={{fontSize: hp(1.7)}}
-                                                            className="font-extrabold text-neutral-700">{recipeDish['strIngredient' + i]} -</Text>
-                                                        <Text
-                                                            style={{fontSize: hp(1.7)}}
-                                                            className="font-medium text-neutral-600">{recipeDish['strMeasure' + i]}</Text>
-                                                    </View>
 
-                                                </View>
-                                            )
-                                        })
+                                    {/*{*/}
+                                    {/*    ingredientsIndexes(recipeDish).map(i => {*/}
+                                    {/*        return (*/}
+                                    {/*            <View key={i} className="flex-row gap-x-4 items-center">*/}
+                                    {/*                <View style={{height: hp(1.5), width: hp(1.5)}}*/}
+                                    {/*                      className="bg-amber-300 rounded-full"*/}
+                                    {/*                />*/}
+                                    {/*                <View className="flex-row gap-x-2">*/}
+                                    {/*                    <Text*/}
+                                    {/*                        style={{fontSize: hp(1.7)}}*/}
+                                    {/*                        className="font-extrabold text-neutral-700">*/}
+                                    {/*                        {recipeDish['strIngredient' + i]} -*/}
+                                    {/*                    </Text>*/}
+                                    {/*                    <Text*/}
+                                    {/*                        style={{fontSize: hp(1.7)}}*/}
+                                    {/*                        className="font-medium text-neutral-600">*/}
+                                    {/*                        {recipeDish['strMeasure' + i]}*/}
+                                    {/*                    </Text>*/}
+                                    {/*                </View>*/}
+
+                                    {/*            </View>*/}
+                                    {/*        )*/}
+                                    {/*    })*/}
+                                    {/*}*/}
+                                    {
+                                        // recipeDish?.ingredients?.lang.find(it=>it.)
                                     }
+                                    <RecipeIngredients recIng={recipeDish?.ingredients?.lang} langDev={langDev}/>
+
                                 </View>
                             </Animated.View>
                             {/*    ingredients  end*/}
@@ -415,7 +486,7 @@ const RecipeDetailsScreen = () => {
                                     style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
                                     className="font-bold px-4 text-neutral-700"
                                 >
-                                    Ingredients
+                                    {i18n.t('Recipe Description')}
                                 </Text>
 
                                 {/*    */}
@@ -452,8 +523,11 @@ const RecipeDetailsScreen = () => {
                             {/*    recipe video end*/}
 
                             {/*accordion comments*/}
-                            <View ref={commentsRef}>
-                                <CommentsComponent comments={comments}/>
+
+                            <View ref={commentsRef}
+                                  onLayout={handleVisibilityChange} // Отслеживаем появление блока
+                            >
+                                <CommentsComponent comments={['ok', 'wery bast', 'naise', 'kryto']} user={user ?? null}/>
                             </View>
 
 

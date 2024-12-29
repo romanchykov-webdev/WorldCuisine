@@ -12,7 +12,7 @@ export const getCategoriesMyDB = async () => {
             return {success: false, msg: error?.message}
         }
 
-        console.log('data', data)
+        // console.log('data', data)
         return {success: true, data}
 
     } catch (error) {
@@ -23,7 +23,7 @@ export const getCategoriesMyDB = async () => {
 
 //получение всех рецептов в категории
 export const getRecipesMyDB = async (category) => {
-    console.log("getRecipesMyDB category",category)
+    // console.log("getRecipesMyDB category",category)
     try {
 
         let { data, error } = await supabase

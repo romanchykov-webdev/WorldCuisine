@@ -68,7 +68,7 @@ const HomeScreen = () => {
     // Вызов функции fetchRecipes и присваивание данных в состояние
     const [recipes, setRecipes] = useState([])
     const fetchRecipes = async () => {
-        console.log('active category', activeCategory);
+        // console.log('active category', activeCategory);
         // const data = await getRecipes(activeCategory)
         const recipesMyDB = await getRecipesMyDB(activeCategory)
         // console.log('fetchRecipes data',recipesMyDB)
@@ -127,7 +127,7 @@ const HomeScreen = () => {
             setIsLoading(false);  // Завершаем процесс загрузки
         }, 1000)
     };
-    console.log('homescreen categories',categories)
+    // console.log('homescreen categories',categories)
 
     return (
         <View className="flex-1">

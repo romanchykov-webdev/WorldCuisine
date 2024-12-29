@@ -33,6 +33,9 @@ const deviceLocale = getLocales()[0]?.languageCode || 'en';  // Использу
 // Устанавливаем язык устройства как текущий язык приложения
 i18n.locale = deviceLocale;
 
+// // Выводим текущий язык в терминал
+// console.log('Device Language:', deviceLocale);
+
 // Включаем fallback для пропущенных ключей
 i18n.enableFallback = true;
 

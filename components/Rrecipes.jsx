@@ -88,7 +88,7 @@ const Recipes = ({categories, recipes, langApp}) => {
 const CardItem = ({item, index, langApp}) => {
     // console.log('index', index)
     // console.log('CardItem item', item)
-    // console.log('CardItem langApp', langApp)
+    console.log('CardItem langApp', langApp)
     const router = useRouter()
 
 

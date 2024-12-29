@@ -21,10 +21,14 @@ import {logOut} from "../service/userService";
 
 // translate
 import i18n from '../lang/i18n'
+import LanguagesWrapper from "../components/LanguagesWrapper";
 
 
 const ProfileScreen = () => {
     const {setAuth, user, setUserData} = useAuth();
+
+    // change lang
+    const [lang, setLang] = useState('en'); // Устанавливаем язык
 
 
 
@@ -238,17 +242,18 @@ const ProfileScreen = () => {
 
                                 {/*block login and sign up*/}
                                 <View
-                                    className="mb-10 w-full flex-row gap-10 justify-center
+                                    className="mb-10 w-full flex-row   gap-10 justify-center
                                     {/*bg-red-500*/}
                                     "
+                                    style={{ flexWrap: 'wrap' }} // Добавляем перенос строк
                                 >
                                     {/*    log in*/}
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/LogInScreen')}
                                         style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
+                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
                                     >
-                                        <Text>Log In</Text>
+                                        <Text>{i18n.t('Log In')}</Text>
                                     </TouchableOpacity>
 
                                     {/*    sign Up*/}
@@ -258,7 +263,7 @@ const ProfileScreen = () => {
                                         style={shadowBoxBlack()}
                                         className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
                                     >
-                                        <Text>Sign Up</Text>
+                                        <Text>{i18n.t('Sign Up')}</Text>
                                     </TouchableOpacity>
                                 </View>
 
@@ -269,6 +274,10 @@ const ProfileScreen = () => {
                                 {/*>*/}
                                 {/*    <Text>Change language App</Text>*/}
                                 {/*</TouchableOpacity>*/}
+                                {/*<View>*/}
+                                {/*    /!*Select lang*!/*/}
+                                {/*    <LanguagesWrapper setLang={setLang} lang={lang}/>*/}
+                                {/*</View>*/}
                             </View>
                         </ScrollView>
 
