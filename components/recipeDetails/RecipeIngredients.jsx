@@ -4,7 +4,13 @@ import { View, Text } from 'react-native';
 const RecipeIngredients = ({ recIng, langDev }) => {
 
     // Получаем ингредиенты для текущего языка или используем английский (fallback)
-    const ingredients = recIng[langDev] || recIng['en'];
+    // const ingredients = recIng[langDev] || recIng['en'];
+
+    // Определяем язык: текущий или первый доступный
+    const language = recIng[langDev] ? langDev : Object.keys(recIng)[0];
+
+    // Получаем ингредиенты для выбранного языка
+    const ingredients = recIng[language];
 
     return (
         <View>

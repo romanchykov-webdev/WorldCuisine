@@ -30,12 +30,13 @@ import {useAuth} from "../contexts/AuthContext";
 // translate
 import i18n from '../lang/i18n'
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
+import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
 
 const RecipeDetailsScreen = () => {
 
 
 
-    const { language:langDev } = useAuth();
+    const {language: langDev} = useAuth();
     i18n.locale = langDev; // Устанавливаем текущий язык
     // console.log('RecipeDetailsScreen langDev',langDev)
 
@@ -43,24 +44,9 @@ const RecipeDetailsScreen = () => {
 
     const [recipeDish, setRecipeDish] = useState(null)
 
-    // Когда блок попадет в видимую область
-    const [isCommentsVisible, setIsCommentsVisible] = useState(false);
-    const [hasLayoutBeenMeasured, setHasLayoutBeenMeasured] = useState(false); // Флаг для отслеживания измерений
 
-    // Плавный запрос на сервер, когда компонент становится видимым
-    const handleVisibilityChange = (event) => {
-        const { layout } = event.nativeEvent;
-        const { height } = layout;
 
-        // Проверяем, что блок с комментариями стал видимым и что проверка еще не была выполнена
-        if (height > 0 && !isCommentsVisible && !hasLayoutBeenMeasured) {
-            setIsCommentsVisible(true);
-            setHasLayoutBeenMeasured(true); // Помечаем, что проверка уже была выполнена
-            console.log('block Comments is visible');
-        }
-    };
-
-    // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
+    console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
 
     const {user, setAuth, setUserData} = useAuth();
 
@@ -73,20 +59,20 @@ const RecipeDetailsScreen = () => {
     // console.log('RecipeDetailsScreen id ',id)
     // console.log('RecipeDetailsScreen langApp ',langApp)
 
-    const comments = ['ok', 'wery bast', 'naise', 'kryto']
+    // const comments = ['ok', 'wery bast', 'naise', 'kryto']
 
 
     // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
     useEffect(() => {
-    if (recipeDish?.rating?.averageScore !== undefined) {
-        const averageScoreString = recipeDish.rating.averageScore.toString();
-        setRating(averageScoreString); // Устанавливаем строковое значение
-        // console.log('recipeDish.rating.averageScore (as string):', averageScoreString);
-        // console.log('rating (as string):', rating);
-    }
-    },[recipeDish])
+        if (recipeDish?.rating?.averageScore !== undefined) {
+            const averageScoreString = recipeDish.rating.averageScore.toString();
+            setRating(averageScoreString); // Устанавливаем строковое значение
+            // console.log('recipeDish.rating.averageScore (as string):', averageScoreString);
+            // console.log('rating (as string):', rating);
+        }
+    }, [recipeDish])
 
 
     // let rating = recipeDish?.rating?.averageScore;
@@ -125,7 +111,6 @@ const RecipeDetailsScreen = () => {
     // scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
-
     // console.log('id', id);
     // console.log('recipeDish', recipeDish);
 
@@ -139,24 +124,21 @@ const RecipeDetailsScreen = () => {
                 // console.log('API Response:', response);
                 setRecipeDish(response?.data[0] || null);
 
-                setTimeout(()=>{
+                setTimeout(() => {
                     setLoading(false);
-                },1000)
+                }, 1000)
             } catch (error) {
                 console.error('Error fetching recipe:', error);
             } finally {
-                setTimeout(()=>{
+                setTimeout(() => {
                     setLoading(false);
-                },1000)
+                }, 1000)
             }
         };
 
         fetchRecipeDish();
     }, [id]);
     // console.log('recipeDish', recipeDish);
-
-
-
 
 
     // get video id
@@ -174,17 +156,19 @@ const RecipeDetailsScreen = () => {
     // console.log('RecipeDetailsScreen recipeDish',JSON.stringify(recipeDish,null,2))
     // console.log('recipeDish.imageHeader',recipeDish.imageHeader)
     return (
+
+
         <ScrollView
             ref={scrollViewRef} //for scroll
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white' }}
+            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white'}}
         >
             <StatusBar style='light'/>
             {
                 loading || recipeDish === null
 
                     ? (
-                        <View style={{height:hp(100)}}>
+                        <View style={{height: hp(100)}}>
                             <LoadingComponent size="large" color="green"/>
                         </View>
                     )
@@ -198,19 +182,7 @@ const RecipeDetailsScreen = () => {
                                 <Animated.View
                                     entering={FadeInUp.duration(400).delay(100)}
                                 >
-                                    {/*<Image*/}
-                                    {/*    source={{uri: recipeDish?.strMealThumb}}*/}
-                                    {/*    contentFit="cover"*/}
-                                    {/*    transition={1000}*/}
-                                    {/*    style={{*/}
-                                    {/*        width: wp(98),*/}
-                                    {/*        height: hp(50),*/}
-                                    {/*        borderRadius: 40,*/}
-                                    {/*        marginTop: wp(1),*/}
-                                    {/*        borderWidth: 0.5,*/}
-                                    {/*        borderColor: 'gray'*/}
-                                    {/*    }}*/}
-                                    {/*/>*/}
+
                                     <AvatarCustom
                                         uri={recipeDish.imageHeader}
                                         style={{
@@ -299,7 +271,7 @@ const RecipeDetailsScreen = () => {
                                           className="font-bold  text-neutral-700">
                                         {/*{recipeDish?.strMeal}*/}
                                         {
-                                            recipeDish?.title?.lang.find(it=>it.lang===langDev)?.name || recipeDish?.title?.strTitle
+                                            recipeDish?.title?.lang.find(it => it.lang === langDev)?.name || recipeDish?.title?.strTitle
                                         }
                                     </Text>
                                     <Text style={{fontSize: hp(1.8)}} className="font-medium text-neutral-500">
@@ -445,33 +417,7 @@ const RecipeDetailsScreen = () => {
                                 {/*    */}
                                 <View className="gap-y-2">
 
-                                    {/*{*/}
-                                    {/*    ingredientsIndexes(recipeDish).map(i => {*/}
-                                    {/*        return (*/}
-                                    {/*            <View key={i} className="flex-row gap-x-4 items-center">*/}
-                                    {/*                <View style={{height: hp(1.5), width: hp(1.5)}}*/}
-                                    {/*                      className="bg-amber-300 rounded-full"*/}
-                                    {/*                />*/}
-                                    {/*                <View className="flex-row gap-x-2">*/}
-                                    {/*                    <Text*/}
-                                    {/*                        style={{fontSize: hp(1.7)}}*/}
-                                    {/*                        className="font-extrabold text-neutral-700">*/}
-                                    {/*                        {recipeDish['strIngredient' + i]} -*/}
-                                    {/*                    </Text>*/}
-                                    {/*                    <Text*/}
-                                    {/*                        style={{fontSize: hp(1.7)}}*/}
-                                    {/*                        className="font-medium text-neutral-600">*/}
-                                    {/*                        {recipeDish['strMeasure' + i]}*/}
-                                    {/*                    </Text>*/}
-                                    {/*                </View>*/}
 
-                                    {/*            </View>*/}
-                                    {/*        )*/}
-                                    {/*    })*/}
-                                    {/*}*/}
-                                    {
-                                        // recipeDish?.ingredients?.lang.find(it=>it.)
-                                    }
                                     <RecipeIngredients recIng={recipeDish?.ingredients?.lang} langDev={langDev}/>
 
                                 </View>
@@ -490,9 +436,10 @@ const RecipeDetailsScreen = () => {
                                 </Text>
 
                                 {/*    */}
-                                <Text style={{fontSize: hp(1.6)}} className="text-neutral-700">
-                                    {recipeDish?.strInstructions}
-                                </Text>
+                                <RecipeInstructions instructions={recipeDish?.instructions} langDev={langDev}/>
+                                {/*<Text style={{fontSize: hp(1.6)}} className="text-neutral-700">*/}
+                                {/*    {recipeDish?.strInstructions} 1*/}
+                                {/*</Text>*/}
                             </Animated.View>
                             {/*    instructions  end*/}
 
@@ -524,14 +471,15 @@ const RecipeDetailsScreen = () => {
 
                             {/*accordion comments*/}
 
-                            <View ref={commentsRef}
-                                  onLayout={handleVisibilityChange} // Отслеживаем появление блока
-                            >
-                                <CommentsComponent comments={['ok', 'wery bast', 'naise', 'kryto']} user={user ?? null}/>
-                            </View>
 
+                            
+                            <CommentsComponent
+                                recepId={id}
+                                user={user ?? null}
+                            />
 
-                        </View> //end block
+                        </View>
+
 
 
                     )

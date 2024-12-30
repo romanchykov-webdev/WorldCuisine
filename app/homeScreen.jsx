@@ -25,6 +25,9 @@ const HomeScreen = () => {
     const {user, setAuth, setUserData} = useAuth();
     const router = useRouter();
 
+    const { language:langDev } = useAuth();
+    i18n.locale = langDev; // Устанавливаем текущий язык
+
     const [isAuth, setIsAuth] = useState(null)
     const [isRefreshing, setIsRefreshing] = useState(false);  // Состояние для отслеживания процесса обновления
     const [isLoading, setIsLoading] = useState(false);  // Состояние для отслеживания загрузки данных
@@ -194,7 +197,7 @@ const HomeScreen = () => {
                                                 activeCategory={activeCategory}
                                                 setActiveCategory={setActiveCategory}
                                                 handleChangeCategory={handleChangeCategory}
-                                                langApp={user?.lang ?? 'en'}
+                                                langApp={user?.lang ?? langDev}
                                             />
                                         )
                                         : (
@@ -211,7 +214,7 @@ const HomeScreen = () => {
                                             <Recipes
                                                 categories={categories.length}
                                                 recipes={recipes}
-                                                langApp={user?.lang ?? 'en'}
+                                                langApp={user?.lang ?? langDev}
                                             />
                                         )
                                         : (

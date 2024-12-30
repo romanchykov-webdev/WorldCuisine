@@ -23,8 +23,11 @@ import {getDeviceType} from "../constants/getWidthDevice";
 import i18n from '../lang/i18n'
 import AvatarCustom from "./AvatarCustom";
 import {myFormatNumber} from "../constants/halperFunctions";
+import {useAuth} from "../contexts/AuthContext";
 
-const Recipes = ({categories, recipes, langApp}) => {
+const Recipes = ({categories, recipes,langApp}) => {
+
+
 
     const [column, setColumn] = useState(0)
 
