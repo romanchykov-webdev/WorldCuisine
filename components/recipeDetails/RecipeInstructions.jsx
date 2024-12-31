@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import LoadingComponent from "../loadingComponent";
+import ImageCustom from "./ImageCustom";
+import ImageSliderCustom from "./ImageSliderCustom";
 
 const RecipeInstructions = ({instructions,langDev}) => {
 
@@ -20,7 +22,7 @@ const RecipeInstructions = ({instructions,langDev}) => {
         ...value,
     }));
 
-    console.log('steps',steps)
+    // console.log('steps',steps)
 
 
   return (
@@ -35,12 +37,24 @@ const RecipeInstructions = ({instructions,langDev}) => {
                                 <View key={index} className="w-full
                                 {/*bg-red-500*/}
                                 ">
-                                    <View >
+                                    <View className="mb-5">
                                         <Text className="flex-wrap">
-                                            {item.step}){" "}
+                                            <Text className="text-amber-500">
+                                                {item.step}){" "}
+                                            </Text>
+
                                             {item.text}
-                                            {'\n'}
+
                                         </Text>
+                                        {
+                                            Array.isArray(item?.images) && item?.images.length > 0 && (
+                                                item?.images.length === 1 ? (
+                                                    <ImageCustom image={item?.images}/>
+                                                ) : (
+                                                    <ImageSliderCustom images={item?.images}/>
+                                                )
+                                            )
+                                        }
                                     </View>
                                 </View>
                             )

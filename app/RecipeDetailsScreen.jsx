@@ -31,6 +31,7 @@ import {useAuth} from "../contexts/AuthContext";
 import i18n from '../lang/i18n'
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
 import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
+import VideoCustom from "../components/recipeDetails/video/VideoCustom";
 
 const RecipeDetailsScreen = () => {
 
@@ -46,7 +47,7 @@ const RecipeDetailsScreen = () => {
 
 
 
-    console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
+    // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
 
     const {user, setAuth, setUserData} = useAuth();
 
@@ -161,7 +162,7 @@ const RecipeDetailsScreen = () => {
         <ScrollView
             ref={scrollViewRef} //for scroll
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white'}}
+            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white',paddingHorizontal:wp(3)}}
         >
             <StatusBar style='light'/>
             {
@@ -291,7 +292,7 @@ const RecipeDetailsScreen = () => {
                                 className="flex-row justify-around">
 
                                 {/*ClockIcon*/}
-                                <View className="flex rounded-full bg-amber-300 p-2"
+                                <View className="flex rounded-full bg-amber-300  p-1 items-center"
                                       style={shadowBoxBlack()}
                                 >
 
@@ -318,7 +319,7 @@ const RecipeDetailsScreen = () => {
                                 </View>
 
                                 {/*users*/}
-                                <View className="flex rounded-full bg-amber-300 p-2"
+                                <View className="flex rounded-full bg-amber-300  p-1 items-center"
                                       style={shadowBoxBlack()}
                                 >
 
@@ -346,7 +347,9 @@ const RecipeDetailsScreen = () => {
                                 </View>
 
                                 {/*calories*/}
-                                <View className="flex rounded-full bg-amber-300 p-2"
+                                <View className="flex rounded-full bg-amber-300  p-1 items-center
+
+                                "
                                       style={shadowBoxBlack()}
                                 >
 
@@ -374,7 +377,7 @@ const RecipeDetailsScreen = () => {
                                 </View>
 
                                 {/*level*/}
-                                <View className="flex rounded-full bg-amber-300 p-2"
+                                <View className="flex rounded-full bg-amber-300  p-1 items-center"
                                       style={shadowBoxBlack()}
                                 >
 
@@ -406,7 +409,7 @@ const RecipeDetailsScreen = () => {
                             {/*    ingredients*/}
                             <Animated.View
                                 entering={FadeInDown.delay(800)}
-                                className="gap-y-4 px-4">
+                                className="gap-y-4 ">
                                 <Text
                                     style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
                                     className="font-bold px-4 text-neutral-700"
@@ -427,7 +430,7 @@ const RecipeDetailsScreen = () => {
                             {/*    instructions*/}
                             <Animated.View
                                 entering={FadeInDown.delay(800)}
-                                className="gap-y-4 px-4">
+                                className="gap-y-4 ">
                                 <Text
                                     style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
                                     className="font-bold px-4 text-neutral-700"
@@ -445,26 +448,31 @@ const RecipeDetailsScreen = () => {
 
                             {/*    recipe video*/}
                             {
-                                recipeDish?.strYoutube && (
-                                    <Animated.View
-                                        entering={FadeInDown.delay(900)}
-                                        className="gap-y-4">
-                                        <Text
-                                            style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
-                                            className="font-bold px-4 text-neutral-700"
-                                        >
-                                            Recipe video
-                                        </Text>
-                                        {/*    plaer*/}
-                                        <View className="px-4">
-                                            <YouTubeIframe
-                                                videoId={getYoutobeVideoId(recipeDish?.strYoutube)}
-                                                // videoId='nMyBC9staMU'
-                                                height={hp(30)}
-                                            />
-                                        </View>
-                                    </Animated.View>
-
+                                // recipeDish?.strYoutube && (
+                                //     <Animated.View
+                                //         entering={FadeInDown.delay(900)}
+                                //         className="gap-y-4">
+                                //         <Text
+                                //             style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
+                                //             className="font-bold px-4 text-neutral-700"
+                                //         >
+                                //             Recipe video
+                                //         </Text>
+                                //         {/*    plaer*/}
+                                //         <View className="px-4">
+                                //             <YouTubeIframe
+                                //                 videoId={getYoutobeVideoId(recipeDish?.strYoutube)}
+                                //                 // videoId='nMyBC9staMU'
+                                //                 height={hp(30)}
+                                //             />
+                                //         </View>
+                                //     </Animated.View>
+                                //
+                                // )
+                            }
+                            {
+                                recipeDish?.video !==null && (
+                                    <VideoCustom/>
                                 )
                             }
                             {/*    recipe video end*/}
@@ -472,7 +480,7 @@ const RecipeDetailsScreen = () => {
                             {/*accordion comments*/}
 
 
-                            
+
                             <CommentsComponent
                                 recepId={id}
                                 user={user ?? null}

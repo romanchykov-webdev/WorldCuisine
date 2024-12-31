@@ -112,7 +112,7 @@ const CommentsComponent = ({recepId, user}) => {
     return (
         <View
 
-            className="rounded-[10]  p-[4]  m-4"
+            className="rounded-[10]   my-4"
         >
 
             {/*input */}
@@ -156,59 +156,57 @@ const CommentsComponent = ({recepId, user}) => {
                 {
                     allDataComments !== null
                         ? (
-                          <>
-                              {
-                                  allDataComments?.map((comment, index) => {
-                                      return (
-                                          <View key={index}
-                                                className="border-[1px] border-neutral-300 rounded-[20] p-3 bg-black/5 "
-                                          >
-                                              {/*data of comment*/}
-                                              <Text style={{fontSize: 8, marginBottom: 5}}>
-                                                  {formatDateTime(comment?.created_at)}
-                                              </Text>
+                            <>
+                                {
+                                    allDataComments?.map((comment, index) => {
+                                        return (
+                                            <View key={index}
+                                                  className="border-[1px] border-neutral-300 rounded-[20] p-3 bg-black/5 "
+                                            >
+                                                {/*data of comment*/}
+                                                <Text style={{fontSize: 8, marginBottom: 5}}>
+                                                    {formatDateTime(comment?.created_at)}
+                                                </Text>
 
-                                              <View className="flex-row gap-x-2">
-                                                  {/*avatar*/}
-                                                  <View className=" w-[50] overflow-hidden
-                                {/*bg-red-500*/}
-                                ">
+                                                <View className="flex-row gap-x-2">
+                                                    {/*avatar*/}
+                                                    <View className=" w-[50] overflow-hidden">
 
-                                                      <AvatarCustom
-                                                          uri={comment?.avatar}
-                                                          style={{
-                                                              width: 50,
-                                                              height:50,
-                                                              borderRadius: 50,
-                                                              // marginTop: wp(1),
-                                                              borderWidth: 1,
-                                                              borderColor: 'gray'
-                                                          }}
-                                                      />
-                                                      <Text
-                                                          style={{fontSize: 8, maxWidth: 50, textAlign: 'center'}}
-                                                          numberOfLines={1}
-                                                          ellipsizeMode="tail"
-                                                      >
-                                                          {comment?.user_name}
-                                                      </Text>
+                                                        <AvatarCustom
+                                                            uri={comment?.avatar}
+                                                            style={{
+                                                                width: 50,
+                                                                height: 50,
+                                                                borderRadius: 50,
+                                                                // marginTop: wp(1),
+                                                                borderWidth: 1,
+                                                                borderColor: 'gray'
+                                                            }}
+                                                        />
+                                                        <Text
+                                                            style={{fontSize: 8, maxWidth: 50, textAlign: 'center'}}
+                                                            numberOfLines={1}
+                                                            ellipsizeMode="tail"
+                                                        >
+                                                            {comment?.user_name}
+                                                        </Text>
 
-                                                  </View>
+                                                    </View>
 
-                                                  {/*comment*/}
-                                                  <Text
-                                                      style={{fontSize: hp(1.7)}}
-                                                      className="border-[1px] border-neutral-300 flex-1 p-2 rounded-[10]"
-                                                  >
-                                                      {comment?.comment}
-                                                  </Text>
-                                              </View>
-                                          </View>
+                                                    {/*comment*/}
+                                                    <Text
+                                                        style={{fontSize: hp(1.7)}}
+                                                        className="border-[1px] border-neutral-300 flex-1 p-2 rounded-[10]"
+                                                    >
+                                                        {comment?.comment}
+                                                    </Text>
+                                                </View>
+                                            </View>
 
-                                      )
-                                  })
-                              }
-                          </>
+                                        )
+                                    })
+                                }
+                            </>
                         )
                         : (
                             <View>
