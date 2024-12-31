@@ -8,7 +8,8 @@ const AvatarCustom = ({
                           uri,
                           size = hp(4.5),
                           style = {},
-                          rounded = 'rounded-full'
+                          // rounded = 'rounded-full'
+                          rounded = '100'
                       }) => {
     // console.log('AvatarCustom uri',uri)
     return (
