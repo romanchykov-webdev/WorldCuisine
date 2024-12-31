@@ -32,12 +32,15 @@ const RecipeInstructions = ({instructions,langDev}) => {
                     {
                         steps.map((item,index) => {
                             return (
-                                <View key={index} className="w-full bg-red-500">
-                                    <View className="flex-row"
-                                        style={{flexWrap: 'wrap'}}
-                                        >
-                                        <Text>{item.step}) </Text>
-                                        <Text className="flex-wrap">{item.text}</Text>
+                                <View key={index} className="w-full
+                                {/*bg-red-500*/}
+                                ">
+                                    <View >
+                                        <Text className="flex-wrap">
+                                            {item.step}){" "}
+                                            {item.text}
+                                            {'\n'}
+                                        </Text>
                                     </View>
                                 </View>
                             )

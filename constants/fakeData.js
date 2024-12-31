@@ -555,7 +555,7 @@ const recipes = {
                 "lang": {
                     "en": {
                         "1": {
-                            "text": "Preheat the oven to 150C/300F/Gas 2. Toss the beef and flour together in a bowl with some salt and black pepper.",
+                            "text": "Preheat the oven to 150C/300F/Gas ",
                             "images": []
                         },
                         "2": {
