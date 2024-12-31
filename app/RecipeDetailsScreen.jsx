@@ -60,10 +60,7 @@ const RecipeDetailsScreen = () => {
     // console.log('RecipeDetailsScreen id ',id)
     // console.log('RecipeDetailsScreen langApp ',langApp)
 
-    // const comments = ['ok', 'wery bast', 'naise', 'kryto']
 
-
-    // rating xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
     useEffect(() => {
@@ -142,17 +139,7 @@ const RecipeDetailsScreen = () => {
     // console.log('recipeDish', recipeDish);
 
 
-    // get video id
-    const getYoutobeVideoId = url => {
-        const regex = /[?&]v=([^&]+)/;
-        const match = url.match(regex);
 
-        if (match && match[1]) {
-            return match[1]
-        }
-        return null
-
-    }
     // get video id
     // console.log('RecipeDetailsScreen recipeDish',JSON.stringify(recipeDish,null,2))
     // console.log('recipeDish.imageHeader',recipeDish.imageHeader)
@@ -472,7 +459,7 @@ const RecipeDetailsScreen = () => {
                             }
                             {
                                 recipeDish?.video !==null && (
-                                    <VideoCustom/>
+                                    <VideoCustom video={recipeDish?.video}/>
                                 )
                             }
                             {/*    recipe video end*/}
