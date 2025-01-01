@@ -8,13 +8,18 @@ import YouTubeIframe from "react-native-youtube-iframe";
 import {hp} from "../../../constants/responsiveScreen";
 import {shadowBoxBlack} from "../../../constants/shadow";
 
-import { useVideoPlayer, VideoView } from 'expo-video';
+import {useVideoPlayer, VideoView} from 'expo-video';
 import {useEvent} from "expo";
+import LoadingComponent from "../../loadingComponent";
+
+// translate
+import i18n from '../../../lang/i18n'
 
 const VideoCustom = ({video}) => {
     // console.log("VideoCustom video", video)
-    // getYoutobeVideoId
 
+    const [loadingVideo, setLoadingVideo] = useState(true)
+    // getYoutobeVideoId
 
 
     const [youTobeLink, setYouTobeLink] = useState(null);
@@ -23,10 +28,22 @@ const VideoCustom = ({video}) => {
     useEffect(() => {
         if (video) {
             if (video.strYoutube) {
+                setLoadingVideo(true)
                 setYouTobeLink(getYoutobeVideoId(video.strYoutube));
+
+                setTimeout(() => {
+                    setLoadingVideo(false)
+                }, 2000)
+
             }
             if (video.strYouVideo) {
+
+                setLoadingVideo(true)
                 setYouVideoLink(convertGoogleDriveLink(video.strYouVideo));
+
+                setTimeout(() => {
+                    setLoadingVideo(false)
+                }, 2000)
             }
         }
     }, [video]);
@@ -49,16 +66,16 @@ const VideoCustom = ({video}) => {
         }
     }, [player]);
 
-    const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+    const {isPlaying} = useEvent(player, 'playingChange', {isPlaying: player.playing});
     // for expo video
 
     return (
         <View>
             <Text
                 style={[{fontSize: hp(2.5)}, shadowBoxBlack()]}
-                className="font-bold text-neutral-700"
+                className="font-bold text-neutral-700 mb-2"
             >
-                Recipe video
+                {i18n.t('Recipe video')}
             </Text>
             <View style={shadowBoxBlack({
                 color: '#000', // Цвет тени для блоков (по умолчанию чёрный)
@@ -79,12 +96,21 @@ const VideoCustom = ({video}) => {
                                 style={[{height: hp(24)},]}
                                 className="rounded-[20] overflow-hidden border-2 border-neutral-700"
                             >
-                                <YouTubeIframe
+                                {
+                                    loadingVideo
+                                        ? (
+                                            <LoadingComponent/>
+                                        )
+                                        : (
+                                            <YouTubeIframe
 
-                                    videoId={youTobeLink}
-                                    // videoId='nMyBC9staMU'
-                                    height='100%'
-                                />
+                                                videoId={youTobeLink}
+                                                // videoId='nMyBC9staMU'
+                                                height='100%'
+                                            />
+                                        )
+                                }
+
                             </View>
                         </View>
                     )
@@ -94,30 +120,22 @@ const VideoCustom = ({video}) => {
                         <View>
 
                             {/*    player*/}
-                            <View  style={[{height: hp(24)},]}
-                                   className="rounded-[20] overflow-hidden border-2 border-neutral-700">
-                                {/*<Video*/}
-                                {/*    source={{uri: youVideoLink}}*/}
-                                {/*    style={styles.video}*/}
-                                {/*    useNativeControls*/}
-                                {/*    resizeMode="contain"*/}
-                                {/*    isLooping*/}
-                                {/*/>*/}
+                            <View style={[{height: hp(24)},]}
+                                  className="rounded-[20] overflow-hidden border-2 border-neutral-700">
 
-
-                                <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
-                                <View style={styles.controlsContainer}>
-                                    <Button
-                                        title={isPlaying ? 'Pause' : 'Play'}
-                                        onPress={() => {
-                                            if (isPlaying) {
-                                                player.pause();
-                                            } else {
-                                                player.play();
-                                            }
-                                        }}
-                                    />
-                                </View>
+                                {
+                                    loadingVideo
+                                        ? (
+                                            <LoadingComponent/>
+                                        )
+                                        : (
+                                            <>
+                                                <VideoView style={styles.video} player={player} allowsFullscreen
+                                                           allowsPictureInPicture/>
+                                                <View style={styles.controlsContainer}></View>
+                                            </>
+                                        )
+                                }
 
 
                             </View>
@@ -137,6 +155,7 @@ const styles = StyleSheet.create({
     },
     controlsContainer: {
         padding: 10,
-    },})
+    },
+})
 
 export default VideoCustom;

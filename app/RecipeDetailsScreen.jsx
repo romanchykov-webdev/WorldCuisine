@@ -1,9 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
+import {
+    View,
+    Text,
+    ScrollView,
+    TouchableOpacity, Platform, KeyboardAvoidingView,
+} from 'react-native';
 import {useLocalSearchParams} from 'expo-router';
-import {getRecipeDish} from "../api";
 
-import {Image} from 'expo-image'
 import {hp, wp} from "../constants/responsiveScreen";
 import {shadowBoxBlack, shadowTextSmall} from "../constants/shadow";
 import LoadingComponent from "../components/loadingComponent";
@@ -15,15 +18,11 @@ import Animated, {FadeInDown, FadeInUp} from "react-native-reanimated";
 import ButtonLike from "../components/ButtonLike";
 import {ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon} from "react-native-heroicons/mini";
 
-import YouTubeIframe from 'react-native-youtube-iframe'
 import {ChatBubbleOvalLeftIcon, StarIcon} from "react-native-heroicons/outline";
 import RatingComponents from "../components/RatingComponents";
 
-// for rating
-// import StarRating, {StarRatingDisplay} from 'react-native-star-rating-widget';
-import {calculateRating} from "../constants/ratingHalper";
 import CommentsComponent from "../components/CommentsComponent";
-import {getRecipesDescriptionMyDB} from "../service/getDataFromDB";
+import {getRecipesDescriptionLikeRatingMyDB, getRecipesDescriptionMyDB} from "../service/getDataFromDB";
 import AvatarCustom from "../components/AvatarCustom";
 import {useAuth} from "../contexts/AuthContext";
 
@@ -36,7 +35,6 @@ import VideoCustom from "../components/recipeDetails/video/VideoCustom";
 const RecipeDetailsScreen = () => {
 
 
-
     const {language: langDev} = useAuth();
     i18n.locale = langDev; // Устанавливаем текущий язык
     // console.log('RecipeDetailsScreen langDev',langDev)
@@ -44,7 +42,6 @@ const RecipeDetailsScreen = () => {
     const [loading, setLoading] = useState(false)
 
     const [recipeDish, setRecipeDish] = useState(null)
-
 
 
     // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
@@ -60,7 +57,24 @@ const RecipeDetailsScreen = () => {
     // console.log('RecipeDetailsScreen id ',id)
     // console.log('RecipeDetailsScreen langApp ',langApp)
 
+    // update like comment count
+    const updateLikeCommentCount = async (payload) => {
+        const res =await getRecipesDescriptionLikeRatingMyDB({id,payload})
 
+
+        if(payload==='updateCommentsCount'){
+            // console.log('updateLikeCommentCount res', res.data);  // Это выводит [{ "comments": 18 }]
+            // console.log('updateLikeCommentCount recipeDish', recipeDish);  // Это выводит текущие данные
+
+            // Обновляем состояние с новым количеством комментариев
+            setRecipeDish((prevRecipeDish) => ({
+                ...prevRecipeDish,
+                comments: res.data[0].comments, // Обновляем только поле comments
+            }));
+
+        }
+    }
+    // update like comment count
 
 
     useEffect(() => {
@@ -139,17 +153,19 @@ const RecipeDetailsScreen = () => {
     // console.log('recipeDish', recipeDish);
 
 
-
     // get video id
     // console.log('RecipeDetailsScreen recipeDish',JSON.stringify(recipeDish,null,2))
     // console.log('recipeDish.imageHeader',recipeDish.imageHeader)
     return (
 
-
+        <KeyboardAvoidingView
+            style={{flex: 1}}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
         <ScrollView
             ref={scrollViewRef} //for scroll
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white',paddingHorizontal:wp(3)}}
+            contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white', paddingHorizontal: wp(3)}}
         >
             <StatusBar style='light'/>
             {
@@ -458,7 +474,7 @@ const RecipeDetailsScreen = () => {
                                 // )
                             }
                             {
-                                recipeDish?.video !==null && (
+                                recipeDish?.video !== null && (
                                     <VideoCustom video={recipeDish?.video}/>
                                 )
                             }
@@ -467,14 +483,15 @@ const RecipeDetailsScreen = () => {
                             {/*accordion comments*/}
 
 
-
-                            <CommentsComponent
-                                recepId={id}
-                                user={user ?? null}
-                            />
+                            <View ref={commentsRef}>
+                                <CommentsComponent
+                                    recepId={id}
+                                    user={user ?? null}
+                                    updateLikeCommentCount={updateLikeCommentCount}
+                                />
+                            </View>
 
                         </View>
-
 
 
                     )
@@ -482,6 +499,7 @@ const RecipeDetailsScreen = () => {
 
 
         </ScrollView>
+        </KeyboardAvoidingView>
 
     );
 };

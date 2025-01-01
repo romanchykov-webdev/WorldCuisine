@@ -41,7 +41,7 @@ export  const getYoutobeVideoId = url => {
 
 // Функция для  видео с google disk
 export const convertGoogleDriveLink = (url) => {
-    console.log('convertGoogleDriveLink url', url);
+    // console.log('convertGoogleDriveLink url', url);
     if(url!=null){
         return url.replace(
             /\/file\/d\/(.*?)\/view.*/,

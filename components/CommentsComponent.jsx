@@ -14,13 +14,18 @@ import {shadowBoxBlack} from "../constants/shadow";
 import {hp, wp} from "../constants/responsiveScreen";
 import {PaperAirplaneIcon} from "react-native-heroicons/mini";
 import LoadingComponent from "./loadingComponent";
-import {getAllCommentsMyDB, getAllUserIdCommentedMyDB} from "../service/getDataFromDB";
+import {addNewCommentToRecipeMyDB, getAllCommentsMyDB, getAllUserIdCommentedMyDB} from "../service/getDataFromDB";
 import {formatDateTime} from "../constants/halperFunctions";
 import AvatarCustom from "./AvatarCustom";
 
-const CommentsComponent = ({recepId, user}) => {
+
+// translate
+import i18n from '../lang/i18n'
+
+const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
 
     // console.log('CommentsComponent recepId',recepId)
+    // console.log('CommentsComponent user',user)
 
     const [commentsAll, setCommentsAll] = useState(null)
     const [userIdCommented, setUserIdCommented] = useState(null)
@@ -86,17 +91,31 @@ const CommentsComponent = ({recepId, user}) => {
 
 
     const addNewComment = async () => {
-        // console.log('inputText',inputText)
+        // console.log('inputText recepId',recepId)
+        // console.log('inputText user.id',user.id)
+        // console.log('inputText comment',inputText)
+
+        // addNewCommentToRecipeMyDB(postId,userIdCommented,comment)
+
         setLoading(true)
         if (inputText === '') {
             Alert.alert('Comment', 'Write a comment')
         } else {
+
+            if(recepId && user?.id && inputText){
+                await addNewCommentToRecipeMyDB({postId:recepId, userIdCommented:user?.id, comment:inputText})
+            }
+
+
             setTimeout(() => {
                 setLoading(false)
                 setCommentsAll([inputText, ...commentsAll])
 
                 setInputText('')
             }, 1000)
+
+            await fetchComments()
+            updateLikeCommentCount('updateCommentsCount')
 
         }
 
@@ -122,7 +141,7 @@ const CommentsComponent = ({recepId, user}) => {
                         // style={shadowBoxBlack()}
                         className="flex-row items-center p-2 rounded-[10] mb-5 bg-black/5 ">
                         <TextInput
-                            placeholder="Your comment"
+                            placeholder={i18n.t('Your comment')}
                             placeholderTextColor="gray"
                             multiline={true}
                             value={inputText}
