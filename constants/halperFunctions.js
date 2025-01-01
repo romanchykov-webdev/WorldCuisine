@@ -19,3 +19,34 @@ export const formatDateTime = (isoDateString) => {
 
     return `${day}.${month}.${year} ${hours}:${minutes}`;
 };
+
+// Функция для  видео с Youtobe
+export  const getYoutobeVideoId = url => {
+    // console.log("getYoutobeVideoId url",url)
+
+    // if(url!=null){
+        const regex = /[?&]v=([^&]+)/;
+        const match = url.match(regex);
+
+        if (match && match[1]) {
+            return match[1]
+        }
+        return null
+    // }else{
+    //     return null;
+    // }
+
+
+}
+
+// Функция для  видео с google disk
+export const convertGoogleDriveLink = (url) => {
+    // console.log('convertGoogleDriveLink url', url);
+    if(url!=null){
+        return url.replace(
+            /\/file\/d\/(.*?)\/view.*/,
+            '/uc?export=download&id=$1'
+        );
+    }
+  return null;
+};

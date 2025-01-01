@@ -79,6 +79,40 @@ export const getRecipesDescriptionMyDB = async (id) => {
     }
 }
 
+//получение description рецепта его количества комментариев и рейтинга
+export const getRecipesDescriptionLikeRatingMyDB = async ({id,payload}) => {
+    // console.log("getRecipesDescriptionLikeRatingMyDB recipe id",id)
+    // console.log("getRecipesDescriptionLikeRatingMyDB recipe payload",payload)
+    // console.log('ok:',tableCategory)
+
+    try {
+        let query;
+        if(payload==='updateCommentsCount'){
+            query='comments'
+        }
+        // console.log('getRecipesDescriptionLikeRatingMyDB query',query)
+
+        let { data, error } = await supabase
+            .from('allRecipesDescription')
+            .select(query)
+            .eq('id', id); // Фильтр по id
+
+        if (error) {
+            return {success: false, msg: 'getRecipesDescriptionLikeRatingMyDB error' + error?.message}
+        }
+        //
+        //
+        // console.log('shortDesc', JSON.stringify(data, null, 2));
+
+        return {success: true, data}
+
+
+    } catch (error) {
+        console.log('error', error)
+        return {success: false, msg: 'getRecipesDescriptionMyDB catch error' + error.message}
+    }
+}
+
 //получение all comments рецепта
 export const getAllCommentsMyDB = async (id) => {
     // console.log('getAllCommentsMyDB id',id)
@@ -87,7 +121,8 @@ export const getAllCommentsMyDB = async (id) => {
         let {data, error} = await supabase
             .from('comments')
             .select('*')
-            .eq('postId', id); // Фильтр по id
+            .eq('postId', id) // Фильтр по id
+            .order('created_at', {ascending: false}); // Сортировка от нового к старому
 
         if (error) {
             return {success: false, msg: 'getRecipesDescriptionMyDB error' + error?.message}
@@ -129,3 +164,37 @@ export const getAllUserIdCommentedMyDB = async (ids) => {
         return {success: false, msg: 'getRecipesDescriptionMyDB catch error' + error.message}
     }
 }
+
+//отправка комментария на рецепт
+export const addNewCommentToRecipeMyDB = async ({postId, userIdCommented, comment}) => {
+    // console.log('getAllCommentsMyDB postId', postId)
+    // console.log('getAllCommentsMyDB userIdCommented', userIdCommented)
+    // console.log('getAllCommentsMyDB comment', comment)
+    try {
+
+        // increment_comment_count
+
+        let {data, error} = await supabase
+            .from('comments')
+            .insert([
+                {
+                    postId,           // ID поста
+                    userIdCommented,  // ID пользователя
+                    comment           // Текст комментария
+                },
+            ])
+            .select()
+
+        if (error) {
+            console.error('Error adding comment:', error.message);
+            return {success: false, msg: 'Error adding comment: ' + error.message};
+        }
+
+        // console.log('Comment added successfully:', JSON.stringify(data, null, 2));
+        return {success: true, data};
+
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        return {success: false, msg: 'Unexpected error: ' + error.message};
+    }
+};
