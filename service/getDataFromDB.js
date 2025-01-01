@@ -198,3 +198,21 @@ export const addNewCommentToRecipeMyDB = async ({postId, userIdCommented, commen
         return {success: false, msg: 'Unexpected error: ' + error.message};
     }
 };
+
+//удаление комментария
+export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
+    try {
+        const { error } = await supabase
+            .from('comments')
+            .delete()
+            .eq('id', commentId); // Фильтруем по id комментария
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        console.log('Комментарий удален успешно');
+    } catch (error) {
+        console.error('Ошибка при удалении комментария:', error.message);
+    }
+};
