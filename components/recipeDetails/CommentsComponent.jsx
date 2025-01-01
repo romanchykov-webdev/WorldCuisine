@@ -254,22 +254,23 @@ const CommentsComponent = ({recepId, user, updateLikeCommentCount, publishedId})
                                                     </Text>
                                                 </View>
 
+                                                {/*  block like dislike  and remove comment */}
                                                 {
                                                     user != null && (
                                                         <View className="mt-2 flex-row justify-between items-center">
 
                                                             {/*  block like dislike   */}
                                                             <View className="flex-row gap-x-10 pl-5">
-                                                                <TouchableOpacity>
+                                                                {/*<TouchableOpacity>*/}
 
-                                                                    <HandThumbUpIcon size={hp(2.5)} color="green"/>
-                                                                </TouchableOpacity>
+                                                                {/*    <HandThumbUpIcon size={hp(2.5)} color="green"/>*/}
+                                                                {/*</TouchableOpacity>*/}
 
 
-                                                                <TouchableOpacity>
+                                                                {/*<TouchableOpacity>*/}
 
-                                                                    <HandThumbDownIcon size={hp(2.5)} color="red"/>
-                                                                </TouchableOpacity>
+                                                                {/*    <HandThumbDownIcon size={hp(2.5)} color="red"/>*/}
+                                                                {/*</TouchableOpacity>*/}
 
                                                             </View>
 

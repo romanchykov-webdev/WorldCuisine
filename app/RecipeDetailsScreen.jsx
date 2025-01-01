@@ -220,7 +220,7 @@ const RecipeDetailsScreen = () => {
                                     ">
                                     <ButtonBack/>
 
-                                    <ButtonLike user={user ?? null}/>
+                                    <ButtonLike user={user ?? null} recipeId={recipeDish?.id}/>
 
                                 </Animated.View>
 

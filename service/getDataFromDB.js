@@ -208,7 +208,8 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
             .eq('id', commentId); // Фильтруем по id комментария
 
         if (error) {
-            throw new Error(error.message);
+            console.error('Error adding comment:', error.message);
+            return {success: false, msg: 'Error adding comment: ' + error.message};
         }
 
         console.log('Комментарий удален успешно');
@@ -216,3 +217,30 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
         console.error('Ошибка при удалении комментария:', error.message);
     }
 };
+
+// добавление лайка рецепту
+export const addLikeRecipeMyDB = async ({recipeId,userIdLike}) => {
+
+    console.log('addLikeRecipeMyDB recipeId',recipeId)
+    console.log('addLikeRecipeMyDB userIdLike',userIdLike)
+    try {
+        let {data, error} = await supabase
+            .from('recipesLikes')
+            .insert([
+                {
+                    recipeId:recipeId,           // ID поста
+                    userIdLike:userIdLike,  // ID пользователя
+                },
+            ])
+            .select()
+
+        if (error) {
+            console.error('Error adding comment:', error.message);
+            return {success: false, msg: 'Error adding comment: ' + error.message};
+        }
+
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        return {success: false, msg: 'Unexpected error: ' + error.message};
+    }
+}

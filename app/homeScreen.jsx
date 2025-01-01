@@ -44,7 +44,7 @@ const HomeScreen = () => {
 
 
     const changeLanguage = (newLocale) => {
-        if (newLocale) {
+        if (newLocale!==undefined) {
             i18n.locale = newLocale;
             console.log('homescreen newLocale', newLocale)
         } else {
