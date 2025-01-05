@@ -10,25 +10,34 @@ import {
     ActivityIndicator,
     FlatList
 } from 'react-native';
-import {shadowBoxBlack} from "../constants/shadow";
-import {hp, wp} from "../constants/responsiveScreen";
-import {PaperAirplaneIcon} from "react-native-heroicons/mini";
-import LoadingComponent from "./loadingComponent";
-import {addNewCommentToRecipeMyDB, getAllCommentsMyDB, getAllUserIdCommentedMyDB} from "../service/getDataFromDB";
-import {formatDateTime} from "../constants/halperFunctions";
-import AvatarCustom from "./AvatarCustom";
+import {shadowBoxBlack} from "../../constants/shadow";
+import {hp, wp} from "../../constants/responsiveScreen";
+import {PaperAirplaneIcon, HandThumbUpIcon, HandThumbDownIcon, TrashIcon} from "react-native-heroicons/mini";
+import LoadingComponent from "../loadingComponent";
+import {
+    addNewCommentToRecipeMyDB,
+    deleteCommentByIdToRecipeMyDB,
+    getAllCommentsMyDB,
+    getAllUserIdCommentedMyDB
+} from "../../service/getDataFromDB";
+import {formatDateTime} from "../../constants/halperFunctions";
+import AvatarCustom from "../AvatarCustom";
 
 
 // translate
-import i18n from '../lang/i18n'
+import i18n from '../../lang/i18n'
 
-const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
+const CommentsComponent = ({recepId, user, updateLikeCommentCount, publishedId}) => {
 
     // console.log('CommentsComponent recepId',recepId)
     // console.log('CommentsComponent user',user)
 
+    // user?.id===comment?.userIdCommented || user?.id===publishedId
+
+
     const [commentsAll, setCommentsAll] = useState(null)
     const [userIdCommented, setUserIdCommented] = useState(null)
+
 
     // полный объект комментариев
     const [allDataComments, setAllDataComments] = useState(null)
@@ -48,6 +57,10 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
             // Извлекаем все userIdCommented из массива commentsAll
             const usersId = res.data.map(comment => comment.userIdCommented);
             setUserIdCommented(usersId)
+
+            // if (user?.id === comment?.userIdCommented || user?.id === publishedId) {
+            //
+            // }
 
 
         } catch (error) {
@@ -85,9 +98,10 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
         fetchUserIdCommented(userIdCommented)
     }, [userIdCommented])
 
+    // Check if the current user is the owner
     useEffect(() => {
-        // console.log('useEffect allDataComments', allDataComments)
-    }, [allDataComments])
+
+    }, [allDataComments]);
 
 
     const addNewComment = async () => {
@@ -102,8 +116,8 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
             Alert.alert('Comment', 'Write a comment')
         } else {
 
-            if(recepId && user?.id && inputText){
-                await addNewCommentToRecipeMyDB({postId:recepId, userIdCommented:user?.id, comment:inputText})
+            if (recepId && user?.id && inputText) {
+                await addNewCommentToRecipeMyDB({postId: recepId, userIdCommented: user?.id, comment: inputText})
             }
 
 
@@ -114,8 +128,8 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
                 setInputText('')
             }, 1000)
 
-            await fetchComments()
             updateLikeCommentCount('updateCommentsCount')
+            await fetchComments()
 
         }
 
@@ -127,6 +141,24 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
         setInputText(value)
         // console.log(inputText)
     }
+
+    // delete comment
+    const deleteComment = async (commentId) => {
+        // console.log('deleteComment commentId', commentId)
+        // console.log('deleteComment userIdCommented', userIdCommented)
+        // console.log('deleteComment userId', user?.id)
+        // console.log('deleteComment publishedId', publishedId)
+        // user?.id === comment?.userIdCommented || user?.id === publishedId
+        await deleteCommentByIdToRecipeMyDB(commentId)
+        await fetchComments()
+
+
+    }
+
+    // Проверьте, является ли пользователь владельцем поста или автором комментария
+    const canDeleteComment = (comment) => {
+        return user?.id === comment?.userIdCommented || user?.id === publishedId;
+    };
 
     return (
         <View
@@ -178,6 +210,7 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
                             <>
                                 {
                                     allDataComments?.map((comment, index) => {
+
                                         return (
                                             <View key={index}
                                                   className="border-[1px] border-neutral-300 rounded-[20] p-3 bg-black/5 "
@@ -220,6 +253,49 @@ const CommentsComponent = ({recepId, user,updateLikeCommentCount}) => {
                                                         {comment?.comment}
                                                     </Text>
                                                 </View>
+
+                                                {/*  block like dislike  and remove comment */}
+                                                {
+                                                    user != null && (
+                                                        <View className="mt-2 flex-row justify-between items-center">
+
+                                                            {/*  block like dislike   */}
+                                                            <View className="flex-row gap-x-10 pl-5">
+                                                                {/*<TouchableOpacity>*/}
+
+                                                                {/*    <HandThumbUpIcon size={hp(2.5)} color="green"/>*/}
+                                                                {/*</TouchableOpacity>*/}
+
+
+                                                                {/*<TouchableOpacity>*/}
+
+                                                                {/*    <HandThumbDownIcon size={hp(2.5)} color="red"/>*/}
+                                                                {/*</TouchableOpacity>*/}
+
+                                                            </View>
+
+                                                            {/*  block delete comment   */}
+
+                                                            {
+                                                                canDeleteComment(comment) &&(
+                                                                    <View>
+                                                                        <TouchableOpacity
+                                                                            onPress={() => deleteComment(comment?.id)}
+                                                                        >
+                                                                            <TrashIcon size={hp(2.5)} color="red"/>
+                                                                        </TouchableOpacity>
+                                                                    </View>
+                                                                )
+                                                            }
+
+
+
+                                                        </View>
+                                                    )
+                                                }
+
+                                                {/*    block like dislike delete comment*/}
+
                                             </View>
 
                                         )

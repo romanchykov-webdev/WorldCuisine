@@ -6,10 +6,12 @@ import {useRouter} from "expo-router";
 
 // translate
 import i18n from '../lang/i18n';
+import {addLikeRecipeMyDB} from "../service/getDataFromDB";
 
-const ButtonLike = ({user}) => {
+const ButtonLike = ({user,recipeId}) => {
 
-    // console.log('ButtonLike user',user)
+    // console.log('ButtonLike user.id',user.id)
+    // console.log('ButtonLike recipeId',recipeId)
     const router=useRouter();
 
     const [isLike, setIsLike] = useState(false)
@@ -32,6 +34,7 @@ const ButtonLike = ({user}) => {
         } else {
             setIsLike(!isLike)
             // add new like
+            await addLikeRecipeMyDB({recipeId:recipeId,userIdLike:user?.id})
         }
 
     }

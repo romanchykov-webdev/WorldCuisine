@@ -26,7 +26,10 @@ const HomeScreen = () => {
     const router = useRouter();
 
     const { language:langDev } = useAuth();
-    i18n.locale = langDev; // Устанавливаем текущий язык
+    useEffect(() => {
+        i18n.locale = langDev; // Устанавливаем текущий язык
+    }, [langDev]);
+
 
     const [isAuth, setIsAuth] = useState(null)
     const [isRefreshing, setIsRefreshing] = useState(false);  // Состояние для отслеживания процесса обновления
@@ -38,8 +41,10 @@ const HomeScreen = () => {
     const [categories, setCategories] = useState(null)
     // console.log('homescreen user',user)
 
+
+
     const changeLanguage = (newLocale) => {
-        if (newLocale) {
+        if (newLocale!==undefined) {
             i18n.locale = newLocale;
             console.log('homescreen newLocale', newLocale)
         } else {
@@ -168,7 +173,7 @@ const HomeScreen = () => {
                         : (
                             <>
                                 {/*avatar snd ball*/}
-                                <HeaderComponent isAuth={isAuth} user={user}/>
+                                <HeaderComponent isAuth={isAuth} user={user} />
 
 
                                 {/*    greetings and punchline*/}

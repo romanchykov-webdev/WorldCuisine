@@ -21,7 +21,7 @@ import {ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon} from "react-native-h
 import {ChatBubbleOvalLeftIcon, StarIcon} from "react-native-heroicons/outline";
 import RatingComponents from "../components/RatingComponents";
 
-import CommentsComponent from "../components/CommentsComponent";
+import CommentsComponent from "../components/recipeDetails/CommentsComponent";
 import {getRecipesDescriptionLikeRatingMyDB, getRecipesDescriptionMyDB} from "../service/getDataFromDB";
 import AvatarCustom from "../components/AvatarCustom";
 import {useAuth} from "../contexts/AuthContext";
@@ -220,7 +220,7 @@ const RecipeDetailsScreen = () => {
                                     ">
                                     <ButtonBack/>
 
-                                    <ButtonLike user={user ?? null}/>
+                                    <ButtonLike user={user ?? null} recipeId={recipeDish?.id}/>
 
                                 </Animated.View>
 
@@ -488,6 +488,7 @@ const RecipeDetailsScreen = () => {
                                     recepId={id}
                                     user={user ?? null}
                                     updateLikeCommentCount={updateLikeCommentCount}
+                                    publishedId={recipeDish?.publishedId}
                                 />
                             </View>
 

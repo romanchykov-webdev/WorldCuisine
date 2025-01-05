@@ -49,12 +49,6 @@ const HeaderComponent = ({isAuth,user}) => {
                                 onPress={() => router.push('/ProfileScreen')}
 
                             >
-                                {/*<Image*/}
-                                {/*    source={require('../assets/img/user_icon.png')}*/}
-                                {/*    className="rounded-full border-[1px] border-neutral-500"*/}
-                                {/*    style={{width: hp(5), height: hp(5)}}*/}
-                                {/*    resizeMode="cover"*/}
-                                {/*/>*/}
                                 <AvatarCustom
                                     uri={user?.avatar}
                                     size={hp(4.3)}
