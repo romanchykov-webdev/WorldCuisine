@@ -221,8 +221,8 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 // добавление лайка рецепту
 export const addLikeRecipeMyDB = async ({recipeId,userIdLike}) => {
 
-    console.log('addLikeRecipeMyDB recipeId',recipeId)
-    console.log('addLikeRecipeMyDB userIdLike',userIdLike)
+    // console.log('addLikeRecipeMyDB recipeId',recipeId)
+    // console.log('addLikeRecipeMyDB userIdLike',userIdLike)
     try {
         let {data, error} = await supabase
             .from('recipesLikes')
