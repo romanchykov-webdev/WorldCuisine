@@ -1,22 +1,33 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {TouchableOpacity, Alert} from 'react-native';
 import {HeartIcon} from "react-native-heroicons/solid";
 import {shadowBoxWhite} from "../constants/shadow";
 import {useRouter} from "expo-router";
 
 // translate
 import i18n from '../lang/i18n';
-import {addLikeRecipeMyDB} from "../service/getDataFromDB";
+import {addLikeRecipeMyDB, checkIfUserLikedRecipe} from "../service/getDataFromDB";
 
-const ButtonLike = ({user,recipeId}) => {
+const ButtonLike = ({user, recipeId}) => {
 
     // console.log('ButtonLike user.id',user.id)
     // console.log('ButtonLike recipeId',recipeId)
-    const router=useRouter();
 
     const [isLike, setIsLike] = useState(false)
 
-    const toggleLike=async ()=>{
+    const router = useRouter();
+
+    const fetchGetLikes = async () => {
+        if (user !== null) {
+
+            const res = await checkIfUserLikedRecipe({recipeId: recipeId, userId: user.id});
+            setIsLike(res.liked)
+            // console.log('res', res.liked);
+        }
+
+    }
+
+    const toggleLike = async () => {
         if (user === null) {
             Alert.alert("Like", `${i18n.t('To add a recipe to your favorites you must log in or create an account')}`, [
                 {
@@ -34,10 +45,14 @@ const ButtonLike = ({user,recipeId}) => {
         } else {
             setIsLike(!isLike)
             // add new like
-            await addLikeRecipeMyDB({recipeId:recipeId,userIdLike:user?.id})
+            await addLikeRecipeMyDB({recipeId: recipeId, userIdLike: user?.id})
         }
 
     }
+
+    useEffect(() => {
+        fetchGetLikes()
+    },[])
 
     return (
         <TouchableOpacity
@@ -61,6 +76,5 @@ const ButtonLike = ({user,recipeId}) => {
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default ButtonLike;

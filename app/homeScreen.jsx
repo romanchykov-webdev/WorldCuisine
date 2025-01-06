@@ -1,18 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, RefreshControl, ActivityIndicator} from 'react-native';
-import {BellIcon} from "react-native-heroicons/outline";
+import {View, Text,  ScrollView, RefreshControl} from 'react-native';
 import {hp, wp} from "../constants/responsiveScreen";
 import {StatusBar} from "expo-status-bar";
-import {MagnifyingGlassIcon, Cog6ToothIcon} from "react-native-heroicons/mini";
-import {shadowBoxBlack} from "../constants/shadow";
 import Categories from "../components/Categories";
-import {getCategories, getRecipes} from "../api";
-import {useRouter} from "expo-router";
 import SearchComponent from "../components/SearchComponent";
 import HeaderComponent from "../components/HeaderComponent";
 
-// import kategory
-import {categoryData} from '../constants/fakeDataDB'
 import {useAuth} from "../contexts/AuthContext";
 
 // translate
@@ -22,8 +15,8 @@ import LoadingComponent from "../components/loadingComponent";
 import Recipes from "../components/Rrecipes";
 
 const HomeScreen = () => {
-    const {user, setAuth, setUserData} = useAuth();
-    const router = useRouter();
+    const {user} = useAuth();
+    // const router = useRouter();
 
     const { language:langDev } = useAuth();
     useEffect(() => {
@@ -139,7 +132,7 @@ const HomeScreen = () => {
 
     return (
         <View className="flex-1">
-            <StatusBar style='darck'/>
+            <StatusBar style='dark'/>
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 50}}
@@ -238,6 +231,5 @@ const HomeScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default HomeScreen;

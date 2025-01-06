@@ -46,7 +46,7 @@ const RecipeDetailsScreen = () => {
 
     // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
 
-    const {user, setAuth, setUserData} = useAuth();
+    const {user} = useAuth();
 
     // console.log('RecipeDetailsScreen setAuth',user);
 
@@ -167,7 +167,7 @@ const RecipeDetailsScreen = () => {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 30, backgroundColor: 'white', paddingHorizontal: wp(3)}}
         >
-            <StatusBar style='light'/>
+            <StatusBar style='dark'/>
             {
                 loading || recipeDish === null
 

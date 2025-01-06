@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     TouchableOpacity,
     ScrollView,
     SafeAreaView,
@@ -178,15 +177,16 @@ const EditProfile = () => {
     return (
         <ScrollView
             keyboardDismissMode={'on-drag'}
-            contentContainerStyle={{paddingHorizontal: wp(4)}}
+            contentContainerStyle={{paddingHorizontal: wp(4),marginTop:50}}
             showsVerticalScrollIndicator={false}
         >
             <SafeAreaView
 
 
             >
+
                 {/*header*/}
-                <View className="flex-row items-center justify-center pt-5 pb-5">
+                <View className="flex-row items-center justify-center pt-5 pb-5 ">
                     <View className="absolute left-0">
                         <ButtonBack/>
                     </View>
@@ -224,12 +224,13 @@ const EditProfile = () => {
 
 
                 <View className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
-                      style={shadowBoxBlack()}
+                      // style={shadowBoxBlack()}
                 >
                     <TextInput
+
                         value={user.user_name}
                         onChangeText={value => setUser({...user, user_name: value})}
-                        className="text-neutral-500 text-xl p-3 "
+                        className="text-neutral-500 text-xl p-3"
 
                     />
                 </View>
@@ -295,6 +296,5 @@ const EditProfile = () => {
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default EditProfile;

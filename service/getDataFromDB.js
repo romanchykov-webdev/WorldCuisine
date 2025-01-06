@@ -1,5 +1,4 @@
 import {supabase} from "../lib/supabase";
-import {Alert} from "react-native";
 
 // Получить все категории
 export const getCategoriesMyDB = async () => {
@@ -221,26 +220,51 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 // добавление лайка рецепту
 export const addLikeRecipeMyDB = async ({recipeId,userIdLike}) => {
 
-    // console.log('addLikeRecipeMyDB recipeId',recipeId)
-    // console.log('addLikeRecipeMyDB userIdLike',userIdLike)
     try {
-        let {data, error} = await supabase
-            .from('recipesLikes')
-            .insert([
-                {
-                    recipeId:recipeId,           // ID поста
-                    userIdLike:userIdLike,  // ID пользователя
-                },
-            ])
-            .select()
+        const {data, error} = await supabase
+            .rpc('toggle_recipe_like', {
+                p_recipe_id_like: recipeId,
+                p_user_id_like: userIdLike,
+            });
 
         if (error) {
-            console.error('Error adding comment:', error.message);
-            return {success: false, msg: 'Error adding comment: ' + error.message};
+            console.error('Error toggling like:', error.message);
+            return {success: false, msg: 'Error toggling like: ' + error.message};
         }
 
+        return {success: true, data};
     } catch (error) {
         console.error('Unexpected error:', error.message);
         return {success: false, msg: 'Unexpected error: ' + error.message};
     }
 }
+
+// проверка ставил ли пользователь лайк этому рецепту
+export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
+
+    // console.log('checkIfUserLikedRecipe recipeId', recipeId);
+    // console.log('checkIfUserLikedRecipe userId', userId);
+    try {
+        // Выполняем запрос к базе данных
+        const { data, error } = await supabase
+            .from('recipesLikes') // Таблица, в которой выполняем поиск
+            .select('*') // Выбираем все столбцы (можно ограничить только нужными)
+            .eq('recipe_id_like', recipeId) // Условие: ID рецепта
+            .eq('user_id_like', userId) // Условие: ID пользователя
+            .limit(1); // Лимитируем до одной строки, чтобы не получать лишние данные
+
+        if (error) {
+            console.error('Error checking like:', error.message);
+            return { success: false, liked: false, msg: error.message };
+        }
+
+        // Проверяем, существует ли запись
+        const liked = data.length > 0;
+        console.log('checkIfUserLikedRecipe liked:', liked);
+
+        return { success: true, liked };
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        return { success: false, liked: false, msg: error.message };
+    }
+};

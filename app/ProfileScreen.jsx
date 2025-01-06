@@ -109,7 +109,7 @@ const ProfileScreen = () => {
 
     return (
         <SafeAreaView
-            contentContainerStyle={{flex: 1}}
+            contentContainerStyle={{flex: 1,}}
             // className="bg-red-500"
         >
             {
@@ -117,9 +117,9 @@ const ProfileScreen = () => {
                     ? (
                         <ScrollView
                             showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{paddingHorizontal: 20}}
+                            contentContainerStyle={{paddingHorizontal: 20,marginTop:50}}
                         >
-                            <View className="flex-row justify-between items-center mt-20">
+                            <View className="flex-row justify-between items-center">
                                 <View style={shadowBoxBlack()}>
 
                                     <ButtonBack/>
@@ -241,15 +241,16 @@ const ProfileScreen = () => {
 
                                 {/*block login and sign up*/}
                                 <View
-                                    className="mb-10 w-full flex-wrap   gap-10 justify-center
+                                    className="mb-10 w-full flex-row   gap-10 justify-center
                                     {/*bg-red-500*/}
                                     "
+                                    style={{ flexWrap: 'wrap' }} // Добавляем перенос строк
                                 >
                                     {/*    log in*/}
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/LogInScreen')}
                                         style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 w-full "
+                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
                                     >
                                         <Text>{i18n.t('Log In')}</Text>
                                     </TouchableOpacity>
@@ -259,7 +260,7 @@ const ProfileScreen = () => {
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/RegistrationScreen')}
                                         style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 w-full"
+                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
                                     >
                                         <Text>{i18n.t('Sign Up')}</Text>
                                     </TouchableOpacity>
