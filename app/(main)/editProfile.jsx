@@ -177,7 +177,7 @@ const EditProfile = () => {
     return (
         <ScrollView
             keyboardDismissMode={'on-drag'}
-            contentContainerStyle={{paddingHorizontal: wp(4),marginTop:50}}
+            contentContainerStyle={{paddingHorizontal: wp(4),marginTop:60}}
             showsVerticalScrollIndicator={false}
         >
             <SafeAreaView

@@ -78,8 +78,9 @@ const RecipeDetailsScreen = () => {
 
 
     useEffect(() => {
-        if (recipeDish?.rating?.averageScore !== undefined) {
-            const averageScoreString = recipeDish.rating.averageScore.toString();
+        if (recipeDish?.rating!== undefined) {
+            const averageScoreString = recipeDish?.rating
+            console.log('averageScoreString recipeDish?.rating',recipeDish?.rating)
             setRating(averageScoreString); // Устанавливаем строковое значение
             // console.log('recipeDish.rating.averageScore (as string):', averageScoreString);
             // console.log('rating (as string):', rating);
@@ -235,7 +236,7 @@ const RecipeDetailsScreen = () => {
                                           style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                                     >
                                         <StarIcon size={45} color='gold'/>
-                                        <Text style={{fontSize: 8}} className="text-neutral-700 absolute">
+                                        <Text style={{fontSize: 8}} className="text-neutral-700 absolute top-[45%] left-[40%]">
                                             {rating}
                                         </Text>
                                     </View>
@@ -261,7 +262,8 @@ const RecipeDetailsScreen = () => {
                             {/* top image button back and like end*/}
 
 
-                            <RatingComponents rating={rating} handleStarPress={handleStarPress} user={user ?? null}/>
+                            {/*ratings */}
+                            <RatingComponents rating={rating} handleStarPress={handleStarPress} user={user ?? null} recipeId={id}/>
 
 
                             {/*    dish and description*/}

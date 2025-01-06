@@ -135,7 +135,7 @@ const HomeScreen = () => {
             <StatusBar style='dark'/>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 50}}
+                contentContainerStyle={{paddingBottom: 50,marginTop: 15}}
                 className="gap-y-6 pt-14 mx-4 relative"
                 refreshControl={
                     <RefreshControl

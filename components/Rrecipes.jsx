@@ -91,7 +91,7 @@ const Recipes = ({categories, recipes,langApp}) => {
 const CardItem = ({item, index, langApp}) => {
     // console.log('index', index)
     // console.log('CardItem item', item)
-    console.log('CardItem langApp', langApp)
+    // console.log('CardItem langApp', langApp)
     const router = useRouter()
 
 
@@ -157,14 +157,6 @@ const CardItem = ({item, index, langApp}) => {
 
                 </View>
 
-                {/*<Image*/}
-                {/*    // source={{uri: item.image}}*/}
-                {/*    source={{uri: item.imageHeader}}*/}
-                {/*    style={{width: '100%', height: imageHeight, borderRadius: 35}}*/}
-                {/*    contentFit="cover"*/}
-                {/*    transition={1000}*/}
-                {/*    onLoad={loadingImage}*/}
-                {/*/>*/}
                 <AvatarCustom
                     uri={item.imageHeader}
                     style={{borderWidth: 0.2, width: '100%', height: imageHeight}}

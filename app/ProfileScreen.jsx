@@ -117,7 +117,7 @@ const ProfileScreen = () => {
                     ? (
                         <ScrollView
                             showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{paddingHorizontal: 20,marginTop:50}}
+                            contentContainerStyle={{paddingHorizontal: 20,marginTop:60}}
                         >
                             <View className="flex-row justify-between items-center">
                                 <View style={shadowBoxBlack()}>

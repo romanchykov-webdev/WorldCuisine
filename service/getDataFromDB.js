@@ -268,3 +268,66 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
         return { success: false, liked: false, msg: error.message };
     }
 };
+
+
+//Добавление рейтинга в таблицу recipe_ratings
+
+// export const addRecipeRatingMyDB = async ({recipeId, userId, rating}) => {
+//     try {
+//         // Вставляем новый рейтинг в таблицу recipe_ratings
+//         // console.log('addRecipeRatingMyDB recipeId',recipeId)
+//         // console.log('addRecipeRatingMyDB userId',userId)
+//         // console.log('addRecipeRatingMyDB rating',rating)
+//         const { data, error } = await supabase
+//             .from('recipe_ratings')
+//             .insert([
+//                 {
+//                     recipe_id: recipeId,
+//                     user_id: userId,
+//                     // total_score: rating,
+//                     number_of_ratings: rating, // Количество оценок, пока 1
+//                     // average_score: rating, // Средний рейтинг = первый рейтинг
+//                 }
+//             ])
+//
+//         if (error) {
+//             console.error('Error checking addRecipeRating:', error.message);
+//             return { success: false,  msg: error.message };
+//         }
+//
+//         console.log('Добавленный рейтинг:', data);
+//
+//         // Поскольку триггер автоматически обновляет таблицы shortDesc и allRecipesDescription,
+//         // дополнительные запросы к ним не требуются.
+//
+//     } catch (error) {
+//         console.error('Unexpected error:', error.message);
+//         return { success: false, liked: false, msg: error.message };
+//     }
+// };
+export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
+    try {
+        const { data, error } = await supabase
+            .from('recipe_ratings')
+            .upsert(
+                {
+                    recipe_id: recipeId,
+                    user_id: userId,
+                    number_of_ratings: rating,
+                    updated_at: new Date().toISOString()
+                },
+                { onConflict: ['recipe_id', 'user_id'] } // Указываем уникальные столбцы
+            );
+
+        if (error) {
+            console.error('Error upserting recipe rating:', error.message);
+            return { success: false, msg: error.message };
+        }
+
+        console.log('Добавленный или обновленный рейтинг:', data);
+        return { success: true };
+    } catch (error) {
+        console.error('Unexpected error:', error.message);
+        return { success: false, msg: error.message };
+    }
+};
