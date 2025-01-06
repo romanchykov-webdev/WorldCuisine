@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import {View, Text,  SafeAreaView, ScrollView, TouchableOpacity, Alert} from 'react-native';
 import {useRouter} from "expo-router";
 import ButtonBack from "../components/ButtonBack";
 
@@ -21,14 +21,13 @@ import {logOut} from "../service/userService";
 
 // translate
 import i18n from '../lang/i18n'
-import LanguagesWrapper from "../components/LanguagesWrapper";
 
 
 const ProfileScreen = () => {
-    const {setAuth, user, setUserData} = useAuth();
+    const {setAuth, user} = useAuth();
 
     // change lang
-    const [lang, setLang] = useState('en'); // Устанавливаем язык
+    // const [lang, setLang] = useState('en'); // Устанавливаем язык
 
 
 
@@ -120,7 +119,7 @@ const ProfileScreen = () => {
                             showsVerticalScrollIndicator={false}
                             contentContainerStyle={{paddingHorizontal: 20}}
                         >
-                            <View className="flex-row justify-between items-center">
+                            <View className="flex-row justify-between items-center mt-20">
                                 <View style={shadowBoxBlack()}>
 
                                     <ButtonBack/>
@@ -242,16 +241,15 @@ const ProfileScreen = () => {
 
                                 {/*block login and sign up*/}
                                 <View
-                                    className="mb-10 w-full flex-row   gap-10 justify-center
+                                    className="mb-10 w-full flex-wrap   gap-10 justify-center
                                     {/*bg-red-500*/}
                                     "
-                                    style={{ flexWrap: 'wrap' }} // Добавляем перенос строк
                                 >
                                     {/*    log in*/}
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/LogInScreen')}
                                         style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
+                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 w-full "
                                     >
                                         <Text>{i18n.t('Log In')}</Text>
                                     </TouchableOpacity>
@@ -261,7 +259,7 @@ const ProfileScreen = () => {
                                     <TouchableOpacity
                                         onPress={() => router.push('/(auth)/RegistrationScreen')}
                                         style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
+                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 w-full"
                                     >
                                         <Text>{i18n.t('Sign Up')}</Text>
                                     </TouchableOpacity>
@@ -288,6 +286,5 @@ const ProfileScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default ProfileScreen;
