@@ -210,7 +210,7 @@ const HomeScreen = () => {
                                         ? (
 
                                             <Recipes
-                                                categories={categories.length}
+                                                // categories={categories.length}
                                                 recipes={recipes}
                                                 langApp={user?.lang ?? langDev}
                                             />

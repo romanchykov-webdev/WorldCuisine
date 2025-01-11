@@ -25,7 +25,7 @@ import AvatarCustom from "./AvatarCustom";
 import {myFormatNumber} from "../constants/halperFunctions";
 import {useAuth} from "../contexts/AuthContext";
 
-const Recipes = ({categories, recipes,langApp}) => {
+const Recipes = ({ recipes,langApp}) => {
 
 
 

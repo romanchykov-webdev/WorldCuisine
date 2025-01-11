@@ -271,7 +271,6 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
 
 //Добавление рейтинга в таблицу recipe_ratings
-
 // export const addRecipeRatingMyDB = async ({recipeId, userId, rating}) => {
 //     try {
 //         // Вставляем новый рейтинг в таблицу recipe_ratings
@@ -331,3 +330,44 @@ export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
         return { success: false, msg: error.message };
     }
 };
+
+export const getAllMyLikedRecipes = async (userId) => {
+    // console.log('getAllMyLikedRecipes id',id);
+    try {
+
+        const { data:likedRecipes, error:likedRecipesError } = await supabase
+            .from('recipesLikes')
+            .select('recipe_id_like')
+            .eq('user_id_like',userId)
+
+        if (likedRecipesError) {
+            console.error('Error fetching liked recipes:', likedRecipesError.message);
+            return { success: false, msg: likedRecipesError.message };
+        }
+
+        if (!likedRecipes || likedRecipes.length === 0) {
+            return { success: true, data: [] }; // Нет лайкнутых рецептов
+        }
+
+        // Извлекаем массив ID рецептов
+        const recipeIds = likedRecipes.map((item) => item.recipe_id_like);
+
+
+        // Запрашиваем подробности из таблицы shortDesc по массиву ID
+        const { data: recipesDetails, error: detailsError } = await supabase
+            .from('shortDesc')
+            .select('*') // Замените '*' на конкретные колонки, которые вам нужны
+            .in('fullRecipeId', recipeIds);
+
+        if (detailsError) {
+            console.error('Error fetching recipe details:', detailsError.message);
+            return { success: false, msg: detailsError.message };
+        }
+
+        return { success: true, data: recipesDetails };
+
+    }catch(error) {
+        console.error('Unexpected error:', error.message);
+        return { success: false, msg: error.message };
+    }
+}
