@@ -46,6 +46,53 @@ export const getRecipesMyDB = async (category) => {
     }
 }
 
+//получение всех категории getCategoryRecipeMasonryMyDB
+export const getCategoryRecipeMasonryMyDB = async (langDew) => {
+    try {
+        let {data, error} = await supabase
+            .from('categories_masonry')
+            .select('*')
+            .eq('lang', langDew)
+
+
+        if (error) {
+            return {success: false, msg: 'getCategoryRecipeMasonryMyDB try error' + error?.message}
+        }
+        // console.log('getCategoryRecipeMasonryMyDB', JSON.stringify(data[0].title, null, 2))
+
+        return {success: true, data:data[0].title}
+
+
+    } catch (error) {
+        console.log('error', error)
+        return {success: false, msg: 'getCategoryRecipeMasonry catch error' + error.message}
+    }
+}
+
+//получение всех под категории getCategoryRecipeMasonryMyDB
+export const getAllRecipesPointMasonryMyDB = async (point) => {
+    try {
+
+        let {data, error} = await supabase
+            .from('allRecipesDescription')
+            .select('*')
+            .eq('point', point)
+
+
+        if (error) {
+            return {success: false, msg: 'getAllSubCategoriesMasonryMyDB try error' + error?.message}
+        }
+        // console.log('getAllSubCategoriesMasonryMyDB', data)
+        // console.log('getAllSubCategoriesMasonryMyDB', JSON.stringify(data[0].title, null, 2))
+
+        return {success: true, data: data}
+
+    }catch (error) {
+        console.log('error', error)
+        return {success: false, msg: 'getAllSubCategoriesMasonryMyDB catch error' + error.message}
+    }
+}
+
 //получение description рецепта
 export const getRecipesDescriptionMyDB = async (id) => {
     // console.log("getRecipesDescriptionMyDB receps id",id)
@@ -79,19 +126,19 @@ export const getRecipesDescriptionMyDB = async (id) => {
 }
 
 //получение description рецепта его количества комментариев и рейтинга
-export const getRecipesDescriptionLikeRatingMyDB = async ({id,payload}) => {
+export const getRecipesDescriptionLikeRatingMyDB = async ({id, payload}) => {
     // console.log("getRecipesDescriptionLikeRatingMyDB recipe id",id)
     // console.log("getRecipesDescriptionLikeRatingMyDB recipe payload",payload)
     // console.log('ok:',tableCategory)
 
     try {
         let query;
-        if(payload==='updateCommentsCount'){
-            query='comments'
+        if (payload === 'updateCommentsCount') {
+            query = 'comments'
         }
         // console.log('getRecipesDescriptionLikeRatingMyDB query',query)
 
-        let { data, error } = await supabase
+        let {data, error} = await supabase
             .from('allRecipesDescription')
             .select(query)
             .eq('id', id); // Фильтр по id
@@ -201,7 +248,7 @@ export const addNewCommentToRecipeMyDB = async ({postId, userIdCommented, commen
 //удаление комментария
 export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
     try {
-        const { error } = await supabase
+        const {error} = await supabase
             .from('comments')
             .delete()
             .eq('id', commentId); // Фильтруем по id комментария
@@ -218,7 +265,7 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 };
 
 // добавление лайка рецепту
-export const addLikeRecipeMyDB = async ({recipeId,userIdLike}) => {
+export const addLikeRecipeMyDB = async ({recipeId, userIdLike}) => {
 
     try {
         const {data, error} = await supabase
@@ -240,13 +287,13 @@ export const addLikeRecipeMyDB = async ({recipeId,userIdLike}) => {
 }
 
 // проверка ставил ли пользователь лайк этому рецепту
-export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
+export const checkIfUserLikedRecipe = async ({recipeId, userId}) => {
 
     // console.log('checkIfUserLikedRecipe recipeId', recipeId);
     // console.log('checkIfUserLikedRecipe userId', userId);
     try {
         // Выполняем запрос к базе данных
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('recipesLikes') // Таблица, в которой выполняем поиск
             .select('*') // Выбираем все столбцы (можно ограничить только нужными)
             .eq('recipe_id_like', recipeId) // Условие: ID рецепта
@@ -255,17 +302,17 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
         if (error) {
             console.error('Error checking like:', error.message);
-            return { success: false, liked: false, msg: error.message };
+            return {success: false, liked: false, msg: error.message};
         }
 
         // Проверяем, существует ли запись
         const liked = data.length > 0;
         console.log('checkIfUserLikedRecipe liked:', liked);
 
-        return { success: true, liked };
+        return {success: true, liked};
     } catch (error) {
         console.error('Unexpected error:', error.message);
-        return { success: false, liked: false, msg: error.message };
+        return {success: false, liked: false, msg: error.message};
     }
 };
 
@@ -304,9 +351,9 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 //         return { success: false, liked: false, msg: error.message };
 //     }
 // };
-export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
+export const addRecipeRatingMyDB = async ({recipeId, userId, rating}) => {
     try {
-        const { data, error } = await supabase
+        const {data, error} = await supabase
             .from('recipe_ratings')
             .upsert(
                 {
@@ -315,19 +362,19 @@ export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
                     number_of_ratings: rating,
                     updated_at: new Date().toISOString()
                 },
-                { onConflict: ['recipe_id', 'user_id'] } // Указываем уникальные столбцы
+                {onConflict: ['recipe_id', 'user_id']} // Указываем уникальные столбцы
             );
 
         if (error) {
             console.error('Error upserting recipe rating:', error.message);
-            return { success: false, msg: error.message };
+            return {success: false, msg: error.message};
         }
 
         console.log('Добавленный или обновленный рейтинг:', data);
-        return { success: true };
+        return {success: true};
     } catch (error) {
         console.error('Unexpected error:', error.message);
-        return { success: false, msg: error.message };
+        return {success: false, msg: error.message};
     }
 };
 
@@ -335,18 +382,18 @@ export const getAllMyLikedRecipes = async (userId) => {
     // console.log('getAllMyLikedRecipes id',id);
     try {
 
-        const { data:likedRecipes, error:likedRecipesError } = await supabase
+        const {data: likedRecipes, error: likedRecipesError} = await supabase
             .from('recipesLikes')
             .select('recipe_id_like')
-            .eq('user_id_like',userId)
+            .eq('user_id_like', userId)
 
         if (likedRecipesError) {
             console.error('Error fetching liked recipes:', likedRecipesError.message);
-            return { success: false, msg: likedRecipesError.message };
+            return {success: false, msg: likedRecipesError.message};
         }
 
         if (!likedRecipes || likedRecipes.length === 0) {
-            return { success: true, data: [] }; // Нет лайкнутых рецептов
+            return {success: true, data: []}; // Нет лайкнутых рецептов
         }
 
         // Извлекаем массив ID рецептов
@@ -354,20 +401,20 @@ export const getAllMyLikedRecipes = async (userId) => {
 
 
         // Запрашиваем подробности из таблицы shortDesc по массиву ID
-        const { data: recipesDetails, error: detailsError } = await supabase
+        const {data: recipesDetails, error: detailsError} = await supabase
             .from('shortDesc')
             .select('*') // Замените '*' на конкретные колонки, которые вам нужны
             .in('fullRecipeId', recipeIds);
 
         if (detailsError) {
             console.error('Error fetching recipe details:', detailsError.message);
-            return { success: false, msg: detailsError.message };
+            return {success: false, msg: detailsError.message};
         }
 
-        return { success: true, data: recipesDetails };
+        return {success: true, data: recipesDetails};
 
-    }catch(error) {
+    } catch (error) {
         console.error('Unexpected error:', error.message);
-        return { success: false, msg: error.message };
+        return {success: false, msg: error.message};
     }
 }

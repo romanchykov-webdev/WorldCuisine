@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text,  ScrollView, RefreshControl} from 'react-native';
+import {View, Text, ScrollView, RefreshControl} from 'react-native';
 import {hp, wp} from "../constants/responsiveScreen";
 import {StatusBar} from "expo-status-bar";
 import Categories from "../components/Categories";
@@ -10,15 +10,16 @@ import {useAuth} from "../contexts/AuthContext";
 
 // translate
 import i18n from '../lang/i18n'
-import {getCategoriesMyDB, getRecipesMyDB} from "../service/getDataFromDB";
+import {getCategoriesMyDB, getCategoryRecipeMasonryMyDB, getRecipesMyDB} from "../service/getDataFromDB";
 import LoadingComponent from "../components/loadingComponent";
 import Recipes from "../components/Rrecipes";
+import RecipesMasonryComponent from "../components/RecipesMasonry/RecipesMasonryComponent";
 
 const HomeScreen = () => {
     const {user} = useAuth();
     // const router = useRouter();
 
-    const { language:langDev } = useAuth();
+    const {language: langDev} = useAuth();
     useEffect(() => {
         i18n.locale = langDev; // Устанавливаем текущий язык
     }, [langDev]);
@@ -35,9 +36,8 @@ const HomeScreen = () => {
     // console.log('homescreen user',user)
 
 
-
     const changeLanguage = (newLocale) => {
-        if (newLocale!==undefined) {
+        if (newLocale !== undefined) {
             i18n.locale = newLocale;
             console.log('homescreen newLocale', newLocale)
         } else {
@@ -67,13 +67,20 @@ const HomeScreen = () => {
 
 
     // Вызов функции fetchRecipes и присваивание данных в состояние
-    const [recipes, setRecipes] = useState([])
-    const fetchRecipes = async () => {
-        // console.log('active category', activeCategory);
-        // const data = await getRecipes(activeCategory)
-        const recipesMyDB = await getRecipesMyDB(activeCategory)
-        // console.log('fetchRecipes data',recipesMyDB)
-        setRecipes(recipesMyDB.data)
+    // const [recipes, setRecipes] = useState([])
+    // const fetchRecipes = async () => {
+    //     // console.log('active category', activeCategory);
+    //     // const data = await getRecipes(activeCategory)
+    //     const recipesMyDB = await getRecipesMyDB(activeCategory)
+    //     // console.log('fetchRecipes data',recipesMyDB)
+    //     setRecipes(recipesMyDB.data)
+    // }
+
+    const [categoryRecipes, setCategoryRecipes] = useState([])
+    const fetchCategoryRecipeMasonry = async () => {
+        const res = await getCategoryRecipeMasonryMyDB(user.lang ?? langDev)
+        // console.log('fetchCategoryRecipeMasonry',res)
+        setCategoryRecipes(res.data)
     }
 
 
@@ -81,47 +88,35 @@ const HomeScreen = () => {
 
         getAllCategories()
         // fetchRecipes()
+        fetchCategoryRecipeMasonry()
 
     }, [])
 
 
     // const handleChangeCategory = (category) => {
-    const handleChangeCategory = (category) => {
-
-
-        setActiveCategory(category);
-        setRecipes([]);  // Очищаем рецепты при смене категории
-
-        fetchRecipes(activeCategory);
-
-    }
+    // const handleChangeCategory = (category) => {
+    //
+    //
+    //     setActiveCategory(category);
+    //     setRecipes([]);  // Очищаем рецепты при смене категории
+    //
+    //     fetchRecipes(activeCategory);
+    //
+    // }
 // Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
     useEffect(() => {
-        fetchRecipes(activeCategory)
+        // fetchRecipes(activeCategory)
 
     }, [activeCategory]); // Следим за изменением activeCategory
 
-    // Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
-    // useEffect(() => {
-    //     const fetchRecipes = async () => {
-    //         console.log('active category', activeCategory);
-    //         // const data = await getRecipes(activeCategory); // Получаем рецепты для актуальной категории
-    //         const data = await getRecipes(activeCategory); // Получаем рецепты для актуальной категории
-    //         setRecipes(data);
-    //     };
-    //
-    //     if (activeCategory) {
-    //         // console.log("activeCategory", activeCategory);
-    //         fetchRecipes(); // Загружаем рецепты при изменении категории
-    //     }
-    // }, [activeCategory]); // Следим за изменением activeCategory
 
     // Функция для обновления данных при свайпе вниз
     const onRefresh = async () => {
         setIsRefreshing(true);
         setIsLoading(true);  // Устанавливаем загрузку в true
         await getAllCategories(); // Загрузка категорий
-        await fetchRecipes(activeCategory);  // Загрузка рецептов
+        // await fetchRecipes(activeCategory);  // Загрузка рецептов
+        await  fetchCategoryRecipeMasonry()
         setIsRefreshing(false);  // Завершаем процесс обновления
 
         setTimeout(() => {
@@ -135,7 +130,7 @@ const HomeScreen = () => {
             <StatusBar style='dark'/>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 50,marginTop: 15}}
+                contentContainerStyle={{paddingBottom: 50, marginTop: 15}}
                 className="gap-y-6 pt-14 mx-4 relative"
                 refreshControl={
                     <RefreshControl
@@ -166,7 +161,7 @@ const HomeScreen = () => {
                         : (
                             <>
                                 {/*avatar snd ball*/}
-                                <HeaderComponent isAuth={isAuth} user={user} />
+                                <HeaderComponent isAuth={isAuth} user={user}/>
 
 
                                 {/*    greetings and punchline*/}
@@ -187,38 +182,42 @@ const HomeScreen = () => {
                                 <SearchComponent/>
 
                                 {/*    categories*/}
-                                {
-                                    categories
-                                        ? (
-                                            <Categories
-                                                categories={categories}
-                                                activeCategory={activeCategory}
-                                                setActiveCategory={setActiveCategory}
-                                                handleChangeCategory={handleChangeCategory}
-                                                langApp={user?.lang ?? langDev}
-                                            />
-                                        )
-                                        : (
-                                            <LoadingComponent size={'small'} color='grey'/>
-                                        )
-                                }
+                                <Text className="bg-red-500 p-5">добавлю топ рецептов</Text>
+                                {/*{*/}
+                                {/*    categories*/}
+                                {/*        ? (*/}
+                                {/*            <Categories*/}
+                                {/*                categories={categories}*/}
+                                {/*                activeCategory={activeCategory}*/}
+                                {/*                setActiveCategory={setActiveCategory}*/}
+                                {/*                handleChangeCategory={handleChangeCategory}*/}
+                                {/*                langApp={user?.lang ?? langDev}*/}
+                                {/*            />*/}
+                                {/*        )*/}
+                                {/*        : (*/}
+                                {/*            <LoadingComponent size={'small'} color='grey'/>*/}
+                                {/*        )*/}
+                                {/*}*/}
 
 
                                 {/*    recipes*/}
-                                {
-                                    categories
-                                        ? (
+                                {/*{*/}
+                                {/*    categories*/}
+                                {/*        ? (*/}
 
-                                            <Recipes
-                                                // categories={categories.length}
-                                                recipes={recipes}
-                                                langApp={user?.lang ?? langDev}
-                                            />
-                                        )
-                                        : (
-                                            <LoadingComponent size={'small'} color='grey'/>
-                                        )
-                                }
+                                {/*            <Recipes*/}
+                                {/*                // categories={categories.length}*/}
+                                {/*                recipes={recipes}*/}
+                                {/*                langApp={user?.lang ?? langDev}*/}
+                                {/*            />*/}
+                                {/*        )*/}
+                                {/*        : (*/}
+                                {/*            <LoadingComponent size={'small'} color='grey'/>*/}
+                                {/*        )*/}
+                                {/*}*/}
+
+                                {/*    RecipesMasonryComponent*/}
+                                <RecipesMasonryComponent categoryRecipes={categoryRecipes} langApp={user?.lang ?? langDev}/>
 
                             </>
                         )

@@ -1,0 +1,172 @@
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useRouter} from "expo-router";
+import {hp} from "../../constants/responsiveScreen";
+import Animated, {FadeInDown, FadeOutDown} from "react-native-reanimated";
+import {shadowBoxBlack, shadowText} from "../../constants/shadow";
+import {
+    ArrowUturnLeftIcon,
+    ChatBubbleOvalLeftEllipsisIcon,
+    HeartIcon,
+    PlayCircleIcon,
+    StarIcon
+} from "react-native-heroicons/outline";
+import AvatarCustom from "../AvatarCustom";
+import {LinearGradient} from "expo-linear-gradient";
+import {myFormatNumber} from "../../constants/halperFunctions";
+import {getDeviceType} from "../../constants/getWidthDevice";
+import i18n from "../../lang/i18n";
+import LoadingComponent from "../loadingComponent";
+import MasonryList from "@react-native-seoul/masonry-list";
+import {getAllRecipesPointMasonryMyDB} from "../../service/getDataFromDB";
+
+
+const RecipesMasonryComponent = ({categoryRecipes, langApp}) => {
+
+    // console.log('RecipesMasonryComponent', categoryRecipes);
+
+    const [isSubCategoryView, setIsSubCategoryView] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const [column, setColumn] = useState(0)
+
+    // console.log('Recipes Recipes',recipes)
+
+    useEffect(() => {
+        // Определяем тип устройства и обновляем количество колонок
+        const type = getDeviceType(window.innerWidth);
+        setColumn(type);
+
+    }, [])
+
+    const handleSubCategory = (item) => {
+        setSelectedItem(item); // Устанавливаем текущий элемент
+        setIsSubCategoryView(true); // Переходим к отображению подкатегорий
+    };
+
+    const handleBack = () => {
+        setIsSubCategoryView(false); // Возвращаемся к основным категориям
+        setSelectedItem(null); // Сбрасываем выбранный элемент
+    };
+
+    return (
+        <View className="flex-1 gap-y-3 mt-5">
+
+
+            {!isSubCategoryView ? (
+                <MasonryList
+                    data={categoryRecipes}
+                    keyExtractor={(_, index) => index.toString()}
+                    numColumns={2}
+                    renderItem={({item, i}) => (
+                        <CardItem
+                            item={item}
+                            index={i}
+                            onPress={handleSubCategory}
+                        />
+                    )}
+                />
+            ) : (
+                <Animated.View entering={FadeInDown} exiting={FadeOutDown}>
+                    <SubCategoryView item={selectedItem} isSubCategoryView={isSubCategoryView} handleBack={handleBack}/>
+                </Animated.View>
+            )}
+        </View>
+    );
+};
+
+const CardItem = ({item, index, onPress}) => {
+    // console.log('CardItem',index)
+    const isEven = index % 3 === 0;
+    const imageHeight = isEven ? hp(25) : hp(35);
+
+    return (
+        <Animated.View
+            entering={FadeInDown.delay(index * 200).springify()} // Задержка анимации
+            className="flex mb-[10] gap-y-1 p-[2]"
+            style={[shadowBoxBlack({offset: {width: 1, height: 1}, opacity: 1, radius: 3})]}
+        >
+            <TouchableOpacity
+                onPress={() => onPress(item)}
+                className="rounded-full relative items-center"
+            >
+                <AvatarCustom
+                    uri={item.image}
+                    style={{borderWidth: 0.2, width: '100%', height: imageHeight}}
+                    rounded={35}
+                />
+                <Text className="absolute bottom-[10] text-white font-semibold">
+                    {item.name}
+                </Text>
+            </TouchableOpacity>
+        </Animated.View>
+    );
+};
+
+const SubCategoryView = ({item, isSubCategoryView, handleBack}) => {
+    const router = useRouter();
+
+    const handleOpenItem = async (item) => {
+        // console.log('SubCategoryView handleOpenItem', item)
+
+        router.push({
+            pathname: '(main)/AllRecipesPointScreen',
+            params: {point: item.point}
+        })
+
+    }
+    // console.log(item);
+    return (
+        <View className="gap-y-3">
+            <View className="flex-row items-center">
+                {isSubCategoryView && (
+                    <TouchableOpacity
+                        className="absolute left-0 z-10"
+                        onPress={handleBack}>
+                        <ArrowUturnLeftIcon size={30} color="gray"/>
+                    </TouchableOpacity>
+                )}
+                <Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">
+                    {item?.name}
+                </Text>
+            </View>
+
+            <MasonryList
+                data={item.subcategories || []}
+                keyExtractor={(subItem, index) => subItem.name + index.toString()} // Используем уникальный ключ
+                numColumns={2}
+                renderItem={({item, i}) => {
+                    // console.log('SubCategoryView',i)
+                    const isEven = i % 3 === 0;
+                    const imageHeight = isEven ? hp(25) : hp(35);
+                    return (
+                        <Animated.View
+                            style={[shadowBoxBlack({offset: {width: 1, height: 1}, opacity: 1, radius: 3})]}
+                            entering={FadeInDown.delay(i * 200)} // Задержка анимации
+                            exiting={FadeOutDown.delay(i * 100)} // Задержка исчезновения
+                            className="flex mb-[10] gap-y-1 p-[2]"
+                        >
+                            <TouchableOpacity
+                                onPress={() => handleOpenItem(item)}
+                                className="rounded-full relative items-center">
+                                <AvatarCustom
+                                    uri={item.image}
+                                    style={{borderWidth: 0.2, width: '100%', height: imageHeight}}
+                                    rounded={35}
+                                />
+                                <Text className="absolute bottom-[10] text-white font-semibold">
+                                    {item.name}
+                                </Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    );
+                }}
+            />
+        </View>
+    );
+};
+
+
+const styles = StyleSheet.create({});
+
+export default RecipesMasonryComponent;
