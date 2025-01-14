@@ -12,11 +12,18 @@ import {useAuth} from "../../contexts/AuthContext";
 import ButtonBack from "../../components/ButtonBack";
 import AddLangComponent from "../../components/CreateRecipeScreen/AddLangComponent";
 import InputCustomComponent from "../../components/CreateRecipeScreen/InputCustomComponent";
+import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
 
 const CreateRecipeScreen = () => {
 
-    const {user: userId, language} = useAuth()
-    console.log('creating recipe language', language)
+    const {user: userData, language} = useAuth()
+    // console.log('creating recipe language', language)
+
+    const langApp = userData.lang ?? language
+    // console.log('CreateRecipeScreen',langApp)
+
+    const [totalLangRecipe, setTotalLangRecipe] = useState([langApp])
+    console.log(totalLangRecipe)
 
 
     return (
@@ -44,47 +51,32 @@ const CreateRecipeScreen = () => {
                 </View>
 
                 {/*    title recipe*/}
-                <View>
+                <View className="mb-5">
 
-                    <InputCustomComponent langDev={language}/>
+                    <InputCustomComponent langDev={langApp} setTotalLangRecipe={setTotalLangRecipe}
+                                          totalLangRecipe={totalLangRecipe}/>
                 </View>
 
-                <Text>
-                    Мясо
-                        Свинина
-                        Говядина
-                        Баранина
-                    Рыба/ морепродукты
-                    Птица
-                        Курица
-                        Перепела
-                        Индейка
-                        Утка
-                        Другие птицы
-                    Салаты
-                        Мясные
-                        Рыбные
-                        Овощные
-                        Эксклюзивные
-                    Закуски
-                        Сандвичи
-                        Рыбные закуски
-                        Мясные закуски
-                    Десерт
-                        Торты
-                        Преложенные
-                        Мороженое
-                        Выпечка
-                        Желе
-                        Пряник
-                        Конфеты
-                        Печенье
-                    Напитки
-                        Смузи
-                        Коктейль
-                        Настойки
+                {/*   aria di recipe*/}
+                <View>
+                    <Text>Country of origin of the recipe</Text>
+                    {
+                        totalLangRecipe?.map((item, index) => {
+                            return(
+                         <View key={index}>
 
-                </Text>
+                             <InputCreateRecipeScreenCustom
+                                 title='Country of origin of the recipe'
+                                 placeholderText={`Write the country of origin of the recipe ${item}`}
+                                 placeholderColor="grey"
+                                 totalLangRecipe={totalLangRecipe}
+
+                             />
+                         </View>
+                            )
+                        })
+                    }
+                </View>
 
             </ScrollView>
         </SafeAreaView>

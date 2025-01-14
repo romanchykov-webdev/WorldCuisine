@@ -24,6 +24,8 @@ import {getAllRecipesPointMasonryMyDB} from "../../service/getDataFromDB";
 const RecipesMasonryComponent = ({categoryRecipes, langApp}) => {
 
     // console.log('RecipesMasonryComponent', categoryRecipes);
+    console.log('RecipesMasonryComponent', langApp);
+    useEffect(() => {},[langApp]);
 
     const [isSubCategoryView, setIsSubCategoryView] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -63,19 +65,20 @@ const RecipesMasonryComponent = ({categoryRecipes, langApp}) => {
                             item={item}
                             index={i}
                             onPress={handleSubCategory}
+                            langApp={langApp}
                         />
                     )}
                 />
             ) : (
                 <Animated.View entering={FadeInDown} exiting={FadeOutDown}>
-                    <SubCategoryView item={selectedItem} isSubCategoryView={isSubCategoryView} handleBack={handleBack}/>
+                    <SubCategoryView item={selectedItem} isSubCategoryView={isSubCategoryView} handleBack={handleBack} langApp={langApp}/>
                 </Animated.View>
             )}
         </View>
     );
 };
 
-const CardItem = ({item, index, onPress}) => {
+const CardItem = ({item, index, onPress,langApp}) => {
     // console.log('CardItem',index)
     const isEven = index % 3 === 0;
     const imageHeight = isEven ? hp(25) : hp(35);
@@ -95,7 +98,14 @@ const CardItem = ({item, index, onPress}) => {
                     style={{borderWidth: 0.2, width: '100%', height: imageHeight}}
                     rounded={35}
                 />
-                <Text className="absolute bottom-[10] text-white font-semibold">
+                <LinearGradient
+
+                    colors={['transparent', '#18181b']}
+                    style={{width: '100%', height: '100%', position: 'absolute', borderRadius: 35}}
+                    start={{x: 0.5, y: 0.2}}
+                    end={{x: 0.5, y: 1}}
+                />
+                <Text className="absolute bottom-[20] text-white font-semibold">
                     {item.name}
                 </Text>
             </TouchableOpacity>
@@ -103,7 +113,7 @@ const CardItem = ({item, index, onPress}) => {
     );
 };
 
-const SubCategoryView = ({item, isSubCategoryView, handleBack}) => {
+const SubCategoryView = ({item, isSubCategoryView, handleBack,langApp}) => {
     const router = useRouter();
 
     const handleOpenItem = async (item) => {
@@ -111,17 +121,17 @@ const SubCategoryView = ({item, isSubCategoryView, handleBack}) => {
 
         router.push({
             pathname: '(main)/AllRecipesPointScreen',
-            params: {point: item.point}
+            params: {point: item.point,langApp:langApp}
         })
 
     }
     // console.log(item);
     return (
         <View className="gap-y-3">
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mb-5 mt-5">
                 {isSubCategoryView && (
                     <TouchableOpacity
-                        className="absolute left-0 z-10"
+                        className="absolute left-0 z-10 w-[50] h-[50] justify-center items-center bg-white rounded-full"
                         onPress={handleBack}>
                         <ArrowUturnLeftIcon size={30} color="gray"/>
                     </TouchableOpacity>
@@ -142,7 +152,7 @@ const SubCategoryView = ({item, isSubCategoryView, handleBack}) => {
                     return (
                         <Animated.View
                             style={[shadowBoxBlack({offset: {width: 1, height: 1}, opacity: 1, radius: 3})]}
-                            entering={FadeInDown.delay(i * 200)} // Задержка анимации
+                            entering={FadeInDown.delay(i * 200).springify()} // Задержка анимации
                             exiting={FadeOutDown.delay(i * 100)} // Задержка исчезновения
                             className="flex mb-[10] gap-y-1 p-[2]"
                         >
@@ -153,6 +163,13 @@ const SubCategoryView = ({item, isSubCategoryView, handleBack}) => {
                                     uri={item.image}
                                     style={{borderWidth: 0.2, width: '100%', height: imageHeight}}
                                     rounded={35}
+                                />
+                                <LinearGradient
+
+                                    colors={['transparent', '#18181b']}
+                                    style={{width: '100%', height: '100%', position: 'absolute', borderRadius: 35}}
+                                    start={{x: 0.5, y: 0.2}}
+                                    end={{x: 0.5, y: 1}}
                                 />
                                 <Text className="absolute bottom-[10] text-white font-semibold">
                                     {item.name}

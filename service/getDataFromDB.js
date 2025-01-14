@@ -74,7 +74,7 @@ export const getAllRecipesPointMasonryMyDB = async (point) => {
     try {
 
         let {data, error} = await supabase
-            .from('allRecipesDescription')
+            .from('shortDesc')
             .select('*')
             .eq('point', point)
 

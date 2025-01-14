@@ -7,7 +7,7 @@ import {
     TrashIcon
 } from "react-native-heroicons/mini";
 
-const InputCustomComponent = ({langDev}) => {
+const InputCustomComponent = ({langDev,setTotalLangRecipe,totalLangRecipe}) => {
 
     const languages = [
         {code: 'en', name: 'English'},
@@ -27,7 +27,7 @@ const InputCustomComponent = ({langDev}) => {
     useEffect(() => {
 
         const res=languages.filter(language=>language.code.toString()===langDev.toLowerCase())
-        console.log('res',res[0].name)
+        // console.log('res',res[0].name)
         setTotLang([res[0].name])
     }, []);
     // console.log(langDev)
@@ -36,9 +36,10 @@ const InputCustomComponent = ({langDev}) => {
         setSelectedLang(lang);
         setModalVisible(false);
         setTotLang([...totLang, lang.name]);
+        setTotalLangRecipe([...totalLangRecipe, lang.code]);
         // console.log(`Selected language: ${lang.name}`);
     };
-    console.log(totLang)
+    // console.log(totLang)
 
     const removeLang = (lang) => {
         const res = totLang.filter((item) => item !== lang)
@@ -51,12 +52,12 @@ const InputCustomComponent = ({langDev}) => {
 
             {
                 totLang && totLang.map(lang => {
-                    console.log('totLang',totLang)
+                    // console.log('totLang',totLang)
                     return (
                         <View key={lang}
 
                         >
-                            <Text className="pl-2">Add translate in {lang}</Text>
+                            <Text className="pl-2">Language {lang}</Text>
                             <View className="flex-row">
                                 <TextInput
                                     className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] mb-2 mr-[1] h-[40]"

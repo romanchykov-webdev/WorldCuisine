@@ -35,8 +35,8 @@ import VideoCustom from "../components/recipeDetails/video/VideoCustom";
 const RecipeDetailsScreen = () => {
 
 
-    const {language: langDev} = useAuth();
-    i18n.locale = langDev; // Устанавливаем текущий язык
+    // const {language: langDev} = useAuth();
+
     // console.log('RecipeDetailsScreen langDev',langDev)
 
     const [loading, setLoading] = useState(false)
@@ -50,7 +50,9 @@ const RecipeDetailsScreen = () => {
 
     // console.log('RecipeDetailsScreen setAuth',user);
 
-    const {id} = useLocalSearchParams();
+    const {id,langApp} = useLocalSearchParams();
+    console.log('RecipeDetailsScreen langDev',langApp)
+    // i18n.locale = langApp; // Устанавливаем текущий язык
 
     const [rating, setRating] = useState('0')
 
@@ -277,7 +279,7 @@ const RecipeDetailsScreen = () => {
                                           className="font-bold  text-neutral-700">
                                         {/*{recipeDish?.strMeal}*/}
                                         {
-                                            recipeDish?.title?.lang.find(it => it.lang === langDev)?.name || recipeDish?.title?.strTitle
+                                            recipeDish?.title?.lang.find(it => it.lang === langApp)?.name || recipeDish?.title?.strTitle
                                         }
                                     </Text>
                                     <Text style={{fontSize: hp(1.8)}} className="font-medium text-neutral-500">
@@ -426,7 +428,7 @@ const RecipeDetailsScreen = () => {
                                 <View className="gap-y-2">
 
 
-                                    <RecipeIngredients recIng={recipeDish?.ingredients?.lang} langDev={langDev}/>
+                                    <RecipeIngredients recIng={recipeDish?.ingredients?.lang} langDev={langApp}/>
 
                                 </View>
                             </Animated.View>
@@ -444,7 +446,7 @@ const RecipeDetailsScreen = () => {
                                 </Text>
 
                                 {/*    */}
-                                <RecipeInstructions instructions={recipeDish?.instructions} langDev={langDev}/>
+                                <RecipeInstructions instructions={recipeDish?.instructions} langDev={langApp}/>
                                 {/*<Text style={{fontSize: hp(1.6)}} className="text-neutral-700">*/}
                                 {/*    {recipeDish?.strInstructions} 1*/}
                                 {/*</Text>*/}
