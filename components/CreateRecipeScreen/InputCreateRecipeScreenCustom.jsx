@@ -13,7 +13,7 @@ const InputCreateRecipeScreenCustom = ({title,placeholderText,placeholderColor,t
 
            {/*input*/}
            <TextInput
-               className=""
+               className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] mb-2 mr-[1] h-[40]"
                placeholder={placeholderText}
                placeholderTextColor={placeholderColor}
            />

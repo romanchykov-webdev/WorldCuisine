@@ -82,25 +82,6 @@ const RatingComponents = ({rating, handleStarPress, user,recipeId}) => {
                 {i18n.t('Rate the recipe')}
             </Text>
 
-            {/* Анимационная звезда */}
-            {/*{addStar && (*/}
-            {/*    <Animated.View style={[styles.starContainer, animatedStyle]}>*/}
-            {/*        <StarIcon size={45} color="gold"/>*/}
-            {/*        <Text style={styles.ratingText}>{selectedRating}</Text>*/}
-            {/*    </Animated.View>*/}
-            {/*)}*/}
-
-            {/* Рейтинг */}
-            {/*<StarRating*/}
-            {/*    emptyColor="gray"*/}
-            {/*    enableHalfStar={false}*/}
-            {/*    starSize={45}*/}
-            {/*    maxStars={5}*/}
-            {/*    rating={rating} // Округление значения*/}
-            {/*    // rating={Math.round(rating)} // Округление значения*/}
-            {/*    onChange={(newRating) => addRating(newRating)} // Используйте onChange вместо selectedStar*/}
-            {/*/>*/}
-
             {/* Star Rating component */}
             <Rating
                 type="star"

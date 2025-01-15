@@ -1,5 +1,15 @@
-import React, {useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 // arrow-up-on-square
 
 // icons
@@ -13,6 +23,7 @@ import ButtonBack from "../../components/ButtonBack";
 import AddLangComponent from "../../components/CreateRecipeScreen/AddLangComponent";
 import InputCustomComponent from "../../components/CreateRecipeScreen/InputCustomComponent";
 import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
+import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 
 const CreateRecipeScreen = () => {
 
@@ -23,16 +34,25 @@ const CreateRecipeScreen = () => {
     // console.log('CreateRecipeScreen',langApp)
 
     const [totalLangRecipe, setTotalLangRecipe] = useState([langApp])
-    console.log(totalLangRecipe)
+
+    // useEffect(() => {
+    //     console.log('CreateRecipeScreen totalLangRecipe',totalLangRecipe)
+    // }, [totalLangRecipe]);
+    // console.log(totalLangRecipe)
 
 
     return (
         <SafeAreaView
-            contentContainerStyle={{flex: 1}}
+            // contentContainerStyle={{flex: 1}}
         >
+            <KeyboardAvoidingView
+                // style={{flex: 1}}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
             <ScrollView
                 contentContainerStyle={{paddingHorizontal: 20, marginBottom: 20,}}
                 showsVerticalScrollIndicator={false}
+                keyboardDismissMode={'on-drag'}
             >
                 {/*title*/}
                 <View className="  p-5">
@@ -58,7 +78,7 @@ const CreateRecipeScreen = () => {
                 </View>
 
                 {/*   aria di recipe*/}
-                <View>
+                <View className="mb-5">
                     <Text>Country of origin of the recipe</Text>
                     {
                         totalLangRecipe?.map((item, index) => {
@@ -78,7 +98,15 @@ const CreateRecipeScreen = () => {
                     }
                 </View>
 
+            {/*    select */}
+                <View className="mb-5">
+
+                    <Text className="mb-3">Description</Text>
+                    <SelectCreateRecipeScreenCustom/>
+                </View>
+
             </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

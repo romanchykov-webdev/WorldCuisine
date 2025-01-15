@@ -19,6 +19,8 @@ const InputCustomComponent = ({langDev,setTotalLangRecipe,totalLangRecipe}) => {
 
 
 
+
+
     const [choiceLang, setChoiceLang] = useState(null);
     const [selectedLang, setSelectedLang] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -36,15 +38,22 @@ const InputCustomComponent = ({langDev,setTotalLangRecipe,totalLangRecipe}) => {
         setSelectedLang(lang);
         setModalVisible(false);
         setTotLang([...totLang, lang.name]);
-        setTotalLangRecipe([...totalLangRecipe, lang.code]);
+        // setTotalLangRecipe([...totalLangRecipe, lang.code]);
+        setTotalLangRecipe((prev)=>[...prev,lang.code]) // Обновляем состояние в CreateRecipeScreen
         // console.log(`Selected language: ${lang.name}`);
     };
     // console.log(totLang)
 
     const removeLang = (lang) => {
         const res = totLang.filter((item) => item !== lang)
-        // console.log(' removeLang lang',res)
-        setTotLang(res)
+        console.log(' removeLang lang',lang)
+        const updatedLangCodes = totalLangRecipe.filter((code) => {
+            const langObj = languages.find((l) => l.code === code);
+            return langObj?.name !== lang;
+        });
+        setTotLang(res);
+        console.log(' removeLang updatedLangCodes',updatedLangCodes)
+        setTotalLangRecipe(updatedLangCodes); // Передаем обновленный список языков
     }
 
     return (
