@@ -88,7 +88,8 @@ const ModalCreateRecipe = ({
                                                 : (
                                                     <View>
                                                         <Text
-                                                            className="text-xl text-center mb-2">{modalSelectItem.calorie} calories</Text>
+                                                            className="text-xl text-center mb-2">{modalSelectItem.calorie} calories
+                                                        </Text>
                                                         <Slider
                                                             style={{width: '100%', height: 40}}
                                                             minimumValue={array[0]}

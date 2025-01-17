@@ -25,21 +25,38 @@ import InputCustomComponent from "../../components/CreateRecipeScreen/InputCusto
 import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import IngredientsCreateRecipe from "../../components/CreateRecipeScreen/IngredientsCreateRecipe";
+import {getMeasurementCreateRecipeMyDB} from "../../service/getDataFromDB";
 
 const CreateRecipeScreen = () => {
 
     const {user: userData, language} = useAuth()
     // console.log('creating recipe language', language)
+    // console.log('creating recipe userData', userData.lang)
+
 
     const langApp = userData.lang ?? language
     // console.log('CreateRecipeScreen',langApp)
 
     const [totalLangRecipe, setTotalLangRecipe] = useState([langApp])
 
+    // measurement
+    const [measurement, setMeasurement] = useState([])
+
     // useEffect(() => {
     //     console.log('CreateRecipeScreen totalLangRecipe',totalLangRecipe)
     // }, [totalLangRecipe]);
     // console.log(totalLangRecipe)
+
+    // get all
+    const fetchMeasurement=async()=>{
+        const res = await getMeasurementCreateRecipeMyDB()
+        // console.log(res.data)
+        setMeasurement(res.data[0].lang)
+
+    }
+    useEffect(()=>{
+        fetchMeasurement()
+    },[])
 
 
     return (
@@ -101,7 +118,6 @@ const CreateRecipeScreen = () => {
 
                     {/*    select */}
                     <View className="mb-5">
-
                         <Text className="mb-3">Description</Text>
                         <SelectCreateRecipeScreenCustom/>
                     </View>
@@ -109,7 +125,29 @@ const CreateRecipeScreen = () => {
                     {/*    Ingredients*/}
                     <View>
                         <Text className="mb-3">Ingredients</Text>
-                        <IngredientsCreateRecipe/>
+                        <Text className="text-neutral-700 text-xs mb-3">
+                            Добавьте все ингредиенты и их количество для приготовления
+                            рецепта.
+                        </Text>
+
+                        {/*{*/}
+                        {/*    totalLangRecipe?.map((item, index) => {*/}
+                        {/*        return (*/}
+                                    <View  className="mb-2">
+                                        <IngredientsCreateRecipe
+                                            placeholderText={`Ingredient language`}
+                                            placeholderColor="grey"
+                                            langApp={userData.lang ?? language}
+                                            measurement={measurement}
+                                            totalLangRecipe={totalLangRecipe}
+                                        />
+                                    </View>
+                        {/*        )*/}
+
+
+                        {/*    })*/}
+                        {/*}*/}
+
                     </View>
 
                 </ScrollView>

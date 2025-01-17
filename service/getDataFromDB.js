@@ -318,39 +318,6 @@ export const checkIfUserLikedRecipe = async ({recipeId, userId}) => {
 
 
 //Добавление рейтинга в таблицу recipe_ratings
-// export const addRecipeRatingMyDB = async ({recipeId, userId, rating}) => {
-//     try {
-//         // Вставляем новый рейтинг в таблицу recipe_ratings
-//         // console.log('addRecipeRatingMyDB recipeId',recipeId)
-//         // console.log('addRecipeRatingMyDB userId',userId)
-//         // console.log('addRecipeRatingMyDB rating',rating)
-//         const { data, error } = await supabase
-//             .from('recipe_ratings')
-//             .insert([
-//                 {
-//                     recipe_id: recipeId,
-//                     user_id: userId,
-//                     // total_score: rating,
-//                     number_of_ratings: rating, // Количество оценок, пока 1
-//                     // average_score: rating, // Средний рейтинг = первый рейтинг
-//                 }
-//             ])
-//
-//         if (error) {
-//             console.error('Error checking addRecipeRating:', error.message);
-//             return { success: false,  msg: error.message };
-//         }
-//
-//         console.log('Добавленный рейтинг:', data);
-//
-//         // Поскольку триггер автоматически обновляет таблицы shortDesc и allRecipesDescription,
-//         // дополнительные запросы к ним не требуются.
-//
-//     } catch (error) {
-//         console.error('Unexpected error:', error.message);
-//         return { success: false, liked: false, msg: error.message };
-//     }
-// };
 export const addRecipeRatingMyDB = async ({recipeId, userId, rating}) => {
     try {
         const {data, error} = await supabase
@@ -415,6 +382,31 @@ export const getAllMyLikedRecipes = async (userId) => {
 
     } catch (error) {
         console.error('Unexpected error:', error.message);
+        return {success: false, msg: error.message};
+    }
+}
+
+// get all measurement
+export const getMeasurementCreateRecipeMyDB = async () => {
+    try {
+
+        let { data, error } = await supabase
+            .from('measurement')
+            .select('lang')
+
+        if (error) {
+            console.error('Error getMeasurementCreateRecipeMyDB:', error.message);
+            return {success: false, msg: error.message};
+        }
+
+        // console.log('getMeasurementCreateRecipeMyDB',JSON.stringify(data,null,2));
+        // Извлечение только значений 'lang' из полученного массива
+        const languages = data.map(item => item.lang);
+
+        return { success: true, data: languages };
+
+    }catch (error) {
+        console.error('getMeasurementCreateRecipeMyDB error:', error.message);
         return {success: false, msg: error.message};
     }
 }
