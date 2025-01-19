@@ -40,7 +40,7 @@ const AddLangComponent = ({languages,totLang, langDev, selectLanguage, modalVisi
                 <Text>Add translate lang</Text>
             </TouchableOpacity>
 
-            {/* Modal for selecting language */}
+            {/* ModalCustom for selecting language */}
             <Modal
                 animationType="fade"
                 transparent={true}

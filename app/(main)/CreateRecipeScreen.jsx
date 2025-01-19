@@ -15,7 +15,7 @@ import {
 // icons
 import {
     ArrowUpOnSquareStackIcon,
-    ArrowUpOnSquareIcon,
+    ArrowUpOnSquareIcon, ScaleIcon, PlusIcon,
 } from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../../constants/shadow";
 import {useAuth} from "../../contexts/AuthContext";
@@ -24,8 +24,10 @@ import AddLangComponent from "../../components/CreateRecipeScreen/AddLangCompone
 import InputCustomComponent from "../../components/CreateRecipeScreen/InputCustomComponent";
 import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
-import IngredientsCreateRecipe from "../../components/CreateRecipeScreen/IngredientsCreateRecipe";
+import IngredientsCreateRecipe
+    from "../../components/CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
 import {getMeasurementCreateRecipeMyDB} from "../../service/getDataFromDB";
+import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeListCreateRecipe/RecipeListCreateRecipe";
 
 const CreateRecipeScreen = () => {
 
@@ -48,15 +50,15 @@ const CreateRecipeScreen = () => {
     // console.log(totalLangRecipe)
 
     // get all
-    const fetchMeasurement=async()=>{
+    const fetchMeasurement = async () => {
         const res = await getMeasurementCreateRecipeMyDB()
         // console.log(res.data)
         setMeasurement(res.data[0].lang)
 
     }
-    useEffect(()=>{
+    useEffect(() => {
         fetchMeasurement()
-    },[])
+    }, [])
 
 
     return (
@@ -123,30 +125,28 @@ const CreateRecipeScreen = () => {
                     </View>
 
                     {/*    Ingredients*/}
-                    <View>
+                    <View className="mb-5">
                         <Text className="mb-3">Ingredients</Text>
                         <Text className="text-neutral-700 text-xs mb-3">
                             Добавьте все ингредиенты и их количество для приготовления
                             рецепта.
                         </Text>
 
-                        {/*{*/}
-                        {/*    totalLangRecipe?.map((item, index) => {*/}
-                        {/*        return (*/}
-                                    <View  className="mb-2">
-                                        <IngredientsCreateRecipe
-                                            placeholderText={`Ingredient language`}
-                                            placeholderColor="grey"
-                                            langApp={userData.lang ?? language}
-                                            measurement={measurement}
-                                            totalLangRecipe={totalLangRecipe}
-                                        />
-                                    </View>
-                        {/*        )*/}
+                        <View className="mb-2">
+                            <IngredientsCreateRecipe
+                                placeholderText={`Ingredient language`}
+                                placeholderColor="grey"
+                                langApp={userData.lang ?? language}
+                                measurement={measurement}
+                                totalLangRecipe={totalLangRecipe}
+                            />
+                        </View>
 
+                    </View>
 
-                        {/*    })*/}
-                        {/*}*/}
+                    {/*    recipe description  */}
+                    <View className="mb-10">
+                        <RecipeListCreateRecipe/>
 
                     </View>
 

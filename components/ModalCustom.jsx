@@ -1,0 +1,140 @@
+import React, {useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Modal,} from 'react-native';
+import Slider from "@react-native-community/slider";
+import {InputCustom} from "./CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
+
+const ModalCustom = ({
+                         isModalVisible,
+                         setIsModalVisible,
+                         animationType = "fade",
+                         ingredient,
+                         setIngredient,
+                         array,
+                         onPressHandler,
+
+                     }) => {
+
+    return (
+        <Modal
+            animationType={animationType}
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => setIsModalVisible(false)}
+            // onRequestClose={closeModal}
+        >
+
+            <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View>
+                            <Text style={styles.modalTitle}> Выберите единицу измерения.</Text>
+                            <Text className="text-neutral-700 text-xs text-center mb-2">
+                                Выберите единицу измерения в которой вы измеряете этот ингредиент.
+                            </Text>
+                            <Text
+                                className="text-xl text-center mb-2">{ingredient.quantity}
+                            </Text>
+                            <Slider
+                                style={{width: '100%', height: 40}}
+                                minimumValue={1}
+                                maximumValue={1000}
+                                step={1} // Шаг перемещения
+                                value={parseInt(ingredient.quantity, 1)} // Текущее значение
+                                minimumTrackTintColor="#000000"
+                                maximumTrackTintColor="#CCCCCC"
+                                onValueChange={(value) => setIngredient((prev) => ({
+                                    ...prev,
+                                    quantity: value.toString()
+                                }))}
+                            />
+                        </View>
+
+                        <FlatList
+                            data={array}
+                            // keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(item) => item.key}
+                            renderItem={({item}) => {
+                                return (
+                                    <TouchableOpacity
+                                        style={styles.langOption}
+                                        // onPress={() => handleSelect(item.key)}
+                                        onPress={() => onPressHandler(item.key)} // обновленный обработчик
+                                    >
+                                        <Text style={styles.langText}>{item.val}</Text>
+                                    </TouchableOpacity>
+                                )
+                            }}
+                        />
+
+
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={() => setIsModalVisible(false)}
+                        >
+                            <Text style={styles.cancelText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
+    );
+};
+
+const styles = StyleSheet.create({
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    modalDescription: {
+        fontSize: 12,
+        color: 'gray',
+    },
+    langOption: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
+    langText: {
+        fontSize: 16,
+    },
+    cancelButton: {
+        marginTop: 15,
+        padding: 10,
+        backgroundColor: '#f44336',
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    cancelText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    selectedLangText: {
+        marginTop: 20,
+        fontSize: 16,
+        fontStyle: 'italic',
+    },
+});
+
+export default ModalCustom;
