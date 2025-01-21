@@ -94,7 +94,7 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
 
         setIngredient((prev) => ({...prev, unit: updatedUnit}));
         setIsModalVisible(false);
-        console.log(setIngredient)
+        // console.log(setIngredient)
     };
 
 

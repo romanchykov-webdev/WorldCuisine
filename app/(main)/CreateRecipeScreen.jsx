@@ -141,7 +141,7 @@ const CreateRecipeScreen = () => {
                     {/*    recipe description  */}
                     <View className="mb-10">
                         <RecipeListCreateRecipe
-                            placeholderText={`Здесь вы можете описать рецепт`}
+                            placeholderText={`Здесь вы можете описать рецепт на языке`}
                             placeholderColor="grey"
                             totalLangRecipe={totalLangRecipe}
                         />
