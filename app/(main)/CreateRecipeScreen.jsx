@@ -4,10 +4,7 @@ import {
     Platform,
     SafeAreaView,
     ScrollView,
-    StyleSheet,
     Text,
-    TextInput,
-    TouchableOpacity,
     View
 } from 'react-native';
 // arrow-up-on-square
@@ -15,12 +12,9 @@ import {
 // icons
 import {
     ArrowUpOnSquareStackIcon,
-    ArrowUpOnSquareIcon, ScaleIcon, PlusIcon,
 } from "react-native-heroicons/mini";
-import {shadowBoxBlack} from "../../constants/shadow";
 import {useAuth} from "../../contexts/AuthContext";
 import ButtonBack from "../../components/ButtonBack";
-import AddLangComponent from "../../components/CreateRecipeScreen/AddLangComponent";
 import InputCustomComponent from "../../components/CreateRecipeScreen/InputCustomComponent";
 import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
@@ -146,7 +140,11 @@ const CreateRecipeScreen = () => {
 
                     {/*    recipe description  */}
                     <View className="mb-10">
-                        <RecipeListCreateRecipe/>
+                        <RecipeListCreateRecipe
+                            placeholderText={`Здесь вы можете описать рецепт`}
+                            placeholderColor="grey"
+                            totalLangRecipe={totalLangRecipe}
+                        />
 
                     </View>
 
@@ -156,6 +154,5 @@ const CreateRecipeScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({});
 
 export default CreateRecipeScreen;

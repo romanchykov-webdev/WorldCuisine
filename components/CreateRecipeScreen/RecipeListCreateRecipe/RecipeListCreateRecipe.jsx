@@ -1,9 +1,25 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {shadowBoxBlack} from "../../../constants/shadow";
-import {PlusIcon, ScaleIcon} from "react-native-heroicons/mini";
+import {PlusIcon, PhotoIcon} from "react-native-heroicons/mini";
 
-const RecipeListCreateRecipe = () => {
+const RecipeListCreateRecipe = ({placeholderText, placeholderColor,totalLangRecipe}) => {
+
+    console.log(totalLangRecipe)
+
+    const [textArea, setTextArea] = useState('')
+
+    const [recipeArray, setRecipeArray] = useState({
+        "": {
+            "text": "",
+            "images": []
+        }
+    })
+
+    const addStepRecipe = () => {
+
+    }
+
     return (
         <View>
             <Text>
@@ -12,24 +28,38 @@ const RecipeListCreateRecipe = () => {
                 одно фото или если их несколько они будут в виде слайдера
             </Text>
 
-            <TextInput
-                className="border-2 border-neutral-500  rounded-[15] p-2"
-                multiline={true}
-                minLength={10}
-            />
+            {
+                totalLangRecipe?.map((item, index) => {
+                    return (
+                        <TextInput
+                            key={index}
+                            className="border-2 border-neutral-500  rounded-[15] p-2 mb-3"
+                            value={textArea}
+                            onChangeText={value => setTextArea(value)}
+                            placeholder={`${placeholderText} ${item}`}
+                            placeholderTextColor={placeholderColor}
+                            multiline={true}
+                            minLength={10}
+                            style={{minHeight: 100}}
+                        />
+                    )
 
-            <View className="flex-row ">
+                })
+            }
+
+
+            <View className="flex-row gap-x-2">
                 <TouchableOpacity
                     // onPress={() => setIsModalVisible(true)}
                     style={shadowBoxBlack()}
-                    className="w-[40px] h-[40px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ml-[2px]">
-                    <ScaleIcon color="white" size={20}/>
+                    className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ">
+                    <PhotoIcon color="white" size={20}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={shadowBoxBlack()}
                     // onPress={addIngredient}
-                    className="w-[40px] h-[40px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ml-[2px]">
+                    className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ">
                     <PlusIcon color="white" size={20}/>
                 </TouchableOpacity>
             </View>
