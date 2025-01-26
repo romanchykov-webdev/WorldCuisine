@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {Alert,  Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {shadowBoxBlack} from "../../../constants/shadow";
 import {PlusIcon, PhotoIcon, TrashIcon} from "react-native-heroicons/mini";
 import * as ImagePicker from 'expo-image-picker';
@@ -103,7 +103,7 @@ const RecipeListCreateRecipe = ({placeholderText, placeholderColor, totalLangRec
         });
 
         if (hasEmptyFields) {
-            Alert.alert('Ошибка hasEmptyFields', 'Заполните все поля перед добавлением нового шага.');
+            Alert.alert('Ошибка добавления.', 'Заполните все поля перед добавлением нового шага.');
             return;
         }
 
@@ -213,7 +213,7 @@ const RecipeListCreateRecipe = ({placeholderText, placeholderColor, totalLangRec
     // };
 
     return (
-        <View className="mb-5">
+        <View >
 
             {/*show result description*/}
 
@@ -382,6 +382,5 @@ const RecipeListCreateRecipe = ({placeholderText, placeholderColor, totalLangRec
     );
 };
 
-const styles = StyleSheet.create({});
 
 export default RecipeListCreateRecipe;

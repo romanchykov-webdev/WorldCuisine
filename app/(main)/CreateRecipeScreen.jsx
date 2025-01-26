@@ -22,6 +22,7 @@ import IngredientsCreateRecipe
     from "../../components/CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
 import {getMeasurementCreateRecipeMyDB} from "../../service/getDataFromDB";
 import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeListCreateRecipe/RecipeListCreateRecipe";
+import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
 
 const CreateRecipeScreen = () => {
 
@@ -146,6 +147,11 @@ const CreateRecipeScreen = () => {
                             totalLangRecipe={totalLangRecipe}
                         />
 
+                    </View>
+
+                    {/*    add recipe link video*/}
+                    <View className="mb-10">
+                        <AddLinkVideo/>
                     </View>
 
                 </ScrollView>
