@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
-import {FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
+import { Text, TouchableOpacity,  View} from 'react-native';
 import {shadowBoxBlack} from "../../../constants/shadow";
-import {TrashIcon, ArrowPathIcon} from "react-native-heroicons/mini";
-import Slider from "@react-native-community/slider";
-import ModalCustom from "../../ModalCustom";
+import {TrashIcon} from "react-native-heroicons/mini";
+import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 
 
 const ListIngredientsCreateRecipe = ({ingredients, setIngredients, totalLangRecipe}) => {
@@ -37,24 +36,7 @@ const ListIngredientsCreateRecipe = ({ingredients, setIngredients, totalLangReci
         setIngredients(updatedIngredients);
     }
 
-    // const updateIngredient = (ingredient) => {
-    //     console.log("updateIngredient", ingredient)
-    //     setIsModalVisible(true);
-    //     setIngredientForUpdate(ingredient)
-    // }
-    //
-    // const onPressHandlerList=(key)=>{
-    //
-    //     console.log(ingredientForUpdate)
-    //     // const updatedUnit = totalLangRecipe.reduce((acc, lang) => {
-    //     //     acc[lang] = measurement[lang][key] || ''; // Добавляем перевод для каждого языка
-    //     //     return acc;
-    //     // }, {});
-    //     //
-    //     // setIngredientForUpdate((prev) => ({...prev, unit: updatedUnit}));
-    //     setIsModalVisible(false);
-    //     // console.log(setIngredientForUpdate)
-    // }
+
 
     return (
         <View className="mb-5 ">
@@ -130,8 +112,10 @@ const ListIngredientsCreateRecipe = ({ingredients, setIngredients, totalLangReci
                                         onPress={() => {
                                             removeIngredient(ingredient)
                                         }}
-                                        className="w-[40px] h-[40px] bg-red-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ">
-                                        <TrashIcon size={20} color='white'/>
+                                        // className="w-[40px] h-[40px] bg-red-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
+                                    >
+                                        <ButtonSmallCustom icon={TrashIcon} size={20}  bg="#EF4444" />
+                                        {/*<TrashIcon size={20} color='white'/>*/}
 
                                     </TouchableOpacity>
 
@@ -141,22 +125,10 @@ const ListIngredientsCreateRecipe = ({ingredients, setIngredients, totalLangReci
                     })
                 }
             </View>
-            {/*/!*modal*!/*/}
-            {/*<ModalCustom*/}
-            {/*    isModalVisible={isModalVisible}*/}
-            {/*    setIsModalVisible={setIsModalVisible}*/}
-            {/*    animationType="fade"*/}
-            {/*    ingredient={ingredientForUpdate}*/}
-            {/*    setIngredient={setIngredientForUpdate}*/}
-            {/*    array={measurementLangApp}*/}
-            {/*    onPressHandler={onPressHandlerList}*/}
-            {/*    // setIngredientForUpdate={setIngredientForUpdate}*/}
-            {/*/>*/}
 
         </View>
     );
 };
 
-const styles = StyleSheet.create({});
 
 export default ListIngredientsCreateRecipe;

@@ -1,20 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {
     Alert,
-    FlatList,
-    // Modal,
     StyleSheet,
-    Text,
     TextInput,
     TouchableOpacity,
-    TouchableWithoutFeedback,
     View
 } from 'react-native';
-import {TrashIcon, PlusIcon, ScaleIcon} from "react-native-heroicons/mini";
+import {PlusIcon, ScaleIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../../../constants/shadow";
-import Slider from "@react-native-community/slider";
 import ListIngredientsCreateRecipe from "./ListIngredientsCreateRecipe";
 import ModalCustom from "../../ModalCustom";
+import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 
 const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, measurement, totalLangRecipe}) => {
 
@@ -122,12 +118,12 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
             }
 
 
-            <View className=" flex-row  items-center bg-black-500">
+            <View className=" flex-row  items-center">
 
                 <View className="flex-1">
                     {
                         totalLangRecipe.map((lang, index) => (
-                            <View key={index} className="mb-2">
+                            <View key={index} >
                                 <InputCustom
                                     placeholderText={`${placeholderText} ${lang}`}
                                     placeholderColor={placeholderColor}
@@ -143,15 +139,15 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
                     <TouchableOpacity
                         onPress={() => setIsModalVisible(true)}
                         style={shadowBoxBlack()}
-                        className="w-[40px] h-[40px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ml-[2px]">
-                        <ScaleIcon color="white" size={20}/>
+                    >
+                        <ButtonSmallCustom icon={ScaleIcon} size={20}  bg="#8B5CF6" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={shadowBoxBlack()}
                         onPress={addIngredient}
-                        className="w-[40px] h-[40px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ml-[2px]">
-                        <PlusIcon color="white" size={20}/>
+                    >
+                        <ButtonSmallCustom icon={PlusIcon} size={20}  bg="#22C55E" />
                     </TouchableOpacity>
                 </View>
 

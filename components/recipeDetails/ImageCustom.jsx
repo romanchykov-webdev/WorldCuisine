@@ -4,6 +4,9 @@ import {hp, wp} from "../../constants/responsiveScreen";
 import AvatarCustom from "../AvatarCustom";
 
 const ImageCustom = ({image}) => {
+
+    console.log("ImageCustom",image);
+
   return (
     <View
         className="mb-5 mt-2"
@@ -17,6 +20,7 @@ const ImageCustom = ({image}) => {
                 marginTop: wp(1),
                 borderWidth: 0.5,
                 borderColor: 'gray'
+
             }}
         />
     </View>

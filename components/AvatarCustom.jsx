@@ -17,6 +17,7 @@ const AvatarCustom = ({
             source={getUserImageSrc(uri)}
             transition={100}
             style={[styles.avatar, {height: size, width: size, borderRadius: rounded}, style]}
+            contentFit="cover" // Заменяем resizeMode на contentFit для 'expo-image'
         />
     );
 };

@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Modal,} from 'react-native';
 import Slider from "@react-native-community/slider";
-import {InputCustom} from "./CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
 
 const ModalCustom = ({
                          isModalVisible,

@@ -15,7 +15,8 @@ const ITEM_WIDTH = width * 0.9;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.47;
 // const ITEM_HEIGHT = 200;
 
-const ImageSliderCustom = ({images}) => {
+const ImageSliderCustom = ({images,createRecipe=false}) => {
+    // console.log("createRecipe",createRecipe)
 
     const [activeIndex, setActiveIndex] = useState(0); // Состояние для активного индекса
 
@@ -105,7 +106,8 @@ const ImageSliderCustom = ({images}) => {
                                 >
                                     <Animated.Image
                                         // source={{ uri: item }}
-                                        source={{uri: getUserImageSrc(item)}}
+
+                                        source={{uri: createRecipe ? item.uri : getUserImageSrc(item)}}
                                         // onLoad={() => handleImageLoad(index)}
                                         style={{
                                             // borderRadius: '30px',
