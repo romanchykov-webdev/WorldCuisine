@@ -154,6 +154,9 @@ const CreateRecipeScreen = () => {
                         <AddLinkVideo/>
                     </View>
 
+                {/*    add link to the author*/}
+                    <Text>Если вы позаимствовали рецепт можете оставить ссылка на автора</Text>
+
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>

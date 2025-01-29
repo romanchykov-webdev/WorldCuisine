@@ -15,7 +15,7 @@ import {
 import {useRouter} from "expo-router";
 import ButtonBack from "../../components/ButtonBack";
 import {hp} from "../../constants/responsiveScreen";
-import InputComponent from "../../components/ImputComponent";
+import InputComponent from "../../components/InputComponent";
 
 import {EnvelopeIcon, EyeIcon, EyeSlashIcon, UserCircleIcon} from "react-native-heroicons/outline";
 import {shadowBoxBlack} from "../../constants/shadow";

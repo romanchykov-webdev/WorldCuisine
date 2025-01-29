@@ -20,7 +20,7 @@ const VideoCustom = ({video}) => {
 
     const [loadingVideo, setLoadingVideo] = useState(true)
     // getYoutobeVideoId
-
+    console.log(video)
 
     const [youTobeLink, setYouTobeLink] = useState(null);
     const [youVideoLink, setYouVideoLink] = useState(null);

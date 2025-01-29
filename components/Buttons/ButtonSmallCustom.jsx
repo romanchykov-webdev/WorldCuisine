@@ -1,6 +1,5 @@
 import React from 'react';
 import {StyleSheet,View} from 'react-native';
-import {shadowBoxBlack} from "../../constants/shadow";
 
 const ButtonSmallCustom = ({w=40,h=40, icon: Icon,size=20,color="white" ,bg="white"}) => {
     return (
