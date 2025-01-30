@@ -23,6 +23,8 @@ import IngredientsCreateRecipe
 import {getMeasurementCreateRecipeMyDB} from "../../service/getDataFromDB";
 import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeListCreateRecipe/RecipeListCreateRecipe";
 import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
+import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCopyright";
+import AddPintGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
 
 const CreateRecipeScreen = () => {
 
@@ -154,8 +156,11 @@ const CreateRecipeScreen = () => {
                         <AddLinkVideo/>
                     </View>
 
-                {/*    add link to the author*/}
-                    <Text>Если вы позаимствовали рецепт можете оставить ссылка на автора</Text>
+                    {/*    add link to the author*/}
+                    <LinkToTheCopyright/>
+
+                    {/*    AddPintGoogleMaps    */}
+                    <AddPintGoogleMaps/>
 
                 </ScrollView>
             </KeyboardAvoidingView>

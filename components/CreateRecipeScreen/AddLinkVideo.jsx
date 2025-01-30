@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 
 import {PlayCircleIcon, CircleStackIcon, TrashIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../../constants/shadow";
@@ -32,7 +32,12 @@ const AddLinkVideo = () => {
 
     const handleSave = () => {
         setIsModalVisible(false);
+        if (inputLink.trim() === "") {
+            setInputLink("")
+            return;
+        }
         if (link === "YouTube") {
+
             setLinkVideo({
                 "strYoutube": inputLink,
                 "strYouVideo": null
@@ -70,6 +75,7 @@ const AddLinkVideo = () => {
         // setIsModalVisible(false)
         // setLink(null)
     }
+
     const removeVideo = () => {
         setLinkVideo({
             "strYoutube": null,
@@ -80,8 +86,8 @@ const AddLinkVideo = () => {
     return (
         <View>
             {
-               ( linkVideo.strYoutube !== null || linkVideo.strYouVideo !== null) &&(
-                    <View >
+                (linkVideo.strYoutube !== null || linkVideo.strYouVideo !== null) && (
+                    <View>
                         <VideoCustom video={linkVideo}/>
 
                         <TouchableOpacity
