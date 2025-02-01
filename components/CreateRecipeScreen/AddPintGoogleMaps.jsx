@@ -27,7 +27,7 @@ const AddPointGoogleMaps = () => {
 
 
     return (
-        <View className="mb-10">
+        <View className="mb-5">
 
             {
                 marker!==null &&(

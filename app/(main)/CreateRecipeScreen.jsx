@@ -3,8 +3,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     SafeAreaView,
-    ScrollView,
-    Text,
+    ScrollView, StyleSheet,
+    Text, TouchableOpacity,
     View
 } from 'react-native';
 // arrow-up-on-square
@@ -25,6 +25,9 @@ import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeLi
 import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
 import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCopyright";
 import AddPintGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
+import {shadowBoxBlack} from "../../constants/shadow";
+import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
+import ModalClearCustom from "../../components/ModalClearCustom";
 
 const CreateRecipeScreen = () => {
 
@@ -32,6 +35,16 @@ const CreateRecipeScreen = () => {
     // console.log('creating recipe language', language)
     // console.log('creating recipe userData', userData.lang)
 
+
+    // modal Preview
+    const [isModalVisible, setIsModalVisible] = useState(false)
+
+    const openModalPreview = () => {
+        setIsModalVisible(true)
+    }
+    const closeModal = () => {
+        setIsModalVisible(false)
+    }
 
     const langApp = userData.lang ?? language
     // console.log('CreateRecipeScreen',langApp)
@@ -162,11 +175,62 @@ const CreateRecipeScreen = () => {
                     {/*    AddPintGoogleMaps    */}
                     <AddPintGoogleMaps/>
 
+                    {/*    buttons save and preview*/}
+                    <View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
+
+                        <TouchableOpacity
+                            style={shadowBoxBlack()}
+                            className="flex-1"
+                        >
+                            <ButtonSmallCustom
+                                buttonText={true}
+                                title={"Preview"}
+                                bg={"violet"}
+                                styleText={styles.buttonTextPrevSave}
+                                w={"100%"}
+                                h={"auto"}
+                                styleWrapperButton={styles.buttonTextPrevSavePadding}
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={shadowBoxBlack()}
+                            className="flex-1"
+                        >
+                            <ButtonSmallCustom
+                                buttonText={true}
+                                title={"Save"}
+                                bg={"green"}
+                                styleText={styles.buttonTextPrevSave}
+                                w={"100%"}
+                                h={"auto"}
+                                styleWrapperButton={styles.buttonTextPrevSavePadding}
+                            />
+                        </TouchableOpacity>
+
+                    </View>
+
+                    {/*<ModalClearCustom*/}
+
+                    {/*/>*/}
+
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };
+
+
+const styles = StyleSheet.create({
+    buttonTextPrevSave: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 18,
+    },
+    buttonTextPrevSavePadding: {
+        padding: 10
+    }
+});
 
 
 export default CreateRecipeScreen;

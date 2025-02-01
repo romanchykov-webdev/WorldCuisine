@@ -3,17 +3,17 @@ import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFe
 import InputComponent from "./InputComponent";
 import {LinkIcon, XMarkIcon} from "react-native-heroicons/mini";
 import ButtonSmallCustom from "./Buttons/ButtonSmallCustom";
+import {shadowBoxBlack} from "../constants/shadow";
 
 const ModalClearCustom = ({
                               isModalVisible,
-                              setIsModalVisible,
-                              inputLink,
-                              setInputLink,
                               animationType = "fade",
                               handleSave,
                               closeModal,
-                              link,
-                              removeLink
+                              titleHeader,
+                              textButton,
+                              childrenSubheader,
+                              children,
                           }) => {
 
     // console.log(inputLink);
@@ -32,39 +32,18 @@ const ModalClearCustom = ({
                     <View style={styles.modalContent}>
                         <View>
                             <Text style={styles.modalTitle}>
-                                Вставьте в это поле ссылку на видео с рецептом из
-
+                                {titleHeader}
                             </Text>
-                            <Text style={styles.modalTitle} className="underline font-bold">{link}.</Text>
 
-                            <View>
-                                <InputComponent
-                                    icon={<LinkIcon size={20} color={'grey'}/>}
-                                    placeholder="Вставле линк на ваше видео"
-                                    value={inputLink}
-                                    onChangeText={setInputLink}
-                                />
+                            {childrenSubheader}
 
-                                {
-                                    inputLink!=="" &&(
-                                        <TouchableOpacity
-                                            onPress={removeLink}
-                                            className="absolute top-[-5] right-0"
-                                        >
-                                            <ButtonSmallCustom
-                                                icon={XMarkIcon}
-                                                bg="red"
-                                                w={20}
-                                                h={20}
-                                            />
-                                        </TouchableOpacity>
-                                    )
-                                }
 
-                            </View>
+
+
 
                         </View>
 
+                        {children}
 
                         <View className="flex-row gap-x-2">
                             {/*<TouchableOpacity*/}
@@ -74,10 +53,12 @@ const ModalClearCustom = ({
                             {/*    <Text style={styles.cancelText}>Remove link</Text>*/}
                             {/*</TouchableOpacity>*/}
                             <TouchableOpacity
-                                style={styles.cancelButton}
+                                style={[styles.cancelButton, shadowBoxBlack()]}
                                 onPress={handleSave}
                             >
-                                <Text style={styles.cancelText}>Save</Text>
+                                <Text style={styles.cancelText}>
+                                    {textButton}
+                                </Text>
                             </TouchableOpacity>
                         </View>
 
@@ -124,8 +105,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cancelText: {
-        color: '#fff',
-        fontSize: 16,
+        color: 'white',
+        fontWeight: "bold",
+        fontSize: 18,
     },
 });
 

@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 
-import {PlayCircleIcon, CircleStackIcon, TrashIcon} from "react-native-heroicons/mini";
+import {PlayCircleIcon, CircleStackIcon, TrashIcon, LinkIcon, XMarkIcon} from "react-native-heroicons/mini";
 import {shadowBoxBlack} from "../../constants/shadow";
 import ModalClearCustom from "../ModalClearCustom";
 import VideoCustom from "../recipeDetails/video/VideoCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import InputComponent from "../InputComponent";
 
 
 const AddLinkVideo = () => {
@@ -91,10 +92,11 @@ const AddLinkVideo = () => {
                         <VideoCustom video={linkVideo}/>
 
                         <TouchableOpacity
-                            className="absolute top-0 right-0"
+                            className="absolute top-0 right-0 justify-center items-center"
                             onPress={removeVideo}
                         >
                             <ButtonSmallCustom
+                                buttonText={false}
                                 icon={TrashIcon}
                                 bg="red"
                                 w={30}
@@ -133,17 +135,45 @@ const AddLinkVideo = () => {
 
 
             <ModalClearCustom
-                // icon={<LinkIcon size={30} color={'grey'}/>}
+                titleHeader={"Вставьте в это поле ссылку на видео с рецептом из"}
+                textButton={"Save"}
                 isModalVisible={isModalVisible}
-                // setIsModalVisible={setIsModalVisible}
                 closeModal={closeModal}
                 handleSave={handleSave}
                 animationType={"fade"}
-                inputLink={inputLink}
-                setInputLink={setInputLink}
-                removeLink={removeLink}
-                link={link}
-            />
+                childrenSubheader={
+                    <Text className="underline font-bold text-[18px] mb-[15] text-center ">
+                        {link}.
+                    </Text>
+                }
+            >
+                <View>
+                    <InputComponent
+                        icon={<LinkIcon size={20} color={'grey'}/>}
+                        placeholder={"Вставьте линк на ваше видео"}
+                        value={inputLink}
+                        onChangeText={setInputLink}
+                    />
+
+                    {
+                        inputLink !== "" && (
+                            <TouchableOpacity
+                                onPress={removeLink}
+                                className="absolute top-[-5] right-0"
+                            >
+                                <ButtonSmallCustom
+                                    icon={XMarkIcon}
+                                    bg="red"
+                                    w={20}
+                                    h={20}
+                                />
+                            </TouchableOpacity>
+                        )
+                    }
+
+                </View>
+
+            </ModalClearCustom>
 
         </View>
     );
