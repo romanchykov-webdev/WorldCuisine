@@ -12,7 +12,7 @@ import ListIngredientsCreateRecipe from "./ListIngredientsCreateRecipe";
 import ModalCustom from "../../ModalCustom";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 
-const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, measurement, totalLangRecipe}) => {
+const IngredientsCreateRecipe = ({styleInput,placeholderText, placeholderColor, langApp, measurement, totalLangRecipe}) => {
 
     // console.log("measurement",measurement)
     // console.log(totalLangRecipe)
@@ -106,7 +106,7 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
             {/*block visual ingredients*/}
             {
                 ingredients.length > 0 && (
-                    <View className="mb-2">
+                    <View >
                         <ListIngredientsCreateRecipe
                             ingredients={ingredients}
                             setIngredients={setIngredients}
@@ -118,36 +118,41 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
             }
 
 
-            <View className=" flex-row  items-center">
+            <View className=" flex-row items-center gap-x-2 ">
 
-                <View className="flex-1">
+                <View className="flex-1 gap-y-2">
                     {
-                        totalLangRecipe.map((lang, index) => (
-                            <View key={index} >
-                                <InputCustom
-                                    placeholderText={`${placeholderText} ${lang}`}
-                                    placeholderColor={placeholderColor}
-                                    value={ingredient.ingredient[lang] || ''}
-                                    handleChange={(value) => handleInputChange(lang, value)}
-                                />
-                            </View>
-                        ))
+                        totalLangRecipe.map((lang, index) => {
+                            console.log("lang", lang);
+                            return (
+                                <View key={index} >
+                                    <InputCustom
+                                        styleInput={styleInput}
+                                        placeholderText={`${placeholderText} ${lang}`}
+                                        placeholderColor={placeholderColor}
+                                        value={ingredient.ingredient[lang] || ''}
+                                        handleChange={(value) => handleInputChange(lang, value)}
+                                    />
+                                </View>
+                            )
+                        })
                     }
                 </View>
 
-                <View className="flex-row ">
+                <View className="flex-row gap-x-2">
                     <TouchableOpacity
                         onPress={() => setIsModalVisible(true)}
                         style={shadowBoxBlack()}
+
                     >
-                        <ButtonSmallCustom icon={ScaleIcon} size={20}  bg="#8B5CF6" />
+                        <ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20}  bg="#8B5CF6" />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={shadowBoxBlack()}
                         onPress={addIngredient}
                     >
-                        <ButtonSmallCustom icon={PlusIcon} size={20}  bg="#22C55E" />
+                        <ButtonSmallCustom w={60} h={60} icon={PlusIcon} size={20}  bg="#22C55E" />
                     </TouchableOpacity>
                 </View>
 
@@ -172,20 +177,20 @@ const IngredientsCreateRecipe = ({placeholderText, placeholderColor, langApp, me
 };
 
 
-export const InputCustom = ({placeholderText, placeholderColor, handleChange, value}) => {
+export const InputCustom = ({styleInput,placeholderText, placeholderColor, handleChange, value}) => {
     return (
         <TextInput
+            style={styleInput}
             onChangeText={handleChange}
             value={value}
             placeholder={placeholderText}
             placeholderTextColor={placeholderColor}
-            className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] h-[40px]"
+            // className="mb-2"
+            // className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] h-[40px]"
         />
     );
 };
 
 
-const styles = StyleSheet.create({
 
-});
 export default IngredientsCreateRecipe;

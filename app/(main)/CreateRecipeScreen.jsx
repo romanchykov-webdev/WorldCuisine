@@ -9,13 +9,9 @@ import {
 } from 'react-native';
 // arrow-up-on-square
 
-// icons
-import {
-    ArrowUpOnSquareStackIcon,
-} from "react-native-heroicons/mini";
+
 import {useAuth} from "../../contexts/AuthContext";
 import ButtonBack from "../../components/ButtonBack";
-import InputCustomComponent from "../../components/CreateRecipeScreen/InputCustomComponent";
 import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import IngredientsCreateRecipe
@@ -27,7 +23,8 @@ import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCop
 import AddPintGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
 import {shadowBoxBlack} from "../../constants/shadow";
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
-import ModalClearCustom from "../../components/ModalClearCustom";
+import UploadHeaderImage from "../../components/CreateRecipeScreen/UploadHeaderImage";
+import {hp} from "../../constants/responsiveScreen";
 
 const CreateRecipeScreen = () => {
 
@@ -92,32 +89,29 @@ const CreateRecipeScreen = () => {
                         <Text className="text-center mb-5">Create Recipe</Text>
 
                     </View>
+
                     {/* upload header image    */}
-                    <View
-                        className="border-2 border-neutral-200 mb-5 w-full h-[200] rounded-[15] justify-center items-center"
-                    >
-                        <Text className="mb-2">Upload yore header image</Text>
-                        <ArrowUpOnSquareStackIcon size={50} color="green"/>
-                    </View>
+                    <UploadHeaderImage
+                        styleTextDesc={styles.styleTextDesc}
+                        styleInput={styles.styleInput}
+                        langDev={langApp}
+                        setTotalLangRecipe={setTotalLangRecipe}
+                        totalLangRecipe={totalLangRecipe}
+                    />
 
-                    {/*    title recipe*/}
-                    <View className="mb-5">
-
-                        <InputCustomComponent langDev={langApp} setTotalLangRecipe={setTotalLangRecipe}
-                                              totalLangRecipe={totalLangRecipe}/>
-                    </View>
 
                     {/*   aria di recipe*/}
                     <View className="mb-5">
-                        <Text>Country of origin of the recipe</Text>
+                        <Text style={styles.styleTextDesc}>Country of origin of the recipe</Text>
                         {
                             totalLangRecipe?.map((item, index) => {
                                 return (
                                     <View key={index}>
 
                                         <InputCreateRecipeScreenCustom
+                                            styleInput={styles.styleInput}
                                             title='Country of origin of the recipe'
-                                            placeholderText={`Write the country of origin of the recipe ${item}`}
+                                            placeholderText={`Write the country of  ${item}`}
                                             placeholderColor="grey"
                                             totalLangRecipe={totalLangRecipe}
 
@@ -130,20 +124,25 @@ const CreateRecipeScreen = () => {
 
                     {/*    select */}
                     <View className="mb-5">
-                        <Text className="mb-3">Description</Text>
+                        <Text
+                            style={styles.styleTextDesc}
+                        >
+                            Description
+                        </Text>
                         <SelectCreateRecipeScreenCustom/>
                     </View>
 
                     {/*    Ingredients*/}
                     <View className="mb-5">
-                        <Text className="mb-3">Ingredients</Text>
+                        <Text style={styles.styleTextDesc}>Ingredients</Text>
                         <Text className="text-neutral-700 text-xs mb-3">
                             Добавьте все ингредиенты и их количество для приготовления
                             рецепта.
                         </Text>
 
-                        <View className="mb-2">
+                        <View>
                             <IngredientsCreateRecipe
+                                styleInput={styles.styleInput}
                                 placeholderText={`Ingredient language`}
                                 placeholderColor="grey"
                                 langApp={userData.lang ?? language}
@@ -229,6 +228,20 @@ const styles = StyleSheet.create({
     },
     buttonTextPrevSavePadding: {
         padding: 10
+    },
+    styleTextDesc: {
+        fontSize: hp(2),
+        fontWeight: "bold",
+        marginBottom: 5,
+        paddingLeft: 5,
+    },
+    styleInput: {
+        fontSize: hp(2),
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "grey",
+        padding: 20,
+        borderRadius: 15,
     }
 });
 
