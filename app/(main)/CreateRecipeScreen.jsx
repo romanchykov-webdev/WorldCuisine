@@ -25,6 +25,7 @@ import {shadowBoxBlack} from "../../constants/shadow";
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
 import UploadHeaderImage from "../../components/CreateRecipeScreen/UploadHeaderImage";
 import {hp} from "../../constants/responsiveScreen";
+import TagsCustom from "../../components/CreateRecipeScreen/TagsCustom";
 
 const CreateRecipeScreen = () => {
 
@@ -121,6 +122,12 @@ const CreateRecipeScreen = () => {
                             })
                         }
                     </View>
+
+                    {/*  Tags   */}
+                    <TagsCustom
+                        styleInput={styles.styleInput}
+                        styleTextDesc={styles.styleTextDesc}
+                    />
 
                     {/*    select */}
                     <View className="mb-5">
