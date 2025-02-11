@@ -26,8 +26,15 @@ import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
 import UploadHeaderImage from "../../components/CreateRecipeScreen/UploadHeaderImage";
 import {hp} from "../../constants/responsiveScreen";
 import TagsCustom from "../../components/CreateRecipeScreen/TagsCustom";
+import AddCategory from "../../components/CreateRecipeScreen/AddCategory";
 
 const CreateRecipeScreen = () => {
+
+
+    const [totalRecipe, setTotalRecipe] = useState({
+        category:null,
+
+    })
 
     const {user: userData, language} = useAuth()
     // console.log('creating recipe language', language)
@@ -90,6 +97,10 @@ const CreateRecipeScreen = () => {
                         <Text className="text-center mb-5">Create Recipe</Text>
 
                     </View>
+
+                    {/*add category*/}
+                    <AddCategory langApp={langApp}/>
+
 
                     {/* upload header image    */}
                     <UploadHeaderImage

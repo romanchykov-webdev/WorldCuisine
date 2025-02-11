@@ -1,5 +1,14 @@
 import React from 'react';
-import {Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
+import {
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
 import InputComponent from "./InputComponent";
 import {LinkIcon, XMarkIcon} from "react-native-heroicons/mini";
 import ButtonSmallCustom from "./Buttons/ButtonSmallCustom";
@@ -35,15 +44,15 @@ const ModalClearCustom = ({
                                 {titleHeader}
                             </Text>
 
+
                             {childrenSubheader}
-
-
-
 
 
                         </View>
 
-                        {children}
+                            {/*{children}*/}
+
+                            {children}
 
                         <View className="flex-row gap-x-2">
                             {/*<TouchableOpacity*/}
@@ -70,6 +79,9 @@ const ModalClearCustom = ({
 };
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        paddingBottom: 20,
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',

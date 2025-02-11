@@ -410,3 +410,16 @@ export const getMeasurementCreateRecipeMyDB = async () => {
         return {success: false, msg: error.message};
     }
 }
+
+// screen create recipe get all category
+// export const getAllCategory = async () => {
+//     try {
+//
+//         let { data: categories_masonry, error } = await supabase
+//             .from('categories_masonry')
+//             .select('id')
+//
+//     }catch (error) {
+//
+//     }
+// }

@@ -192,5 +192,7 @@ export const InputCustom = ({styleInput,placeholderText, placeholderColor, handl
 };
 
 
+const styles = StyleSheet.create({
 
+});
 export default IngredientsCreateRecipe;
