@@ -15,8 +15,9 @@ const ButtonSmallCustom = ({
                            }) => {
     return (
         <View
+            className="border-2  border-neutral-300 rounded-[10] justify-center items-center "
             style={{backgroundColor: bg, width: w, height: h, ...styleWrapperButton}}
-            className="border-2  border-neutral-300 rounded-[10] justify-center items-center ">
+        >
             {Icon && <Icon size={size} color={color}/>}
 
             {

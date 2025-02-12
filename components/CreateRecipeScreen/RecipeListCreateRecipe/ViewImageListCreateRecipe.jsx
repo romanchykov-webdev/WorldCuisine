@@ -13,7 +13,7 @@ const ViewImageListCreateRecipe = ({image}) => {
                opacity : 0.9, // Прозрачность тени (по умолчанию 30%)
            })}>
                <Image
-                   source={image[0].uri}
+                   source={image[0]?.uri}
                    transition={100}
                    style={styles.image}
                    contentFit="cover" // Заменяем resizeMode на contentFit для 'expo-image'

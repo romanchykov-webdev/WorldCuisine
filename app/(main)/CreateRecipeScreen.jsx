@@ -94,7 +94,7 @@ const CreateRecipeScreen = () => {
                         <View className="absolute left-0 z-10">
                             <ButtonBack/>
                         </View>
-                        <Text className="text-center mb-5">Create Recipe</Text>
+                        <Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text>
 
                     </View>
 

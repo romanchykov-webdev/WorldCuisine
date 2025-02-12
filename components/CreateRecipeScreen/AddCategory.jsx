@@ -1,27 +1,34 @@
 import React, {useState} from 'react';
 import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
-import {LinkIcon, PlusIcon, XMarkIcon} from "react-native-heroicons/mini"
+import {TrashIcon, PlusIcon, ArrowUturnLeftIcon} from "react-native-heroicons/mini"
 import ModalClearCustom from "../ModalClearCustom";
 import InputComponent from "../InputComponent";
 import {supabase} from "../../lib/supabase";
 import {getCategoryRecipeMasonryMyDB} from "../../service/getDataFromDB";
 import LoadingComponent from "../loadingComponent";
-import {hp} from "../../constants/responsiveScreen";
+import {hp, wp} from "../../constants/responsiveScreen";
 
 
 const AddCategory = ({langApp}) => {
 
     const [allCategories, setAllCategories] = useState([])
     const [cat, setCat] = useState(null)
-    const [subCategory, setSubCategory] = useState("")
+    const [subCategory, setSubCategory] = useState({
+        point:"",
+        name:"",
+    })
 
     const handleCategory = (cat) => {
         setCat(cat)
         console.log("handleCategory", cat)
     }
     const handleSubCategory = (subCat) => {
-        setSubCategory(subCat)
+        setSubCategory({
+            point:subCat.point,
+            name:subCat.name,
+        })
+        setIsModalVisible(false)
         console.log("handleSubCategory", subCat)
     }
 
@@ -42,6 +49,8 @@ const AddCategory = ({langApp}) => {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const closeModal = () => {
         setIsModalVisible(false);
+        // setCat(null)
+        // setSubCategory("")
     }
     const handleSave = () => {
         setIsModalVisible(false);
@@ -49,8 +58,50 @@ const AddCategory = ({langApp}) => {
 
     }
 
+    const handlerBackCat=()=>{
+        if(cat !== null){
+            setCat(null)
+        }else{
+            setSubCategory("")
+            setCat(null)
+            setIsModalVisible(false);
+        }
+    }
+
+    const handlerRemoveCategory=()=>{
+        setCat(null)
+        setSubCategory({
+            point:"",
+            name:"",
+        })
+    }
+
     return (
         <View className="mb-5">
+
+
+            {
+                (subCategory.name!=="" && cat !== null) &&(
+                    <View className="flex-row gap-x-2 items-center justify-between mb-3 " >
+                        <View className="flex-row items-center flex-wrap " style={{maxWidth:wp(80)}}>
+                            <Text className="text-xl text-neutral-700 font-bold">Category: </Text>
+                            <Text className="text-xl text-neutral-700 font-black">{cat.name} -> </Text>
+                            <Text  className="text-xl text-neutral-700 font-medium">{subCategory.name}</Text>
+                        </View>
+
+                        <View>
+                            <TouchableOpacity onPress={handlerRemoveCategory}>
+                                <ButtonSmallCustom
+                                    icon={TrashIcon}
+                                    bg={"red"}
+                                />
+                            </TouchableOpacity>
+
+                        </View>
+                    </View>
+                )
+            }
+
             <TouchableOpacity
                 onPress={handlerAddCategory}
                 className="flex-row gap-x-2 items-center justify-center "
@@ -65,7 +116,7 @@ const AddCategory = ({langApp}) => {
                     h={60}
                     title="Add category"
                     icon={PlusIcon}
-                    styleWrapperButton={{flexDirection: "row", gap: 10, justifyContent: "center", alignItems: 'center'}}
+                    styleWrapperButton={{flexDirection: "row", gap: 10, justifyContent: "center", alignItems: 'center',borderRadius:15}}
                     styleText={{fontSize: 20, fontWeight: 'bold'}}
                 />
             </TouchableOpacity>
@@ -78,42 +129,67 @@ const AddCategory = ({langApp}) => {
                 handleSave={handleSave}
                 animationType={"fade"}
                 childrenSubheader={
-                    <Text className="underline font-bold text-[18px] mb-[15] text-center ">
-                        {/* {link}. */}
-                    </Text>
+                    <TouchableOpacity
+                        className="mb-5"
+                        onPress={handlerBackCat}
+                    >
+                        <ButtonSmallCustom
+                            icon={ArrowUturnLeftIcon}
+                           color={"grey"}
+                            styleWrapperButton={{borderRadius:"100%"}}
+                        />
+                    </TouchableOpacity>
                 }
             >
+
                 {
                     allCategories.length === 0 ? (
                         <View className="mb-10">
                             <LoadingComponent/>
                         </View>
                     ) : (
-                        allCategories.map((category, index) => {
-                            // Если категория не выбрана, показываем все категории
-                            if (cat === null) {
-                                return (
-                                    <TouchableOpacity
-                                        onPress={() => handleCategory(category)}
-                                        key={index} className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
-                                        <Text className="text-2xl">{category.name}</Text>
-                                    </TouchableOpacity>
-                                );
-                            } else {
-                                // Если категория выбрана, показываем ее подкатегории
-                                return category.subcategories.map((subcategory, subIndex) => (
-                                    <TouchableOpacity
-                                        onPress={() => handleSubCategory(subcategory.point)}
-                                        key={subIndex}
-                                        className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
-                                        <Text className="text-2xl">{subcategory.name}</Text>
-                                    </TouchableOpacity>
-                                ));
+
+                        <ScrollView
+                        style={{maxHeight:hp(60)}}
+                        >
+                            {
+                                cat === null
+                                ?(
+                                    allCategories.map((category,index) => {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={() => handleCategory(category)}
+                                                key={index}
+                                                className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+                                                <Text className="text-2xl">{category.name}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    })
+                                    )
+                                :(
+                                    cat.subcategories.map((subCategory,index) => {
+                                        return (
+                                            <TouchableOpacity
+                                                onPress={() => handleSubCategory(subCategory)}
+                                                key={index}
+                                                className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+                                                <Text className="text-2xl">{subCategory.name}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    })
+                                    )
+
+
+
+
+
                             }
-                        }
-                        )
+                        </ScrollView>
+
                     )
+
                 }
+
             </ModalClearCustom>
 
 
