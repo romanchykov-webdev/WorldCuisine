@@ -31,6 +31,7 @@ import i18n from '../lang/i18n'
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
 import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
 import VideoCustom from "../components/recipeDetails/video/VideoCustom";
+import SubscriptionsComponent from "../components/recipeDetails/SubscriptionsComponent";
 
 const RecipeDetailsScreen = () => {
 
@@ -44,7 +45,7 @@ const RecipeDetailsScreen = () => {
     const [recipeDish, setRecipeDish] = useState(null)
 
 
-    // console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
+    console.log('RecipeDetailsScreen recipeDish', JSON.stringify(recipeDish,null,2));
 
     const {user} = useAuth();
 
@@ -234,16 +235,19 @@ const RecipeDetailsScreen = () => {
                                     {/*bg-red-500*/}
                                     ">
                                     {/*    StarIcon*/}
-                                    <View className="items-center justify-center flex-row w-[60] h-[60] rounded-full"
-                                          style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
+                                    <View className="items-center justify-center flex-row w-[60] h-[60] rounded-full relative"
+                                          style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
                                     >
-                                        <StarIcon size={45} color='gold'/>
-                                        <Text style={{fontSize: 8}} className="text-neutral-700 absolute top-[45%] left-[40%]">
-                                            {rating}
-                                        </Text>
+                                        <View style={{ position: 'absolute', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                                            <Text style={{ fontSize: 12, color: 'black', fontWeight: 'bold' }}>
+                                                {rating}
+                                            </Text>
+                                        </View>
+                                        <StarIcon size={45} color="gold" />
                                     </View>
 
-                                    {/*    comments*/}
+
+                                    {/*    comments quantity*/}
                                     <View className="items-center justify-center flex-row w-[60] h-[60] rounded-full"
                                           style={{backgroundColor: 'rgba(255,255,255,0.5)'}}
                                     >
@@ -267,6 +271,12 @@ const RecipeDetailsScreen = () => {
                             {/*ratings */}
                             <RatingComponents rating={rating} handleStarPress={handleStarPress} user={user ?? null} recipeId={id}/>
 
+
+                            {/*section Subscriptions*/}
+                            <Animated.View
+                                entering={FadeInDown.delay(550)}>
+                            <SubscriptionsComponent subscriberId={user?.id ?? null} creatorId={recipeDish?.publishedId} />
+                            </Animated.View>
 
                             {/*    dish and description*/}
                             <Animated.View

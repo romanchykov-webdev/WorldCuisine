@@ -3,6 +3,8 @@ import {Linking, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 import {MapPinIcon} from "react-native-heroicons/mini"
+import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import {shadowBoxBlack} from "../../constants/shadow";
 
 const AddPointGoogleMaps = () => {
     const [marker, setMarker] = useState(null);
@@ -51,12 +53,20 @@ const AddPointGoogleMaps = () => {
             </Text>
 
             <TouchableOpacity
-                style={styles.button}
+                // style={styles.button}
+                style={shadowBoxBlack()}
                 onPress={() => setMapVisible(!mapVisible)}
             >
-                <Text style={styles.buttonText}>
-                    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}
-                </Text>
+                {/*<Text style={styles.buttonText}>*/}
+                {/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}*/}
+                {/*</Text>*/}
+                <ButtonSmallCustom
+                    bg="green"
+                    h={60}
+                    w="100%"
+                    title={mapVisible ? 'Скрыть карту' : 'Открыть карту'}
+                    buttonText={true}
+                />
             </TouchableOpacity>
 
             {mapVisible && (

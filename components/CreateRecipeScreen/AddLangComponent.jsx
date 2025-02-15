@@ -2,6 +2,8 @@ import React, {useEffect, } from 'react';
 import { StyleSheet, Text, TouchableOpacity, Modal, View, FlatList, TouchableWithoutFeedback} from 'react-native';
 import {shadowBoxBlack} from "../../constants/shadow";
 import {hp} from "../../constants/responsiveScreen";
+import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import {PlusIcon} from "react-native-heroicons/mini"
 
 const AddLangComponent = ({languages,totLang, langDev, selectLanguage, modalVisible, setModalVisible}) => {
 
@@ -9,9 +11,9 @@ const AddLangComponent = ({languages,totLang, langDev, selectLanguage, modalVisi
     // const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        console.log("languages:", languages);
-        console.log("totLang:", totLang);
-        console.log("langDev:", langDev);
+        // console.log("languages:", languages);
+        // console.log("totLang:", totLang);
+        // console.log("langDev:", langDev);
     }, [languages, totLang, langDev]);
 
 
@@ -51,16 +53,26 @@ const AddLangComponent = ({languages,totLang, langDev, selectLanguage, modalVisi
     return (
             <View style={styles.container}>
                 <TouchableOpacity
-                    className="p-5 w-full items-center justify-center bg-amber-500 rounded-[15]"
+                    className="w-[100%]"
+                    // className="p-5 w-full items-center justify-center bg-amber-500 rounded-[15]"
                     style={shadowBoxBlack()}
                     onPress={handleAddLang}
                 >
-                    <Text
-                    style={{fontSize:hp(2)}}
-                        className="font-bold"
-                    >
-                        Add translate lang
-                    </Text>
+                    {/*<Text*/}
+                    {/*style={{fontSize:hp(2)}}*/}
+                    {/*    className="font-bold"*/}
+                    {/*>*/}
+                    {/*    Add translate lang*/}
+                    {/*</Text>*/}
+                    <ButtonSmallCustom
+                    icon={PlusIcon}
+                    w="100%"
+                    h={60}
+                    bg="green"
+                    title="Add translate lang"
+                    buttonText={true}
+                    styleWrapperButton={{}}
+                    />
                 </TouchableOpacity>
 
                 {/* ModalCustom for selecting language */}
@@ -110,6 +122,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        // backgroundColor:'red'
     },
     modalOverlay: {
         flex: 1,

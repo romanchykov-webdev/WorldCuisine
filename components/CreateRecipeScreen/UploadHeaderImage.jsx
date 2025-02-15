@@ -9,7 +9,7 @@ import SliderImagesListCreateRecipe from "./RecipeListCreateRecipe/SliderImagesL
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import {TrashIcon} from "react-native-heroicons/mini"
 
-const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe}) => {
+const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe,setTotalRecipe}) => {
 
     const [addImage, setAddImage] = useState([])
     const addImageRecipeList = async () => {
@@ -51,12 +51,17 @@ const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangReci
             // Выводим обновленный список изображений
             // console.log('add image for recipe list', addImages);
 
-            console.log("addImage",addImage)
+            // console.log("addImage",addImage)
+
             // Выводим информацию в alert
             Alert.alert("Size image",
                 `Original size: ${originalSizeInMB} MB\n` +
                 `Compressed size:, ${compressedSizeInMB} MB`
             );
+            setTotalRecipe((prevRecipe) => ({
+                ...prevRecipe,
+                imageHeader:compressedResponse.url
+            }));
         } else {
             // console.error("Image selection canceled or failed", result);
             Alert.alert("Вы не добавили изображение")

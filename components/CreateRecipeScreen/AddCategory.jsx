@@ -10,7 +10,7 @@ import LoadingComponent from "../loadingComponent";
 import {hp, wp} from "../../constants/responsiveScreen";
 
 
-const AddCategory = ({langApp}) => {
+const AddCategory = ({langApp,setTotalRecipe}) => {
 
     const [allCategories, setAllCategories] = useState([])
     const [cat, setCat] = useState(null)
@@ -21,7 +21,12 @@ const AddCategory = ({langApp}) => {
 
     const handleCategory = (cat) => {
         setCat(cat)
-        console.log("handleCategory", cat)
+        // console.log("handleCategory", cat)
+        console.log("handleCategory", cat.point)
+        setTotalRecipe((prevRecipe) => ({
+            ...prevRecipe,
+            category: cat.point,
+        }));
     }
     const handleSubCategory = (subCat) => {
         setSubCategory({
@@ -30,6 +35,10 @@ const AddCategory = ({langApp}) => {
         })
         setIsModalVisible(false)
         console.log("handleSubCategory", subCat)
+        setTotalRecipe((prevRecipe) => ({
+            ...prevRecipe,
+            point: subCat.point,
+        }));
     }
 
     // console.log("AddCategory",langApp);
@@ -61,10 +70,24 @@ const AddCategory = ({langApp}) => {
     const handlerBackCat=()=>{
         if(cat !== null){
             setCat(null)
+            // console.log("cat !== null")
+            setTotalRecipe((prevRecipe) => ({
+                ...prevRecipe,
+                point: null,
+                category: null
+            }));
         }else{
-            setSubCategory("")
+            setSubCategory({
+                point:"",
+                name:"",
+            })
             setCat(null)
             setIsModalVisible(false);
+            setTotalRecipe((prevRecipe) => ({
+                ...prevRecipe,
+                point: null,
+                category: null
+            }));
         }
     }
 
@@ -74,6 +97,11 @@ const AddCategory = ({langApp}) => {
             point:"",
             name:"",
         })
+        setTotalRecipe((prevRecipe) => ({
+            ...prevRecipe,
+            point: null,
+            category: null
+        }));
     }
 
     return (
@@ -111,13 +139,13 @@ const AddCategory = ({langApp}) => {
                 <ButtonSmallCustom
                     buttonText={true}
                     // styleWrapperButton={}
-                    bg={"green"}
-                    w={"100%"}
+                    bg="green"
+                    w="100%"
                     h={60}
                     title="Add category"
                     icon={PlusIcon}
                     styleWrapperButton={{flexDirection: "row", gap: 10, justifyContent: "center", alignItems: 'center',borderRadius:15}}
-                    styleText={{fontSize: 20, fontWeight: 'bold'}}
+                    // styleText={{fontSize: 20, fontWeight: 'bold'}}
                 />
             </TouchableOpacity>
 
@@ -125,20 +153,24 @@ const AddCategory = ({langApp}) => {
                 titleHeader={"Выберете к какой категории относится ваш рецепт."}
                 textButton={"Save"}
                 isModalVisible={isModalVisible}
-                closeModal={closeModal}
+                // closeModal={closeModal}
                 handleSave={handleSave}
                 animationType={"fade"}
                 childrenSubheader={
-                    <TouchableOpacity
-                        className="mb-5"
-                        onPress={handlerBackCat}
-                    >
-                        <ButtonSmallCustom
-                            icon={ArrowUturnLeftIcon}
-                           color={"grey"}
-                            styleWrapperButton={{borderRadius:"100%"}}
-                        />
-                    </TouchableOpacity>
+                   <View className="flex-row items-center mb-5">
+                       <TouchableOpacity
+                           className="bg-red-500"
+                           onPress={()=>handlerBackCat()}
+                           style={{zIndex: 10}}
+                       >
+                           <ButtonSmallCustom
+                               icon={ArrowUturnLeftIcon}
+                               color={"grey"}
+                               styleWrapperButton={{borderRadius:"100%",}}
+                           />
+                       </TouchableOpacity>
+                       <Text className="flex-1 text-center ml-[-40]">{cat?.name}</Text>
+                   </View>
                 }
             >
 

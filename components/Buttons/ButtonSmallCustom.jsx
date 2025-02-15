@@ -11,18 +11,22 @@ const ButtonSmallCustom = ({
                                bg = "white",
                                title,
                                styleText,
+                               styleIcon,
                                buttonText = false
                            }) => {
     return (
         <View
-            className="border-2  border-neutral-300 rounded-[10] justify-center items-center "
+            className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden"
             style={{backgroundColor: bg, width: w, height: h, ...styleWrapperButton}}
         >
-            {Icon && <Icon size={size} color={color}/>}
+            <View style={[styles.icon, styleIcon]}>
+                {Icon && <Icon size={size} color={color}/>}
+            </View>
+
 
             {
                 buttonText && (
-                    <Text style={styleText}>
+                    <Text numberOfLines={1} style={[styles.buttonText, styleText]}>
                         {title}
                     </Text>
                 )
@@ -32,6 +36,17 @@ const ButtonSmallCustom = ({
     );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    icon:{
+    },
+    buttonText: {
+        textAlign: 'center',
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: 'black',
+        marginLeft: 10,
+        // padding:20,
+    }
+});
 
 export default ButtonSmallCustom;

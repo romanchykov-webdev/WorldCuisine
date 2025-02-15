@@ -96,6 +96,7 @@ const RootLayout = () => {
                 <Stack.Screen name="(main)/editProfile" options={{headerShown: false}}/>
                 <Stack.Screen name="(main)/CreateRecipeScreen" options={{headerShown: false}}/>
                 <Stack.Screen name="(main)/AllRecipesPointScreen" options={{headerShown: false}}/>
+                <Stack.Screen name="(main)/AllRecipesBayCreator" options={{headerShown: false}}/>
 
 
             </Stack>

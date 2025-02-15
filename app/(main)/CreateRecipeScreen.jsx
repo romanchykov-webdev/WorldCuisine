@@ -32,10 +32,25 @@ const CreateRecipeScreen = () => {
 
 
     const [totalRecipe, setTotalRecipe] = useState({
-        category:null,
-
+        category: null,
+        categoryId: null,
+        imageHeader: null,
+        area: null,
+        title:null,
+        rating: '0',
+        likes: '0',
+        comments: '0',
+        recipeMetrics: null,
+        ingredients: null,
+        instructions: null,
+        video: null,
+        sourceReference: null,
+        tags: null,
+        publishedId: null,
+        publishedUser: null,
+        point: null,
     })
-
+    console.log("totalRecipe",totalRecipe)
     const {user: userData, language} = useAuth()
     // console.log('creating recipe language', language)
     // console.log('creating recipe userData', userData.lang)
@@ -76,6 +91,10 @@ const CreateRecipeScreen = () => {
     }, [])
 
 
+    const handlePreview = () => {
+        console.log("prevoew")
+        // const resPreview=
+    };
     return (
         <SafeAreaView
             // contentContainerStyle={{flex: 1}}
@@ -99,7 +118,7 @@ const CreateRecipeScreen = () => {
                     </View>
 
                     {/*add category*/}
-                    <AddCategory langApp={langApp}/>
+                    <AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe}/>
 
 
                     {/* upload header image    */}
@@ -109,6 +128,7 @@ const CreateRecipeScreen = () => {
                         langDev={langApp}
                         setTotalLangRecipe={setTotalLangRecipe}
                         totalLangRecipe={totalLangRecipe}
+                        setTotalRecipe={setTotalRecipe}
                     />
 
 
@@ -196,17 +216,18 @@ const CreateRecipeScreen = () => {
                     <View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
 
                         <TouchableOpacity
+                            onPress={handlePreview}
                             style={shadowBoxBlack()}
                             className="flex-1"
                         >
                             <ButtonSmallCustom
                                 buttonText={true}
-                                title={"Preview"}
-                                bg={"violet"}
-                                styleText={styles.buttonTextPrevSave}
-                                w={"100%"}
-                                h={"auto"}
-                                styleWrapperButton={styles.buttonTextPrevSavePadding}
+                                title="Preview"
+                                bg="violet"
+                                // styleText={styles.buttonTextPrevSave}
+                                w="100%"
+                                h={60}
+                                // styleWrapperButton={styles.buttonTextPrevSavePadding}
                             />
                         </TouchableOpacity>
 
@@ -216,12 +237,12 @@ const CreateRecipeScreen = () => {
                         >
                             <ButtonSmallCustom
                                 buttonText={true}
-                                title={"Save"}
-                                bg={"green"}
-                                styleText={styles.buttonTextPrevSave}
-                                w={"100%"}
-                                h={"auto"}
-                                styleWrapperButton={styles.buttonTextPrevSavePadding}
+                                title="Save"
+                                bg="green"
+                                // styleText={styles.buttonTextPrevSave}
+                                w="100%"
+                                h={60}
+                                // styleWrapperButton={styles.buttonTextPrevSavePadding}
                             />
                         </TouchableOpacity>
 

@@ -212,6 +212,8 @@ const RecipeListCreateRecipe = ({placeholderText, placeholderColor, totalLangRec
     //     });
     // };
 
+    // console.log("recipeArray", JSON.stringify(recipeArray,null ,2));
+
     return (
         <View >
 

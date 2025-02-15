@@ -34,6 +34,7 @@ const TagsCustom = ({styleInput, styleTextDesc}) => {
 
 
         setArrayTags(prev => [...prev, clearTags])
+        setInputTags("")
     }
 
     const removeTag=(tagToRemove) => {
