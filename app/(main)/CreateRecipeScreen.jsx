@@ -30,7 +30,8 @@ import AddCategory from "../../components/CreateRecipeScreen/AddCategory";
 
 const CreateRecipeScreen = () => {
 
-
+    const {user: userData, language} = useAuth()
+    console.log("userData",userData.id)
     const [totalRecipe, setTotalRecipe] = useState({
         category: null,
         categoryId: null,
@@ -46,12 +47,14 @@ const CreateRecipeScreen = () => {
         video: null,
         sourceReference: null,
         tags: null,
-        publishedId: null,
+        publishedId: userData.id,
         publishedUser: null,
         point: null,
     })
-    console.log("totalRecipe",totalRecipe)
-    const {user: userData, language} = useAuth()
+
+    useEffect(() => {console.log("totalRecipe",JSON.stringify(totalRecipe));},[totalRecipe])
+
+
     // console.log('creating recipe language', language)
     // console.log('creating recipe userData', userData.lang)
 
@@ -129,6 +132,7 @@ const CreateRecipeScreen = () => {
                         setTotalLangRecipe={setTotalLangRecipe}
                         totalLangRecipe={totalLangRecipe}
                         setTotalRecipe={setTotalRecipe}
+                        totalRecipe={totalRecipe}
                     />
 
 

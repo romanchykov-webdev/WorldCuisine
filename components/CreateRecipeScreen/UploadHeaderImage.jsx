@@ -9,7 +9,7 @@ import SliderImagesListCreateRecipe from "./RecipeListCreateRecipe/SliderImagesL
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import {TrashIcon} from "react-native-heroicons/mini"
 
-const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe,setTotalRecipe}) => {
+const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe,setTotalRecipe,totalRecipe}) => {
 
     const [addImage, setAddImage] = useState([])
     const addImageRecipeList = async () => {
@@ -119,6 +119,8 @@ const UploadHeaderImage = ({styleTextDesc, styleInput, langDev, setTotalLangReci
                     langDev={langDev}
                     setTotalLangRecipe={setTotalLangRecipe}
                     totalLangRecipe={totalLangRecipe}
+                    setTotalRecipe={setTotalRecipe}
+                    totalRecipe={totalRecipe}
                 />
             </View>
         </View>
