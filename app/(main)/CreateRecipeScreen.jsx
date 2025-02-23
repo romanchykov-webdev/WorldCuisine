@@ -164,7 +164,9 @@ const CreateRecipeScreen = () => {
 					{/*    select */}
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>Description</Text>
-						<SelectCreateRecipeScreenCustom />
+						<SelectCreateRecipeScreenCustom
+							setTotalRecipe={setTotalRecipe}
+						/>
 					</View>
 
 					{/*    Ingredients*/}
