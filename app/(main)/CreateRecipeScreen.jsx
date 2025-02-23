@@ -206,7 +206,7 @@ const CreateRecipeScreen = () => {
 					</View>
 
 					{/*    add link to the author*/}
-					<LinkToTheCopyright />
+					<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
 
 					{/*    AddPintGoogleMaps    */}
 					<AddPintGoogleMaps />
