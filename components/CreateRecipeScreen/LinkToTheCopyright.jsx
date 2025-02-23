@@ -18,7 +18,7 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 	const debouncedValue = useDebounce(linkCopyright, 1000);
 
 	const addLinkCopyright = () => {
-		console.log("addLinkCopyright");
+		// console.log("addLinkCopyright");
 		setLinkCopyright(inputText);
 	};
 
@@ -42,18 +42,6 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 
 			{linkCopyright !== "" && (
 				<View className="flex-row  items-center mb-3 ">
-					{/* <View
-						style={{ height: 20, width: 20 }}
-						className="bg-amber-300 rounded-full"
-					/>
-					<View className="flex-row gap-x-2 items-center justify-between  flex-1">
-						<Link
-							href={linkCopyright}
-							className="text-blue-900 font-bold text-xl underline"
-						>
-							Ссылка на автора
-						</Link> */}
-
 					<LinkCopyrightComponent linkCopyright={linkCopyright} />
 
 					<TouchableOpacity
@@ -67,7 +55,6 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 							bg={"red"}
 						/>
 					</TouchableOpacity>
-					{/* </View> */}
 				</View>
 			)}
 

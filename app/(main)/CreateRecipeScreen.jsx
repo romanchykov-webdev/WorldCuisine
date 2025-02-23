@@ -47,6 +47,7 @@ const CreateRecipeScreen = () => {
 		sourceReference: null,
 		tags: null,
 		linkCopyright: null,
+		mapСoordinates: null,
 		publishedId: userData.id,
 		publishedUser: null,
 		point: null,
@@ -210,7 +211,7 @@ const CreateRecipeScreen = () => {
 					<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
 
 					{/*    AddPintGoogleMaps    */}
-					<AddPintGoogleMaps />
+					<AddPintGoogleMaps setTotalRecipe={setTotalRecipe} />
 
 					{/*    buttons save and preview*/}
 					<View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
