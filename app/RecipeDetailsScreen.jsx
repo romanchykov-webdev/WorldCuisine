@@ -26,6 +26,7 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import ButtonLike from "../components/ButtonLike";
 
 import LinkCopyrightComponent from "../components/recipeDetails/LinkCopyrightComponent";
+import MapСoordinatesComponent from "../components/recipeDetails/MapСoordinatesComponent";
 
 import {
 	ChatBubbleOvalLeftIcon,
@@ -549,29 +550,6 @@ const RecipeDetailsScreen = () => {
 						{/*    instructions  end*/}
 
 						{/*    recipe video*/}
-						{
-							// recipeDish?.strYoutube && (
-							//     <Animated.View
-							//         entering={FadeInDown.delay(900)}
-							//         className="gap-y-4">
-							//         <Text
-							//             style={[{fontSize: hp(2.5)}, shadowTextSmall()]}
-							//             className="font-bold px-4 text-neutral-700"
-							//         >
-							//             Recipe video
-							//         </Text>
-							//         {/*    plaer*/}
-							//         <View className="px-4">
-							//             <YouTubeIframe
-							//                 videoId={getYoutobeVideoId(recipeDish?.strYoutube)}
-							//                 // videoId='nMyBC9staMU'
-							//                 height={hp(30)}
-							//             />
-							//         </View>
-							//     </Animated.View>
-							//
-							// )
-						}
 						<View className="mb-5">
 							{recipeDish?.video !== null && (
 								<VideoCustom video={recipeDish?.video} />
@@ -583,6 +561,13 @@ const RecipeDetailsScreen = () => {
 						{recipeDish?.linkCopyright && (
 							<LinkCopyrightComponent
 								linkCopyright={recipeDish?.linkCopyright}
+							/>
+						)}
+
+						{/* MapСoordinatesComponent */}
+						{recipeDish?.mapСoordinates && (
+							<MapСoordinatesComponent
+								mapСoordinates={recipeDish?.mapСoordinates}
 							/>
 						)}
 

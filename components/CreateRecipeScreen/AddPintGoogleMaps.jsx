@@ -19,7 +19,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	const [marker, setMarker] = useState(null);
 	const [mapVisible, setMapVisible] = useState(false);
 
-	console.log("marker", marker);
+	// console.log("marker", marker);
 
 	// Добавляем дебонсированное значение
 	const debouncedValue = useDebounce(marker, 1000);
@@ -87,7 +87,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 					style={styles.map}
 					mapType="hybrid" // Спутниковый вид
 					initialRegion={{
-						latitude: 48.8566, // Например, Париж (можно изменить)
+						latitude: 48.8566, // Например, Париж
 						longitude: 2.3522,
 						latitudeDelta: 10,
 						longitudeDelta: 10,
