@@ -185,6 +185,7 @@ const CreateRecipeScreen = () => {
 								langApp={userData.lang ?? language}
 								measurement={measurement}
 								totalLangRecipe={totalLangRecipe}
+								setTotalRecipe={setTotalRecipe}
 							/>
 						</View>
 					</View>
