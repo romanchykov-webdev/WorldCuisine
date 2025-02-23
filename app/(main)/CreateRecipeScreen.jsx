@@ -144,6 +144,7 @@ const CreateRecipeScreen = () => {
 							placeholderText={`Write the country of`}
 							placeholderColor="grey"
 							totalLangRecipe={totalLangRecipe}
+							setTotalRecipe={setTotalRecipe}
 						/>
 					</View>
 
