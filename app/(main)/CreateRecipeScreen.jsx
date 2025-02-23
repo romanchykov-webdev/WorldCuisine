@@ -196,6 +196,7 @@ const CreateRecipeScreen = () => {
 							placeholderText={`Здесь вы можете описать рецепт на языке`}
 							placeholderColor="grey"
 							totalLangRecipe={totalLangRecipe}
+							setTotalRecipe={setTotalRecipe}
 						/>
 					</View>
 
