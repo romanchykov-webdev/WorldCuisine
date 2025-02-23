@@ -31,7 +31,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 	const handleCategory = (cat) => {
 		setCat(cat);
 		// console.log("handleCategory", cat)
-		console.log("handleCategory", cat.point);
+		// console.log("handleCategory", cat.point);
 		setTotalRecipe((prevRecipe) => ({
 			...prevRecipe,
 			category: cat.point,
@@ -43,7 +43,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 			name: subCat.name,
 		});
 		setIsModalVisible(false);
-		console.log("handleSubCategory", subCat);
+		// console.log("handleSubCategory", subCat);
 		setTotalRecipe((prevRecipe) => ({
 			...prevRecipe,
 			point: subCat.point,
@@ -54,7 +54,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 
 	const handlerAddCategory = async () => {
 		setIsModalVisible(true);
-		console.log("handlerAddCategory");
+		// console.log("handlerAddCategory");
 
 		const resp = await getCategoryRecipeMasonryMyDB(langApp);
 		// console.log("handlerAddCategory",JSON.stringify(resp.data, null, 2))
@@ -181,7 +181,9 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 								styleWrapperButton={{ borderRadius: "100%" }}
 							/>
 						</TouchableOpacity>
-						<Text className="flex-1 text-center ml-[-40]">{cat?.name}</Text>
+						<Text className="flex-1 text-center ml-[-40]">
+							{cat?.name}
+						</Text>
 					</View>
 				}
 			>
@@ -195,22 +197,30 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 							? allCategories.map((category, index) => {
 									return (
 										<TouchableOpacity
-											onPress={() => handleCategory(category)}
+											onPress={() =>
+												handleCategory(category)
+											}
 											key={index}
 											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
 										>
-											<Text className="text-2xl">{category.name}</Text>
+											<Text className="text-2xl">
+												{category.name}
+											</Text>
 										</TouchableOpacity>
 									);
 							  })
 							: cat.subcategories.map((subCategory, index) => {
 									return (
 										<TouchableOpacity
-											onPress={() => handleSubCategory(subCategory)}
+											onPress={() =>
+												handleSubCategory(subCategory)
+											}
 											key={index}
 											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
 										>
-											<Text className="text-2xl">{subCategory.name}</Text>
+											<Text className="text-2xl">
+												{subCategory.name}
+											</Text>
 										</TouchableOpacity>
 									);
 							  })}

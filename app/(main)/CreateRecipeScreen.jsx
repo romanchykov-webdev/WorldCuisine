@@ -11,22 +11,22 @@ import {
 } from "react-native";
 // arrow-up-on-square
 
-import { useAuth } from "../../contexts/AuthContext";
 import ButtonBack from "../../components/ButtonBack";
-import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
-import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
-import IngredientsCreateRecipe from "../../components/CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
-import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
-import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeListCreateRecipe/RecipeListCreateRecipe";
-import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
-import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCopyright";
-import AddPintGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
-import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
+import AddCategory from "../../components/CreateRecipeScreen/AddCategory";
+import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
+import AddPintGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
+import IngredientsCreateRecipe from "../../components/CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe";
+import InputCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom";
+import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCopyright";
+import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeListCreateRecipe/RecipeListCreateRecipe";
+import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
+import TagsCustom from "../../components/CreateRecipeScreen/TagsCustom";
 import UploadHeaderImage from "../../components/CreateRecipeScreen/UploadHeaderImage";
 import { hp } from "../../constants/responsiveScreen";
-import TagsCustom from "../../components/CreateRecipeScreen/TagsCustom";
-import AddCategory from "../../components/CreateRecipeScreen/AddCategory";
+import { shadowBoxBlack } from "../../constants/shadow";
+import { useAuth } from "../../contexts/AuthContext";
+import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 
 const CreateRecipeScreen = () => {
 	const { user: userData, language } = useAuth();
@@ -104,7 +104,10 @@ const CreateRecipeScreen = () => {
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 			>
 				<ScrollView
-					contentContainerStyle={{ paddingHorizontal: 20, marginBottom: 20 }}
+					contentContainerStyle={{
+						paddingHorizontal: 20,
+						marginBottom: 20,
+					}}
 					showsVerticalScrollIndicator={false}
 					keyboardDismissMode={"on-drag"}
 				>
@@ -119,7 +122,10 @@ const CreateRecipeScreen = () => {
 					</View>
 
 					{/*add category*/}
-					<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} />
+					<AddCategory
+						langApp={langApp}
+						setTotalRecipe={setTotalRecipe}
+					/>
 
 					{/* upload header image    */}
 					<UploadHeaderImage
@@ -152,6 +158,7 @@ const CreateRecipeScreen = () => {
 					<TagsCustom
 						styleInput={styles.styleInput}
 						styleTextDesc={styles.styleTextDesc}
+						setTotalRecipe={setTotalRecipe}
 					/>
 
 					{/*    select */}
@@ -164,8 +171,8 @@ const CreateRecipeScreen = () => {
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>Ingredients</Text>
 						<Text className="text-neutral-700 text-xs mb-3">
-							Добавьте все ингредиенты и их количество для приготовления
-							рецепта.
+							Добавьте все ингредиенты и их количество для
+							приготовления рецепта.
 						</Text>
 
 						<View>
@@ -218,7 +225,10 @@ const CreateRecipeScreen = () => {
 							/>
 						</TouchableOpacity>
 
-						<TouchableOpacity style={shadowBoxBlack()} className="flex-1">
+						<TouchableOpacity
+							style={shadowBoxBlack()}
+							className="flex-1"
+						>
 							<ButtonSmallCustom
 								buttonText={true}
 								title="Save"

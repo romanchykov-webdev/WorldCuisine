@@ -9,7 +9,7 @@ const InputCreateRecipeScreenCustom = ({
 	totalLangRecipe,
 	setTotalRecipe,
 }) => {
-	console.log("totalLangRecipe", totalLangRecipe);
+	// console.log("totalLangRecipe", totalLangRecipe);
 
 	// Инициализируем состояние как объект
 	const [inputValues, setInputValues] = useState({});
@@ -41,14 +41,9 @@ const InputCreateRecipeScreenCustom = ({
 			...prevValues,
 			[lang]: value,
 		}));
-
-		// setTotalRecipe((prevRecipe) => ({
-		// 	...prevRecipe,
-		// 	area: inputValues,
-		// }));
 	};
 
-	console.log("inputValues", inputValues);
+	// console.log("inputValues", inputValues);
 
 	return (
 		<View className="mb-2">
