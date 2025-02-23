@@ -202,7 +202,7 @@ const CreateRecipeScreen = () => {
 
 					{/*    add recipe link video*/}
 					<View className="mb-10">
-						<AddLinkVideo />
+						<AddLinkVideo setTotalRecipe={setTotalRecipe} />
 					</View>
 
 					{/*    add link to the author*/}
