@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { LinkIcon, PlusIcon, TrashIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../constants/shadow";
@@ -26,6 +26,13 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 		setInputText("");
 		setLinkCopyright("");
 	};
+
+	useEffect(() => {
+		setTotalRecipe((prevRecipe) => ({
+			...prevRecipe,
+			linkCopyright: debouncedValue,
+		}));
+	}, [debouncedValue]);
 
 	return (
 		<View className="mb-5">

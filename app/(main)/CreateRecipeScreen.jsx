@@ -46,6 +46,7 @@ const CreateRecipeScreen = () => {
 		video: null,
 		sourceReference: null,
 		tags: null,
+		linkCopyright: null,
 		publishedId: userData.id,
 		publishedUser: null,
 		point: null,
