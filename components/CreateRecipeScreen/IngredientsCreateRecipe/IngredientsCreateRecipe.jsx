@@ -32,20 +32,33 @@ const IngredientsCreateRecipe = ({
 	const [measurementLangApp, setMeasurementLangApp] = useState([]);
 	// console.log(measurementLangApp)
 
-	const [ingredients, setIngredients] = useState([]);
+	// const [ingredients, setIngredients] = useState([]);
+	const [ingredients, setIngredients] = useState({ lang: {} }); // Новая структура
+
+	// const [ingredient, setIngredient] = useState({
+	// 	unit: totalLangRecipe.reduce(
+	// 		(acc, lang) => ({ ...acc, [lang]: "" }),
+	// 		{}
+	// 	),
+	// 	quantity: 1,
+	// 	ingredient: totalLangRecipe.reduce(
+	// 		(acc, lang) => ({ ...acc, [lang]: "" }),
+	// 		{}
+	// 	),
+	// 	// "ingredient": []
+	// 	// "ingredient": Array(totalLangRecipe.length).fill('') // Инициализируем пустыми строками
+	// });
 
 	const [ingredient, setIngredient] = useState({
 		unit: totalLangRecipe.reduce(
 			(acc, lang) => ({ ...acc, [lang]: "" }),
 			{}
 		),
-		quantity: 1,
+		quantity: "1", // Изменено на строку для соответствия желаемой структуре
 		ingredient: totalLangRecipe.reduce(
 			(acc, lang) => ({ ...acc, [lang]: "" }),
 			{}
 		),
-		// "ingredient": []
-		// "ingredient": Array(totalLangRecipe.length).fill('') // Инициализируем пустыми строками
 	});
 
 	const debouncedValue = useDebounce(ingredients, 1000);
@@ -70,15 +83,46 @@ const IngredientsCreateRecipe = ({
 			Alert.alert("Заполните все поля ингредиента");
 			return;
 		}
+
 		// Добавляем новый ингредиент в массив ingredients
-		setIngredients((prev) => [
-			...prev,
-			{
-				ingredient: { ...ingredient.ingredient },
-				quantity: ingredient.quantity,
-				unit: { ...ingredient.unit }, // Добавляем unit с переводами
-			},
-		]);
+		// setIngredients((prev) => [
+		// 	...prev,
+		// 	{
+		// 		ingredient: { ...ingredient.ingredient },
+		// 		quantity: ingredient.quantity,
+		// 		unit: { ...ingredient.unit }, // Добавляем unit с переводами
+		// 	},
+		// ]);
+		// Добавляем ингредиент в новую структуру
+		setIngredients((prev) => {
+			const newLang = { ...prev.lang };
+
+			totalLangRecipe.forEach((lang) => {
+				if (!newLang[lang]) {
+					newLang[lang] = [];
+				}
+				newLang[lang].push({
+					unit: ingredient.unit[lang],
+					quantity: ingredient.quantity.toString(), // Убедимся, что это строка
+					ingredient: ingredient.ingredient[lang],
+				});
+			});
+
+			return { lang: newLang };
+		});
+
+		// Сбрасываем состояние для нового ингредиента
+		// setIngredient({
+		// 	unit: totalLangRecipe.reduce(
+		// 		(acc, lang) => ({ ...acc, [lang]: "" }),
+		// 		{}
+		// 	),
+		// 	quantity: 1,
+		// 	ingredient: totalLangRecipe.reduce(
+		// 		(acc, lang) => ({ ...acc, [lang]: "" }),
+		// 		{}
+		// 	),
+		// });
 
 		// Сбрасываем состояние для нового ингредиента
 		setIngredient({
@@ -86,7 +130,7 @@ const IngredientsCreateRecipe = ({
 				(acc, lang) => ({ ...acc, [lang]: "" }),
 				{}
 			),
-			quantity: 1,
+			quantity: "1",
 			ingredient: totalLangRecipe.reduce(
 				(acc, lang) => ({ ...acc, [lang]: "" }),
 				{}
@@ -119,10 +163,10 @@ const IngredientsCreateRecipe = ({
 		// console.log(setIngredient)
 	};
 
-	useEffect(() => {
-		// console.log('Current Ingredient:', ingredient); // Для проверки значений
-		// console.log('Current Ingredients:', ingredients); // Для проверки значений
-	}, [ingredient, ingredients]);
+	// useEffect(() => {
+	// 	// console.log('Current Ingredient:', ingredient); // Для проверки значений
+	// 	// console.log('Current Ingredients:', ingredients); // Для проверки значений
+	// }, [ingredient, ingredients]);
 
 	useEffect(() => {
 		setTotalRecipe((prevRecipe) => ({
@@ -134,7 +178,9 @@ const IngredientsCreateRecipe = ({
 	return (
 		<View>
 			{/*block visual ingredients*/}
-			{ingredients.length > 0 && (
+			{/* {ingredients.length > 0 && ( */}
+			{/* Отображение ингредиентов */}
+			{Object.keys(ingredients.lang).length > 0 && (
 				<View>
 					<ListIngredientsCreateRecipe
 						ingredients={ingredients}
@@ -193,7 +239,7 @@ const IngredientsCreateRecipe = ({
 				</View>
 			</View>
 
-			{/*modal*/}
+			{/* Модальное окно */}
 			<ModalCustom
 				isModalVisible={isModalVisible}
 				setIsModalVisible={setIsModalVisible}

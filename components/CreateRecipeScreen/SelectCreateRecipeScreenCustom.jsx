@@ -23,7 +23,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 		time: "0",
 		person: "0",
 		calorie: "0",
-		level: "Уровень",
+		level: "Легко",
 	});
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -219,7 +219,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						title: "Выберите сложность.",
 						description:
 							"Здесь вы можете выбрать уровень сложности приготовления рецепта.",
-						array: ["Легко", "Среднее", "Сложно"],
+						array: ["Easy", "Medium", "Hard"],
 						type: "level",
 					})
 				}

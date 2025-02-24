@@ -150,8 +150,9 @@ const RecipeListCreateRecipe = ({
 					},
 				};
 
-				// Удаляем текст на верхнем уровне
-				delete updatedArray[lang]?.text;
+				// Удаляем верхнеуровневые поля `text` и `images`
+				delete updatedArray[lang].text;
+				delete updatedArray[lang].images;
 			});
 
 			setAddImages([]);

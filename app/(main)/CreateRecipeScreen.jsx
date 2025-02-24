@@ -28,8 +28,14 @@ import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 
+// import recipe preview
+import { useRouter } from "expo-router";
+
 const CreateRecipeScreen = () => {
 	const { user: userData, language } = useAuth();
+
+	const router = useRouter();
+
 	// console.log("userData",userData.id)
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
@@ -37,9 +43,9 @@ const CreateRecipeScreen = () => {
 		imageHeader: null,
 		area: null,
 		title: null,
-		rating: "0",
-		likes: "0",
-		comments: "0",
+		rating: 0,
+		likes: 0,
+		comments: 0,
 		recipeMetrics: null,
 		ingredients: null,
 		instructions: null,
@@ -54,7 +60,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		console.log("totalRecipe", JSON.stringify(totalRecipe));
+		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -78,11 +84,6 @@ const CreateRecipeScreen = () => {
 	// measurement
 	const [measurement, setMeasurement] = useState([]);
 
-	// useEffect(() => {
-	//     console.log('CreateRecipeScreen totalLangRecipe',totalLangRecipe)
-	// }, [totalLangRecipe]);
-	// console.log(totalLangRecipe)
-
 	// get all
 	const fetchMeasurement = async () => {
 		const res = await getMeasurementCreateRecipeMyDB();
@@ -94,8 +95,17 @@ const CreateRecipeScreen = () => {
 	}, []);
 
 	const handlePreview = () => {
-		console.log("prevoew");
-		// const resPreview=
+		// console.log("prevoew");
+
+		// console.log("totalRecipe", JSON.stringify(totalRecipe, null));
+		router.push({
+			pathname: "/RecipeDetailsScreen", // Путь к экрану RecipeDetailsScreen
+			params: {
+				totalRecipe: JSON.stringify(totalRecipe), // Передаем данные как строку
+				preview: "true", // Указываем, что это предпросмотр
+				langApp: language, // Язык приложения
+			},
+		});
 	};
 	return (
 		<SafeAreaView
@@ -122,13 +132,11 @@ const CreateRecipeScreen = () => {
 							Create Recipe
 						</Text>
 					</View>
-
 					{/*add category*/}
 					<AddCategory
 						langApp={langApp}
 						setTotalRecipe={setTotalRecipe}
 					/>
-
 					{/* upload header image    */}
 					<UploadHeaderImage
 						styleTextDesc={styles.styleTextDesc}
@@ -139,7 +147,6 @@ const CreateRecipeScreen = () => {
 						setTotalRecipe={setTotalRecipe}
 						totalRecipe={totalRecipe}
 					/>
-
 					{/*   aria di recipe*/}
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>
@@ -155,14 +162,12 @@ const CreateRecipeScreen = () => {
 							setTotalRecipe={setTotalRecipe}
 						/>
 					</View>
-
 					{/*  Tags   */}
 					<TagsCustom
 						styleInput={styles.styleInput}
 						styleTextDesc={styles.styleTextDesc}
 						setTotalRecipe={setTotalRecipe}
 					/>
-
 					{/*    select */}
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>Description</Text>
@@ -170,7 +175,6 @@ const CreateRecipeScreen = () => {
 							setTotalRecipe={setTotalRecipe}
 						/>
 					</View>
-
 					{/*    Ingredients*/}
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>Ingredients</Text>
@@ -191,7 +195,6 @@ const CreateRecipeScreen = () => {
 							/>
 						</View>
 					</View>
-
 					{/*    recipe description  */}
 					<View className="mb-10">
 						<RecipeListCreateRecipe
@@ -201,18 +204,14 @@ const CreateRecipeScreen = () => {
 							setTotalRecipe={setTotalRecipe}
 						/>
 					</View>
-
 					{/*    add recipe link video*/}
 					<View className="mb-10">
 						<AddLinkVideo setTotalRecipe={setTotalRecipe} />
 					</View>
-
 					{/*    add link to the author*/}
 					<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
-
 					{/*    AddPintGoogleMaps    */}
 					<AddPintGoogleMaps setTotalRecipe={setTotalRecipe} />
-
 					{/*    buttons save and preview*/}
 					<View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
 						<TouchableOpacity
@@ -246,10 +245,6 @@ const CreateRecipeScreen = () => {
 							/>
 						</TouchableOpacity>
 					</View>
-
-					{/*<ModalClearCustom*/}
-
-					{/*/>*/}
 				</ScrollView>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
@@ -278,6 +273,31 @@ const styles = StyleSheet.create({
 		borderColor: "grey",
 		padding: 20,
 		borderRadius: 15,
+	},
+	modalOverlay: {
+		flex: 1,
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	modalContent: {
+		width: "80%",
+		backgroundColor: "#fff",
+		borderRadius: 10,
+		padding: 20,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	},
+	cancelText: {
+		color: "white",
+		fontWeight: "bold",
+		fontSize: 18,
 	},
 });
 
