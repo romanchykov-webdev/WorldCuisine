@@ -1,5 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { hp } from "../../constants/responsiveScreen";
+import { shadowTextSmall } from "../../constants/shadow";
+import i18n from "../../lang/i18n";
 import LoadingComponent from "../loadingComponent";
 import ImageCustom from "./ImageCustom";
 import ImageSliderCustom from "./ImageSliderCustom";
@@ -9,14 +12,22 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 	// console.log("RecipeInstructions langDev ",langDev)
 
 	// Проверяем, есть ли язык, соответствующий langDev
-	const selectedLang = instructions.lang[langDev]
-		? instructions.lang[langDev]
-		: Object.values(instructions.lang)[0]; // Если языка нет, берем первый доступный
+	// const selectedLang = instructions.lang[langDev]
+	// 	? instructions.lang[langDev]
+	// 	: Object.values(instructions.lang)[0]; // Если языка нет, берем первый доступный
 
+	// Проверяем, есть ли язык, соответствующий langDev
+	const selectedLang =
+		instructions.lang[langDev] || Object.values(instructions.lang)[0];
 	// console.log('selectedLang',selectedLang)
 
+	// Если instructions.lang пустой объект, ничего не рендерим
+	if (!selectedLang || Object.keys(instructions.lang).length === 0) {
+		return null;
+	}
+
 	// Преобразуем объект в массив для FlatList
-	const steps = Object.entries(selectedLang).map(([key, value]) => ({
+	const steps = Object?.entries(selectedLang).map(([key, value]) => ({
 		step: key,
 		...value,
 	}));
@@ -25,9 +36,15 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 
 	return (
 		<View>
+			<Text
+				style={[{ fontSize: hp(2.5) }, shadowTextSmall()]}
+				className="font-bold px-4 text-neutral-700"
+			>
+				{i18n.t("Recipe Description")}
+			</Text>
 			{steps ? (
 				<>
-					{steps.map((item, index) => {
+					{steps?.map((item, index) => {
 						return (
 							<View
 								key={index}
@@ -38,7 +55,8 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 								<View className="mb-5">
 									<Text className="flex-wrap">
 										<Text className="text-amber-500">
-											{item.step}){" "}
+											{item.step}
+											{" ) "}
 										</Text>
 
 										{item.text}

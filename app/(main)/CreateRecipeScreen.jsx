@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+	Alert,
 	KeyboardAvoidingView,
 	Platform,
 	SafeAreaView,
@@ -23,6 +24,7 @@ import RecipeListCreateRecipe from "../../components/CreateRecipeScreen/RecipeLi
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import TagsCustom from "../../components/CreateRecipeScreen/TagsCustom";
 import UploadHeaderImage from "../../components/CreateRecipeScreen/UploadHeaderImage";
+import { validateRecipeStructure } from "../../constants/halperFunctions";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
@@ -60,7 +62,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		// console.log("totalRecipe", JSON.stringify(totalRecipe));
+		console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -96,6 +98,17 @@ const CreateRecipeScreen = () => {
 
 	const handlePreview = () => {
 		// console.log("prevoew");
+		// console.log(
+		// 	"Preview totalRecipe:",
+		// 	JSON.stringify(totalRecipe, null, 2)
+		// );
+
+		// Проверка структуры перед переходом
+		const validationResult = validateRecipeStructure(totalRecipe);
+		if (!validationResult.isValid) {
+			Alert.alert("Ошибка предпросмотра", validationResult.message);
+			return;
+		}
 
 		// console.log("totalRecipe", JSON.stringify(totalRecipe, null));
 		router.push({
@@ -171,6 +184,7 @@ const CreateRecipeScreen = () => {
 					{/*    select */}
 					<View className="mb-5">
 						<Text style={styles.styleTextDesc}>Description</Text>
+
 						<SelectCreateRecipeScreenCustom
 							setTotalRecipe={setTotalRecipe}
 						/>

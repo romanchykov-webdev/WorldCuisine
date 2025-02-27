@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TextInput, View } from "react-native";
 import { useDebounce } from "../../constants/halperFunctions";
-
+import StərɪskCustomComponent from "../StərɪskCustomComponent";
 const InputCreateRecipeScreenCustom = ({
 	styleInput,
 	placeholderText,
@@ -49,6 +49,7 @@ const InputCreateRecipeScreenCustom = ({
 		<View className="mb-2">
 			{totalLangRecipe?.map((lang, index) => (
 				<View key={index} className="mb-3">
+					<StərɪskCustomComponent />
 					<TextInput
 						// className="bg-red-500"
 						value={inputValues[lang]}

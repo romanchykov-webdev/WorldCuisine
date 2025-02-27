@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 import { langArray } from "../../constants/langArray";
+import StərɪskCustomComponent from "../StərɪskCustomComponent";
 import AddLangComponent from "./AddLangComponent";
 
 // icons
@@ -126,16 +127,20 @@ const InputCustomComponent = ({
 							>
 								Language {lang}
 							</Text>
-							<View className="flex-row items-center ">
-								<TextInput
-									value={translations[langCode] || ""}
-									onChangeText={(value) =>
-										handleTextChange(langCode, value)
-									}
-									style={styleInput}
-									placeholder="Enter new recipe name"
-									placeholderTextColor="grey"
-								/>
+							<View className="flex-row items-center">
+								<View className="relative flex-1">
+									<StərɪskCustomComponent />
+									<TextInput
+										value={translations[langCode] || ""}
+										onChangeText={(value) =>
+											handleTextChange(langCode, value)
+										}
+										style={styleInput}
+										placeholder="Enter new recipe name"
+										placeholderTextColor="grey"
+									/>
+								</View>
+
 								{/*<CustomTextInputTitle styleInput={styleInput} languages={languages} lang={lang}*/}
 								{/*                      langDev={langDev}/>*/}
 								{totLang[0] !== lang && (

@@ -8,7 +8,8 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
-import { MapPinIcon } from "react-native-heroicons/mini";
+import { MapPinIcon, TrashIcon } from "react-native-heroicons/mini";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
@@ -51,13 +52,26 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	return (
 		<View className="mb-5">
 			{marker !== null && (
-				<View className="flex-row items-center justify-center mb-3">
-					<Text>Здесь находиться торговая точка</Text>
+				<Animated.View
+					entering={FadeInDown.delay(100).springify()}
+					className="flex-row items-center justify-betwen mb-3"
+				>
+					<View className="flex-row items-center  flex-1">
+						<TouchableOpacity onPress={openMap}>
+							<MapPinIcon size={50} color="blue" />
+						</TouchableOpacity>
+						<Text>Здесь находиться торговая точка</Text>
+					</View>
 
-					<TouchableOpacity onPress={openMap}>
-						<MapPinIcon size={50} color="blue" />
+					<TouchableOpacity onPress={() => setMarker(null)}>
+						<ButtonSmallCustom
+							bg="red"
+							icon={TrashIcon}
+							w={60}
+							h={60}
+						/>
 					</TouchableOpacity>
-				</View>
+				</Animated.View>
 			)}
 
 			<Text className="mb-4">

@@ -10,6 +10,7 @@ import { PlusIcon, ScaleIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../../constants/shadow";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 import ModalCustom from "../../ModalCustom";
+import StərɪskCustomComponent from "../../StərɪskCustomComponent";
 import ListIngredientsCreateRecipe from "./ListIngredientsCreateRecipe";
 
 //import my hook
@@ -76,11 +77,26 @@ const IngredientsCreateRecipe = ({
 
 	const addIngredient = () => {
 		// Проверяем, заполнены ли все поля
-		if (
-			Object.values(ingredient.unit).some((u) => u.trim() === "") ||
-			Object.values(ingredient.ingredient).some((i) => i.trim() === "")
-		) {
-			Alert.alert("Заполните все поля ингредиента");
+		// if (
+		// 	Object.values(ingredient.unit).some((u) => u.trim() === "") ||
+		// 	Object.values(ingredient.ingredient).some((i) => i.trim() === "")
+		// ) {
+		// 	Alert.alert(
+		// 		"Вы забыли!",
+		// 		"Написать название ингредиента или выбрать его количество или измерение."
+		// 	);
+		// 	return;
+		// }
+		if (Object.values(ingredient.ingredient).some((u) => u.trim() === "")) {
+			Alert.alert("Вы забыли!", "Написать название ингредиента.");
+			return;
+		}
+		if (Object.values(ingredient.quantity).some((q) => q.trim() === "")) {
+			Alert.alert("Вы забыли!", "Выбрать количество ингредиента.");
+			return;
+		}
+		if (Object.values(ingredient.unit).some((u) => u.trim() === "")) {
+			Alert.alert("Вы забыли!", "Выбрать меру измерение ингредиента.");
 			return;
 		}
 
@@ -196,6 +212,7 @@ const IngredientsCreateRecipe = ({
 						// console.log("lang", lang);
 						return (
 							<View key={index}>
+								<StərɪskCustomComponent />
 								<InputCustom
 									styleInput={styleInput}
 									placeholderText={`${placeholderText} ${lang}`}

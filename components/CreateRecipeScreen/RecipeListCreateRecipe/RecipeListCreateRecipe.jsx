@@ -26,14 +26,16 @@ const RecipeListCreateRecipe = ({
 		setChangeLang(item);
 	};
 
-	const [recipeArray, setRecipeArray] = useState(() => {
-		// Инициализируем пустой объект для каждого языка
-		const initialArray = {};
-		totalLangRecipe.forEach((lang) => {
-			initialArray[lang] = { text: "", images: [] };
-		});
-		return initialArray;
-	});
+	// const [recipeArray, setRecipeArray] = useState(() => {
+	// 	// Инициализируем пустой объект для каждого языка
+	// 	const initialArray = {};
+	// 	totalLangRecipe.forEach((lang) => {
+	// 		initialArray[lang] = { text: "", images: [] };
+	// 	});
+	// 	return initialArray;
+	// });
+	const [recipeArray, setRecipeArray] = useState({});
+	// добавить проверку если обьект пуст то просто не отрисоввывать !!!!!!!!!!!!!
 
 	// Добавляем дебонсированное значение
 	const debouncedValue = useDebounce(recipeArray, 1000);
@@ -227,81 +229,85 @@ const RecipeListCreateRecipe = ({
 
 				{
 					// Проверяем, есть ли данные для выбранного языка
-					recipeArray[changeLang] &&
-						Object.keys(recipeArray[changeLang]).map(
-							(stepIndex, index) => {
-								// Выводим только те элементы, которые являются шагами (то есть числами)
-								if (!isNaN(Number(stepIndex))) {
-									return (
-										<Animated.View
-											entering={FadeInDown.duration(
-												300
-											).springify()}
-											key={stepIndex}
-											className="mb-5 "
-										>
-											<View className="flex-1 flex-row">
-												<Text className="mb-2 flex-1">
-													<Text className="text-amber-500">
-														{/*{stepIndex}) {" "}*/}
-														{index + 1}){" "}
+					recipeArray[changeLang]
+						? Object.keys(recipeArray[changeLang]).map(
+								(stepIndex, index) => {
+									// Выводим только те элементы, которые являются шагами (то есть числами)
+									if (!isNaN(Number(stepIndex))) {
+										return (
+											<Animated.View
+												entering={FadeInDown.duration(
+													300
+												).springify()}
+												key={stepIndex}
+												className="mb-5 "
+											>
+												<View className="flex-1 flex-row">
+													<Text className="mb-2 flex-1">
+														<Text className="text-amber-500">
+															{/*{stepIndex}) {" "}*/}
+															{index + 1}){" "}
+														</Text>
+														{
+															recipeArray[
+																changeLang
+															][stepIndex]?.text
+														}
 													</Text>
-													{
-														recipeArray[changeLang][
-															stepIndex
-														]?.text
-													}
-												</Text>
 
-												{/*    button remove */}
-												<TouchableOpacity
-													onPress={() => {
-														removeStepRecipe(
-															stepIndex
-														);
-													}}
-													style={shadowBoxBlack()}
-												>
-													<ButtonSmallCustom
-														icon={TrashIcon}
-														color="white"
-														bg="#EF4444"
-													/>
-												</TouchableOpacity>
-											</View>
+													{/*    button remove */}
+													<TouchableOpacity
+														onPress={() => {
+															removeStepRecipe(
+																stepIndex
+															);
+														}}
+														style={shadowBoxBlack()}
+													>
+														<ButtonSmallCustom
+															icon={TrashIcon}
+															color="white"
+															bg="#EF4444"
+														/>
+													</TouchableOpacity>
+												</View>
 
-											<View>
-												{recipeArray[changeLang][
-													stepIndex
-												]?.images.length > 0 &&
-													(recipeArray[changeLang][
+												<View>
+													{recipeArray[changeLang][
 														stepIndex
-													]?.images.length === 1 ? (
-														<ViewImageListCreateRecipe
-															image={
-																recipeArray[
-																	changeLang
-																][stepIndex]
-																	?.images
-															}
-														/>
-													) : (
-														<SliderImagesListCreateRecipe
-															createRecipe={true}
-															images={
-																recipeArray[
-																	changeLang
-																][stepIndex]
-																	?.images
-															}
-														/>
-													))}
-											</View>
-										</Animated.View>
-									);
+													]?.images.length > 0 &&
+														(recipeArray[
+															changeLang
+														][stepIndex]?.images
+															.length === 1 ? (
+															<ViewImageListCreateRecipe
+																image={
+																	recipeArray[
+																		changeLang
+																	][stepIndex]
+																		?.images
+																}
+															/>
+														) : (
+															<SliderImagesListCreateRecipe
+																createRecipe={
+																	true
+																}
+																images={
+																	recipeArray[
+																		changeLang
+																	][stepIndex]
+																		?.images
+																}
+															/>
+														))}
+												</View>
+											</Animated.View>
+										);
+									}
 								}
-							}
-						)
+						  )
+						: null
 				}
 			</View>
 

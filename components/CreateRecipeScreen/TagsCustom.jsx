@@ -10,6 +10,7 @@ import {
 import { PlusIcon, TrashIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import StərɪskCustomComponent from "../StərɪskCustomComponent";
 
 // import my hook
 import { useDebounce } from "../../constants/halperFunctions";
@@ -39,12 +40,12 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 		const clearTags = inputTags.trim();
 
 		if (clearTags === "") {
-			Alert.alert("Please enter a tag");
+			Alert.alert("Пожалуйста, введите тег");
 			return;
 		}
 
 		if (arrayTags.includes(clearTags)) {
-			Alert.alert("This tag already exists!");
+			Alert.alert("Этот тег уже существует!");
 			return;
 		}
 
@@ -96,16 +97,19 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 
 			<Text style={styleTextDesc}>TagsCustom</Text>
 
-			<View className="flex-row gap-x-2 items-center">
-				<TextInput
-					style={styleInput}
-					onChangeText={(value) => handleChange(value)}
-					value={inputTags}
-					placeholder={"Enter uor tags"}
-					placeholderTextColor={"grey"}
-					// className="mb-2"
-					// className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] h-[40px]"
-				/>
+			<View className="flex-row gap-x-2 items-center ">
+				<View className="relative flex-1">
+					<StərɪskCustomComponent />
+					<TextInput
+						style={styleInput}
+						onChangeText={(value) => handleChange(value)}
+						value={inputTags}
+						placeholder={"Enter uor tags"}
+						placeholderTextColor={"grey"}
+						// className="mb-2"
+						// className="flex-1 border-2 border-neutral-200 p-3 rounded-[5] h-[40px]"
+					/>
+				</View>
 
 				<TouchableOpacity
 					style={shadowBoxBlack()}

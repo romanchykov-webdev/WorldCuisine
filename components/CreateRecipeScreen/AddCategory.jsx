@@ -1,24 +1,22 @@
 import React, { useState } from "react";
 import {
-	FlatList,
 	ScrollView,
 	StyleSheet,
 	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
-import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import {
-	TrashIcon,
-	PlusIcon,
 	ArrowUturnLeftIcon,
+	PlusIcon,
+	TrashIcon,
 } from "react-native-heroicons/mini";
-import ModalClearCustom from "../ModalClearCustom";
-import InputComponent from "../InputComponent";
-import { supabase } from "../../lib/supabase";
-import { getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
-import LoadingComponent from "../loadingComponent";
 import { hp, wp } from "../../constants/responsiveScreen";
+import { getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
+import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import LoadingComponent from "../loadingComponent";
+import ModalClearCustom from "../ModalClearCustom";
+import StərɪskCustomComponent from "../StərɪskCustomComponent";
 
 const AddCategory = ({ langApp, setTotalRecipe }) => {
 	const [allCategories, setAllCategories] = useState([]);
@@ -123,7 +121,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 							Category:{" "}
 						</Text>
 						<Text className="text-xl text-neutral-700 font-black">
-							{cat.name} ->{" "}
+							{cat.name} {" ->"}
 						</Text>
 						<Text className="text-xl text-neutral-700 font-medium">
 							{subCategory.name}
@@ -140,7 +138,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 
 			<TouchableOpacity
 				onPress={handlerAddCategory}
-				className="flex-row gap-x-2 items-center justify-center "
+				className="flex-row gap-x-2 items-center justify-center relative "
 			>
 				<ButtonSmallCustom
 					buttonText={true}
@@ -159,6 +157,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 					}}
 					// styleText={{fontSize: 20, fontWeight: 'bold'}}
 				/>
+				<StərɪskCustomComponent />
 			</TouchableOpacity>
 
 			<ModalClearCustom

@@ -15,13 +15,7 @@ import { addRecipeRatingMyDB } from "../service/getDataFromDB";
 //rating
 import { Rating } from "react-native-ratings";
 
-const RatingComponents = ({
-	rating,
-	handleStarPress,
-	user,
-	recipeId,
-	isPreview,
-}) => {
+const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	// console.log('RatingComponents user', user)
 	console.log("RatingComponents isPreview", isPreview);
 	// console.log('RatingComponents rating', typeof rating)

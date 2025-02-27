@@ -9,6 +9,7 @@ import {
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
+import StərɪskCustomComponent from "../StərɪskCustomComponent";
 import ModalCreateRecipe from "./ModalCreateRecipe";
 
 // import my hook
@@ -20,10 +21,10 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 	const [modalArray, setModalArray] = useState([]);
 	const [modalType, setModalType] = useState();
 	const [modalSelectItem, setModalSelectItem] = useState({
-		time: "0",
-		person: "0",
-		calorie: "0",
-		level: "Легко",
+		time: 1,
+		person: 1,
+		calorie: 1,
+		level: "Easy",
 	});
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -71,10 +72,11 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						title: "Время приготовления.",
 						description:
 							"Здесь вы можете указать примерное время приготовления блюда.",
-						array: [0, 299],
+						array: [1, 299],
 						type: "time",
 					})
 				}
+				className="relative"
 			>
 				<View
 					className="flex rounded-full bg-amber-300  p-1 items-center"
@@ -85,6 +87,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 							className="bg-white rounded-full flex items-center justify-around"
 							style={{ width: hp(6.5), height: hp(6.5) }}
 						>
+							<StərɪskCustomComponent top={-5} right={-5} />
 							<ClockIcon
 								size={hp(4)}
 								strokeWidth={2.5}
@@ -141,6 +144,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 							className="bg-white rounded-full flex items-center justify-around"
 							style={{ width: hp(6.5), height: hp(6.5) }}
 						>
+							<StərɪskCustomComponent top={-5} right={-5} />
 							<UsersIcon
 								size={hp(4)}
 								strokeWidth={2.5}
@@ -173,7 +177,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						title: "Выберите калорийности.",
 						description:
 							"Здесь вы можете выбрать уровень калорийности блюда в 100 граммах.",
-						array: [0, 3000],
+						array: [1, 3000],
 						type: "calorie",
 					})
 				}
@@ -187,6 +191,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 							className="bg-white rounded-full flex items-center justify-around"
 							style={{ width: hp(6.5), height: hp(6.5) }}
 						>
+							<StərɪskCustomComponent top={-5} right={-5} />
 							<FireIcon
 								size={hp(4)}
 								strokeWidth={2.5}
@@ -233,6 +238,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 							className="bg-white rounded-full flex items-center justify-around"
 							style={{ width: hp(6.5), height: hp(6.5) }}
 						>
+							<StərɪskCustomComponent top={-5} right={-5} />
 							<Square3Stack3DIcon
 								size={hp(4)}
 								strokeWidth={2.5}

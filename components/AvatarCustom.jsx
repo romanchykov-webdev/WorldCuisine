@@ -8,7 +8,7 @@ const AvatarCustom = ({
 	uri,
 	size = hp(4.5),
 	style = {},
-	isPreview,
+	isPreview = false,
 	// rounded = 'rounded-full'
 	rounded = "100%",
 }) => {
@@ -16,6 +16,7 @@ const AvatarCustom = ({
 	return (
 		<Image
 			source={isPreview ? uri : getUserImageSrc(uri)}
+			// source={getUserImageSrc(uri)}
 			transition={100}
 			style={[
 				styles.avatar,
