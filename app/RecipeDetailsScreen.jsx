@@ -47,6 +47,7 @@ import {
 // translate
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
 import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
+import SelectLangComponent from "../components/recipeDetails/SelectLangComponent";
 import SubscriptionsComponent from "../components/recipeDetails/SubscriptionsComponent";
 import i18n from "../lang/i18n";
 
@@ -61,11 +62,14 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 
 	const [recipeDish, setRecipeDish] = useState(null);
 
-	const { user } = useAuth();
+	// const [dataSource, setDataSource] = useState("unknown"); // Состояние для источника данных
+
+	const { user, language } = useAuth();
 
 	const params = useLocalSearchParams();
 
-	const [rating, setRating] = useState("0");
+	const [rating, setRating] = useState(0);
+	// console.log("RecipeDetailsScreen rating", rating);
 
 	const scrollViewRef = useRef(null);
 	const commentsRef = useRef(null);
@@ -73,26 +77,22 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	// console.log('RecipeDetailsScreen setAuth',user);
 
 	// const { id, langApp } = useLocalSearchParams();
-	const { id, langApp, totalRecipe: totalRecipeString, preview } = params;
+	const { id, currentLang, totalRecipe: totalRecipeString, preview } = params;
+
+	const [langApp, setLangApp] = useState(
+		// user?.lang ?? currentLang ?? language
+		user?.lang ?? language
+	);
 
 	const isPreview = preview === "true" || preview === true;
 
-	// Мемоизация parsedTotalRecipe для предотвращения повторного парсинга
-	// const parsedTotalRecipe = useMemo(() => {
-	// 	try {
-	// 		return totalRecipeString ? JSON.parse(totalRecipeString) : null;
-	// 	} catch (error) {
-	// 		console.error("Ошибка предпросмотра", error);
-	// 		return null;
-	// 	}
-	// }, [totalRecipeString]); // Зависимость только от totalRecipeString
 	// Парсинг totalRecipe с проверкой
 	const parsedTotalRecipe = useMemo(() => {
 		if (!totalRecipeString) return null;
 		try {
 			const parsed = JSON.parse(totalRecipeString);
 			if (typeof parsed !== "object" || parsed === null) {
-				console.error("Некорректная структура totalRecipe:", parsed);
+				console.error("Некорректная структура :", parsed);
 				return null;
 			}
 			return parsed;
@@ -126,47 +126,6 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 		}
 	};
 
-	// useEffect(() => {
-	// 	if (isPreview) {
-	// 		if (
-	// 			parsedTotalRecipe &&
-	// 			JSON.stringify(recipeDish) !== JSON.stringify(parsedTotalRecipe)
-	// 		) {
-	// 			setRecipeDish(parsedTotalRecipe);
-
-	// 			setLoading(false);
-	// 		}
-	// 	} else if (id) {
-	// 		const fetchRecipeDish = async () => {
-	// 			try {
-	// 				setLoading(true);
-	// 				const response = await getRecipesDescriptionMyDB(id);
-	// 				if (
-	// 					JSON.stringify(recipeDish) !==
-	// 					JSON.stringify(response?.data[0])
-	// 				) {
-	// 					setRecipeDish(response?.data[0] || null);
-	// 				}
-	// 			} catch (error) {
-	// 				console.error("Error fetching recipe:", error);
-	// 			} finally {
-	// 				setLoading(false);
-	// 			}
-	// 		};
-	// 		fetchRecipeDish();
-	// 	}
-	// }, [id, isPreview, parsedTotalRecipe, recipeDish]); // Добавляем recipeDish в зависимости
-
-	// console.log("setRecipeDish", JSON.stringify(recipeDish?.imageHeader, null));
-
-	// useEffect(() => {
-	// 	if (!isPreview && recipeDish?.rating !== undefined) {
-	// 		setRating(recipeDish.rating.toString());
-	// 	}
-	// }, [recipeDish, isPreview]);
-
-	// let rating = recipeDish?.rating?.averageScore;
-
 	// scroll xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 	const scrollToComments = () => {
@@ -195,6 +154,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 			try {
 				if (isPreview && parsedTotalRecipe) {
 					setRecipeDish(parsedTotalRecipe);
+					// setDataSource("preview");
 
 					// setTimeout(() => {
 					// 	setLoading(false);
@@ -202,6 +162,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 				} else if (id) {
 					const response = await getRecipesDescriptionMyDB(id);
 					setRecipeDish(response?.data[0] || null);
+					setRating(response?.data[0].rating ?? 0);
+					// setDataSource("Mydb");
 					// setTimeout(() => {
 					// 	setLoading(false);
 					// }, 1000);
@@ -218,6 +180,20 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 
 		loadRecipeDish();
 	}, [id, isPreview, parsedTotalRecipe]); // Зависимости: только id, isPreview и parsedTotalRecipe
+
+	useEffect(() => {
+		// console.log(
+		// 	// `Rerender - Data Source ${dataSource}: `,
+		// 	`Rerender - Data Source : `,
+		// 	JSON.stringify(recipeDish, null)
+		// );
+		// console.log("langApp useEffect", langApp);
+		// console.log("currentLang useEffect", currentLang);
+	}, [recipeDish, isPreview, langApp]);
+
+	const handleLangChange = (lang) => {
+		setLangApp(lang);
+	};
 
 	return (
 		<>
@@ -363,6 +339,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 														fontSize: 12,
 														color: "black",
 														fontWeight: "bold",
+														position: "relative",
+														zIndex: 1,
 													}}
 												>
 													{rating}
@@ -415,6 +393,13 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 										creatorId={recipeDish?.publishedId}
 									/>
 								</Animated.View>
+
+								{/* section select lang */}
+								<SelectLangComponent
+									recipeDishArea={recipeDish?.area}
+									handleLangChange={handleLangChange}
+									langApp={langApp}
+								/>
 
 								{/*    dish and description*/}
 								<Animated.View

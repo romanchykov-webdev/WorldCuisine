@@ -12,7 +12,7 @@ const AvatarCustom = ({
 	// rounded = 'rounded-full'
 	rounded = "100%",
 }) => {
-	console.log("AvatarCustom uri", uri);
+	// console.log("AvatarCustom uri", uri);
 	return (
 		<Image
 			source={isPreview ? uri : getUserImageSrc(uri)}

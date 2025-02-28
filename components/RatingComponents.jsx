@@ -20,6 +20,7 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	console.log("RatingComponents isPreview", isPreview);
 	// console.log('RatingComponents rating', typeof rating)
 	// console.log('RatingComponents rating', rating)
+	console.log("RatingComponents recipeId", recipeId);
 
 	const router = useRouter();
 

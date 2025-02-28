@@ -12,7 +12,7 @@ import AvatarCustom from "../AvatarCustom";
 
 const RecipesMasonryComponent = ({ categoryRecipes, langApp }) => {
 	// console.log('RecipesMasonryComponent', categoryRecipes);
-	console.log("RecipesMasonryComponent", langApp);
+	// console.log("RecipesMasonryComponent", langApp);
 	useEffect(() => {}, [langApp]);
 
 	const [isSubCategoryView, setIsSubCategoryView] = useState(false);
