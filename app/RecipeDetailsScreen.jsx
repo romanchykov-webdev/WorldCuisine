@@ -308,7 +308,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											recipeId={recipeDish?.id}
 										/>
 									</Animated.View>
-									{/*    rating and comments*/}
+
+									{/*    rating Star and comments*/}
 									<Animated.View
 										entering={FadeInDown.duration(
 											400
@@ -395,11 +396,13 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 								</Animated.View>
 
 								{/* section select lang */}
-								<SelectLangComponent
-									recipeDishArea={recipeDish?.area}
-									handleLangChange={handleLangChange}
-									langApp={langApp}
-								/>
+								<Animated.View entering={FadeInDown.delay(570)}>
+									<SelectLangComponent
+										recipeDishArea={recipeDish?.area}
+										handleLangChange={handleLangChange}
+										langApp={langApp}
+									/>
+								</Animated.View>
 
 								{/*    dish and description*/}
 								<Animated.View

@@ -1,4 +1,21 @@
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
+
+// Функция для отображения алерта с кастомными параметрами
+export const showCustomAlert = (title, message, router) => {
+	Alert.alert(title, message, [
+		{
+			text: "Cancel",
+			onPress: () => console.log("modal cancelled"),
+			style: "cancel",
+		},
+		{
+			text: "LogIn-SignUp",
+			onPress: () => router.replace("/ProfileScreen"),
+			style: "default",
+		},
+	]);
+};
 
 // Функция для форматирования чисел  1299 in 1.2K
 // export const myFormatNumber = (num) => {

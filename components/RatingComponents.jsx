@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Animated, {
 	FadeInDown,
 	useAnimatedStyle,
@@ -14,9 +14,10 @@ import { addRecipeRatingMyDB } from "../service/getDataFromDB";
 
 //rating
 import { Rating } from "react-native-ratings";
+import { showCustomAlert } from "../constants/halperFunctions";
 
 const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
-	// console.log('RatingComponents user', user)
+	console.log("RatingComponents user", user);
 	console.log("RatingComponents isPreview", isPreview);
 	// console.log('RatingComponents rating', typeof rating)
 	// console.log('RatingComponents rating', rating)
@@ -25,7 +26,8 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	const router = useRouter();
 
 	const [addStar, setAddStar] = useState(true);
-	const [selectedRating, setSelectedRating] = useState(0); // Сохранение выбранного рейтинга
+	// const [selectedRating, setSelectedRating] = useState(0); // Сохранение выбранного рейтинга
+	const [selectedRating, setSelectedRating] = useState(rating || 0); // Сохранение выбранного рейтинга
 
 	// Анимация масштаба
 	const scale = useSharedValue(0);
@@ -35,39 +37,49 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	}));
 	// Анимация масштаба
 
+	// useEffect(() => {
+	// 	console.log("addRating rating", rating);
+	// 	setSelectedRating(rating);
+	// }, [selectedRating]);
+
 	const addRating = async (newRating) => {
+		console.log("addRecipeRatingMyDB try", newRating);
 		if (isPreview || !recipeId) return; // Если это предпросмотр или recipeId отсутствует, не выполняем действие
 		// console.log('addRating called with newRating:', newRating);
+		// if (user === null) {
+		// 	showCustomAlert(
+		// 		"Rating",
+		// 		`${i18n.t(
+		// 			"To rate a recipe you must log in or create an account"
+		// 		)}`,
+		// 		router
+		// 	);
+
+		// 	// Alert.alert("",{i18n.t('To rate a recipe you must log in or create an account')})
+		// } else {
+		try {
+			setSelectedRating(newRating); // Обновляем состояние только для авторизованного пользователя
+			await addRecipeRatingMyDB({
+				recipeId: recipeId,
+				userId: user.id,
+				rating: newRating,
+			});
+		} catch (error) {
+			console.error("Error upserting recipe rating:", error);
+			setSelectedRating(rating); // Возвращаем предыдущее значение в случае ошибки
+		}
+		// }
+	};
+
+	const IfUserNull = () => {
 		if (user === null) {
-			Alert.alert(
+			showCustomAlert(
 				"Rating",
 				`${i18n.t(
 					"To rate a recipe you must log in or create an account"
 				)}`,
-				[
-					{
-						text: "Cancel",
-						onPress: () => console.log("modal cancelled"),
-						style: "cancel",
-					},
-					{
-						text: "LogIn-SignUp",
-						onPress: () => router.replace("/ProfileScreen"),
-						style: "default",
-					},
-				]
+				router
 			);
-			// Alert.alert("",{i18n.t('To rate a recipe you must log in or create an account')})
-		} else {
-			try {
-				await addRecipeRatingMyDB({
-					recipeId: recipeId,
-					userId: user.id,
-					rating: newRating,
-				});
-			} catch (error) {
-				console.error("Error upserting recipe rating:", error);
-			}
 		}
 	};
 
@@ -81,17 +93,23 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 			</Text>
 
 			{/* Star Rating component */}
-			<Rating
-				type="star"
-				ratingCount={5}
-				imageSize={40}
-				ratingColor="gold"
-				ratingBackgroundColor="gray"
-				startingValue={isPreview ? 0 : rating}
-				onFinishRating={isPreview ? null : addRating}
-				readonly={isPreview} // Делаем рейтинг только для чтения в режиме предпросмотра
-				style={styles.rating}
-			/>
+
+			<TouchableOpacity onPress={IfUserNull}>
+				<Rating
+					type="star"
+					ratingCount={5}
+					imageSize={40}
+					ratingColor="gold"
+					ratingBackgroundColor="gray"
+					// startingValue={isPreview ? 0 : rating}
+					startingValue={isPreview ? 0 : selectedRating}
+					// onFinishRating={isPreview ? null : addRating}
+					// onFinishRating={addRating} // Вызываем addRating для обработки рейтинга
+					onFinishRating={addRating} // Вызываем addRating для обработки рейтинга
+					readonly={isPreview || user === null} // Делаем неактивным для предпросмотра или неавторизованных пользователей
+					style={styles.rating}
+				/>
+			</TouchableOpacity>
 		</Animated.View>
 	);
 };

@@ -1,10 +1,11 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { HeartIcon } from "react-native-heroicons/solid";
 import { shadowBoxWhite } from "../constants/shadow";
 
 // translate
+import { showCustomAlert } from "../constants/halperFunctions";
 import i18n from "../lang/i18n";
 import {
 	addLikeRecipeMyDB,
@@ -37,24 +38,31 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 		if (isPreview) return; //если это предпросмотр
 
 		if (user === null) {
-			Alert.alert(
+			showCustomAlert(
 				"Like",
 				`${i18n.t(
 					"To add a recipe to your favorites you must log in or create an account"
 				)}`,
-				[
-					{
-						text: "Cancel",
-						onPress: () => console.log("modal cancelled"),
-						style: "cancel",
-					},
-					{
-						text: "LogIn-SignUp",
-						onPress: () => router.replace("/ProfileScreen"),
-						style: "default",
-					},
-				]
+				router
 			);
+			// Alert.alert(
+			// 	"Like",
+			// `${i18n.t(
+			// 	"To add a recipe to your favorites you must log in or create an account"
+			// )}`,
+			// 	[
+			// 		{
+			// 			text: "Cancel",
+			// 			onPress: () => console.log("modal cancelled"),
+			// 			style: "cancel",
+			// 		},
+			// 		{
+			// 			text: "LogIn-SignUp",
+			// 			onPress: () => router.replace("/ProfileScreen"),
+			// 			style: "default",
+			// 		},
+			// 	]
+			// );
 			// Alert.alert("",{i18n.t('To rate a recipe you must log in or create an account')})
 		} else {
 			setIsLike(!isLike);

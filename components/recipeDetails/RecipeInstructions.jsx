@@ -38,7 +38,7 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 		<View>
 			<Text
 				style={[{ fontSize: hp(2.5) }, shadowTextSmall()]}
-				className="font-bold px-4 text-neutral-700"
+				className="font-bold px-4 text-neutral-700 mb-3"
 			>
 				{i18n.t("Recipe Description")}
 			</Text>
@@ -53,7 +53,10 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
                                 "
 							>
 								<View className="mb-5">
-									<Text className="flex-wrap">
+									<Text
+										className="flex-wrap mb-3"
+										style={{ fontSize: hp(2.5) }}
+									>
 										<Text className="text-amber-500">
 											{item.step}
 											{" ) "}

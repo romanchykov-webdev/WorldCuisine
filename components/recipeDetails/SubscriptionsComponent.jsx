@@ -15,7 +15,8 @@ const SubscriptionsComponent = ({
 }) => {
 	const subscriberId = subscriber?.id;
 
-	console.log("subscriber", subscriber);
+	console.log("SubscriptionsComponent subscriber", subscriber);
+	// console.log("SubscriptionsComponent isPreview", isPreview);
 
 	const router = useRouter();
 	// subscriberId={user?.id} creatorId={recipeDish?.publishedId}
@@ -52,6 +53,7 @@ const SubscriptionsComponent = ({
 	const handleSubscribe = async () => {
 		if (isPreview) return;
 		console.log("ok");
+		console.log("subscriber", subscriber);
 		console.log("subscriberId", subscriberId);
 		console.log("creatorId", creatorId);
 	};

@@ -347,6 +347,8 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
 //Добавление рейтинга в таблицу recipe_ratings
 export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
+	console.log("addRecipeRatingMyDB", rating);
+
 	try {
 		const { data, error } = await supabase.from("recipe_ratings").upsert(
 			{
