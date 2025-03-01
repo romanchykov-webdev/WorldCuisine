@@ -1,17 +1,8 @@
 import React, { useState } from "react";
-import {
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
-import {
-	ArrowUturnLeftIcon,
-	PlusIcon,
-	TrashIcon,
-} from "react-native-heroicons/mini";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ArrowUturnLeftIcon, PlusIcon, TrashIcon } from "react-native-heroicons/mini";
 import { hp, wp } from "../../constants/responsiveScreen";
+import i18n from "../../lang/i18n";
 import { getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import LoadingComponent from "../loadingComponent";
@@ -109,23 +100,19 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 		}));
 	};
 
+	const titleModal = i18n.t("To subscribe, you need to log in or create an account."); // Убедитесь, что ключ точно совпадает
+	console.log("titleModal key check:", "To subscribe, you need to log in or create an account." === i18n.t("To subscribe, you need to log in or create an account.") ? "Match" : "No match");
+
 	return (
 		<View className="mb-5">
 			{subCategory.name !== "" && cat !== null && (
 				<View className="flex-row gap-x-2 items-center justify-between mb-3 ">
-					<View
-						className="flex-row items-center flex-wrap "
-						style={{ maxWidth: wp(80) }}
-					>
-						<Text className="text-xl text-neutral-700 font-bold">
-							Category:{" "}
-						</Text>
+					<View className="flex-row items-center flex-wrap " style={{ maxWidth: wp(80) }}>
+						<Text className="text-xl text-neutral-700 font-bold">Category: </Text>
 						<Text className="text-xl text-neutral-700 font-black">
 							{cat.name} {" ->"}
 						</Text>
-						<Text className="text-xl text-neutral-700 font-medium">
-							{subCategory.name}
-						</Text>
+						<Text className="text-xl text-neutral-700 font-medium">{subCategory.name}</Text>
 					</View>
 
 					<View>
@@ -136,17 +123,14 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 				</View>
 			)}
 
-			<TouchableOpacity
-				onPress={handlerAddCategory}
-				className="flex-row gap-x-2 items-center justify-center relative "
-			>
+			<TouchableOpacity onPress={handlerAddCategory} className="flex-row gap-x-2 items-center justify-center relative ">
 				<ButtonSmallCustom
 					buttonText={true}
 					// styleWrapperButton={}
 					bg="green"
 					w="100%"
 					h={60}
-					title="Add category"
+					title={i18n.t("Add category")}
 					icon={PlusIcon}
 					styleWrapperButton={{
 						flexDirection: "row",
@@ -161,7 +145,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 			</TouchableOpacity>
 
 			<ModalClearCustom
-				titleHeader={"Выберете к какой категории относится ваш рецепт."}
+				titleHeader={i18n.t("To add a recipe to your favorites you must log in or create an account")}
 				textButton={"Save"}
 				isModalVisible={isModalVisible}
 				// closeModal={closeModal}
@@ -174,15 +158,9 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 							onPress={() => handlerBackCat()}
 							style={{ zIndex: 10 }}
 						>
-							<ButtonSmallCustom
-								icon={ArrowUturnLeftIcon}
-								color={"grey"}
-								styleWrapperButton={{ borderRadius: "100%" }}
-							/>
+							<ButtonSmallCustom icon={ArrowUturnLeftIcon} color={"grey"} styleWrapperButton={{ borderRadius: "100%" }} />
 						</TouchableOpacity>
-						<Text className="flex-1 text-center ml-[-40]">
-							{cat?.name}
-						</Text>
+						<Text className="flex-1 text-center ml-[-40]">{cat?.name}</Text>
 					</View>
 				}
 			>
@@ -195,31 +173,15 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 						{cat === null
 							? allCategories.map((category, index) => {
 									return (
-										<TouchableOpacity
-											onPress={() =>
-												handleCategory(category)
-											}
-											key={index}
-											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
-										>
-											<Text className="text-2xl">
-												{category.name}
-											</Text>
+										<TouchableOpacity onPress={() => handleCategory(category)} key={index} className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+											<Text className="text-2xl">{category.name}</Text>
 										</TouchableOpacity>
 									);
 							  })
 							: cat.subcategories.map((subCategory, index) => {
 									return (
-										<TouchableOpacity
-											onPress={() =>
-												handleSubCategory(subCategory)
-											}
-											key={index}
-											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
-										>
-											<Text className="text-2xl">
-												{subCategory.name}
-											</Text>
+										<TouchableOpacity onPress={() => handleSubCategory(subCategory)} key={index} className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+											<Text className="text-2xl">{subCategory.name}</Text>
 										</TouchableOpacity>
 									);
 							  })}

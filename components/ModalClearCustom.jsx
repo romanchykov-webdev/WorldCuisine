@@ -1,12 +1,5 @@
 import React from "react";
-import {
-	Modal,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	TouchableWithoutFeedback,
-	View,
-} from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { shadowBoxBlack } from "../constants/shadow";
 
 const ModalClearCustom = ({
@@ -32,12 +25,7 @@ const ModalClearCustom = ({
 		>
 			<TouchableWithoutFeedback onPress={closeModal}>
 				<View style={styles.modalOverlay}>
-					<View
-						style={[
-							styles.modalContent,
-							fullWidth && { width: "98%" },
-						]}
-					>
+					<View style={[styles.modalContent, fullWidth && { width: "98%" }]}>
 						<View>
 							<Text style={styles.modalTitle}>{titleHeader}</Text>
 
@@ -47,13 +35,8 @@ const ModalClearCustom = ({
 						{children}
 
 						<View className="flex-row gap-x-2">
-							<TouchableOpacity
-								style={[styles.cancelButton, shadowBoxBlack()]}
-								onPress={handleSave}
-							>
-								<Text style={styles.cancelText}>
-									{textButton}
-								</Text>
+							<TouchableOpacity style={[styles.cancelButton, shadowBoxBlack()]} onPress={handleSave}>
+								<Text style={styles.cancelText}>{textButton}</Text>
 							</TouchableOpacity>
 						</View>
 					</View>

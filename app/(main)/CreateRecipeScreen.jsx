@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-	Alert,
-	KeyboardAvoidingView,
-	Platform,
-	SafeAreaView,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // arrow-up-on-square
 
 import ButtonBack from "../../components/ButtonBack";
@@ -32,6 +22,8 @@ import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 
 // import recipe preview
 import { useRouter } from "expo-router";
+import TitleDescriptionComponent from "../../components/CreateRecipeScreen/TitleDescriptionComponent";
+import i18n from "../../lang/i18n";
 
 const CreateRecipeScreen = () => {
 	const { user: userData, language } = useAuth();
@@ -62,7 +54,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		// console.log("totalRecipe", JSON.stringify(totalRecipe));
+		console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -141,98 +133,60 @@ const CreateRecipeScreen = () => {
 						<View className="absolute left-0 z-10">
 							<ButtonBack />
 						</View>
-						<Text className="text-center mb-5 text-xl font-bold">
-							Create Recipe
-						</Text>
+						<Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text>
 					</View>
+
 					{/*add category*/}
-					<AddCategory
-						langApp={langApp}
-						setTotalRecipe={setTotalRecipe}
-					/>
+					<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} />
+
 					{/* upload header image    */}
-					<UploadHeaderImage
-						styleTextDesc={styles.styleTextDesc}
-						styleInput={styles.styleInput}
-						langDev={langApp}
-						setTotalLangRecipe={setTotalLangRecipe}
-						totalLangRecipe={totalLangRecipe}
-						setTotalRecipe={setTotalRecipe}
-						totalRecipe={totalRecipe}
-					/>
+					<UploadHeaderImage styleTextDesc={styles.styleTextDesc} styleInput={styles.styleInput} langDev={langApp} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />
+
 					{/*   aria di recipe*/}
 					<View className="mb-5">
-						<Text style={styles.styleTextDesc}>
-							Country of origin of the recipe
-						</Text>
+						{/* <Text style={styles.styleTextDesc}>Country of origin of the recipe</Text> */}
+						<TitleDescriptionComponent titleText={i18n.t("Country of origin of the recipe")} titleVisual={true} />
 
-						<InputCreateRecipeScreenCustom
-							styleInput={styles.styleInput}
-							title="Country of origin of the recipe"
-							placeholderText={`Write the country of`}
-							placeholderColor="grey"
-							totalLangRecipe={totalLangRecipe}
-							setTotalRecipe={setTotalRecipe}
-						/>
+						<InputCreateRecipeScreenCustom styleInput={styles.styleInput} placeholderText={i18n.t("Write the name of the country")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
 					</View>
+
 					{/*  Tags   */}
-					<TagsCustom
-						styleInput={styles.styleInput}
-						styleTextDesc={styles.styleTextDesc}
-						setTotalRecipe={setTotalRecipe}
-					/>
+					<TagsCustom styleInput={styles.styleInput} styleTextDesc={styles.styleTextDesc} setTotalRecipe={setTotalRecipe} />
+
 					{/*    select */}
 					<View className="mb-5">
-						<Text style={styles.styleTextDesc}>Description</Text>
-
-						<SelectCreateRecipeScreenCustom
-							setTotalRecipe={setTotalRecipe}
-						/>
+						<SelectCreateRecipeScreenCustom setTotalRecipe={setTotalRecipe} />
 					</View>
+
 					{/*    Ingredients*/}
 					<View className="mb-5">
-						<Text style={styles.styleTextDesc}>Ingredients</Text>
-						<Text className="text-neutral-700 text-xs mb-3">
-							Добавьте все ингредиенты и их количество для
-							приготовления рецепта.
-						</Text>
+						{/* <Text style={styles.styleTextDesc}>Ingredients</Text> */}
+						{/* <Text className="text-neutral-700 text-xs mb-3">Добавьте все ингредиенты и их количество для приготовления рецепта.</Text> */}
 
 						<View>
-							<IngredientsCreateRecipe
-								styleInput={styles.styleInput}
-								placeholderText={`Ingredient language`}
-								placeholderColor="grey"
-								langApp={userData.lang ?? language}
-								measurement={measurement}
-								totalLangRecipe={totalLangRecipe}
-								setTotalRecipe={setTotalRecipe}
-							/>
+							<IngredientsCreateRecipe styleInput={styles.styleInput} placeholderText={i18n.t("Name of the ingredient")} placeholderColor="grey" langApp={userData.lang ?? language} measurement={measurement} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
 						</View>
 					</View>
+
 					{/*    recipe description  */}
 					<View className="mb-10">
-						<RecipeListCreateRecipe
-							placeholderText={`Здесь вы можете описать рецепт на языке`}
-							placeholderColor="grey"
-							totalLangRecipe={totalLangRecipe}
-							setTotalRecipe={setTotalRecipe}
-						/>
+						<RecipeListCreateRecipe placeholderText={i18n.t("Here you can describe the recipe in the language")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
 					</View>
+
 					{/*    add recipe link video*/}
 					<View className="mb-10">
 						<AddLinkVideo setTotalRecipe={setTotalRecipe} />
 					</View>
+
 					{/*    add link to the author*/}
 					<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
+
 					{/*    AddPintGoogleMaps    */}
 					<AddPintGoogleMaps setTotalRecipe={setTotalRecipe} />
+
 					{/*    buttons save and preview*/}
 					<View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
-						<TouchableOpacity
-							onPress={handlePreview}
-							style={shadowBoxBlack()}
-							className="flex-1"
-						>
+						<TouchableOpacity onPress={handlePreview} style={shadowBoxBlack()} className="flex-1">
 							<ButtonSmallCustom
 								buttonText={true}
 								title="Preview"
@@ -244,10 +198,7 @@ const CreateRecipeScreen = () => {
 							/>
 						</TouchableOpacity>
 
-						<TouchableOpacity
-							style={shadowBoxBlack()}
-							className="flex-1"
-						>
+						<TouchableOpacity style={shadowBoxBlack()} className="flex-1">
 							<ButtonSmallCustom
 								buttonText={true}
 								title="Save"

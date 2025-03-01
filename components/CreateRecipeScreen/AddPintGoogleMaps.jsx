@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-	Linking,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 import { MapPinIcon, TrashIcon } from "react-native-heroicons/mini";
@@ -15,6 +9,8 @@ import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
 // import my hook
 import { useDebounce } from "../../constants/halperFunctions";
+import i18n from "../../lang/i18n";
+import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
 const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	const [marker, setMarker] = useState(null);
@@ -52,32 +48,21 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	return (
 		<View className="mb-5">
 			{marker !== null && (
-				<Animated.View
-					entering={FadeInDown.delay(100).springify()}
-					className="flex-row items-center justify-betwen mb-3"
-				>
+				<Animated.View entering={FadeInDown.delay(100).springify()} className="flex-row items-center justify-betwen mb-3">
 					<View className="flex-row items-center  flex-1">
 						<TouchableOpacity onPress={openMap}>
 							<MapPinIcon size={50} color="blue" />
 						</TouchableOpacity>
-						<Text>Здесь находиться торговая точка</Text>
+						<Text>{i18n.t("There is a store here")}</Text>
 					</View>
 
 					<TouchableOpacity onPress={() => setMarker(null)}>
-						<ButtonSmallCustom
-							bg="red"
-							icon={TrashIcon}
-							w={60}
-							h={60}
-						/>
+						<ButtonSmallCustom bg="red" icon={TrashIcon} w={60} h={60} />
 					</TouchableOpacity>
 				</Animated.View>
 			)}
 
-			<Text className="mb-4">
-				Если у вас есть торговая точка, вы можете добавить её на карте,
-				и клиенты смогут её найти.
-			</Text>
+			<TitleDescriptionComponent titleText={i18n.t("If you have a store")} titleVisual={true} discriptionVisual={true} descriptionText={i18n.t("You can add it to the map, and customers can find it")} />
 
 			<TouchableOpacity
 				// style={styles.button}
@@ -87,13 +72,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 				{/*<Text style={styles.buttonText}>*/}
 				{/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}*/}
 				{/*</Text>*/}
-				<ButtonSmallCustom
-					bg="green"
-					h={60}
-					w="100%"
-					title={mapVisible ? "Скрыть карту" : "Открыть карту"}
-					buttonText={true}
-				/>
+				<ButtonSmallCustom bg="green" h={60} w="100%" title={mapVisible ? `${i18n.t("Hide")} ${i18n.t("the map")}` : `${i18n.t("Open")} ${i18n.t("the map")}`} buttonText={true} />
 			</TouchableOpacity>
 
 			{mapVisible && (
@@ -108,18 +87,15 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 					}}
 					onPress={handleMapPress}
 				>
-					{marker && (
-						<Marker coordinate={marker} title="Выбранная точка" />
-					)}
+					{marker && <Marker coordinate={marker} title={i18n.t("Selected point")} />}
 				</MapView>
 			)}
 
-			{marker && (
+			{/* {marker && (
 				<Text className="mt-4">
-					Выбрано местоположение координаты: {marker.latitude},{" "}
-					{marker.longitude}
+					Выбрано местоположение координаты: {marker.latitude}, {marker.longitude}
 				</Text>
-			)}
+			)} */}
 		</View>
 	);
 };

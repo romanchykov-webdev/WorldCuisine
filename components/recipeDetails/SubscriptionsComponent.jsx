@@ -13,7 +13,7 @@ import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) => {
 	const subscriberId = subscriber?.id;
 
-	console.log("SubscriptionsComponent subscriber ", subscriber);
+	// console.log("SubscriptionsComponent subscriber ", subscriber);
 	// console.log("SubscriptionsComponent subscriber id", subscriber?.id);
 	// console.log("SubscriptionsComponent creatorId id", creatorId);
 	// console.log("SubscriptionsComponent isPreview", isPreview);
@@ -148,8 +148,12 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 		// console.log("subscriber", subscriber);
 		// console.log("subscriberId", subscriberId);
 		// console.log("creatorId", creatorId);
+		// const cleanKey = (key) => key.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
+		// const titleModal = i18n.t(cleanKey("To subscribe, you need to log in or create an account"));
+		// console.log(titleModal);
+
 		if (subscriber === null) {
-			showCustomAlert("Subscribe", `${i18n.t("To subscribe, you need to log in or create an account.")}`, router);
+			showCustomAlert("Subscribe", `${i18n.t("To subscribe, you need to log in or create an account")}`, router);
 		}
 	};
 

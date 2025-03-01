@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-import {
-	CircleStackIcon,
-	LinkIcon,
-	PlayCircleIcon,
-	TrashIcon,
-	XMarkIcon,
-} from "react-native-heroicons/mini";
+import { CircleStackIcon, LinkIcon, PlayCircleIcon, TrashIcon, XMarkIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import InputComponent from "../InputComponent";
@@ -16,6 +10,8 @@ import VideoCustom from "../recipeDetails/video/VideoCustom";
 
 // import my hook
 import { useDebounce } from "../../constants/halperFunctions";
+import i18n from "../../lang/i18n";
+import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
 const AddLinkVideo = ({ setTotalRecipe }) => {
 	// https://www.youtube.com/watch?v=q4xBdh4Cjfk
@@ -103,89 +99,38 @@ const AddLinkVideo = ({ setTotalRecipe }) => {
 
 	return (
 		<View>
-			{(linkVideo.strYoutube !== null ||
-				linkVideo.strYouVideo !== null) && (
-				<View>
+			{(linkVideo.strYoutube !== null || linkVideo.strYouVideo !== null) && (
+				<View className="mb-5">
 					<VideoCustom video={linkVideo} />
 
-					<TouchableOpacity
-						className="absolute top-0 right-0 justify-center items-center"
-						onPress={removeVideo}
-					>
-						<ButtonSmallCustom
-							buttonText={false}
-							icon={TrashIcon}
-							bg="red"
-							w={30}
-							h={30}
-						/>
+					<TouchableOpacity className="absolute top-0 right-0 justify-center items-center" onPress={removeVideo}>
+						<ButtonSmallCustom buttonText={false} icon={TrashIcon} bg="red" w={30} h={30} />
 					</TouchableOpacity>
 				</View>
 			)}
 
-			<Text className="mt-2 mb-2">Add link to video</Text>
+			<TitleDescriptionComponent titleText={i18n.t("Add link to video")} titleVisual={true} discriptionVisual={true} descriptionText={i18n.t("If you have a link to a video stored on YouTube or Google Drive")} />
 			<View className="gap-x-2 flex-row flex-1">
 				{/*YouTube*/}
-				<TouchableOpacity
-					onPress={() => handleTuLink("YouTube")}
-					style={[
-						shadowBoxBlack(),
-						styles.buttonWrapper,
-						{ backgroundColor: "#EF4444" },
-					]}
-				>
+				<TouchableOpacity onPress={() => handleTuLink("YouTube")} style={[shadowBoxBlack(), styles.buttonWrapper, { backgroundColor: "#EF4444" }]}>
 					<PlayCircleIcon size={25} color="white" />
 					<Text style={styles.ButtonText}>YouTube</Text>
 				</TouchableOpacity>
 
 				{/*Google disk*/}
-				<TouchableOpacity
-					onPress={() => handleTuLink("Google Disk")}
-					style={[
-						shadowBoxBlack(),
-						styles.buttonWrapper,
-						{ backgroundColor: "green" },
-					]}
-				>
+				<TouchableOpacity onPress={() => handleTuLink("Google Disk")} style={[shadowBoxBlack(), styles.buttonWrapper, { backgroundColor: "green" }]}>
 					<CircleStackIcon size={25} color="white" />
 					<Text style={styles.ButtonText}>Google Disk</Text>
 				</TouchableOpacity>
 			</View>
 
-			<ModalClearCustom
-				titleHeader={
-					"Вставьте в это поле ссылку на видео с рецептом из"
-				}
-				textButton={"Save"}
-				isModalVisible={isModalVisible}
-				closeModal={closeModal}
-				handleSave={handleSave}
-				animationType={"fade"}
-				childrenSubheader={
-					<Text className="underline font-bold text-[18px] mb-[15] text-center ">
-						{link}.
-					</Text>
-				}
-			>
+			<ModalClearCustom titleHeader={`${i18n.t("Insert the link to the recipe video from here")}`} textButton={"Save"} isModalVisible={isModalVisible} closeModal={closeModal} handleSave={handleSave} animationType={"fade"} childrenSubheader={<Text className="underline font-bold text-[18px] mb-[15] text-center ">{link}.</Text>}>
 				<View>
-					<InputComponent
-						icon={<LinkIcon size={20} color={"grey"} />}
-						placeholder={"Вставьте линк на ваше видео"}
-						value={inputLink}
-						onChangeText={setInputLink}
-					/>
+					<InputComponent icon={<LinkIcon size={20} color={"grey"} />} placeholder={i18n.t("Insert the link to your video")} value={inputLink} onChangeText={setInputLink} />
 
 					{inputLink !== "" && (
-						<TouchableOpacity
-							onPress={removeLink}
-							className="absolute top-[-5] right-0"
-						>
-							<ButtonSmallCustom
-								icon={XMarkIcon}
-								bg="red"
-								w={20}
-								h={20}
-							/>
+						<TouchableOpacity onPress={removeLink} className="absolute top-[-5] right-0">
+							<ButtonSmallCustom icon={XMarkIcon} bg="red" w={20} h={20} />
 						</TouchableOpacity>
 					)}
 				</View>

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import {
-	convertGoogleDriveLink,
-	getYoutubeVideoId,
-} from "../../../constants/halperFunctions";
+import { StyleSheet, View } from "react-native";
+import { convertGoogleDriveLink, getYoutubeVideoId } from "../../../constants/halperFunctions";
 
 import YouTubeIframe from "react-native-youtube-iframe";
 import { hp } from "../../../constants/responsiveScreen";
@@ -15,6 +12,7 @@ import LoadingComponent from "../../loadingComponent";
 
 // translate
 import i18n from "../../../lang/i18n";
+import TitleDescriptionComponent from "../../CreateRecipeScreen/TitleDescriptionComponent";
 
 const VideoCustom = ({ video }) => {
 	// console.log("VideoCustom video", video)
@@ -72,12 +70,13 @@ const VideoCustom = ({ video }) => {
 
 	return (
 		<View>
-			<Text
+			{/* <Text
 				style={[{ fontSize: hp(2.5) }, shadowBoxBlack()]}
 				className="font-bold text-neutral-700 mb-2"
 			>
 				{i18n.t("Recipe video")}
-			</Text>
+			</Text> */}
+			<TitleDescriptionComponent titleText={i18n.t("Recipe video")} titleVisual={true} />
 			<View
 				style={shadowBoxBlack({
 					color: "#000", // Цвет тени для блоков (по умолчанию чёрный)
@@ -92,10 +91,7 @@ const VideoCustom = ({ video }) => {
 					// entering={FadeInDown.delay(900)}
 					>
 						{/*    player*/}
-						<View
-							style={[{ height: hp(24) }]}
-							className="rounded-[20] overflow-hidden border-2 border-neutral-700"
-						>
+						<View style={[{ height: hp(24) }]} className="rounded-[20] overflow-hidden border-2 border-neutral-700">
 							{loadingVideo ? (
 								<LoadingComponent />
 							) : (
@@ -111,23 +107,13 @@ const VideoCustom = ({ video }) => {
 				{youVideoLink != null && (
 					<View>
 						{/*    player*/}
-						<View
-							style={[{ height: hp(24) }]}
-							className="rounded-[20] overflow-hidden border-2 border-neutral-700"
-						>
+						<View style={[{ height: hp(24) }]} className="rounded-[20] overflow-hidden border-2 border-neutral-700">
 							{loadingVideo ? (
 								<LoadingComponent />
 							) : (
 								<>
-									<VideoView
-										style={styles.video}
-										player={player}
-										allowsFullscreen
-										allowsPictureInPicture
-									/>
-									<View
-										style={styles.controlsContainer}
-									></View>
+									<VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+									<View style={styles.controlsContainer}></View>
 								</>
 							)}
 						</View>

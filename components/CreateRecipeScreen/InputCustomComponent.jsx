@@ -8,16 +8,9 @@ import AddLangComponent from "./AddLangComponent";
 import { TrashIcon } from "react-native-heroicons/mini";
 
 import { useDebounce } from "../../constants/halperFunctions";
+import i18n from "../../lang/i18n";
 
-const InputCustomComponent = ({
-	styleTextDesc,
-	styleInput,
-	langDev,
-	setTotalLangRecipe,
-	totalLangRecipe,
-	setTotalRecipe,
-	totalRecipe,
-}) => {
+const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe, setTotalRecipe, totalRecipe }) => {
 	const [choiceLang, setChoiceLang] = useState(null);
 	const [selectedLang, setSelectedLang] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
@@ -30,6 +23,11 @@ const InputCustomComponent = ({
 
 	const [totalTitle, setTotalTitle] = useState({});
 
+	// console.log("InputCustomComponent totalLangRecipe", totalLangRecipe);
+	// console.log("InputCustomComponent totalTitle", totalTitle);
+	// console.log("InputCustomComponent totalTitle", totalTitle?.lang?.length);
+	// console.log("InputCustomComponent totalTitle", totLang?.length);
+
 	// Добавляем дебонсированное значение
 	const debouncedInputValue = useDebounce(totalTitle, 1000); // 1000мс = 1 секунда
 
@@ -38,9 +36,7 @@ const InputCustomComponent = ({
 	}, [languages]);
 
 	useEffect(() => {
-		const res = languages?.filter(
-			(language) => language.code.toString() === langDev.toLowerCase()
-		);
+		const res = languages?.filter((language) => language.code.toString() === langDev.toLowerCase());
 		// console.log('res',res[0]?.name)
 		setTotLang([res[0]?.name]);
 	}, [languages]);
@@ -49,11 +45,7 @@ const InputCustomComponent = ({
 	const selectLanguage = (lang) => {
 		setSelectedLang(lang);
 		setModalVisible(false);
-		if (
-			!totLang.some(
-				(item) => item.toLowerCase() === lang.name.toLowerCase()
-			)
-		) {
+		if (!totLang.some((item) => item.toLowerCase() === lang.name.toLowerCase())) {
 			setTotLang([...totLang, lang.name]);
 		}
 
@@ -77,17 +69,15 @@ const InputCustomComponent = ({
 	};
 
 	useEffect(() => {
-		setTotalRecipe((prevRecipe) => ({
-			...prevRecipe,
-			title: debouncedInputValue,
-		}));
+		if (totalTitle?.lang?.length === totLang?.length) {
+			setTotalRecipe((prevRecipe) => ({
+				...prevRecipe,
+				title: debouncedInputValue,
+			}));
+		}
 	}, [debouncedInputValue, setTotalRecipe]);
 
-	const debouncedUpdateTranslations = (
-		updatedTranslations,
-		setTotalTitle,
-		langDev
-	) => {
+	const debouncedUpdateTranslations = (updatedTranslations, setTotalTitle, langDev) => {
 		const langArray = Object.keys(updatedTranslations).map((key) => ({
 			lang: key,
 			name: updatedTranslations[key],
@@ -103,42 +93,29 @@ const InputCustomComponent = ({
 	const handleTextChange = (langCode, value) => {
 		const updatedTranslations = { ...translations, [langCode]: value };
 		setTranslations(updatedTranslations);
-		debouncedUpdateTranslations(
-			updatedTranslations,
-			setTotalTitle,
-			langDev
-		);
+		debouncedUpdateTranslations(updatedTranslations, setTotalTitle, langDev);
 	};
 
 	return (
 		<View>
-			<Text style={styleTextDesc}>Название блюда</Text>
+			<Text style={styleTextDesc}>{i18n.t("Dish Name")}</Text>
 			{totLang &&
 				totLang?.map((lang, index) => {
 					// console.log("totLang", lang);
-					const langCode = languages.find(
-						(language) => language.name === lang
-					)?.code;
+					const langCode = languages.find((language) => language.name === lang)?.code;
 					return (
 						<View key={index} className="mb-5">
 							<Text
-								style={styleTextDesc}
+								style={[styleTextDesc, { fontSize: 12 }]}
 								// className="pl-2 mb-2"
+								className="mt-2"
 							>
-								Language {lang}
+								{lang}
 							</Text>
 							<View className="flex-row items-center">
 								<View className="relative flex-1">
 									<StərɪskCustomComponent />
-									<TextInput
-										value={translations[langCode] || ""}
-										onChangeText={(value) =>
-											handleTextChange(langCode, value)
-										}
-										style={styleInput}
-										placeholder="Enter new recipe name"
-										placeholderTextColor="grey"
-									/>
+									<TextInput value={translations[langCode] || ""} onChangeText={(value) => handleTextChange(langCode, value)} style={styleInput} placeholder={i18n.t("Enter recipe name")} placeholderTextColor="grey" />
 								</View>
 
 								{/*<CustomTextInputTitle styleInput={styleInput} languages={languages} lang={lang}*/}
@@ -157,14 +134,7 @@ const InputCustomComponent = ({
 					);
 				})}
 
-			<AddLangComponent
-				languages={languages}
-				selectLanguage={selectLanguage}
-				modalVisible={modalVisible}
-				setModalVisible={setModalVisible}
-				totLang={totLang}
-				langDev={langDev}
-			/>
+			<AddLangComponent languages={languages} selectLanguage={selectLanguage} modalVisible={modalVisible} setModalVisible={setModalVisible} totLang={totLang} langDev={langDev} />
 		</View>
 	);
 };

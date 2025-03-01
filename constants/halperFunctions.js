@@ -105,10 +105,7 @@ export const getYoutubeVideoId = (url) => {
 export const convertGoogleDriveLink = (url) => {
 	// console.log('convertGoogleDriveLink url', url);
 	if (url != null) {
-		return url.replace(
-			/\/file\/d\/(.*?)\/view.*/,
-			"/uc?export=download&id=$1"
-		);
+		return url.replace(/\/file\/d\/(.*?)\/view.*/, "/uc?export=download&id=$1");
 	}
 	return null;
 };
@@ -131,18 +128,7 @@ export const useDebounce = (value, delay) => {
 // функция проверки структуры данных totalRecipe
 export const validateRecipeStructure = (recipe) => {
 	// Проверка базовых обязательных полей
-	const requiredFields = [
-		"category",
-		"imageHeader",
-		"title",
-		"area",
-		"rating",
-		"likes",
-		"comments",
-		"recipeMetrics",
-		"ingredients",
-		"publishedId",
-	];
+	const requiredFields = ["category", "imageHeader", "title", "area", "rating", "likes", "comments", "recipeMetrics", "ingredients", "publishedId"];
 
 	for (const field of requiredFields) {
 		if (!recipe.hasOwnProperty(field)) {
@@ -154,18 +140,18 @@ export const validateRecipeStructure = (recipe) => {
 	}
 
 	// Проверка типа данных
-	if (
-		typeof recipe.category !== "string" ||
-		typeof recipe.imageHeader !== "string" ||
-		typeof recipe.rating !== "number" ||
-		typeof recipe.likes !== "number" ||
-		typeof recipe.comments !== "number" ||
-		typeof recipe.publishedId !== "string"
-	) {
+	if (typeof recipe.category !== "string" || typeof recipe.imageHeader !== "string" || typeof recipe.rating !== "number" || typeof recipe.likes !== "number" || typeof recipe.comments !== "number" || typeof recipe.publishedId !== "string") {
 		return {
 			isValid: false,
-			message:
-				"Необходимо заполнить все обязательные поля, отмеченные \u2736.",
+			message: "Необходимо заполнить все обязательные поля, отмеченные \u2736.",
+		};
+	}
+
+	// Проверка title (not null)
+	if (recipe.title === null) {
+		return {
+			isValid: false,
+			message: "Заполните поле название рецепта.",
 		};
 	}
 
@@ -193,8 +179,7 @@ export const validateRecipeStructure = (recipe) => {
 		) {
 			return {
 				isValid: false,
-				message:
-					"Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.",
+				message: "Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.",
 			};
 		}
 	}
@@ -207,8 +192,7 @@ export const validateRecipeStructure = (recipe) => {
 	) {
 		return {
 			isValid: false,
-			message:
-				"Поле title.strTitle должно быть непустой строкой после удаления пробелов.",
+			message: "Поле title.strTitle должно быть непустой строкой после удаления пробелов.",
 		};
 	}
 
@@ -233,27 +217,15 @@ export const validateRecipeStructure = (recipe) => {
 	}
 
 	// Проверка recipeMetrics (объект с time, persons, calories, difficulty)
-	if (
-		typeof recipe.recipeMetrics !== "object" ||
-		recipe.recipeMetrics === null ||
-		!recipe.recipeMetrics.hasOwnProperty("time") ||
-		!recipe.recipeMetrics.hasOwnProperty("persons") ||
-		!recipe.recipeMetrics.hasOwnProperty("calories") ||
-		!recipe.recipeMetrics.hasOwnProperty("difficulty")
-	) {
+	if (typeof recipe.recipeMetrics !== "object" || recipe.recipeMetrics === null || !recipe.recipeMetrics.hasOwnProperty("time") || !recipe.recipeMetrics.hasOwnProperty("persons") || !recipe.recipeMetrics.hasOwnProperty("calories") || !recipe.recipeMetrics.hasOwnProperty("difficulty")) {
 		return {
 			isValid: false,
-			message:
-				"Поле recipeMetrics должно содержать time, persons, calories, difficulty.",
+			message: "Поле recipeMetrics должно содержать time, persons, calories, difficulty.",
 		};
 	}
 
 	// Проверка ingredients (объект с lang и массивами ингредиентов)
-	if (
-		typeof recipe.ingredients !== "object" ||
-		!recipe.ingredients.hasOwnProperty("lang") ||
-		typeof recipe.ingredients.lang !== "object"
-	) {
+	if (typeof recipe.ingredients !== "object" || !recipe.ingredients.hasOwnProperty("lang") || typeof recipe.ingredients.lang !== "object") {
 		return {
 			isValid: false,
 			message: "Необходимо добавить минимум один ингредиент.",
@@ -278,12 +250,7 @@ export const validateRecipeStructure = (recipe) => {
 		}
 
 		for (const ingredient of ingredientsArray) {
-			if (
-				typeof ingredient !== "object" ||
-				!ingredient.hasOwnProperty("unit") ||
-				!ingredient.hasOwnProperty("quantity") ||
-				!ingredient.hasOwnProperty("ingredient")
-			) {
+			if (typeof ingredient !== "object" || !ingredient.hasOwnProperty("unit") || !ingredient.hasOwnProperty("quantity") || !ingredient.hasOwnProperty("ingredient")) {
 				return {
 					isValid: false,
 					message: `Для ингредиента на языке "${lang}".Вы забыли добавить количество или меру измерения.`,
@@ -291,20 +258,14 @@ export const validateRecipeStructure = (recipe) => {
 			}
 
 			// Проверка, что значения не являются пустыми строками после trim
-			if (
-				typeof ingredient.unit === "string" &&
-				ingredient.unit.trim() === ""
-			) {
+			if (typeof ingredient.unit === "string" && ingredient.unit.trim() === "") {
 				return {
 					isValid: false,
 					message: `Для ингредиента на языке "${lang}". Вы забыли добавить меру измерения.`,
 				};
 			}
 
-			if (
-				typeof ingredient.ingredient === "string" &&
-				ingredient.ingredient.trim() === ""
-			) {
+			if (typeof ingredient.ingredient === "string" && ingredient.ingredient.trim() === "") {
 				return {
 					isValid: false,
 					message: `Для ингредиента на языке "${lang}". Вы забыли добавить название ингредиента.`,
@@ -312,10 +273,7 @@ export const validateRecipeStructure = (recipe) => {
 			}
 
 			// Проверка quantity (может быть строкой или числом, но не пустой строкой, если строка)
-			if (
-				typeof ingredient.quantity === "string" &&
-				ingredient.quantity.trim() === ""
-			) {
+			if (typeof ingredient.quantity === "string" && ingredient.quantity.trim() === "") {
 				return {
 					isValid: false,
 					message: `Для ингредиента на языке "${lang}". Вы забыли добавить количество ингредиента.`,
@@ -365,15 +323,13 @@ export const validateRecipeStructure = (recipe) => {
 		if (!Array.isArray(recipe.tags)) {
 			return {
 				isValid: false,
-				message:
-					"Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
+				message: "Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
 			};
 		}
 		if (recipe.tags.length < 1) {
 			return {
 				isValid: false,
-				message:
-					"Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
+				message: "Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
 			};
 		}
 		if (!recipe.tags.every((tag) => typeof tag === "string")) {

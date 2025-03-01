@@ -11,13 +11,10 @@ import ViewImageListCreateRecipe from "./ViewImageListCreateRecipe";
 
 //import my hook
 import { useDebounce } from "../../../constants/halperFunctions";
+import i18n from "../../../lang/i18n";
+import TitleDescriptionComponent from "../TitleDescriptionComponent";
 
-const RecipeListCreateRecipe = ({
-	placeholderText,
-	placeholderColor,
-	totalLangRecipe,
-	setTotalRecipe,
-}) => {
+const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRecipe, setTotalRecipe }) => {
 	const [addImages, setAddImages] = useState([]);
 	useEffect(() => {}, [addImages]);
 
@@ -61,7 +58,7 @@ const RecipeListCreateRecipe = ({
 	const addImageRecipeList = async () => {
 		// console.log('Add Recipe List');
 		if (addImages.length >= 5) {
-			Alert.alert("Вы достигли лимита изображений на один пункт.");
+			Alert.alert(`${i18n.t("You have reached the image limit for one item")}`);
 			return;
 		}
 
@@ -78,10 +75,7 @@ const RecipeListCreateRecipe = ({
 			// Получаем размер оригинального изображения
 			const originalResponse = await fetch(originalUri);
 			const originalBlob = await originalResponse.blob();
-			const originalSizeInMB = (
-				originalBlob.size /
-				(1024 * 1024)
-			).toFixed(2);
+			const originalSizeInMB = (originalBlob.size / (1024 * 1024)).toFixed(2);
 			// console.log(`Original image size: ${originalSizeInMB} MB`);
 
 			// Сжимаем изображение перед использованием
@@ -91,10 +85,7 @@ const RecipeListCreateRecipe = ({
 			// Получаем размер сжатого изображения
 			const compressedResponse = await fetch(compressedImage.uri);
 			const compressedBlob = await compressedResponse.blob();
-			const compressedSizeInMB = (
-				compressedBlob.size /
-				(1024 * 1024)
-			).toFixed(2);
+			const compressedSizeInMB = (compressedBlob.size / (1024 * 1024)).toFixed(2);
 			// console.log(`Compressed image size: ${compressedSizeInMB} MB`);
 
 			// Обновляем состояние
@@ -104,14 +95,10 @@ const RecipeListCreateRecipe = ({
 			// console.log('add image for recipe list', addImages);
 
 			// Выводим информацию в alert
-			Alert.alert(
-				"Size image",
-				`Original size: ${originalSizeInMB} MB\n` +
-					`Compressed size:, ${compressedSizeInMB} MB`
-			);
+			Alert.alert("Size image", `Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`);
 		} else {
 			// console.error("Image selection canceled or failed", result);
-			Alert.alert("Вы не добавили изображение");
+			Alert.alert(`${i18n.t("You did not add an image")}`);
 		}
 	};
 
@@ -125,10 +112,7 @@ const RecipeListCreateRecipe = ({
 		});
 
 		if (hasEmptyFields) {
-			Alert.alert(
-				"Ошибка добавления.",
-				"Заполните все поля перед добавлением нового шага."
-			);
+			Alert.alert("Ошибка добавления.", "Заполните все поля перед добавлением нового шага.");
 			return;
 		}
 
@@ -193,27 +177,16 @@ const RecipeListCreateRecipe = ({
 				{totalLangRecipe?.length > 1 && (
 					<View className="mb-2">
 						<Text className="mb-2 text-xl text-neutral-700 font-bold">
-							Вид на языке
-							<Text className="capitalize text-amber-500">
-								{" "}
-								{changeLang}
-							</Text>
+							{i18n.t("View in language")}
+							<Text className="capitalize text-amber-500"> {changeLang}</Text>
 						</Text>
 
 						<View className="flex-row flex-wrap gap-x-2 mb-2 items-center justify-around">
 							{totalLangRecipe.map((item, index) => {
 								return (
 									<TouchableOpacity
-										style={
-											changeLang === item
-												? shadowBoxBlack()
-												: null
-										}
-										className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${
-											changeLang === item
-												? `bg-amber-500`
-												: `bg-transparent`
-										} `}
+										style={changeLang === item ? shadowBoxBlack() : null}
+										className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${changeLang === item ? `bg-amber-500` : `bg-transparent`} `}
 										key={index}
 										onPress={() => {
 											handleChangeLang(item);
@@ -230,115 +203,48 @@ const RecipeListCreateRecipe = ({
 				{
 					// Проверяем, есть ли данные для выбранного языка
 					recipeArray[changeLang]
-						? Object.keys(recipeArray[changeLang]).map(
-								(stepIndex, index) => {
-									// Выводим только те элементы, которые являются шагами (то есть числами)
-									if (!isNaN(Number(stepIndex))) {
-										return (
-											<Animated.View
-												entering={FadeInDown.duration(
-													300
-												).springify()}
-												key={stepIndex}
-												className="mb-5 "
-											>
-												<View className="flex-1 flex-row">
-													<Text className="mb-2 flex-1">
-														<Text className="text-amber-500">
-															{/*{stepIndex}) {" "}*/}
-															{index + 1}){" "}
-														</Text>
-														{
-															recipeArray[
-																changeLang
-															][stepIndex]?.text
-														}
+						? Object.keys(recipeArray[changeLang]).map((stepIndex, index) => {
+								// Выводим только те элементы, которые являются шагами (то есть числами)
+								if (!isNaN(Number(stepIndex))) {
+									return (
+										<Animated.View entering={FadeInDown.duration(300).springify()} key={stepIndex} className="mb-5 ">
+											<View className="flex-1 flex-row">
+												<Text className="mb-2 flex-1">
+													<Text className="text-amber-500">
+														{/*{stepIndex}) {" "}*/}
+														{index + 1}){" "}
 													</Text>
+													{recipeArray[changeLang][stepIndex]?.text}
+												</Text>
 
-													{/*    button remove */}
-													<TouchableOpacity
-														onPress={() => {
-															removeStepRecipe(
-																stepIndex
-															);
-														}}
-														style={shadowBoxBlack()}
-													>
-														<ButtonSmallCustom
-															icon={TrashIcon}
-															color="white"
-															bg="#EF4444"
-														/>
-													</TouchableOpacity>
-												</View>
+												{/*    button remove */}
+												<TouchableOpacity
+													onPress={() => {
+														removeStepRecipe(stepIndex);
+													}}
+													style={shadowBoxBlack()}
+												>
+													<ButtonSmallCustom icon={TrashIcon} color="white" bg="#EF4444" />
+												</TouchableOpacity>
+											</View>
 
-												<View>
-													{recipeArray[changeLang][
-														stepIndex
-													]?.images.length > 0 &&
-														(recipeArray[
-															changeLang
-														][stepIndex]?.images
-															.length === 1 ? (
-															<ViewImageListCreateRecipe
-																image={
-																	recipeArray[
-																		changeLang
-																	][stepIndex]
-																		?.images
-																}
-															/>
-														) : (
-															<SliderImagesListCreateRecipe
-																createRecipe={
-																	true
-																}
-																images={
-																	recipeArray[
-																		changeLang
-																	][stepIndex]
-																		?.images
-																}
-															/>
-														))}
-												</View>
-											</Animated.View>
-										);
-									}
+											<View>{recipeArray[changeLang][stepIndex]?.images.length > 0 && (recipeArray[changeLang][stepIndex]?.images.length === 1 ? <ViewImageListCreateRecipe image={recipeArray[changeLang][stepIndex]?.images} /> : <SliderImagesListCreateRecipe createRecipe={true} images={recipeArray[changeLang][stepIndex]?.images} />)}</View>
+										</Animated.View>
+									);
 								}
-						  )
+						  })
 						: null
 				}
 			</View>
 
-			<Text>
-				Здесь вы можете написать рецепт в виде текста или в виде пунктов
-				также вы можете добавить фото на каждый пункт можно добавить
-				одно фото или если их несколько они будут в виде слайдера
-				максимальное количество изображений на один пункт 5 изображений.
-			</Text>
+			<TitleDescriptionComponent titleText={i18n.t("Recipe Description")} titleVisual={true} discriptionVisual={true} descriptionText={i18n.t("Here you can write a recipe as text or in bullet points")} />
 
 			{totalLangRecipe?.map((item, index) => {
-				return (
-					<TextInput
-						key={index}
-						className="border-2 border-neutral-500 rounded-[15] p-2 mb-3"
-						value={recipeArray[item]?.text || ""}
-						onChangeText={(value) => handleTextChange(item, value)}
-						placeholder={`${placeholderText} ${item}`}
-						placeholderTextColor={placeholderColor}
-						multiline={true}
-						style={{ minHeight: 100 }}
-					/>
-				);
+				return <TextInput key={index} className="border-2 border-neutral-500 rounded-[15] p-2 mb-3" value={recipeArray[item]?.text || ""} onChangeText={(value) => handleTextChange(item, value)} placeholder={`${placeholderText} ${item}`} placeholderTextColor={placeholderColor} multiline={true} style={{ minHeight: 100 }} />;
 			})}
 
 			<View className="flex-row gap-x-2 ">
-				<TouchableOpacity
-					onPress={addImageRecipeList}
-					style={shadowBoxBlack()}
-					className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
-				>
+				<TouchableOpacity onPress={addImageRecipeList} style={shadowBoxBlack()} className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ">
 					<PhotoIcon color="white" size={20} />
 					{addImages?.length > 0 && (
 						<Animated.View
@@ -359,18 +265,12 @@ const RecipeListCreateRecipe = ({
 							]}
 							className="border-2 border-neutral-500 rounded-3xl bg-violet-700"
 						>
-							<Text className="text-neutral-900 text-[16px]">
-								{addImages?.length}
-							</Text>
+							<Text className="text-neutral-900 text-[16px]">{addImages?.length}</Text>
 						</Animated.View>
 					)}
 				</TouchableOpacity>
 
-				<TouchableOpacity
-					style={shadowBoxBlack()}
-					onPress={addStepRecipe}
-					className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
-				>
+				<TouchableOpacity style={shadowBoxBlack()} onPress={addStepRecipe} className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center">
 					<PlusIcon color="white" size={20} />
 				</TouchableOpacity>
 

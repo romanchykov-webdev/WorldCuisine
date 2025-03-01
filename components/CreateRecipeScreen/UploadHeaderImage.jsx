@@ -1,25 +1,15 @@
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
-import {
-	ArrowUpOnSquareStackIcon,
-	TrashIcon,
-} from "react-native-heroicons/mini";
+import { ArrowUpOnSquareStackIcon, TrashIcon } from "react-native-heroicons/mini";
+import i18n from "../../lang/i18n";
 import { compressImage100 } from "../../lib/imageUtils";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import StərɪskCustomComponent from "../StərɪskCustomComponent";
 import InputCustomComponent from "./InputCustomComponent";
 import ViewImageListCreateRecipe from "./RecipeListCreateRecipe/ViewImageListCreateRecipe";
 
-const UploadHeaderImage = ({
-	styleTextDesc,
-	styleInput,
-	langDev,
-	setTotalLangRecipe,
-	totalLangRecipe,
-	setTotalRecipe,
-	totalRecipe,
-}) => {
+const UploadHeaderImage = ({ styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe, setTotalRecipe, totalRecipe }) => {
 	const [addImage, setAddImage] = useState([]);
 	const addImageRecipeList = async () => {
 		// console.log('Add Recipe List');
@@ -41,10 +31,7 @@ const UploadHeaderImage = ({
 			// Получаем размер оригинального изображения
 			const originalRes = await fetch(originalUri);
 			const originalBlob = await originalRes.blob();
-			const originalSizeInMB = (
-				originalBlob.size /
-				(1024 * 1024)
-			).toFixed(2);
+			const originalSizeInMB = (originalBlob.size / (1024 * 1024)).toFixed(2);
 			// console.log(`Original image size: ${originalSizeInMB} MB`);
 
 			// Сжимаем изображение перед использованием
@@ -54,10 +41,7 @@ const UploadHeaderImage = ({
 			// Получаем размер сжатого изображения
 			const compressedResponse = await fetch(compressedImage.uri);
 			const compressedBlob = await compressedResponse.blob();
-			const compressedSizeInMB = (
-				compressedBlob.size /
-				(1024 * 1024)
-			).toFixed(2);
+			const compressedSizeInMB = (compressedBlob.size / (1024 * 1024)).toFixed(2);
 			// console.log(`Compressed image size: ${compressedSizeInMB} MB`);
 
 			// Обновляем состояние
@@ -69,11 +53,7 @@ const UploadHeaderImage = ({
 			// console.log("addImage",addImage)
 
 			// Выводим информацию в alert
-			Alert.alert(
-				"Size image",
-				`Original size: ${originalSizeInMB} MB\n` +
-					`Compressed size:, ${compressedSizeInMB} MB`
-			);
+			Alert.alert("Size image", `Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`);
 			setTotalRecipe((prevRecipe) => ({
 				...prevRecipe,
 				imageHeader: compressedResponse.url,
@@ -94,22 +74,16 @@ const UploadHeaderImage = ({
 			<StərɪskCustomComponent />
 			{addImage[0]?.uri ? (
 				<View className="relative">
-					<TouchableOpacity
-						onPress={handlerRemoveHeaderImage}
-						className="absolute top-[-5] right-0 z-10"
-					>
+					<TouchableOpacity onPress={handlerRemoveHeaderImage} className="absolute top-[-5] right-0 z-10">
 						<ButtonSmallCustom icon={TrashIcon} bg={"red"} />
 					</TouchableOpacity>
 
 					<ViewImageListCreateRecipe image={addImage} />
 				</View>
 			) : (
-				<TouchableOpacity
-					onPress={addImageRecipeList}
-					className="border-2 border-neutral-200 w-full h-[200]  rounded-[15] justify-center "
-				>
+				<TouchableOpacity onPress={addImageRecipeList} className="border-2 border-neutral-200 w-full h-[200]  rounded-[15] justify-center ">
 					<View className="items-center">
-						<Text className="mb-2">Upload yore header image</Text>
+						<Text className="mb-2">{i18n.t("Upload your image")}</Text>
 						<ArrowUpOnSquareStackIcon size={50} color="green" />
 					</View>
 				</TouchableOpacity>
@@ -117,15 +91,7 @@ const UploadHeaderImage = ({
 
 			{/*    title recipe*/}
 			<View className="mb-5 mt-5">
-				<InputCustomComponent
-					styleTextDesc={styleTextDesc}
-					styleInput={styleInput}
-					langDev={langDev}
-					setTotalLangRecipe={setTotalLangRecipe}
-					totalLangRecipe={totalLangRecipe}
-					setTotalRecipe={setTotalRecipe}
-					totalRecipe={totalRecipe}
-				/>
+				<InputCustomComponent styleTextDesc={styleTextDesc} styleInput={styleInput} langDev={langDev} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />
 			</View>
 		</View>
 	);
