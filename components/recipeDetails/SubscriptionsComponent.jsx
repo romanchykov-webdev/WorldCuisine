@@ -23,7 +23,7 @@ const SubscriptionsComponent = ({
 	// console.log("subscriberId",subscriberId);
 
 	// get creator data componennt SubscriptionsComponent
-	const [creatorData, setcreatorData] = useState({
+	const [creatorData, setCreatorData] = useState({
 		creaotorId: null,
 		creaotorName: null,
 		creaotorAvatar: null,
@@ -31,16 +31,67 @@ const SubscriptionsComponent = ({
 	});
 
 	useEffect(() => {
-		if (isPreview) {
-			setcreatorData({
-				creatorId: subscriber?.id,
-				creaotorName: subscriber.user_name,
-				creaotorAvatar: subscriber.avatar,
-				creaotorSubscribers: subscriber.subscribers,
-			});
-		}
-		console.log("creatorData", creatorData);
-	}, [isPreview]);
+		let mounted = true;
+
+		const fetchCreatorData = async () => {
+			try {
+				// Приоритет 1: Режим предпросмотра
+				if (isPreview && subscriber) {
+					if (mounted) {
+						setCreatorData({
+							creatorId: subscriber?.id,
+							creatorName: subscriber.user_name,
+							creatorAvatar: subscriber.avatar,
+							creatorSubscribers: subscriber.subscribers,
+						});
+					}
+					return; // Прерываем выполнение, если данные из предпросмотра
+				}
+
+				// Приоритет 2: Текущий пользователь является создателем
+				if (subscriberId === creatorId && subscriber) {
+					if (mounted) {
+						setCreatorData({
+							creatorId: subscriber?.id,
+							creatorName: subscriber.user_name,
+							creatorAvatar: subscriber.avatar,
+							creatorSubscribers: subscriber.subscribers,
+						});
+					}
+					return; // Прерываем выполнение, если данные из subscriber
+				}
+
+				// Приоритет 3: Запрос к серверу для другого пользователя
+				if (!isPreview && subscriberId !== creatorId && creatorId) {
+					const data = await getCreatorData(creatorId); // Предполагаемый запрос
+					if (mounted && data) {
+						setCreatorData({
+							creatorId: data.id,
+							creatorName: data.user_name,
+							creatorAvatar: data.avatar,
+							creatorSubscribers: data.subscribers,
+						});
+					}
+				}
+			} catch (error) {
+				console.error("Error fetching creator data:", error);
+				if (mounted) {
+					setCreatorData({
+						creatorId: null,
+						creatorName: "Unknown",
+						creatorAvatar: null,
+						creatorSubscribers: 0,
+					}); // Установка значений по умолчанию при ошибке
+				}
+			}
+		};
+
+		fetchCreatorData();
+
+		return () => {
+			mounted = false;
+		};
+	}, [isPreview, subscriberId, creatorId, subscriber]);
 
 	const getDataCreator = async () => {
 		try {
@@ -51,7 +102,8 @@ const SubscriptionsComponent = ({
 
 	console.log("creatorId", creatorId);
 	const handleSubscribe = async () => {
-		if (isPreview) return;
+		if (isPreview) return; //if prewiew true
+		if (subscriber?.id === creatorId) return;
 		console.log("ok");
 		console.log("subscriber", subscriber);
 		console.log("subscriberId", subscriberId);
