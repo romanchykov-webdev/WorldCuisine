@@ -1,17 +1,17 @@
-import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-// import { useSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
+import React from "react";
+import { SafeAreaView, StyleSheet, Text } from "react-native";
 const AllRecipesBayCreator = () => {
+	const params = useLocalSearchParams();
+	const creatorId = params.creatorId;
+	console.log("creatorId", creatorId);
 
-    // const { creatorId } = useSearchParams();
-    // console.log(creatorId);
-
-    return (
-        <SafeAreaView>
-            <Text>AllRecipesBayCreator</Text>
-            {/*<Text>creator id :{creatorId}</Text>*/}
-        </SafeAreaView>
-    );
+	return (
+		<SafeAreaView>
+			<Text>AllRecipesBayCreator</Text>
+			<Text>creator id :{creatorId}</Text>
+		</SafeAreaView>
+	);
 };
 
 const styles = StyleSheet.create({});

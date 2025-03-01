@@ -7,15 +7,12 @@ import { shadowBoxWhite } from "../constants/shadow";
 // translate
 import { showCustomAlert } from "../constants/halperFunctions";
 import i18n from "../lang/i18n";
-import {
-	addLikeRecipeMyDB,
-	checkIfUserLikedRecipe,
-} from "../service/getDataFromDB";
+import { addLikeRecipeMyDB, checkIfUserLikedRecipe } from "../service/getDataFromDB";
 
 const ButtonLike = ({ user, recipeId, isPreview }) => {
 	// console.log('ButtonLike user.id',user.id)
 	// console.log('ButtonLike recipeId',recipeId)
-	console.log("ButtonLike preview", isPreview);
+	// console.log("ButtonLike preview", isPreview);
 
 	const [isLike, setIsLike] = useState(false);
 
@@ -38,13 +35,7 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 		if (isPreview) return; //если это предпросмотр
 
 		if (user === null) {
-			showCustomAlert(
-				"Like",
-				`${i18n.t(
-					"To add a recipe to your favorites you must log in or create an account"
-				)}`,
-				router
-			);
+			showCustomAlert("Like", `${i18n.t("To add a recipe to your favorites you must log in or create an account")}`, router);
 			// Alert.alert(
 			// 	"Like",
 			// `${i18n.t(
@@ -79,16 +70,8 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 	}, []);
 
 	return (
-		<TouchableOpacity
-			onPress={toggleLike}
-			className="w-[50] h-[50] justify-center items-center bg-white rounded-full"
-			style={shadowBoxWhite()}
-		>
-			{isLike ? (
-				<HeartIcon size={30} color="red" />
-			) : (
-				<HeartIcon size={30} color="gray" />
-			)}
+		<TouchableOpacity onPress={toggleLike} className="w-[50] h-[50] justify-center items-center bg-white rounded-full" style={shadowBoxWhite()}>
+			{isLike ? <HeartIcon size={30} color="red" /> : <HeartIcon size={30} color="gray" />}
 		</TouchableOpacity>
 	);
 };
