@@ -144,6 +144,8 @@
 	"the map": "карту",
 	"Selected point": "Выбранная точка",
 	"There is a store here": "Здесь находится торговая точка.",
+	"Preview": "Предпросмотр",
+	"Publish": "Опубликовать",
 
 	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
 }

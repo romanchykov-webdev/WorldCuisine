@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
@@ -27,6 +27,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { getRecipesDescriptionLikeRatingMyDB, getRecipesDescriptionMyDB } from "../service/getDataFromDB";
 
 // translate
+import ButtonSmallCustom from "../components/Buttons/ButtonSmallCustom";
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
 import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
 import SelectLangComponent from "../components/recipeDetails/SelectLangComponent";
@@ -40,13 +41,15 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	// console.log("RecipeDetailsScreen totalRecipe", totalRecipe);
 	// const [forceRender, setForceRender] = useState(0);
 
+	const router = useRouter();
+
 	const [loading, setLoading] = useState(true);
 
 	const [recipeDish, setRecipeDish] = useState(null);
 
 	// const [dataSource, setDataSource] = useState("unknown"); // Состояние для источника данных
 
-	const { user, language } = useAuth();
+	const { user, language, previewRecipeReady, setPreviewRecipeReady } = useAuth();
 
 	const params = useLocalSearchParams();
 
@@ -510,8 +513,27 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 								{recipeDish?.mapСoordinates && <MapСoordinatesComponent mapСoordinates={recipeDish?.mapСoordinates} />}
 
 								{/*accordion comments*/}
-
 								<View ref={commentsRef}>{isPreview === false && <CommentsComponent recepId={id} user={user ?? null} updateLikeCommentCount={updateLikeCommentCount} publishedId={recipeDish?.publishedId} />}</View>
+
+								{/* if Previeb section for button */}
+								{isPreview && (
+									<View className=" mt-10 mb-10 gap-y-5 justify-center items-center flex-1 ">
+										<TouchableOpacity onPress={() => router.back()} style={shadowBoxBlack()} className="w-full">
+											<ButtonSmallCustom styleWrapperButton={{ flex: 1 }} w="100%" h={60} buttonText={true} bg="yellow" title={"Refactor"} />
+										</TouchableOpacity>
+
+										<TouchableOpacity
+											onPress={() => {
+												setPreviewRecipeReady(true);
+												router.back();
+											}}
+											style={shadowBoxBlack()}
+											className="w-full"
+										>
+											<ButtonSmallCustom w="100%" h={60} buttonText={true} bg="green" title={"Back to publishet"} />
+										</TouchableOpacity>
+									</View>
+								)}
 							</View>
 						)}
 					</ScrollView>

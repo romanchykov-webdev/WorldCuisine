@@ -8,18 +8,9 @@ export const AuthProvider = ({ children }) => {
 
 	const [requiredFields, setRequiredFields] = useState(false);
 
+	const [previewRecipeReady, setPreviewRecipeReady] = useState(false);
+
 	const [language, setLanguage] = useState(i18n.locale); // Храним текущий язык
-
-	// const [isContextReady, setIsContextReady] = useState(false);
-
-	// useEffect(() => {
-	// 	// Имитация проверки готовности контекста
-	// 	setIsContextReady(true);
-	// }, []);
-
-	// if (!isContextReady) {
-	// 	return null; // Или индикатор загрузки
-	// }
 
 	const setAuth = (authUser) => {
 		setUser(authUser);
@@ -35,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 		i18n.locale = newLanguage; // Обновляем язык в i18n
 	};
 	// console.log("AuthProvider requiredFields before render:", requiredFields);
-	return <AuthContext.Provider value={{ user, setAuth, setUserData, language, changeLanguage, requiredFields, setRequiredFields }}>{children}</AuthContext.Provider>;
+	return <AuthContext.Provider value={{ user, setAuth, setUserData, language, changeLanguage, requiredFields, setRequiredFields, previewRecipeReady, setPreviewRecipeReady }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

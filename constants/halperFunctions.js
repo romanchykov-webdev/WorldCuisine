@@ -132,7 +132,7 @@ export const validateRecipeStructure = (recipe) => {
 	const requiredFields = ["category", "imageHeader", "title", "area", "rating", "likes", "comments", "recipeMetrics", "ingredients", "publishedId"];
 
 	for (const field of requiredFields) {
-		if (!recipe.hasOwnProperty(field)) {
+		if (!recipe?.hasOwnProperty(field)) {
 			return {
 				isValid: false,
 				message: `${i18n.t("Field is missing")} ${field}`,

@@ -151,6 +151,8 @@
 	"the map": "карту",
 	"Selected point": "Вибрана точка",
 	"There is a store here": "Тут знаходиться торговий пункт.",
+	"Preview": "Попередній перегляд",
+	"Publish": "Опублікувати",
 
 	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
 }

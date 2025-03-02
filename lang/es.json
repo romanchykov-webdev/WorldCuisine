@@ -151,6 +151,8 @@
 	"the map": "el mapa",
 	"Selected point": "Punto seleccionado",
 	"There is a store here": "Aquí se encuentra una tienda.",
+	"Preview": "Vista previa",
+	"Publish": "Publicar",
 
 	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
 }

@@ -23,14 +23,19 @@ import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 // import recipe preview
 import { useRouter } from "expo-router";
 import TitleDescriptionComponent from "../../components/CreateRecipeScreen/TitleDescriptionComponent";
+import LoadingComponent from "../../components/loadingComponent";
 import i18n from "../../lang/i18n";
 
 const CreateRecipeScreen = () => {
-	const { user: userData, language, setRequiredFields, requiredFields } = useAuth();
+	const { user: userData, language, setRequiredFields, previewRecipeReady, setPreviewRecipeReady } = useAuth();
 
 	const router = useRouter();
 
+	const [uploadRecipe, setUploadRecipe] = useState(false);
+
 	// console.log("userData",userData.id)
+	console.log("previewRecipeReady", previewRecipeReady);
+
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
 		categoryId: null,
@@ -94,6 +99,7 @@ const CreateRecipeScreen = () => {
 		// 	"Preview totalRecipe:",
 		// 	JSON.stringify(totalRecipe, null, 2)
 		// );
+		console.log("totalRecipe", JSON.stringify(totalRecipe));
 
 		// Проверка структуры перед переходом
 		const validationResult = validateRecipeStructure(totalRecipe);
@@ -113,107 +119,150 @@ const CreateRecipeScreen = () => {
 			},
 		});
 	};
+
+	// handlePublishRecipe
+	const handlePublishRecipe = async () => {
+		setPreviewRecipeReady(false);
+		setUploadRecipe(true);
+		// uploadr recipe
+
+		// after setUploadRecipe(false)
+		setTimeout(() => {
+			setUploadRecipe(false);
+		}, 2000);
+
+		// setTotalRecipe({
+		// 	category: null,
+		// categoryId: null,
+		// imageHeader: null,
+		// area: null,
+		// title: null,
+		// rating: 0,
+		// likes: 0,
+		// comments: 0,
+		// recipeMetrics: null,
+		// ingredients: null,
+		// instructions: null,
+		// video: null,
+		// sourceReference: null,
+		// tags: null,
+		// linkCopyright: null,
+		// mapСoordinates: null,
+		// publishedId: userData.id,
+		// publishedUser: null,
+		// point: null,
+		// })
+	};
+
 	return (
-		<SafeAreaView
-		// contentContainerStyle={{flex: 1}}
-		>
-			<KeyboardAvoidingView
-				// style={{flex: 1}}
-				behavior={Platform.OS === "ios" ? "padding" : "height"}
-			>
-				<ScrollView
-					contentContainerStyle={{
-						paddingHorizontal: 20,
-						marginBottom: 20,
-					}}
-					showsVerticalScrollIndicator={false}
-					keyboardDismissMode={"on-drag"}
+		<>
+			{uploadRecipe ? (
+				<LoadingComponent color="green" />
+			) : (
+				<SafeAreaView
+				// contentContainerStyle={{flex: 1}}
 				>
-					{/*title*/}
-					<View className="  p-5">
-						<View className="absolute left-0 z-10">
-							<ButtonBack />
-						</View>
-						<Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text>
-					</View>
+					<KeyboardAvoidingView
+						// style={{flex: 1}}
+						behavior={Platform.OS === "ios" ? "padding" : "height"}
+					>
+						<ScrollView
+							contentContainerStyle={{
+								paddingHorizontal: 20,
+								marginBottom: 20,
+							}}
+							showsVerticalScrollIndicator={false}
+							keyboardDismissMode={"on-drag"}
+						>
+							{/*title*/}
+							<View className="  p-5">
+								<View className="absolute left-0 z-10">
+									<ButtonBack />
+								</View>
+								<Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text>
+							</View>
 
-					{/*add category*/}
-					<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} requiredFields={requiredFields} />
+							{/*add category*/}
+							<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} />
 
-					{/* upload header image    */}
-					<UploadHeaderImage styleTextDesc={styles.styleTextDesc} styleInput={styles.styleInput} langDev={langApp} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />
+							{/* upload header image    */}
+							<UploadHeaderImage styleTextDesc={styles.styleTextDesc} styleInput={styles.styleInput} langDev={langApp} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />
 
-					{/*   aria di recipe*/}
-					<View className="mb-5">
-						{/* <Text style={styles.styleTextDesc}>Country of origin of the recipe</Text> */}
-						<TitleDescriptionComponent titleText={i18n.t("Country of origin of the recipe")} titleVisual={true} />
+							{/*   aria di recipe*/}
+							<View className="mb-5">
+								{/* <Text style={styles.styleTextDesc}>Country of origin of the recipe</Text> */}
+								<TitleDescriptionComponent titleText={i18n.t("Country of origin of the recipe")} titleVisual={true} />
 
-						<InputCreateRecipeScreenCustom styleInput={styles.styleInput} placeholderText={i18n.t("Write the name of the country")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
-					</View>
+								<InputCreateRecipeScreenCustom styleInput={styles.styleInput} placeholderText={i18n.t("Write the name of the country")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+							</View>
 
-					{/*  Tags   */}
-					<TagsCustom styleInput={styles.styleInput} styleTextDesc={styles.styleTextDesc} setTotalRecipe={setTotalRecipe} />
+							{/*  Tags   */}
+							<TagsCustom styleInput={styles.styleInput} styleTextDesc={styles.styleTextDesc} setTotalRecipe={setTotalRecipe} />
 
-					{/*    select */}
-					<View className="mb-5">
-						<SelectCreateRecipeScreenCustom setTotalRecipe={setTotalRecipe} />
-					</View>
+							{/*    select */}
+							<View className="mb-5">
+								<SelectCreateRecipeScreenCustom setTotalRecipe={setTotalRecipe} />
+							</View>
 
-					{/*    Ingredients*/}
-					<View className="mb-5">
-						{/* <Text style={styles.styleTextDesc}>Ingredients</Text> */}
-						{/* <Text className="text-neutral-700 text-xs mb-3">Добавьте все ингредиенты и их количество для приготовления рецепта.</Text> */}
+							{/*    Ingredients*/}
+							<View className="mb-5">
+								{/* <Text style={styles.styleTextDesc}>Ingredients</Text> */}
+								{/* <Text className="text-neutral-700 text-xs mb-3">Добавьте все ингредиенты и их количество для приготовления рецепта.</Text> */}
 
-						<View>
-							<IngredientsCreateRecipe styleInput={styles.styleInput} placeholderText={i18n.t("Name of the ingredient")} placeholderColor="grey" langApp={userData.lang ?? language} measurement={measurement} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
-						</View>
-					</View>
+								<View>
+									<IngredientsCreateRecipe styleInput={styles.styleInput} placeholderText={i18n.t("Name of the ingredient")} placeholderColor="grey" langApp={userData.lang ?? language} measurement={measurement} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+								</View>
+							</View>
 
-					{/*    recipe description  */}
-					<View className="mb-10">
-						<RecipeListCreateRecipe placeholderText={i18n.t("Here you can describe the recipe in the language")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
-					</View>
+							{/*    recipe description  */}
+							<View className="mb-10">
+								<RecipeListCreateRecipe placeholderText={i18n.t("Here you can describe the recipe in the language")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+							</View>
 
-					{/*    add recipe link video*/}
-					<View className="mb-10">
-						<AddLinkVideo setTotalRecipe={setTotalRecipe} />
-					</View>
+							{/*    add recipe link video*/}
+							<View className="mb-10">
+								<AddLinkVideo setTotalRecipe={setTotalRecipe} />
+							</View>
 
-					{/*    add link to the author*/}
-					<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
+							{/*    add link to the author*/}
+							<LinkToTheCopyright setTotalRecipe={setTotalRecipe} />
 
-					{/*    AddPintGoogleMaps    */}
-					<AddPintGoogleMaps setTotalRecipe={setTotalRecipe} />
+							{/*    AddPintGoogleMaps    */}
+							<AddPintGoogleMaps setTotalRecipe={setTotalRecipe} />
 
-					{/*    buttons save and preview*/}
-					<View className="gap-x-2 flex-row mb-10 flex-1 mt-5">
-						<TouchableOpacity onPress={handlePreview} style={shadowBoxBlack()} className="flex-1">
-							<ButtonSmallCustom
-								buttonText={true}
-								title="Preview"
-								bg="violet"
-								// styleText={styles.buttonTextPrevSave}
-								w="100%"
-								h={60}
-								// styleWrapperButton={styles.buttonTextPrevSavePadding}
-							/>
-						</TouchableOpacity>
+							{/*    buttons save and preview*/}
+							<View className="gap-y-5 mt-10 mb-10 flex-1 ">
+								<TouchableOpacity onPress={handlePreview} style={shadowBoxBlack()} className="flex-1">
+									<ButtonSmallCustom
+										buttonText={true}
+										title={i18n.t("Preview")}
+										bg="violet"
+										// styleText={styles.buttonTextPrevSave}
+										w="100%"
+										h={60}
+										// styleWrapperButton={styles.buttonTextPrevSavePadding}
+									/>
+								</TouchableOpacity>
 
-						<TouchableOpacity style={shadowBoxBlack()} className="flex-1">
-							<ButtonSmallCustom
-								buttonText={true}
-								title="Save"
-								bg="green"
-								// styleText={styles.buttonTextPrevSave}
-								w="100%"
-								h={60}
-								// styleWrapperButton={styles.buttonTextPrevSavePadding}
-							/>
-						</TouchableOpacity>
-					</View>
-				</ScrollView>
-			</KeyboardAvoidingView>
-		</SafeAreaView>
+								{previewRecipeReady && (
+									<TouchableOpacity onPress={handlePublishRecipe} style={shadowBoxBlack()} className="flex-1">
+										<ButtonSmallCustom
+											buttonText={true}
+											title={i18n.t("Publish")}
+											bg="green"
+											// styleText={styles.buttonTextPrevSave}
+											w="100%"
+											h={100}
+											// styleWrapperButton={styles.buttonTextPrevSavePadding}
+										/>
+									</TouchableOpacity>
+								)}
+							</View>
+						</ScrollView>
+					</KeyboardAvoidingView>
+				</SafeAreaView>
+			)}
+		</>
 	);
 };
 
