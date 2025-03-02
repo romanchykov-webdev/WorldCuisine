@@ -1,5 +1,28 @@
 {
+	"---Alert---": "---Alert---",
+	"You haven't added an image": "Вы не добавили изображение",
+	"You have reached the image limit for one item": "Вы достигли лимита изображений на один пункт",
+	"Preview error": "Ошибка предпросмотра",
+	"All required fields marked must be filled in": "Необходимо заполнить все обязательные поля, отмеченные",
+	"Field is missing": "Отсутствует поле",
+	"Fill in the recipe name field": "Заполните поле названия рецепта",
+	"Add the name of the country where the recipe comes from, for the language": "Добавьте название страны, откуда родом рецепт, для языка",
+	"At least one ingredient is required": "Необходимо добавить минимум один ингредиент",
+	"Add the name of the ingredient for the language": "Добавьте название ингредиента для языка",
+	"For the ingredient in the language": "Для ингредиента на языке",
+	"You forgot to add": "Вы забыли добавить",
+	"quantity": "количество",
+	"or": "или",
+	"measure of measurement": "меру измерения",
+	"title": "название",
+	"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe": "Тег, должен быть минимум 1, но чем больше тегов, тем легче пользователю найти ваш рецепт",
+	"Please enter the tag": "Пожалуйста, введите тег",
+	"This tag already exists": "Этот тег уже существует",
+
+	"---Alert-END--": "---Alert-END--",
+
 	"---SIGNUP---": "---SIGNUP---",
+
 	"Let`s,": "Давайте,",
 	"Get Started": "Hачните сейчас",
 	"Please fill the details to create an account": "Пожалуйста, заполните данные, чтобы создать учетную запись",
@@ -10,14 +33,23 @@
 	"Sign Up": "Зарегистрироваться",
 	"Already have an account,": "У вас уже есть аккаунт,",
 	"Log In": "Авторизоваться",
+
 	"---SIGNUP-END---": "---SIGNUP-END---",
+
 	"---LanguagesWrapper---": "---LanguagesWrapper---",
+
 	"Language App:": "Язык Приложения:",
+
 	"---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
+
 	"---ThemeWrapper:---": "---ThemeWrapper:---",
+
 	"Theme App:": "Тема приложения:",
+
 	"---ThemeWrapper-END---": "---ThemeWrapper-END---",
+
 	"---HOME_SCREEN---": "---HOME_SCREEN---",
+
 	"Hello": "Привет",
 	"Make your own food": "Готовьте еду сами",
 	"stay at": "оставайся",
@@ -25,27 +57,40 @@
 	"---Recipes---": "---Recipes---",
 	"Recipes": "Рецепты",
 	"---Recipes-END---": "---Recipes-END---",
+
 	"---Search---": "---Search---",
 	"Search any food": "Поиск любой еды",
+
 	"---Search-END--": "---Search-END--",
+
 	"---HOME_SCREEN-END---": "---HOME_SCREEN-END---",
+
 	"---Profile---": "---Profile---",
+
 	"Profile": "Профиль",
 	"Log In": "Авторизоваться",
 	"Sign Up": "Зарегистрироваться",
+
 	"---Profile-END--": "---Profile-END--",
+
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
+
 	"Edit Profile": "Редактировать профиль",
 	"Update your Profile": "Обновите свой профиль",
 	"Delete your Profile": "Удалить свой профиль",
+
 	"---Profile-EditProfile-END--": "---Profile-EditProfile-END--",
+
 	"---RecipeDetailsScreen---": "---RecipeDetailsScreen---",
+
 	"To rate a recipe you must log in or create an account": "Для оценки рецепта вам необходимо авторизоваться или создать учетную запись.",
 	"To add a recipe to your favorites you must log in or create an account": "Для добавления рецепта в любимые вы должны авторизоваться или создать учетную запись",
-	"To subscribe, you need to log in or create an account": "Для підписки необхідно увійти до системи або створити обліковий запис.",
+	"To subscribe, you need to log in or create an account": "Для подписки необходимо войти в систему или создать учетную запись",
 	"--RatingComponents---": "---RatingComponents---",
 	"Rate the recipe": "Оцените рецепт",
+
 	"--RatingComponents-end--": "---RatingComponents-end--",
+
 	"Mins": "Мин",
 	"Person": "Челове",
 	"Cal": "Калор",
@@ -64,6 +109,7 @@
 	"Select the category your recipe belongs to.": "Выберите категорию, к которой относится ваш рецепт.",
 	"Upload your image": "Загрузите изображение",
 	"Dish Name": "Название блюда",
+	"Add translation language": "Добавить язык перевода",
 	"Enter recipe name": "Введите название рецепта",
 	"Country of origin of the recipe": "Страна происхождения рецепта",
 	"Write the name of the country": "Напишите название страны",
@@ -81,7 +127,6 @@
 	"Choose": "Выберите",
 	"Select the unit of measurement": "Выберите единицу измерения, в которой вы измеряете этот ингредиент и его количество.",
 	"Here you can describe the recipe in the language": "Здесь вы можете описать рецепт на языке",
-	"You have reached the image limit for one item": "Вы достигли лимита изображений на один пункт",
 	"You did not add an image": "Вы не добавили изображение",
 	"View in language": "Вид на языке",
 	"Here you can write a recipe as text or in bullet points": "Здесь вы можете написать рецепт в виде текста или в виде пунктов. Также вы можете добавить фото на каждый пункт, можно добавить одно фото, или если их несколько, они будут в виде слайдера. Максимальное количество изображений на один пункт — 5.",

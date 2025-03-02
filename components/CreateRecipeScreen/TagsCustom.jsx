@@ -35,12 +35,12 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 		const clearTags = inputTags.trim();
 
 		if (clearTags === "") {
-			Alert.alert("Пожалуйста, введите тег");
+			Alert.alert(`${i18n.t("Please enter the tag")}`);
 			return;
 		}
 
 		if (arrayTags.includes(clearTags)) {
-			Alert.alert("Этот тег уже существует!");
+			Alert.alert(`${i18n.t("This tag already exists")}`);
 			return;
 		}
 

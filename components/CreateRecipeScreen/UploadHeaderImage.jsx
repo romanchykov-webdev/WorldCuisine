@@ -14,7 +14,7 @@ const UploadHeaderImage = ({ styleTextDesc, styleInput, langDev, setTotalLangRec
 	const addImageRecipeList = async () => {
 		// console.log('Add Recipe List');
 		if (addImage.length >= 5) {
-			Alert.alert("Вы достигли лимита изображений на один пункт.");
+			Alert.alert(`${i18n.t("You have reached the image limit for one item")}`);
 			return;
 		}
 
@@ -60,7 +60,7 @@ const UploadHeaderImage = ({ styleTextDesc, styleInput, langDev, setTotalLangRec
 			}));
 		} else {
 			// console.error("Image selection canceled or failed", result);
-			Alert.alert("Вы не добавили изображение");
+			Alert.alert(`${i18n.t("You haven't added an image")}`);
 		}
 	};
 

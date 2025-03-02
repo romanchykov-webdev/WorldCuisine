@@ -25,32 +25,28 @@ const RootLayout = () => {
 	const [isLoading, setIsLoading] = useState(true); // Добавляем состояние загрузки
 
 	useEffect(() => {
-		const { data: authListener } = supabase.auth.onAuthStateChange(
-			async (_event, session) => {
-				// console.log("session:", session);
+		const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+			// console.log("session:", session);
 
-				if (session) {
-					setAuth(session?.user);
-					try {
-						await updateUserData(session?.user);
-					} catch (error) {
-						console.error(
-							"Ошибка при обновлении данных пользователя:",
-							error
-						);
-					}
-					router.replace("/homeScreen");
-				} else {
-					setAuth(null);
-					// router.replace("/homeScreen");
-					router.replace("/(main)/welcome");
+			if (session) {
+				setAuth(session?.user);
+				try {
+					await updateUserData(session?.user);
+				} catch (error) {
+					console.error("Ошибка при обновлении данных пользователя:", error);
 				}
 
-				setTimeout(() => {
-					setIsLoading(false); // Загрузка завершена
-				}, 2000);
+				router.replace("/homeScreen");
+			} else {
+				setAuth(null);
+				router.replace("/homeScreen");
+				// router.replace("/(main)/welcome");
 			}
-		);
+
+			// setTimeout(() => {
+			setIsLoading(false); // Загрузка завершена
+			// }, 2000);
+		});
 
 		// Отписка от подписчика при размонтировании
 		return () => {
@@ -68,56 +64,29 @@ const RootLayout = () => {
 		}
 	};
 	//
-	// if (isLoading) {
-	//     // Показываем страницу индекса (или индикатор загрузки), пока идет проверка
-	//     return (
-	//         <Stack>
-	//             <Stack.Screen name="index" options={{headerShown: false}}/>
-	//         </Stack>
-	//     );
-	// }
+	if (isLoading) {
+		// Показываем страницу индекса (или индикатор загрузки), пока идет проверка
+		return (
+			<Stack>
+				<Stack.Screen name="index" options={{ headerShown: false }} />
+			</Stack>
+		);
+	}
 
 	return (
 		<Stack>
 			<Stack.Screen name="index" options={{ headerShown: false }} />
-			<Stack.Screen
-				name="(main)/welcome"
-				options={{ headerShown: false }}
-			/>
+			<Stack.Screen name="(main)/welcome" options={{ headerShown: false }} />
 
 			<Stack.Screen name="homeScreen" options={{ headerShown: false }} />
-			<Stack.Screen
-				name="RecipeDetailsScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="ProfileScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(auth)/LogInScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(auth)/RegistrationScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(main)/editProfile"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(main)/CreateRecipeScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(main)/AllRecipesPointScreen"
-				options={{ headerShown: false }}
-			/>
-			<Stack.Screen
-				name="(main)/AllRecipesBayCreator"
-				options={{ headerShown: false }}
-			/>
+			<Stack.Screen name="RecipeDetailsScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="ProfileScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="(auth)/LogInScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="(auth)/RegistrationScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/editProfile" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/CreateRecipeScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/AllRecipesPointScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/AllRecipesBayCreator" options={{ headerShown: false }} />
 		</Stack>
 	);
 };

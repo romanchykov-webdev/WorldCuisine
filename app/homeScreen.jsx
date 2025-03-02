@@ -11,10 +11,7 @@ import { useAuth } from "../contexts/AuthContext";
 import LoadingComponent from "../components/loadingComponent";
 import RecipesMasonryComponent from "../components/RecipesMasonry/RecipesMasonryComponent";
 import i18n from "../lang/i18n";
-import {
-	getCategoriesMyDB,
-	getCategoryRecipeMasonryMyDB,
-} from "../service/getDataFromDB";
+import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
 
 const HomeScreen = () => {
 	const { user } = useAuth();
@@ -25,6 +22,8 @@ const HomeScreen = () => {
 		i18n.locale = langDev; // Устанавливаем текущий язык
 	}, [langDev]);
 	// console.log("HomeScreen langDev", langDev);
+	// console.log("HomeScreen requiredFields", requiredFields);
+	// console.log("HomeScreen");
 
 	const [isAuth, setIsAuth] = useState(null);
 	const [isRefreshing, setIsRefreshing] = useState(false); // Состояние для отслеживания процесса обновления
@@ -38,7 +37,7 @@ const HomeScreen = () => {
 	const changeLanguage = (newLocale) => {
 		if (newLocale !== undefined) {
 			i18n.locale = newLocale;
-			console.log("homescreen newLocale", newLocale);
+			// console.log("homescreen newLocale", newLocale);
 		} else {
 			i18n.locale = "en";
 			console.log("homescreen newLocale else i18n undefine", newLocale);
@@ -51,6 +50,7 @@ const HomeScreen = () => {
 		if (user) {
 			setIsAuth(true);
 			changeLanguage(user.lang);
+			// console.log("HomeScreen useEffect if user");
 		} else if (!user && !isAuth) {
 			setIsAuth(false);
 		}
@@ -154,20 +154,11 @@ const HomeScreen = () => {
 						{/*    greetings and punchline*/}
 						<View gap-y-2>
 							<View>
-								<Text
-									style={{ fontSize: hp(3) }}
-									className="font-semibold text-neutral-700"
-								>
+								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
 									{i18n.t("Make your own food")},
 								</Text>
-								<Text
-									style={{ fontSize: hp(3) }}
-									className="font-semibold text-neutral-700"
-								>
-									{i18n.t("stay at")}{" "}
-									<Text className="text-amber-500">
-										{i18n.t("home")}
-									</Text>
+								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
+									{i18n.t("stay at")} <Text className="text-amber-500">{i18n.t("home")}</Text>
 								</Text>
 							</View>
 						</View>
@@ -176,9 +167,7 @@ const HomeScreen = () => {
 						<SearchComponent />
 
 						{/*    categories*/}
-						<Text className="bg-red-500 p-5">
-							добавлю топ рецептов
-						</Text>
+						<Text className="bg-red-500 p-5">добавлю топ рецептов</Text>
 						{/*{*/}
 						{/*    categories*/}
 						{/*        ? (*/}
@@ -212,10 +201,7 @@ const HomeScreen = () => {
 						{/*}*/}
 
 						{/*    RecipesMasonryComponent*/}
-						<RecipesMasonryComponent
-							categoryRecipes={categoryRecipes}
-							langApp={user?.lang ?? langDev}
-						/>
+						<RecipesMasonryComponent categoryRecipes={categoryRecipes} langApp={user?.lang ?? langDev} />
 					</>
 				)}
 			</ScrollView>

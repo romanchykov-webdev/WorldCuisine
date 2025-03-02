@@ -100,8 +100,8 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 		}));
 	};
 
-	const titleModal = i18n.t("To subscribe, you need to log in or create an account."); // Убедитесь, что ключ точно совпадает
-	console.log("titleModal key check:", "To subscribe, you need to log in or create an account." === i18n.t("To subscribe, you need to log in or create an account.") ? "Match" : "No match");
+	// const titleModal = i18n.t("To subscribe, you need to log in or create an account."); // Убедитесь, что ключ точно совпадает
+	// console.log("titleModal key check:", "To subscribe, you need to log in or create an account." === i18n.t("To subscribe, you need to log in or create an account.") ? "Match" : "No match");
 
 	return (
 		<View className="mb-5">

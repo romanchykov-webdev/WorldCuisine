@@ -26,7 +26,7 @@ import TitleDescriptionComponent from "../../components/CreateRecipeScreen/Title
 import i18n from "../../lang/i18n";
 
 const CreateRecipeScreen = () => {
-	const { user: userData, language } = useAuth();
+	const { user: userData, language, setRequiredFields, requiredFields } = useAuth();
 
 	const router = useRouter();
 
@@ -98,7 +98,8 @@ const CreateRecipeScreen = () => {
 		// Проверка структуры перед переходом
 		const validationResult = validateRecipeStructure(totalRecipe);
 		if (!validationResult.isValid) {
-			Alert.alert("Ошибка предпросмотра", validationResult.message);
+			setRequiredFields(true);
+			Alert.alert(`${i18n.t("Preview error")}`, validationResult.message);
 			return;
 		}
 
@@ -137,7 +138,7 @@ const CreateRecipeScreen = () => {
 					</View>
 
 					{/*add category*/}
-					<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} />
+					<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} requiredFields={requiredFields} />
 
 					{/* upload header image    */}
 					<UploadHeaderImage styleTextDesc={styles.styleTextDesc} styleInput={styles.styleInput} langDev={langApp} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />

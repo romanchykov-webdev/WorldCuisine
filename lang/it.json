@@ -1,5 +1,28 @@
 {
+	"---Alert---": "---Alert---",
+	"You haven't added an image": "Non hai aggiunto un'immagine.",
+	"You have reached the image limit for one item": "Hai raggiunto il limite di immagini per un articolo",
+	"Preview error": "Errore di anteprima",
+	"All required fields marked must be filled in": "È necessario compilare tutti i campi obbligatori contrassegnati",
+	"Field is missing": "Campo mancante",
+	"Fill in the recipe name field": "Compila il campo del nome della ricetta",
+	"Add the name of the country where the recipe comes from, for the language": "Aggiungi il nome del paese da cui proviene la ricetta, per la lingua",
+	"At least one ingredient is required": "È necessario aggiungere almeno un ingrediente",
+	"Add the name of the ingredient for the language": "Aggiungi il nome dell'ingrediente per la lingua",
+	"For the ingredient in the language": "Per l'ingrediente nella lingua",
+	"You forgot to add": "Hai dimenticato di aggiungere",
+	"quantity": "quantità",
+	"or": "o",
+	"measure of measurement": "misura di misurazione",
+	"title": "titolo",
+	"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe": "Un tag, deve essercene almeno uno, ma più tag ci sono, più facile sarà per l'utente trovare la tua ricetta",
+	"Please enter the tag": "Per favore, inserisci il tag",
+	"This tag already exists": "Questo tag esiste già",
+
+	"---Alert-END--": "---Alert-END--",
+
 	"---SIGNUP---": "---SIGNUP---",
+
 	"Let`s,": "Dai,",
 	"Get Started": "Inizia ora",
 	"Please fill the details to create an account": "Per favore, compila i dettagli per creare un account",
@@ -10,42 +33,68 @@
 	"Sign Up": "Registrati",
 	"Already have an account,": "Hai già un account,",
 	"Log In": "Accedi",
+
 	"---SIGNUP-END---": "---SIGNUP-END---",
+
 	"---LanguagesWrapper---": "---LanguagesWrapper---",
+
 	"Language App:": "Lingua dell'applicazione:",
+
 	"---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
+
 	"---ThemeWrapper:---": "---ThemeWrapper:---",
+
 	"Theme App:": "Tema dell'applicazione:",
+
 	"---ThemeWrapper-END---": "---ThemeWrapper-END---",
+
 	"---HOME_SCREEN---": "---HOME_SCREEN---",
+
 	"Hello": "Ciao",
 	"Make your own food": "Prepara il tuo cibo",
 	"stay at": "stare a",
 	"home": "casa",
 	"---Recipes---": "---Recipes---",
 	"Recipes": "Ricette",
+
 	"---Recipes-END---": "---Recipes-END---",
+
 	"---Search---": "---Search---",
+
 	"Search any food": "Cerca qualsiasi cibo",
+
 	"---Search-END--": "---Search-END--",
+
 	"---HOME_SCREEN-END---": "---HOME_SCREEN-END---",
+
 	"---Profile---": "---Profile---",
+
 	"Profile": "Prófíll",
 	"Log In": "Login",
 	"Sign Up": "Iscrizione",
+
 	"---Profile-END--": "---Profile-END--",
+
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
+
 	"Edit Profile": "Modifica profilo",
 	"Update your Profile": "Aggiorna il tuo profilo",
 	"Delete your Profile": "Elimina il tuo profilo",
+
 	"---Profile-EditProfile-END--": "---Profile-EditProfile-END--",
+
 	"---RecipeDetailsScreen---": "---RecipeDetailsScreen---",
+
 	"To rate a recipe you must log in or create an account": "Per valutare una ricetta devi effettuare il login o creare un account",
 	"To add a recipe to your favorites you must log in or create an account": "Per aggiungere una ricetta ai tuoi preferiti, devi effettuare il login o creare un account.",
-	"To subscribe, you need to log in or create an account": "Для підписки необхідно увійти до системи або створити обліковий запис.",
+	"To subscribe, you need to log in or create an account": "Per iscriverti, devi accedere o creare un account",
+
 	"--RatingComponents---": "---RatingComponents---",
+
 	"Rate the recipe": "Valuta la ricetta",
+
 	"--RatingComponents-end--": "---RatingComponents-end--",
+
 	"Mins": "Min",
 	"Person": "Person",
 	"Cal": "Cal",
@@ -60,10 +109,12 @@
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
+
 	"Add category": "Aggiungi categoria",
 	"Select the category your recipe belongs to.": "Seleziona la categoria a cui appartiene la tua ricetta.",
 	"Upload your image": "Carica la tua immagine",
 	"Dish Name": "Nome del piatto",
+	"Add translation language": "Aggiungi lingua di traduzione",
 	"Enter recipe name": "Inserisci il nome della ricetta",
 	"Country of origin of the recipe": "Paese d'origine della ricetta",
 	"Write the name of the country": "Scrivi il nome del paese",
@@ -81,7 +132,6 @@
 	"Choose": "Scegliere",
 	"Select the unit of measurement": "Seleziona l'unità di misura con cui misuri questo ingrediente e la sua quantità.",
 	"Here you can describe the recipe in the language": "Qui puoi descrivere la ricetta nella lingua",
-	"You have reached the image limit for one item": "Hai raggiunto il limite di immagini per un articolo",
 	"You did not add an image": "Non hai aggiunto un'immagine",
 	"View in language": "Vista nella lingua",
 	"Here you can write a recipe as text or in bullet points": "Qui puoi scrivere una ricetta sotto forma di testo o punti. Puoi anche aggiungere una foto per ogni punto, puoi aggiungere una foto o, se ce ne sono più di una, verranno mostrate come uno slider. Il numero massimo di immagini per punto è 5",

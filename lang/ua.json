@@ -1,5 +1,28 @@
 {
+	"---Alert---": "---Alert---",
+	"You haven't added an image": "Ви не додали зображення.",
+	"You have reached the image limit for one item": "Ви досягли ліміту зображень для одного пункту",
+	"Preview error": "Помилка попереднього перегляду",
+	"All required fields marked must be filled in": "Необхідно заповнити всі обов’язкові поля, позначені",
+	"Field is missing": "Відсутнє поле",
+	"Fill in the recipe name field": "Заповніть поле назви рецепта",
+	"Add the name of the country where the recipe comes from, for the language": "Додайте назву країни, звідки походить рецепт, для мови",
+	"At least one ingredient is required": "Потрібно додати хоча б один інгредієнт",
+	"Add the name of the ingredient for the language": "Додайте назву інгредієнта для мови",
+	"For the ingredient in the language": "Для інгредієнта на мові",
+	"You forgot to add": "Ви забули додати",
+	"quantity": "кількість",
+	"or": "або",
+	"measure of measurement": "міру вимірювання",
+	"title": "назву",
+	"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe": "Тег, має бути щонайменше один, але чим більше тегів, тим легше користувачеві знайти ваш рецепт",
+	"Please enter the tag": "Будь ласка, введіть тег",
+	"This tag already exists": "Цей тег уже існує",
+
+	"---Alert-END--": "---Alert-END--",
+
 	"---SIGNUP---": "---SIGNUP---",
+
 	"Let`s,": "Давайте,",
 	"Get Started": "Розпочнімо",
 	"Please fill the details to create an account": "Будь ласка, заповніть дані для створення облікового запису",
@@ -10,42 +33,70 @@
 	"Sign Up": "Зареєструватися",
 	"Already have an account,": "У вас вже є акаунт,",
 	"Log In": "Увійти",
+
 	"---SIGNUP-END---": "---SIGNUP-END---",
+
 	"---LanguagesWrapper---": "---LanguagesWrapper---",
+
 	"Language App:": "Мова програми:",
+
 	"---LanguagesWrapper-END---": "---LanguagesWrapper-END---",
+
 	"---ThemeWrapper:---": "---ThemeWrapper:---",
+
 	"Theme App:": "Тема програми:",
+
 	"---ThemeWrapper-END---": "---ThemeWrapper-END---",
+
 	"---HOME_SCREEN---": "---HOME_SCREEN---",
+
 	"Hello": "Привіт",
 	"Make your own food": "Готуйте власну їжу",
 	"stay at": "залишайся",
 	"home": "вдома",
+
 	"---Recipes---": "---Recipes---",
+
 	"Recipes": "Рецепти",
+
 	"---Recipes-END---": "---Recipes-END---",
+
 	"---Search---": "---Search---",
+
 	"Search any food": "Пошук будь-якої їжі",
+
 	"---Search-END--": "---Search-END--",
+
 	"---HOME_SCREEN-END---": "---HOME_SCREEN-END---",
+
 	"---Profile---": "---Profile---",
+
 	"Profile": "Профіль",
 	"Log In": "Увійти",
 	"Sign Up": "Зареєструватися",
+
 	"---Profile-END--": "---Profile-END--",
+
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
+
 	"Edit Profile": "Редагувати профіль",
 	"Update your Profile": "Оновіть свій профіль",
 	"Delete your Profile": "Видалити свій профіль",
+
 	"---Profile-EditProfile-END--": "---Profile-EditProfile-END--",
+
 	"---RecipeDetailsScreen---": "---RecipeDetailsScreen---",
+
 	"To add a recipe to your favorites you must log in or create an account": "Щоб додати рецепт до улюблених, ви повинні авторизуватися або створити обліковий запис",
 	"To rate a recipe you must log in or create an account": "Для оцінки рецепту ви повинні авторизуватися або створити обліковий запис",
 	"To subscribe, you need to log in or create an account": "Для підписки необхідно увійти до системи або створити обліковий запис.",
+
 	"--RatingComponents---": "---RatingComponents---",
+
 	"Rate the recipe": "Оцініть рецепт",
+
 	"--RatingComponents-end--": "---RatingComponents-end--",
+
 	"Mins": "Хв",
 	"Person": "Осiб",
 	"Cal": "Калор",
@@ -60,10 +111,12 @@
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
+
 	"Add category": "Додати категорію",
 	"Select the category your recipe belongs to.": "Виберіть, до якої категорії належить ваш рецепт.",
 	"Upload your image": "Завантажте зображення",
 	"Dish Name": "Назва страви",
+	"Add translation language": "Додати мову перекладу",
 	"Enter recipe name": "Введіть назву рецепту",
 	"Country of origin of the recipe": "Країна походження рецепту",
 	"Write the name of the country": "Напишіть назву країни",
@@ -81,7 +134,6 @@
 	"Select the measurement unit for the ingredient": "Вибрати одиницю виміру для інгредієнта.",
 	"Select the unit of measurement": "Виберіть одиницю вимірювання, в якій ви вимірюєте цей інгредієнт і його кількість.",
 	"Here you can describe the recipe in the language": "Тут ви можете описати рецепт на мові",
-	"You have reached the image limit for one item": "Ви досягли ліміту зображень для одного пункту",
 	"You did not add an image": "Ви не додали зображення",
 	"View in language": "Вид на мові",
 	"Here you can write a recipe as text or in bullet points": "Тут ви можете написати рецепт у вигляді тексту або пунктів. Ви також можете додати фото до кожного пункту, можна додати одне фото, або якщо їх кілька, вони будуть показані як слайдер. Максимальна кількість зображень на один пункт — 5.",

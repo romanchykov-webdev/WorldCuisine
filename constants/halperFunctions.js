@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
+import i18n from "../lang/i18n";
 
 // Функция для отображения алерта с кастомными параметрами
 export const showCustomAlert = (title, message, router) => {
@@ -134,7 +135,7 @@ export const validateRecipeStructure = (recipe) => {
 		if (!recipe.hasOwnProperty(field)) {
 			return {
 				isValid: false,
-				message: `Поле ${field} отсутствует в totalRecipe.`,
+				message: `${i18n.t("Field is missing")} ${field}`,
 			};
 		}
 	}
@@ -143,7 +144,7 @@ export const validateRecipeStructure = (recipe) => {
 	if (typeof recipe.category !== "string" || typeof recipe.imageHeader !== "string" || typeof recipe.rating !== "number" || typeof recipe.likes !== "number" || typeof recipe.comments !== "number" || typeof recipe.publishedId !== "string") {
 		return {
 			isValid: false,
-			message: "Необходимо заполнить все обязательные поля, отмеченные \u2736.",
+			message: `${i18n.t("All required fields marked must be filled in")} \u2736.`,
 		};
 	}
 
@@ -151,7 +152,7 @@ export const validateRecipeStructure = (recipe) => {
 	if (recipe.title === null) {
 		return {
 			isValid: false,
-			message: "Заполните поле название рецепта.",
+			message: `${i18n.t("Fill in the recipe name field")}`,
 		};
 	}
 
@@ -164,7 +165,7 @@ export const validateRecipeStructure = (recipe) => {
 	) {
 		return {
 			isValid: false,
-			message: "Заполните поле название рецепта.",
+			message: `${i18n.t("Fill in the recipe name field")}`,
 		};
 	}
 	// Проверка каждого объекта в массиве lang
@@ -210,7 +211,7 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof value === "string" && value.trim() === "") {
 				return {
 					isValid: false,
-					message: `Добавьте название страны откуда родом рецепт, для языка"${key}" .`,
+					message: `${i18n.t("Add the name of the country where the recipe comes from, for the language")} "${key}" .`,
 				};
 			}
 		}
@@ -228,7 +229,7 @@ export const validateRecipeStructure = (recipe) => {
 	if (typeof recipe.ingredients !== "object" || !recipe.ingredients.hasOwnProperty("lang") || typeof recipe.ingredients.lang !== "object") {
 		return {
 			isValid: false,
-			message: "Необходимо добавить минимум один ингредиент.",
+			message: `${i18n.t("At least one ingredient is required")}`,
 		};
 	}
 	// Проверка, что в lang есть минимум один ключ с массивом, содержащим минимум один объект
@@ -236,7 +237,7 @@ export const validateRecipeStructure = (recipe) => {
 	if (langKeys.length === 0) {
 		return {
 			isValid: false,
-			message: "Необходимо добавить минимум один ингредиент.",
+			message: `${i18n.t("At least one ingredient is required")}`,
 		};
 	}
 
@@ -245,7 +246,7 @@ export const validateRecipeStructure = (recipe) => {
 		if (!Array.isArray(ingredientsArray) || ingredientsArray.length === 0) {
 			return {
 				isValid: false,
-				message: `Добавьте название ингредиента для языка "${lang}" .`,
+				message: `${i18n.t("Add the name of the ingredient for the language")} "${lang}" .`,
 			};
 		}
 
@@ -253,7 +254,7 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof ingredient !== "object" || !ingredient.hasOwnProperty("unit") || !ingredient.hasOwnProperty("quantity") || !ingredient.hasOwnProperty("ingredient")) {
 				return {
 					isValid: false,
-					message: `Для ингредиента на языке "${lang}".Вы забыли добавить количество или меру измерения.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("quantity")} ${i18n.t("or")} ${i18n.t("measure of measurement")}.`,
 				};
 			}
 
@@ -261,14 +262,14 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof ingredient.unit === "string" && ingredient.unit.trim() === "") {
 				return {
 					isValid: false,
-					message: `Для ингредиента на языке "${lang}". Вы забыли добавить меру измерения.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("measure of measurement")}.`,
 				};
 			}
 
 			if (typeof ingredient.ingredient === "string" && ingredient.ingredient.trim() === "") {
 				return {
 					isValid: false,
-					message: `Для ингредиента на языке "${lang}". Вы забыли добавить название ингредиента.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("title")}.`,
 				};
 			}
 
@@ -276,7 +277,7 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof ingredient.quantity === "string" && ingredient.quantity.trim() === "") {
 				return {
 					isValid: false,
-					message: `Для ингредиента на языке "${lang}". Вы забыли добавить количество ингредиента.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("quantity")}.`,
 				};
 			}
 		}
@@ -323,13 +324,13 @@ export const validateRecipeStructure = (recipe) => {
 		if (!Array.isArray(recipe.tags)) {
 			return {
 				isValid: false,
-				message: "Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
+				message: `${i18n.t("A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe")}`,
 			};
 		}
 		if (recipe.tags.length < 1) {
 			return {
 				isValid: false,
-				message: "Теги, должен быть минимум 1, но чем больше тегов тем легче ползователю найты ваш рецепт.",
+				message: `${i18n.t("A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe")}`,
 			};
 		}
 		if (!recipe.tags.every((tag) => typeof tag === "string")) {
