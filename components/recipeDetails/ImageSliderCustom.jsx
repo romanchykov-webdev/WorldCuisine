@@ -21,11 +21,9 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 
 	const scrollX = useRef(new Animated.Value(0)).current;
 
-	// console.log("ImageSliderCustom images",images)
+	console.log("ImageSliderCustom images", images);
 
-	const animatedValues = useRef(
-		images.map(() => new Animated.Value(0))
-	).current; // Массив Animated.Value для индикаторов
+	const animatedValues = useRef(images.map(() => new Animated.Value(0))).current; // Массив Animated.Value для индикаторов
 
 	useEffect(() => {
 		animatedValues.forEach((animatedValue, index) => {
@@ -54,16 +52,9 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 					showsHorizontalScrollIndicator={false}
 					pagingEnabled={true}
 					onMomentumScrollEnd={handleMomentumScrollEnd} // Отслеживание конца скролла
-					onScroll={Animated.event(
-						[{ nativeEvent: { contentOffset: { x: scrollX } } }],
-						{ useNativeDriver: true }
-					)}
+					onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
 					renderItem={({ item, index }) => {
-						const inputRange = [
-							(index - 1) * width,
-							index * width,
-							(index + 1) * width,
-						];
+						const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
 						// for translate x
 						const translateX = scrollX.interpolate({
@@ -103,10 +94,7 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 										// source={{ uri: item }}
 
 										source={{
-											uri:
-												createRecipe || isPreview
-													? item.uri
-													: getUserImageSrc(item),
+											uri: createRecipe || isPreview ? item.uri : getUserImageSrc(item),
 										}}
 										// onLoad={() => handleImageLoad(index)}
 										style={{
@@ -114,10 +102,7 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 											width: ITEM_WIDTH * 1.4,
 											height: 300,
 											resizeMode: "cover",
-											transform: [
-												{ translateX },
-												{ scale },
-											],
+											transform: [{ translateX }, { scale }],
 										}}
 									/>
 								</View>
@@ -140,19 +125,15 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 					})}
 				>
 					{images.map((_, index) => {
-						const animatedWidth = animatedValues[index].interpolate(
-							{
-								inputRange: [0, 1],
-								outputRange: [10, 20], // Анимация ширины от 5 до 10
-							}
-						);
+						const animatedWidth = animatedValues[index].interpolate({
+							inputRange: [0, 1],
+							outputRange: [10, 20], // Анимация ширины от 5 до 10
+						});
 
-						const animatedColor = animatedValues[index].interpolate(
-							{
-								inputRange: [0, 1],
-								outputRange: ["#1C1C1E", "#f59e0b"], // Анимация цвета от светлого к темному
-							}
-						);
+						const animatedColor = animatedValues[index].interpolate({
+							inputRange: [0, 1],
+							outputRange: ["#1C1C1E", "#f59e0b"], // Анимация цвета от светлого к темному
+						});
 
 						return (
 							<Animated.View

@@ -227,7 +227,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 										{isPreview ? (
 											<Image
 												source={{
-													uri: recipeDish?.imageHeader,
+													uri: recipeDish?.image_header,
 												}}
 												transition={100}
 												style={{
@@ -241,7 +241,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											/>
 										) : (
 											<AvatarCustom
-												uri={recipeDish?.imageHeader}
+												uri={recipeDish?.image_header}
 												style={{
 													width: wp(98),
 													height: hp(50),
@@ -339,7 +339,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 
 								{/*section Subscriptions*/}
 								<Animated.View entering={FadeInDown.delay(550)}>
-									<SubscriptionsComponent isPreview={isPreview} subscriber={user ?? null} creatorId={recipeDish?.publishedId} />
+									<SubscriptionsComponent isPreview={isPreview} subscriber={user ?? null} creatorId={recipeDish?.published_id} />
 								</Animated.View>
 
 								{/* section select lang */}
@@ -381,7 +381,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 										<View className="flex items-center py-2 gap-y-1">
 											<Text style={{ fontSize: hp(2) }} className="font-bold  text-neutral-700">
 												{/*35*/}
-												{recipeDish?.recipeMetrics?.time?.value}
+												{recipeDish?.recipe_metrics?.time?.value}
 											</Text>
 											<Text style={{ fontSize: hp(1.2) }} className="font-bold  text-neutral-500">
 												{i18n.t("Mins")}
@@ -404,7 +404,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 										{/*    descriptions*/}
 										<View className="flex items-center py-2 gap-y-1">
 											<Text style={{ fontSize: hp(2) }} className="font-bold  text-neutral-700">
-												{recipeDish?.recipeMetrics?.persons?.value}
+												{recipeDish?.recipe_metrics?.persons?.value}
 											</Text>
 											<Text
 												style={{ fontSize: hp(1.2) }}
@@ -437,7 +437,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 										{/*    descriptions*/}
 										<View className="flex items-center py-2 gap-y-1">
 											<Text style={{ fontSize: hp(2) }} className="font-bold  text-neutral-700">
-												{recipeDish?.recipeMetrics?.calories?.value}
+												{recipeDish?.recipe_metrics?.calories?.value}
 											</Text>
 											<Text
 												style={{ fontSize: hp(1.2) }}
@@ -471,7 +471,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
                                         {/*bg-red-500*/}
                                         "
 											>
-												{i18n.t(`${recipeDish?.recipeMetrics?.difficulty?.value}`)}
+												{i18n.t(`${recipeDish?.recipe_metrics?.difficulty?.value}`)}
 
 												{/*{recipeDish?.recipeMetrics?.difficulty?.value}*/}
 											</Text>
@@ -507,13 +507,13 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 								{/*    recipe video end*/}
 
 								{/* LinkCopyrightComponent */}
-								{recipeDish?.linkCopyright && <LinkCopyrightComponent linkCopyright={recipeDish?.linkCopyright} />}
+								{recipeDish?.linkCopyright && <LinkCopyrightComponent linkCopyright={recipeDish?.link_copyright} />}
 
 								{/* MapСoordinatesComponent */}
-								{recipeDish?.mapСoordinates && <MapСoordinatesComponent mapСoordinates={recipeDish?.mapСoordinates} />}
+								{recipeDish?.mapСoordinates && <MapСoordinatesComponent mapСoordinates={recipeDish?.map_coordinates} />}
 
 								{/*accordion comments*/}
-								<View ref={commentsRef}>{isPreview === false && <CommentsComponent recepId={id} user={user ?? null} updateLikeCommentCount={updateLikeCommentCount} publishedId={recipeDish?.publishedId} />}</View>
+								<View ref={commentsRef}>{isPreview === false && <CommentsComponent recepId={id} user={user ?? null} updateLikeCommentCount={updateLikeCommentCount} publishedId={recipeDish?.published_id} />}</View>
 
 								{/* if Previeb section for button */}
 								{isPreview && (

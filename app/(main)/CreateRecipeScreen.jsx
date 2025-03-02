@@ -25,6 +25,7 @@ import { useRouter } from "expo-router";
 import TitleDescriptionComponent from "../../components/CreateRecipeScreen/TitleDescriptionComponent";
 import LoadingComponent from "../../components/loadingComponent";
 import i18n from "../../lang/i18n";
+import { uploadRecipeToTheServer } from "../../service/uploadDataToTheDB";
 
 const CreateRecipeScreen = () => {
 	const { user: userData, language, setRequiredFields, previewRecipeReady, setPreviewRecipeReady } = useAuth();
@@ -34,7 +35,7 @@ const CreateRecipeScreen = () => {
 	const [uploadRecipe, setUploadRecipe] = useState(false);
 
 	// console.log("userData",userData.id)
-	console.log("previewRecipeReady", previewRecipeReady);
+	// console.log("previewRecipeReady", previewRecipeReady);
 
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
@@ -59,7 +60,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		console.log("totalRecipe", JSON.stringify(totalRecipe));
+		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -99,7 +100,7 @@ const CreateRecipeScreen = () => {
 		// 	"Preview totalRecipe:",
 		// 	JSON.stringify(totalRecipe, null, 2)
 		// );
-		console.log("totalRecipe", JSON.stringify(totalRecipe));
+		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 
 		// Проверка структуры перед переходом
 		const validationResult = validateRecipeStructure(totalRecipe);
@@ -122,14 +123,23 @@ const CreateRecipeScreen = () => {
 
 	// handlePublishRecipe
 	const handlePublishRecipe = async () => {
-		setPreviewRecipeReady(false);
-		setUploadRecipe(true);
+		// setPreviewRecipeReady(false);
+		// setUploadRecipe(true);
 		// uploadr recipe
+		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 
 		// after setUploadRecipe(false)
-		setTimeout(() => {
-			setUploadRecipe(false);
-		}, 2000);
+		// setTimeout(() => {
+		// 	setUploadRecipe(false);
+		// }, 2000);
+
+		const res = await uploadRecipeToTheServer(totalRecipe);
+		if (res.success) {
+			Alert.alert("Success", "Recipe uploaded successfully!");
+			router.push("/homeScreen"); // Перенаправление после сохранения
+		} else {
+			Alert.alert("Error", res.msg);
+		}
 
 		// setTotalRecipe({
 		// 	category: null,

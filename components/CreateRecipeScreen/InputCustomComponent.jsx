@@ -23,10 +23,11 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 
 	const [totalTitle, setTotalTitle] = useState({});
 
-	// console.log("InputCustomComponent totalLangRecipe", totalLangRecipe);
-	// console.log("InputCustomComponent totalTitle", totalTitle);
-	// console.log("InputCustomComponent totalTitle", totalTitle?.lang?.length);
-	// console.log("InputCustomComponent totalTitle", totLang?.length);
+	console.log("InputCustomComponent totalLangRecipe", totalLangRecipe);
+	console.log("InputCustomComponent totalTitle", totalTitle);
+	console.log("InputCustomComponent totalTitle", totalTitle?.lang?.length);
+	console.log("InputCustomComponent totalTitle", totLang?.length);
+	console.log("InputCustomComponent langDev", langDev);
 
 	// Добавляем дебонсированное значение
 	const debouncedInputValue = useDebounce(totalTitle, 1000); // 1000мс = 1 секунда
@@ -83,7 +84,8 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 			name: updatedTranslations[key],
 		}));
 
-		const str = langArray.find((item) => item.lang === "ua")?.name || "";
+		// const str = langArray.find((item) => item.lang === "ua")?.name || "";
+		const str = langArray.find((item) => item.lang === langDev)?.name || "";
 		setTotalTitle({
 			lang: langArray,
 			strTitle: str,

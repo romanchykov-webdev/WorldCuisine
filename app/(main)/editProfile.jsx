@@ -1,16 +1,7 @@
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-	ActivityIndicator,
-	Alert,
-	SafeAreaView,
-	ScrollView,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	View,
-} from "react-native";
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { CameraIcon } from "react-native-heroicons/mini";
 import ButtonBack from "../../components/ButtonBack";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
@@ -56,10 +47,7 @@ const EditProfile = () => {
 	}, [currentUser]);
 
 	// let imageSource = user?.avatar && typeof user.avatar === 'object' ? user.avatar : getUserImageSrc(user?.avatar);
-	let imageSource =
-		user?.avatar && typeof user.avatar == "object"
-			? user.avatar.uri
-			: getUserImageSrc(user?.avatar);
+	let imageSource = user?.avatar && typeof user.avatar == "object" ? user.avatar.uri : getUserImageSrc(user?.avatar);
 
 	const updateAvatar = async () => {
 		// console.log('updateAvatar')
@@ -75,13 +63,11 @@ const EditProfile = () => {
 
 		if (result) {
 			// Сжимаем изображение перед использованием
-			const compressedImage = await compressImage(
-				result.assets[0].uri,
-				0.5,
-				200,
-				200
-			);
+			const compressedImage = await compressImage(result.assets[0].uri, 0.5, 200, 200);
+			console.log("EditProfile compressedImage", compressedImage);
+
 			setUser({ ...user, avatar: compressedImage });
+			console.log("EditProfile user", user);
 			// console.log('Compressed image:', compressedImage);
 			// setUser({...user, avatar: result.assets[0]});
 			// console.log('user avatar update', user)
@@ -102,12 +88,7 @@ const EditProfile = () => {
 		if (typeof avatar == "object") {
 			//     upload image
 			// console.log('upload avatar handleSubmit', avatar)
-			let imageRes = await uploadFile(
-				"profiles",
-				avatar?.uri,
-				true,
-				currentUser?.avatar
-			);
+			let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
 			if (imageRes.success) {
 				userData.avatar = imageRes.data;
 			} else {
@@ -115,12 +96,13 @@ const EditProfile = () => {
 			}
 		}
 
-		// console.log('before submit', userData);
+		console.log("before submit", userData);
 
 		const res = await updateUser(currentUser?.id, userData);
 
 		// // update user data
 		// // console.log('EditProfile res',res)
+
 		if (res.success) {
 			// setUserData({...currentUser, ...user})
 			setUserData({ ...currentUser, ...userData });
@@ -170,20 +152,14 @@ const EditProfile = () => {
 	};
 
 	return (
-		<ScrollView
-			keyboardDismissMode={"on-drag"}
-			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: 60 }}
-			showsVerticalScrollIndicator={false}
-		>
+		<ScrollView keyboardDismissMode={"on-drag"} contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: 60 }} showsVerticalScrollIndicator={false}>
 			<SafeAreaView>
 				{/*header*/}
 				<View className="flex-row items-center justify-center pt-5 pb-5 ">
 					<View className="absolute left-0">
 						<ButtonBack />
 					</View>
-					<Text style={{ fontSize: hp(2) }}>
-						{i18n.t("Edit Profile")} !
-					</Text>
+					<Text style={{ fontSize: hp(2) }}>{i18n.t("Edit Profile")} !</Text>
 				</View>
 
 				{/*avatar*/}
@@ -204,14 +180,8 @@ const EditProfile = () => {
 								borderRadius: 100,
 							}}
 						/>
-						<View
-							className="absolute bottom-5 right-5"
-							style={shadowBoxBlack()}
-						>
-							<TouchableOpacity
-								onPress={updateAvatar}
-								className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
-							>
+						<View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
+							<TouchableOpacity onPress={updateAvatar} className="bg-white p-2 border-[1px] border-neutral-300 rounded-full">
 								<CameraIcon size={30} color="grey" />
 							</TouchableOpacity>
 						</View>
@@ -222,34 +192,18 @@ const EditProfile = () => {
 					className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
 					// style={shadowBoxBlack()}
 				>
-					<TextInput
-						value={user.user_name}
-						onChangeText={(value) =>
-							setUser({ ...user, user_name: value })
-						}
-						className="text-neutral-500 text-xl p-3"
-					/>
+					<TextInput value={user.user_name} onChangeText={(value) => setUser({ ...user, user_name: value })} className="text-neutral-500 text-xl p-3" />
 				</View>
 
 				<View className="mb-5">
-					<LanguagesWrapper
-						lang={user.lang}
-						setLang={(newLang) =>
-							setUser({ ...user, lang: newLang })
-						}
-					/>
+					<LanguagesWrapper lang={user.lang} setLang={(newLang) => setUser({ ...user, lang: newLang })} />
 					{/*<LanguagesWrapper lang={currentUser.lang}*/}
 					{/*                  setLang={(newLang) => setUser({...currentUser, lang: newLang})}/>*/}
 				</View>
 
 				{/*theme*/}
 				<View className="mb-5">
-					<ThemeWrapper
-						setTheme={(newTheme) =>
-							setUser({ ...user, theme: newTheme })
-						}
-						theme={user.theme}
-					/>
+					<ThemeWrapper setTheme={(newTheme) => setUser({ ...user, theme: newTheme })} theme={user.theme} />
 					{/*<ThemeWrapper setTheme={(newTheme) => setUser({...currentUser, theme: newTheme})}*/}
 					{/*              theme={currentUser.theme}/>*/}
 				</View>
@@ -257,33 +211,13 @@ const EditProfile = () => {
 				{/*button update profile*/}
 				{/*{*/}
 				{/*    buttonUpdate &&(*/}
-				<TouchableOpacity
-					onPress={handleSubmit}
-					style={shadowBoxBlack()}
-					className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center"
-				>
-					{loading ? (
-						<ActivityIndicator color="green" size={20} />
-					) : (
-						<Text className="text-neutral-700 text-xl">
-							{i18n.t("Update your Profile")}
-						</Text>
-					)}
+				<TouchableOpacity onPress={handleSubmit} style={shadowBoxBlack()} className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center">
+					{loading ? <ActivityIndicator color="green" size={20} /> : <Text className="text-neutral-700 text-xl">{i18n.t("Update your Profile")}</Text>}
 				</TouchableOpacity>
 
 				{/*    delete profile*/}
-				<TouchableOpacity
-					onPress={handleDeleteProfile}
-					style={shadowBoxBlack()}
-					className="bg-rose-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center mt-20"
-				>
-					{loading ? (
-						<ActivityIndicator color="green" size={20} />
-					) : (
-						<Text className="text-neutral-700 text-xl">
-							{i18n.t("Delete your Profile")} ?
-						</Text>
-					)}
+				<TouchableOpacity onPress={handleDeleteProfile} style={shadowBoxBlack()} className="bg-rose-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center mt-20">
+					{loading ? <ActivityIndicator color="green" size={20} /> : <Text className="text-neutral-700 text-xl">{i18n.t("Delete your Profile")} ?</Text>}
 				</TouchableOpacity>
 			</SafeAreaView>
 		</ScrollView>
