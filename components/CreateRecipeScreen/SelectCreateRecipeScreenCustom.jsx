@@ -39,7 +39,7 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 	useEffect(() => {
 		setTotalRecipe((prevRecipe) => ({
 			...prevRecipe,
-			recipeMetrics: {
+			recipe_metrics: {
 				time: {
 					unit: "mins",
 					value: debouncedValue.time,

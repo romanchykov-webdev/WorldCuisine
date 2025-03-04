@@ -4,8 +4,8 @@ import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
 const SelectLangComponent = ({ recipeDishArea, handleLangChange, langApp }) => {
-	console.log("SelectLangComponent langApp", langApp);
-	console.log("SelectLangComponent recipeDishArea", recipeDishArea);
+	// console.log("SelectLangComponent langApp", langApp);
+	// console.log("SelectLangComponent recipeDishArea", recipeDishArea);
 
 	const areaKeys = Object.keys(recipeDishArea);
 	return (
@@ -13,12 +13,7 @@ const SelectLangComponent = ({ recipeDishArea, handleLangChange, langApp }) => {
 			{areaKeys &&
 				areaKeys.length > 1 &&
 				areaKeys.map((item) => (
-					<TouchableOpacity
-						onPress={() => handleLangChange(item)}
-						key={item}
-						className="flex-1"
-						style={shadowBoxBlack()}
-					>
+					<TouchableOpacity onPress={() => handleLangChange(item)} key={item} className="flex-1" style={shadowBoxBlack()}>
 						<ButtonSmallCustom
 							w="auto"
 							bg={langApp === item ? "yellow" : "green"}

@@ -2,28 +2,13 @@ import MasonryList from "@react-native-seoul/masonry-list";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-	SafeAreaView,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-} from "react-native";
-import {
-	ChatBubbleOvalLeftEllipsisIcon,
-	HeartIcon,
-	PlayCircleIcon,
-	StarIcon,
-} from "react-native-heroicons/outline";
-import Animated, {
-	FadeInDown,
-	FadeInLeft,
-	FadeInUp,
-} from "react-native-reanimated";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon, PlayCircleIcon, StarIcon } from "react-native-heroicons/outline";
+import Animated, { FadeInDown, FadeInLeft, FadeInUp } from "react-native-reanimated";
 import AvatarCustom from "../../components/AvatarCustom";
 import ButtonBack from "../../components/ButtonBack";
 import LoadingComponent from "../../components/loadingComponent";
+import TitleScrean from "../../components/TitleScrean";
 import { getDeviceType } from "../../constants/getWidthDevice";
 import { myFormatNumber } from "../../constants/halperFunctions";
 import { hp } from "../../constants/responsiveScreen";
@@ -49,7 +34,7 @@ const AllRecipesPointScreen = () => {
 
 	const fetchGetAllRecipesPointMasonryMyDB = async () => {
 		const res = await getAllRecipesPointMasonryMyDB(point);
-		// console.log('AllRecipesPointScreen res point', JSON.stringify(res.data,null,2))
+		// console.log("AllRecipesPointScreen res point", JSON.stringify(res.data, null, 2));
 		setAllRecipes(res.data);
 	};
 
@@ -63,30 +48,14 @@ const AllRecipesPointScreen = () => {
 				<View className="gap-y-3 p-[20]">
 					{/* block header*/}
 					<View className=" items-center justify-center mb-5">
-						<Animated.View
-							entering={FadeInLeft.delay(300)
-								.springify()
-								.damping(30)}
-							className="absolute left-0"
-						>
+						{/* button back */}
+						<Animated.View entering={FadeInLeft.delay(300).springify().damping(30)} className="absolute left-0">
 							<ButtonBack />
 						</Animated.View>
-						<Animated.Text
-							entering={FadeInUp.delay(500)
-								.springify()
-								.damping(30)}
-							style={[
-								{ fontSize: hp(3) },
-								shadowText({
-									color: "rgba(0,0,0,0.4)",
-									offset: { width: 1.5, height: 1.5 },
-									radius: 1,
-								}),
-							]}
-							className="font-semibold text-neutral-700 mb-2"
-						>
-							{i18n.t("Recipes")}
-						</Animated.Text>
+						{/* title header screan */}
+						<Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
+							<TitleScrean title={i18n.t("Recipes")} />
+						</Animated.View>
 					</View>
 					{/* block header end*/}
 
@@ -105,13 +74,7 @@ const AllRecipesPointScreen = () => {
 								numColumns={column}
 								style={{ gap: 10 }}
 								showsVerticalScrollIndicator={false}
-								renderItem={({ item, i }) => (
-									<RecipePointItem
-										item={item}
-										index={i}
-										langApp={langApp}
-									/>
-								)}
+								renderItem={({ item, i }) => <RecipePointItem item={item} index={i} langApp={langApp} />}
 								// refreshing={isLoadingNext}
 								// onRefresh={() => refetch({first: ITEM_CNT})}
 								onEndReachedThreshold={0.1}
@@ -136,10 +99,7 @@ const RecipePointItem = ({ item, index, langApp }) => {
 
 	// Находим название категории в зависимости от выбранного языка
 
-	const categoryTitle = Array.isArray(item.title.lang)
-		? item.title.lang.find((it) => it.lang === langApp)?.name ||
-		  item.title.strTitle
-		: item.title.strTitle;
+	const categoryTitle = Array.isArray(item.title.lang) ? item.title.lang.find((it) => it.lang === langApp)?.name || item.title.strTitle : item.title.strTitle;
 
 	// console.log('categoryTitle',categoryTitle)
 
@@ -163,7 +123,7 @@ const RecipePointItem = ({ item, index, langApp }) => {
 				onPress={() =>
 					router.push({
 						pathname: "RecipeDetailsScreen",
-						params: { id: item.fullRecipeId, langApp: langApp },
+						params: { id: item.full_recipe_id, langApp: langApp },
 					})
 				}
 				style={{ width: "100%" }}
@@ -177,44 +137,43 @@ const RecipePointItem = ({ item, index, langApp }) => {
 						radius: 1, // Радиус размытия тени (по умолчанию 5px)
 						elevation: 3, // Высота "подъема" для создания тени на Android (по умолчанию 6)
 					})}
-					className={`${
-						item.video ? "justify-between" : "justify-end"
-					} items-start flex-row w-full absolute top-2 left-0 z-10 px-5 
+					className={`${item?.video ? "justify-between" : "justify-end"} items-start flex-row w-full absolute top-2 left-0 z-10 px-5 
                     `}
 				>
-					{item.video && <PlayCircleIcon size={25} color="red" />}
+					{item?.video && <PlayCircleIcon size={25} color="red" />}
 
-					<View className=" items-center ">
-						<AvatarCustom
-							uri={item.publishedUser.avatar}
-							size={25}
-							style={{ borderWidth: 0.2 }}
-							rounded={50}
-						/>
-						<Text
-							style={{
-								fontSize: 6,
-								maxWidth: 20,
-								overflow: "hidden",
-								textAlign: "center",
-							}}
-							numberOfLines={1}
-							ellipsizeMode="tail"
-						>
-							{item.publishedUser.username}
-						</Text>
-					</View>
+					{/* if item?.published_user not null {} */}
+					{item?.published_user && (
+						<View className=" items-center ">
+							<AvatarCustom uri={item?.published_user?.avatar} size={25} style={{ borderWidth: 0.2 }} rounded={50} />
+							<Text
+								style={{
+									fontSize: 6,
+									maxWidth: 20,
+									overflow: "hidden",
+									textAlign: "center",
+								}}
+								numberOfLines={1}
+								ellipsizeMode="tail"
+							>
+								{item?.published_user?.user_name}
+							</Text>
+						</View>
+					)}
 				</View>
 
-				<AvatarCustom
-					uri={item.imageHeader}
-					style={{
-						borderWidth: 0.2,
-						width: "100%",
-						height: imageHeight,
-					}}
-					rounded={35}
-				/>
+				{item.image_header && (
+					<AvatarCustom
+						uri={item.image_header}
+						style={{
+							borderWidth: 0.2,
+							width: "100%",
+							height: imageHeight,
+						}}
+						rounded={35}
+					/>
+				)}
+
 				<LinearGradient
 					colors={["transparent", "#18181b"]}
 					style={{
@@ -229,10 +188,7 @@ const RecipePointItem = ({ item, index, langApp }) => {
 
 				{/*    icons like comments rating*/}
 				<View className=" absolute bottom-[20] items-center justify-around">
-					<Text
-						className=" text-white font-medium text-center mb-2"
-						style={shadowText()}
-					>
+					<Text className=" text-white font-medium text-center mb-2" style={shadowText()}>
 						{categoryTitle}
 					</Text>
 
@@ -267,10 +223,7 @@ const RecipePointItem = ({ item, index, langApp }) => {
 						{/*    comments*/}
 						{item.comments > 0 && (
 							<View className="items-center ">
-								<ChatBubbleOvalLeftEllipsisIcon
-									size={25}
-									color="gray"
-								/>
+								<ChatBubbleOvalLeftEllipsisIcon size={25} color="gray" />
 								<Text
 									style={{
 										fontSize: 8,
@@ -292,10 +245,7 @@ const RecipePointItem = ({ item, index, langApp }) => {
 						{item.rating > 0 && (
 							<View className="items-center">
 								<StarIcon size={25} color="gray" />
-								<Text
-									style={{ fontSize: 8 }}
-									className="text-white"
-								>
+								<Text style={{ fontSize: 8 }} className="text-white">
 									{item.rating}
 								</Text>
 							</View>

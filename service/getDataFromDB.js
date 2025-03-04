@@ -20,7 +20,7 @@ export const getCategoriesMyDB = async () => {
 export const getRecipesMyDB = async (category) => {
 	// console.log("getRecipesMyDB category",category)
 	try {
-		let { data, error } = await supabase.from("shortDesc").select("*").eq("category", category);
+		let { data, error } = await supabase.from("short_desc").select("*").eq("category", category);
 
 		if (error) {
 			return {
@@ -69,7 +69,8 @@ export const getCategoryRecipeMasonryMyDB = async (langDew) => {
 //получение всех под категории getCategoryRecipeMasonryMyDB
 export const getAllRecipesPointMasonryMyDB = async (point) => {
 	try {
-		let { data, error } = await supabase.from("shortDesc").select("*").eq("point", point);
+		// let { data, error } = await supabase.from("shortDesc").select("*").eq("point", point);
+		let { data, error } = await supabase.from("short_desc").select("*").eq("point", point);
 
 		if (error) {
 			return {
@@ -109,8 +110,6 @@ export const getRecipesDescriptionMyDB = async (id) => {
 			};
 		}
 
-		// console.log('shortDesc', JSON.stringify(data, null, 2));
-
 		return { success: true, data };
 	} catch (error) {
 		console.log("error", error);
@@ -144,7 +143,6 @@ export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 		}
 		//
 		//
-		// console.log('shortDesc', JSON.stringify(data, null, 2));
 
 		return { success: true, data };
 	} catch (error) {
@@ -172,8 +170,6 @@ export const getAllCommentsMyDB = async (id) => {
 				msg: "getRecipesDescriptionMyDB error" + error?.message,
 			};
 		}
-
-		// console.log('shortDesc', JSON.stringify(data, null, 2));
 
 		return { success: true, data };
 	} catch (error) {
@@ -367,7 +363,7 @@ export const getAllMyLikedRecipes = async (userId) => {
 
 		// Запрашиваем подробности из таблицы shortDesc по массиву ID
 		const { data: recipesDetails, error: detailsError } = await supabase
-			.from("shortDesc")
+			.from("short_desc")
 			.select("*") // Замените '*' на конкретные колонки, которые вам нужны
 			.in("fullRecipeId", recipeIds);
 

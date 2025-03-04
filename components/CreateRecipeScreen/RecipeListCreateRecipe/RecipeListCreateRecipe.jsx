@@ -12,6 +12,7 @@ import ViewImageListCreateRecipe from "./ViewImageListCreateRecipe";
 //import my hook
 import { useDebounce } from "../../../constants/halperFunctions";
 import i18n from "../../../lang/i18n";
+import LoadingComponent from "../../loadingComponent";
 import TitleDescriptionComponent from "../TitleDescriptionComponent";
 
 const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRecipe, setTotalRecipe }) => {
@@ -22,6 +23,8 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 	const handleChangeLang = (item) => {
 		setChangeLang(item);
 	};
+
+	const [loadingCompresImg, setLoadingCompresImg] = useState(false);
 
 	// const [recipeArray, setRecipeArray] = useState(() => {
 	// 	// Инициализируем пустой объект для каждого языка
@@ -62,6 +65,8 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 			return;
 		}
 
+		setLoadingCompresImg(true);
+
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ["images"],
 			allowsEditing: true,
@@ -80,7 +85,7 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 
 			// Сжимаем изображение перед использованием
 			// const compressedImage = await compressImage(originalUri, 1, 300, 300);
-			const compressedImage = await compressImage100(originalUri, 0.1);
+			const compressedImage = await compressImage100(originalUri, 0.2);
 
 			// Получаем размер сжатого изображения
 			const compressedResponse = await fetch(compressedImage.uri);
@@ -95,7 +100,11 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 			// console.log('add image for recipe list', addImages);
 
 			// Выводим информацию в alert
-			Alert.alert("Size image", `Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`);
+			Alert.alert(
+				"Size image",
+				`Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`
+			);
+			setLoadingCompresImg(false);
 		} else {
 			// console.error("Image selection canceled or failed", result);
 			Alert.alert(`${i18n.t("You did not add an image")}`);
@@ -186,7 +195,9 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 								return (
 									<TouchableOpacity
 										style={changeLang === item ? shadowBoxBlack() : null}
-										className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${changeLang === item ? `bg-amber-500` : `bg-transparent`} `}
+										className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${
+											changeLang === item ? `bg-amber-500` : `bg-transparent`
+										} `}
 										key={index}
 										onPress={() => {
 											handleChangeLang(item);
@@ -207,7 +218,11 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 								// Выводим только те элементы, которые являются шагами (то есть числами)
 								if (!isNaN(Number(stepIndex))) {
 									return (
-										<Animated.View entering={FadeInDown.duration(300).springify()} key={stepIndex} className="mb-5 ">
+										<Animated.View
+											entering={FadeInDown.duration(300).springify()}
+											key={stepIndex}
+											className="mb-5 "
+										>
 											<View className="flex-1 flex-row">
 												<Text className="mb-2 flex-1">
 													<Text className="text-amber-500">
@@ -228,7 +243,19 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 												</TouchableOpacity>
 											</View>
 
-											<View>{recipeArray[changeLang][stepIndex]?.images.length > 0 && (recipeArray[changeLang][stepIndex]?.images.length === 1 ? <ViewImageListCreateRecipe image={recipeArray[changeLang][stepIndex]?.images} /> : <SliderImagesListCreateRecipe createRecipe={true} images={recipeArray[changeLang][stepIndex]?.images} />)}</View>
+											<View>
+												{recipeArray[changeLang][stepIndex]?.images.length > 0 &&
+													(recipeArray[changeLang][stepIndex]?.images.length === 1 ? (
+														<ViewImageListCreateRecipe
+															image={recipeArray[changeLang][stepIndex]?.images}
+														/>
+													) : (
+														<SliderImagesListCreateRecipe
+															createRecipe={true}
+															images={recipeArray[changeLang][stepIndex]?.images}
+														/>
+													))}
+											</View>
 										</Animated.View>
 									);
 								}
@@ -237,14 +264,34 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 				}
 			</View>
 
-			<TitleDescriptionComponent titleText={i18n.t("Recipe Description")} titleVisual={true} discriptionVisual={true} descriptionText={i18n.t("Here you can write a recipe as text or in bullet points")} />
+			<TitleDescriptionComponent
+				titleText={i18n.t("Recipe Description")}
+				titleVisual={true}
+				discriptionVisual={true}
+				descriptionText={i18n.t("Here you can write a recipe as text or in bullet points")}
+			/>
 
 			{totalLangRecipe?.map((item, index) => {
-				return <TextInput key={index} className="border-2 border-neutral-500 rounded-[15] p-2 mb-3" value={recipeArray[item]?.text || ""} onChangeText={(value) => handleTextChange(item, value)} placeholder={`${placeholderText} ${item}`} placeholderTextColor={placeholderColor} multiline={true} style={{ minHeight: 100 }} />;
+				return (
+					<TextInput
+						key={index}
+						className="border-2 border-neutral-500 rounded-[15] p-2 mb-3"
+						value={recipeArray[item]?.text || ""}
+						onChangeText={(value) => handleTextChange(item, value)}
+						placeholder={`${placeholderText} ${item}`}
+						placeholderTextColor={placeholderColor}
+						multiline={true}
+						style={{ minHeight: 100 }}
+					/>
+				);
 			})}
 
 			<View className="flex-row gap-x-2 ">
-				<TouchableOpacity onPress={addImageRecipeList} style={shadowBoxBlack()} className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center ">
+				<TouchableOpacity
+					onPress={addImageRecipeList}
+					style={shadowBoxBlack()}
+					className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
+				>
 					<PhotoIcon color="white" size={20} />
 					{addImages?.length > 0 && (
 						<Animated.View
@@ -270,8 +317,12 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 					)}
 				</TouchableOpacity>
 
-				<TouchableOpacity style={shadowBoxBlack()} onPress={addStepRecipe} className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center">
-					<PlusIcon color="white" size={20} />
+				<TouchableOpacity
+					style={shadowBoxBlack()}
+					onPress={loadingCompresImg ? null : addStepRecipe}
+					className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
+				>
+					{loadingCompresImg ? <LoadingComponent /> : <PlusIcon color="white" size={20} />}
 				</TouchableOpacity>
 
 				{/*<TouchableOpacity*/}

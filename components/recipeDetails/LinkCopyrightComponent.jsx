@@ -4,6 +4,12 @@ import { StyleSheet, View } from "react-native";
 import i18n from "../../lang/i18n";
 
 const LinkCopyrightComponent = ({ linkCopyright }) => {
+	// console.log("LinkCopyrightComponent", linkCopyright);
+
+	if (!linkCopyright) {
+		return null; // Или placeholder, например: <Text>Ссылка отсутствует</Text>
+	}
+
 	return (
 		<View className="flex-row gap-x-4 items-center flex-1">
 			<View style={{ height: 20, width: 20 }} className="bg-amber-300 rounded-full" />

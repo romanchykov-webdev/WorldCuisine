@@ -32,7 +32,7 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 	useEffect(() => {
 		setTotalRecipe((prevRecipe) => ({
 			...prevRecipe,
-			linkCopyright: debouncedValue,
+			link_copyright: debouncedValue,
 		}));
 	}, [debouncedValue]);
 

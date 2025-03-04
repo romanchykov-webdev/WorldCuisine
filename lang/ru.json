@@ -105,6 +105,8 @@
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
+
+	"Create Recipe": "Создать рецепт",
 	"Add category": "Добавить категорию",
 	"Select the category your recipe belongs to.": "Выберите категорию, к которой относится ваш рецепт.",
 	"Upload your image": "Загрузите изображение",

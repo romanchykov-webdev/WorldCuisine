@@ -507,10 +507,10 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 								{/*    recipe video end*/}
 
 								{/* LinkCopyrightComponent */}
-								{recipeDish?.linkCopyright && <LinkCopyrightComponent linkCopyright={recipeDish?.link_copyright} />}
+								{recipeDish?.link_copyright && <LinkCopyrightComponent linkCopyright={recipeDish?.link_copyright} />}
 
 								{/* MapСoordinatesComponent */}
-								{recipeDish?.mapСoordinates && <MapСoordinatesComponent mapСoordinates={recipeDish?.map_coordinates} />}
+								{recipeDish?.map_coordinates && <MapСoordinatesComponent mapСoordinates={recipeDish?.map_coordinates} />}
 
 								{/*accordion comments*/}
 								<View ref={commentsRef}>{isPreview === false && <CommentsComponent recepId={id} user={user ?? null} updateLikeCommentCount={updateLikeCommentCount} publishedId={recipeDish?.published_id} />}</View>

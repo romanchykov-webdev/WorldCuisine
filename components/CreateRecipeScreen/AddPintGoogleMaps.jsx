@@ -41,7 +41,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	useEffect(() => {
 		setTotalRecipe((prevRecipe) => ({
 			...prevRecipe,
-			mapСoordinates: debouncedValue,
+			map_coordinates: debouncedValue,
 		}));
 	}, [debouncedValue]);
 

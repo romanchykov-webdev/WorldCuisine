@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import Animated, {
-	FadeInDown,
-	useAnimatedStyle,
-	useSharedValue,
-} from "react-native-reanimated";
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 // import StarRating from "react-native-star-rating-widget";
 
 // translate
@@ -17,11 +13,11 @@ import { Rating } from "react-native-ratings";
 import { showCustomAlert } from "../constants/halperFunctions";
 
 const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
-	console.log("RatingComponents user", user);
-	console.log("RatingComponents isPreview", isPreview);
+	// console.log("RatingComponents user", user);
+	// console.log("RatingComponents isPreview", isPreview);
 	// console.log('RatingComponents rating', typeof rating)
 	// console.log('RatingComponents rating', rating)
-	console.log("RatingComponents recipeId", recipeId);
+	// console.log("RatingComponents recipeId", recipeId);
 
 	const router = useRouter();
 
@@ -43,7 +39,7 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	// }, [selectedRating]);
 
 	const addRating = async (newRating) => {
-		console.log("addRecipeRatingMyDB try", newRating);
+		// console.log("addRecipeRatingMyDB try", newRating);
 		if (isPreview || !recipeId) return; // Если это предпросмотр или recipeId отсутствует, не выполняем действие
 		// console.log('addRating called with newRating:', newRating);
 		// if (user === null) {
@@ -73,24 +69,13 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 
 	const IfUserNull = () => {
 		if (user === null) {
-			showCustomAlert(
-				"Rating",
-				`${i18n.t(
-					"To rate a recipe you must log in or create an account"
-				)}`,
-				router
-			);
+			showCustomAlert("Rating", `${i18n.t("To rate a recipe you must log in or create an account")}`, router);
 		}
 	};
 
 	return (
-		<Animated.View
-			entering={FadeInDown.duration(400).delay(550)}
-			className="px-4  items-center justify-around relative"
-		>
-			<Text className="text-neutral-700 mb-2">
-				{i18n.t("Rate the recipe")}
-			</Text>
+		<Animated.View entering={FadeInDown.duration(400).delay(550)} className="px-4  items-center justify-around relative">
+			<Text className="text-neutral-700 mb-2">{i18n.t("Rate the recipe")}</Text>
 
 			{/* Star Rating component */}
 

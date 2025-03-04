@@ -23,11 +23,11 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 
 	const [totalTitle, setTotalTitle] = useState({});
 
-	console.log("InputCustomComponent totalLangRecipe", totalLangRecipe);
-	console.log("InputCustomComponent totalTitle", totalTitle);
-	console.log("InputCustomComponent totalTitle", totalTitle?.lang?.length);
-	console.log("InputCustomComponent totalTitle", totLang?.length);
-	console.log("InputCustomComponent langDev", langDev);
+	// console.log("InputCustomComponent totalLangRecipe", totalLangRecipe);
+	// console.log("InputCustomComponent totalTitle", totalTitle);
+	// console.log("InputCustomComponent totalTitle", totalTitle?.lang?.length);
+	// console.log("InputCustomComponent totalTitle", totLang?.length);
+	// console.log("InputCustomComponent langDev", langDev);
 
 	// Добавляем дебонсированное значение
 	const debouncedInputValue = useDebounce(totalTitle, 1000); // 1000мс = 1 секунда

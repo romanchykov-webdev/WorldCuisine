@@ -129,7 +129,7 @@ export const useDebounce = (value, delay) => {
 // функция проверки структуры данных totalRecipe
 export const validateRecipeStructure = (recipe) => {
 	// Проверка базовых обязательных полей
-	const requiredFields = ["category", "imageHeader", "title", "area", "rating", "likes", "comments", "recipeMetrics", "ingredients", "publishedId"];
+	const requiredFields = ["category", "image_header", "title", "area", "rating", "likes", "comments", "recipe_metrics", "ingredients", "published_id"];
 
 	for (const field of requiredFields) {
 		if (!recipe?.hasOwnProperty(field)) {
@@ -141,7 +141,7 @@ export const validateRecipeStructure = (recipe) => {
 	}
 
 	// Проверка типа данных
-	if (typeof recipe.category !== "string" || typeof recipe.imageHeader !== "string" || typeof recipe.rating !== "number" || typeof recipe.likes !== "number" || typeof recipe.comments !== "number" || typeof recipe.publishedId !== "string") {
+	if (typeof recipe.category !== "string" || typeof recipe.image_header !== "string" || typeof recipe.rating !== "number" || typeof recipe.likes !== "number" || typeof recipe.comments !== "number" || typeof recipe.published_id !== "string") {
 		return {
 			isValid: false,
 			message: `${i18n.t("All required fields marked must be filled in")} \u2736.`,
@@ -217,11 +217,11 @@ export const validateRecipeStructure = (recipe) => {
 		}
 	}
 
-	// Проверка recipeMetrics (объект с time, persons, calories, difficulty)
-	if (typeof recipe.recipeMetrics !== "object" || recipe.recipeMetrics === null || !recipe.recipeMetrics.hasOwnProperty("time") || !recipe.recipeMetrics.hasOwnProperty("persons") || !recipe.recipeMetrics.hasOwnProperty("calories") || !recipe.recipeMetrics.hasOwnProperty("difficulty")) {
+	// Проверка recipe_metrics (объект с time, persons, calories, difficulty)
+	if (typeof recipe.recipe_metrics !== "object" || recipe.recipe_metrics === null || !recipe.recipe_metrics.hasOwnProperty("time") || !recipe.recipe_metrics.hasOwnProperty("persons") || !recipe.recipe_metrics.hasOwnProperty("calories") || !recipe.recipe_metrics.hasOwnProperty("difficulty")) {
 		return {
 			isValid: false,
-			message: "Поле recipeMetrics должно содержать time, persons, calories, difficulty.",
+			message: "Поле recipe_metrics должно содержать time, persons, calories, difficulty.",
 		};
 	}
 

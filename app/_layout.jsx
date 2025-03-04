@@ -43,9 +43,9 @@ const RootLayout = () => {
 				// router.replace("/(main)/welcome");
 			}
 
-			// setTimeout(() => {
-			setIsLoading(false); // Загрузка завершена
-			// }, 2000);
+			setTimeout(() => {
+				setIsLoading(false); // Загрузка завершена
+			}, 2000);
 		});
 
 		// Отписка от подписчика при размонтировании
@@ -64,14 +64,14 @@ const RootLayout = () => {
 		}
 	};
 	//
-	if (isLoading) {
-		// Показываем страницу индекса (или индикатор загрузки), пока идет проверка
-		return (
-			<Stack>
-				<Stack.Screen name="index" options={{ headerShown: false }} />
-			</Stack>
-		);
-	}
+	// if (isLoading) {
+	// 	// Показываем страницу индекса (или индикатор загрузки), пока идет проверка
+	// 	return (
+	// 		<Stack>
+	// 			<Stack.Screen name="index" options={{ headerShown: false }} />
+	// 		</Stack>
+	// 	);
+	// }
 
 	return (
 		<Stack>

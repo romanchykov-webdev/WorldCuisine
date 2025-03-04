@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+	Alert,
+	KeyboardAvoidingView,
+	Platform,
+	SafeAreaView,
+	ScrollView,
+	StyleSheet,
+	TouchableOpacity,
+	View,
+} from "react-native";
 // arrow-up-on-square
 
 import ButtonBack from "../../components/ButtonBack";
@@ -24,6 +33,7 @@ import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 import { useRouter } from "expo-router";
 import TitleDescriptionComponent from "../../components/CreateRecipeScreen/TitleDescriptionComponent";
 import LoadingComponent from "../../components/loadingComponent";
+import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
 import { uploadRecipeToTheServer } from "../../service/uploadDataToTheDB";
 
@@ -34,33 +44,40 @@ const CreateRecipeScreen = () => {
 
 	const [uploadRecipe, setUploadRecipe] = useState(false);
 
+	const [loadingUpload, setLoadingUpload] = useState(false);
+
 	// console.log("userData",userData.id)
+	// console.log("userData", userData);
 	// console.log("previewRecipeReady", previewRecipeReady);
 
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
-		categoryId: null,
-		imageHeader: null,
+		category_id: null,
+		image_header: null,
 		area: null,
 		title: null,
 		rating: 0,
 		likes: 0,
 		comments: 0,
-		recipeMetrics: null,
+		recipe_metrics: null,
 		ingredients: null,
 		instructions: null,
 		video: null,
-		sourceReference: null,
+		source_reference: null,
 		tags: null,
-		linkCopyright: null,
-		mapСoordinates: null,
-		publishedId: userData.id,
-		publishedUser: null,
+		link_copyright: null,
+		map_coordinates: null,
+		published_id: userData.id,
+		published_user: {
+			avatar: userData?.avatar,
+			user_id: userData?.id,
+			user_name: userData?.user_name,
+		},
 		point: null,
 	});
 
 	useEffect(() => {
-		// console.log("totalRecipe", JSON.stringify(totalRecipe));
+		console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -133,35 +150,49 @@ const CreateRecipeScreen = () => {
 		// 	setUploadRecipe(false);
 		// }, 2000);
 
+		setLoadingUpload(true);
+
 		const res = await uploadRecipeToTheServer(totalRecipe);
 		if (res.success) {
 			Alert.alert("Success", "Recipe uploaded successfully!");
-			router.push("/homeScreen"); // Перенаправление после сохранения
+			router.back(); // Перенаправление после сохранения
+			// Отключить оповещение об обязательном заполнение полей
+			setRequiredFields(false);
+
+			// прячем кнопку опубликовать
+			setPreviewRecipeReady(false);
+
+			setLoadingUpload(false);
+
+			// обнуляем объект
+			// setTotalRecipe({
+			// 	category: null,
+			// 	category_id: null,
+			// 	image_header: null,
+			// 	area: null,
+			// 	title: null,
+			// 	rating: 0,
+			// 	likes: 0,
+			// 	comments: 0,
+			// 	recipe_metrics: null,
+			// 	ingredients: null,
+			// 	instructions: null,
+			// 	video: null,
+			// 	source_reference: null,
+			// 	tags: null,
+			// 	link_copyright: null,
+			// 	map_coordinates: null,
+			// 	published_id: userData.id,
+			// 	published_user: {
+			// 		avatar: userData?.avatar,
+			// 		user_id: userData?.id,
+			// 		user_name: userData?.user_name,
+			// 	},
+			// 	point: null,
+			// });
 		} else {
 			Alert.alert("Error", res.msg);
 		}
-
-		// setTotalRecipe({
-		// 	category: null,
-		// categoryId: null,
-		// imageHeader: null,
-		// area: null,
-		// title: null,
-		// rating: 0,
-		// likes: 0,
-		// comments: 0,
-		// recipeMetrics: null,
-		// ingredients: null,
-		// instructions: null,
-		// video: null,
-		// sourceReference: null,
-		// tags: null,
-		// linkCopyright: null,
-		// mapСoordinates: null,
-		// publishedId: userData.id,
-		// publishedUser: null,
-		// point: null,
-		// })
 	};
 
 	return (
@@ -185,29 +216,53 @@ const CreateRecipeScreen = () => {
 							keyboardDismissMode={"on-drag"}
 						>
 							{/*title*/}
-							<View className="  p-5">
-								<View className="absolute left-0 z-10">
+							<View className="pt-5">
+								<View className=" flex-1">
 									<ButtonBack />
 								</View>
-								<Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text>
+								{/* <Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text> */}
+								<View className="items-center mb-5">
+									<TitleScrean title={i18n.t("Create Recipe")} />
+								</View>
 							</View>
 
 							{/*add category*/}
 							<AddCategory langApp={langApp} setTotalRecipe={setTotalRecipe} />
 
 							{/* upload header image    */}
-							<UploadHeaderImage styleTextDesc={styles.styleTextDesc} styleInput={styles.styleInput} langDev={langApp} setTotalLangRecipe={setTotalLangRecipe} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} totalRecipe={totalRecipe} />
+							<UploadHeaderImage
+								styleTextDesc={styles.styleTextDesc}
+								styleInput={styles.styleInput}
+								langDev={langApp}
+								setTotalLangRecipe={setTotalLangRecipe}
+								totalLangRecipe={totalLangRecipe}
+								setTotalRecipe={setTotalRecipe}
+								totalRecipe={totalRecipe}
+							/>
 
 							{/*   aria di recipe*/}
 							<View className="mb-5">
 								{/* <Text style={styles.styleTextDesc}>Country of origin of the recipe</Text> */}
-								<TitleDescriptionComponent titleText={i18n.t("Country of origin of the recipe")} titleVisual={true} />
+								<TitleDescriptionComponent
+									titleText={i18n.t("Country of origin of the recipe")}
+									titleVisual={true}
+								/>
 
-								<InputCreateRecipeScreenCustom styleInput={styles.styleInput} placeholderText={i18n.t("Write the name of the country")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+								<InputCreateRecipeScreenCustom
+									styleInput={styles.styleInput}
+									placeholderText={i18n.t("Write the name of the country")}
+									placeholderColor="grey"
+									totalLangRecipe={totalLangRecipe}
+									setTotalRecipe={setTotalRecipe}
+								/>
 							</View>
 
 							{/*  Tags   */}
-							<TagsCustom styleInput={styles.styleInput} styleTextDesc={styles.styleTextDesc} setTotalRecipe={setTotalRecipe} />
+							<TagsCustom
+								styleInput={styles.styleInput}
+								styleTextDesc={styles.styleTextDesc}
+								setTotalRecipe={setTotalRecipe}
+							/>
 
 							{/*    select */}
 							<View className="mb-5">
@@ -220,13 +275,26 @@ const CreateRecipeScreen = () => {
 								{/* <Text className="text-neutral-700 text-xs mb-3">Добавьте все ингредиенты и их количество для приготовления рецепта.</Text> */}
 
 								<View>
-									<IngredientsCreateRecipe styleInput={styles.styleInput} placeholderText={i18n.t("Name of the ingredient")} placeholderColor="grey" langApp={userData.lang ?? language} measurement={measurement} totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+									<IngredientsCreateRecipe
+										styleInput={styles.styleInput}
+										placeholderText={i18n.t("Name of the ingredient")}
+										placeholderColor="grey"
+										langApp={userData.lang ?? language}
+										measurement={measurement}
+										totalLangRecipe={totalLangRecipe}
+										setTotalRecipe={setTotalRecipe}
+									/>
 								</View>
 							</View>
 
 							{/*    recipe description  */}
 							<View className="mb-10">
-								<RecipeListCreateRecipe placeholderText={i18n.t("Here you can describe the recipe in the language")} placeholderColor="grey" totalLangRecipe={totalLangRecipe} setTotalRecipe={setTotalRecipe} />
+								<RecipeListCreateRecipe
+									placeholderText={i18n.t("Here you can describe the recipe in the language")}
+									placeholderColor="grey"
+									totalLangRecipe={totalLangRecipe}
+									setTotalRecipe={setTotalRecipe}
+								/>
 							</View>
 
 							{/*    add recipe link video*/}
@@ -255,16 +323,22 @@ const CreateRecipeScreen = () => {
 								</TouchableOpacity>
 
 								{previewRecipeReady && (
-									<TouchableOpacity onPress={handlePublishRecipe} style={shadowBoxBlack()} className="flex-1">
-										<ButtonSmallCustom
-											buttonText={true}
-											title={i18n.t("Publish")}
-											bg="green"
-											// styleText={styles.buttonTextPrevSave}
-											w="100%"
-											h={100}
-											// styleWrapperButton={styles.buttonTextPrevSavePadding}
-										/>
+									<TouchableOpacity
+										onPress={handlePublishRecipe}
+										style={[{ backgroundColor: "green" }, shadowBoxBlack()]}
+										className="flex-1 w-full h-[100] rounded-[12] border-[1px] border-neutral-50 "
+									>
+										{loadingUpload ? (
+											<LoadingComponent />
+										) : (
+											<ButtonSmallCustom
+												buttonText={true}
+												title={i18n.t("Publish")}
+												bg="green"
+												w="100%"
+												h={100}
+											/>
+										)}
 									</TouchableOpacity>
 								)}
 							</View>
