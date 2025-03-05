@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ArrowUturnLeftIcon, PlusIcon, TrashIcon } from "react-native-heroicons/mini";
 import { hp, wp } from "../../constants/responsiveScreen";
@@ -16,6 +16,10 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 		point: "",
 		name: "",
 	});
+
+	useEffect(() => {
+		console.log("AddCategory subCategory", subCategory);
+	}, [subCategory]);
 
 	const handleCategory = (cat) => {
 		setCat(cat);
@@ -123,7 +127,10 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 				</View>
 			)}
 
-			<TouchableOpacity onPress={handlerAddCategory} className="flex-row gap-x-2 items-center justify-center relative ">
+			<TouchableOpacity
+				onPress={handlerAddCategory}
+				className="flex-row gap-x-2 items-center justify-center relative "
+			>
 				<ButtonSmallCustom
 					buttonText={true}
 					// styleWrapperButton={}
@@ -158,7 +165,11 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 							onPress={() => handlerBackCat()}
 							style={{ zIndex: 10 }}
 						>
-							<ButtonSmallCustom icon={ArrowUturnLeftIcon} color={"grey"} styleWrapperButton={{ borderRadius: "100%" }} />
+							<ButtonSmallCustom
+								icon={ArrowUturnLeftIcon}
+								color={"grey"}
+								styleWrapperButton={{ borderRadius: "100%" }}
+							/>
 						</TouchableOpacity>
 						<Text className="flex-1 text-center ml-[-40]">{cat?.name}</Text>
 					</View>
@@ -173,14 +184,22 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 						{cat === null
 							? allCategories.map((category, index) => {
 									return (
-										<TouchableOpacity onPress={() => handleCategory(category)} key={index} className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+										<TouchableOpacity
+											onPress={() => handleCategory(category)}
+											key={index}
+											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
+										>
 											<Text className="text-2xl">{category.name}</Text>
 										</TouchableOpacity>
 									);
 							  })
 							: cat.subcategories.map((subCategory, index) => {
 									return (
-										<TouchableOpacity onPress={() => handleSubCategory(subCategory)} key={index} className="border-2 border-neutral-700 rounded-[15] mb-3 p-2">
+										<TouchableOpacity
+											onPress={() => handleSubCategory(subCategory)}
+											key={index}
+											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
+										>
 											<Text className="text-2xl">{subCategory.name}</Text>
 										</TouchableOpacity>
 									);

@@ -101,7 +101,7 @@ export const getRecipesDescriptionMyDB = async (id) => {
 	//     console.log('Строка не содержит пробелы');
 	// }
 	try {
-		let { data, error } = await supabase.from("allRecipesDescription").select("*").eq("id", id); // Фильтр по id
+		let { data, error } = await supabase.from("all_recipes_description").select("*").eq("id", id); // Фильтр по id
 
 		if (error) {
 			return {
@@ -133,7 +133,7 @@ export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 		}
 		// console.log('getRecipesDescriptionLikeRatingMyDB query',query)
 
-		let { data, error } = await supabase.from("allRecipesDescription").select(query).eq("id", id); // Фильтр по id
+		let { data, error } = await supabase.from("all_recipes_description").select(query).eq("id", id); // Фильтр по id
 
 		if (error) {
 			return {
@@ -347,7 +347,10 @@ export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
 export const getAllMyLikedRecipes = async (userId) => {
 	// console.log('getAllMyLikedRecipes id',id);
 	try {
-		const { data: likedRecipes, error: likedRecipesError } = await supabase.from("recipesLikes").select("recipe_id_like").eq("user_id_like", userId);
+		const { data: likedRecipes, error: likedRecipesError } = await supabase
+			.from("recipesLikes")
+			.select("recipe_id_like")
+			.eq("user_id_like", userId);
 
 		if (likedRecipesError) {
 			console.error("Error fetching liked recipes:", likedRecipesError.message);
@@ -405,7 +408,11 @@ export const getCreatoreRecipeDateMyDB = async (publishedId) => {
 	try {
 		console.log("getCreatoreRecipeDateMyDB", publishedId);
 
-		let { data, error } = await supabase.from("users").select("user_name, avatar, subscribers").eq("id", publishedId).single();
+		let { data, error } = await supabase
+			.from("users")
+			.select("user_name, avatar, subscribers")
+			.eq("id", publishedId)
+			.single();
 
 		if (error) {
 			console.error("Error getCreatoreRecipeDateMyDB:", error.message);

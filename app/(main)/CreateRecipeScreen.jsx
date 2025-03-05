@@ -77,7 +77,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		console.log("totalRecipe", JSON.stringify(totalRecipe));
+		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
