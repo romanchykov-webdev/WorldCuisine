@@ -6,6 +6,7 @@ import {
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
+	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
@@ -300,6 +301,7 @@ const CreateRecipeScreen = () => {
 							{/*    add recipe link video*/}
 							<View className="mb-10">
 								<AddLinkVideo setTotalRecipe={setTotalRecipe} />
+								<Text>add anase social tiktok facebuok instagram telegram </Text>
 							</View>
 
 							{/*    add link to the author*/}

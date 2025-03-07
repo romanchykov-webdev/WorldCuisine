@@ -258,7 +258,7 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 			};
 		}
 
-		console.log("Комментарий удален успешно");
+		// console.log("Комментарий удален успешно");
 	} catch (error) {
 		console.error("Ошибка при удалении комментария:", error.message);
 	}
@@ -294,7 +294,7 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 	try {
 		// Выполняем запрос к базе данных
 		const { data, error } = await supabase
-			.from("recipesLikes") // Таблица, в которой выполняем поиск
+			.from("recipes_likes") // Таблица, в которой выполняем поиск
 			.select("*") // Выбираем все столбцы (можно ограничить только нужными)
 			.eq("recipe_id_like", recipeId) // Условие: ID рецепта
 			.eq("user_id_like", userId) // Условие: ID пользователя

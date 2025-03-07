@@ -1,18 +1,19 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity } from "react-native";
 import { HeartIcon } from "react-native-heroicons/solid";
 import { shadowBoxWhite } from "../constants/shadow";
 
 // translate
-import { showCustomAlert } from "../constants/halperFunctions";
+import { myFormatNumber, showCustomAlert } from "../constants/halperFunctions";
 import i18n from "../lang/i18n";
 import { addLikeRecipeMyDB, checkIfUserLikedRecipe } from "../service/getDataFromDB";
 
-const ButtonLike = ({ user, recipeId, isPreview }) => {
+const ButtonLike = ({ user, recipeId, isPreview, totalCountLike }) => {
 	// console.log('ButtonLike user.id',user.id)
 	// console.log('ButtonLike recipeId',recipeId)
 	// console.log("ButtonLike preview", isPreview);
+	console.log("ButtonLike totalCountLike", totalCountLike);
 
 	const [isLike, setIsLike] = useState(false);
 
@@ -25,7 +26,7 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 				userId: user.id,
 			});
 			setIsLike(res?.liked);
-			// console.log('res', res.liked);
+			console.log("res", res.liked);
 		} else {
 			setIsLike(false);
 		}
@@ -35,7 +36,11 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 		if (isPreview) return; //если это предпросмотр
 
 		if (user === null) {
-			showCustomAlert("Like", `${i18n.t("To add a recipe to your favorites you must log in or create an account")}`, router);
+			showCustomAlert(
+				"Like",
+				`${i18n.t("To add a recipe to your favorites you must log in or create an account")}`,
+				router
+			);
 			// Alert.alert(
 			// 	"Like",
 			// `${i18n.t(
@@ -70,8 +75,14 @@ const ButtonLike = ({ user, recipeId, isPreview }) => {
 	}, []);
 
 	return (
-		<TouchableOpacity onPress={toggleLike} className="w-[50] h-[50] justify-center items-center bg-white rounded-full" style={shadowBoxWhite()}>
+		<TouchableOpacity
+			onPress={toggleLike}
+			className="w-[50] h-[50] justify-center items-center bg-white rounded-full relative"
+			style={shadowBoxWhite()}
+		>
 			{isLike ? <HeartIcon size={30} color="red" /> : <HeartIcon size={30} color="gray" />}
+
+			<Text className="absolute text-[8px] text-neutral-900">{myFormatNumber(totalCountLike)}</Text>
 		</TouchableOpacity>
 	);
 };
