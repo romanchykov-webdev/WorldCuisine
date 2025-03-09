@@ -48,7 +48,10 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	return (
 		<View className="mb-5">
 			{marker !== null && (
-				<Animated.View entering={FadeInDown.delay(100).springify()} className="flex-row items-center justify-betwen mb-3">
+				<Animated.View
+					entering={FadeInDown.delay(100).springify()}
+					className="flex-row items-center justify-betwen mb-3"
+				>
 					<View className="flex-row items-center  flex-1">
 						<TouchableOpacity onPress={openMap}>
 							<MapPinIcon size={50} color="blue" />
@@ -62,7 +65,12 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 				</Animated.View>
 			)}
 
-			<TitleDescriptionComponent titleText={i18n.t("If you have a store")} titleVisual={true} discriptionVisual={true} descriptionText={i18n.t("You can add it to the map, and customers can find it")} />
+			<TitleDescriptionComponent
+				titleText={i18n.t("If you have a store")}
+				titleVisual={true}
+				descriptionVisual={true}
+				descriptionText={i18n.t("You can add it to the map, and customers can find it")}
+			/>
 
 			<TouchableOpacity
 				// style={styles.button}
@@ -72,7 +80,15 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 				{/*<Text style={styles.buttonText}>*/}
 				{/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}*/}
 				{/*</Text>*/}
-				<ButtonSmallCustom bg="green" h={60} w="100%" title={mapVisible ? `${i18n.t("Hide")} ${i18n.t("the map")}` : `${i18n.t("Open")} ${i18n.t("the map")}`} buttonText={true} />
+				<ButtonSmallCustom
+					bg="green"
+					h={60}
+					w="100%"
+					title={
+						mapVisible ? `${i18n.t("Hide")} ${i18n.t("the map")}` : `${i18n.t("Open")} ${i18n.t("the map")}`
+					}
+					buttonText={true}
+				/>
 			</TouchableOpacity>
 
 			{mapVisible && (

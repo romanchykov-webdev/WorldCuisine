@@ -61,7 +61,12 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 
 	return (
 		<View>
-			<TitleDescriptionComponent titleVisual={true} titleText={i18n.t("Short description")} discriptionVisual={true} descriptionText={i18n.t("Mark how long it takes to prepare the recipe")} />
+			<TitleDescriptionComponent
+				titleVisual={true}
+				titleText={i18n.t("Short description")}
+				descriptionVisual={true}
+				descriptionText={i18n.t("Mark how long it takes to prepare the recipe")}
+			/>
 
 			<View className="flex-row justify-around ">
 				{/*ClockIcon*/}
@@ -76,9 +81,15 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 					}
 					className="relative"
 				>
-					<View className="flex rounded-full bg-amber-300  p-1 items-center" style={[{ height: 120 }, shadowBoxBlack()]}>
+					<View
+						className="flex rounded-full bg-amber-300  p-1 items-center"
+						style={[{ height: 120 }, shadowBoxBlack()]}
+					>
 						<View className="justify-between flex-col pb-2 flex-1">
-							<View className="bg-white rounded-full flex items-center justify-around" style={{ width: hp(6.5), height: hp(6.5) }}>
+							<View
+								className="bg-white rounded-full flex items-center justify-around"
+								style={{ width: hp(6.5), height: hp(6.5) }}
+							>
 								<StərɪskCustomComponent top={-5} right={-5} />
 								<ClockIcon size={hp(4)} strokeWidth={2.5} color="gray" />
 							</View>
@@ -106,9 +117,15 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						})
 					}
 				>
-					<View className="flex rounded-full bg-amber-300  p-1 items-center" style={[{ height: 120 }, shadowBoxBlack()]}>
+					<View
+						className="flex rounded-full bg-amber-300  p-1 items-center"
+						style={[{ height: 120 }, shadowBoxBlack()]}
+					>
 						<View className="justify-between flex-col pb-2 flex-1">
-							<View className="bg-white rounded-full flex items-center justify-around" style={{ width: hp(6.5), height: hp(6.5) }}>
+							<View
+								className="bg-white rounded-full flex items-center justify-around"
+								style={{ width: hp(6.5), height: hp(6.5) }}
+							>
 								<StərɪskCustomComponent top={-5} right={-5} />
 								<UsersIcon size={hp(4)} strokeWidth={2.5} color="gray" />
 							</View>
@@ -140,9 +157,15 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						})
 					}
 				>
-					<View className="flex rounded-full bg-amber-300  p-1 items-center " style={[{ height: 120 }, shadowBoxBlack()]}>
+					<View
+						className="flex rounded-full bg-amber-300  p-1 items-center "
+						style={[{ height: 120 }, shadowBoxBlack()]}
+					>
 						<View className="justify-between flex-col pb-2 flex-1">
-							<View className="bg-white rounded-full flex items-center justify-around" style={{ width: hp(6.5), height: hp(6.5) }}>
+							<View
+								className="bg-white rounded-full flex items-center justify-around"
+								style={{ width: hp(6.5), height: hp(6.5) }}
+							>
 								<StərɪskCustomComponent top={-5} right={-5} />
 								<FireIcon size={hp(4)} strokeWidth={2.5} color="gray" />
 							</View>
@@ -174,9 +197,15 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 						})
 					}
 				>
-					<View className="flex rounded-full bg-amber-300  p-1 items-center" style={[{ height: 120 }, shadowBoxBlack()]}>
+					<View
+						className="flex rounded-full bg-amber-300  p-1 items-center"
+						style={[{ height: 120 }, shadowBoxBlack()]}
+					>
 						<View className="justify-between flex-col pb-2 flex-1">
-							<View className="bg-white rounded-full flex items-center justify-around" style={{ width: hp(6.5), height: hp(6.5) }}>
+							<View
+								className="bg-white rounded-full flex items-center justify-around"
+								style={{ width: hp(6.5), height: hp(6.5) }}
+							>
 								<StərɪskCustomComponent top={-5} right={-5} />
 								<Square3Stack3DIcon size={hp(4)} strokeWidth={2.5} color="gray" />
 							</View>
@@ -195,7 +224,18 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 					</View>
 				</TouchableOpacity>
 
-				{isModalVisible && <ModalCreateRecipe isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} title={modalTitle} description={modalDescription} array={modalArray} setModalSelectItem={setModalSelectItem} modalSelectItem={modalSelectItem} modalType={modalType} />}
+				{isModalVisible && (
+					<ModalCreateRecipe
+						isModalVisible={isModalVisible}
+						setIsModalVisible={setIsModalVisible}
+						title={modalTitle}
+						description={modalDescription}
+						array={modalArray}
+						setModalSelectItem={setModalSelectItem}
+						modalSelectItem={modalSelectItem}
+						modalType={modalType}
+					/>
+				)}
 			</View>
 		</View>
 	);

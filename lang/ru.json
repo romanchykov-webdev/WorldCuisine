@@ -23,6 +23,11 @@
 	"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe": "Тег, должен быть минимум 1, но чем больше тегов, тем легче пользователю найти ваш рецепт",
 	"Please enter the tag": "Пожалуйста, введите тег",
 	"This tag already exists": "Этот тег уже существует",
+	"Please enter a valid link": "Пожалуйста, введите действительную ссылку",
+	"Invalid link": "Недействительная ссылка",
+	"from Facebook, Instagram, or TikTok": "из Facebook, Instagram или TikTok",
+	"Link already added": "Ссылка уже добавлена",
+	"If you want to update or change the link": "Если вы хотите обновить или изменить ссылку, удалите её, а затем можете добавить новую",
 
 	"---Alert-END--": "---Alert-END--",
 
@@ -141,6 +146,8 @@
 	"Insert the link to your video": "Вставьте ссылку на ваше видео",
 	"Add link to video": "Добавить ссылку на видео",
 	"Add link": "Добавить ссылку",
+	"Here you can add links to Facebook, Instagram, TikTok": "Здесь вы можете добавить ссылки на Facebook, Instagram, TikTok",
+	"If you want to add links to your facebook instagram tiktok": "Если вы хотите добавить ссылки на ваш Facebook, Instagram, TikTok",
 	"Link to the author": "Ссылка на автора",
 	"If you have a link to a video stored on YouTube or Google Drive": "Если у вас есть ссылка на видео, сохранённое на YouTube или Google Drive.",
 	"If this recipe is available on another resource, you can add a link to it": "Если этот рецепт есть на другом ресурсе, вы можете добавить на него ссылку",

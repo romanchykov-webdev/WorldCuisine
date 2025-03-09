@@ -8,6 +8,8 @@ const ModalClearCustom = ({
 	handleSave,
 	closeModal,
 	titleHeader,
+	titleHeaderVisible = true,
+	buttonVisible = true,
 	textButton,
 	childrenSubheader,
 	children,
@@ -26,19 +28,24 @@ const ModalClearCustom = ({
 			<TouchableWithoutFeedback onPress={closeModal}>
 				<View style={styles.modalOverlay}>
 					<View style={[styles.modalContent, fullWidth && { width: "98%" }]}>
+						{/* block titleHeader and  childrenSubheader*/}
 						<View>
-							<Text style={styles.modalTitle}>{titleHeader}</Text>
+							{titleHeaderVisible && <Text style={styles.modalTitle}>{titleHeader}</Text>}
 
 							{childrenSubheader}
 						</View>
 
-						{children}
+						{/* block children с гибкостью */}
+						<View style={{ flexShrink: 1 }}>{children}</View>
 
-						<View className="flex-row gap-x-2">
-							<TouchableOpacity style={[styles.cancelButton, shadowBoxBlack()]} onPress={handleSave}>
-								<Text style={styles.cancelText}>{textButton}</Text>
-							</TouchableOpacity>
-						</View>
+						{/* ?block button */}
+						{buttonVisible && (
+							<View className="flex-row gap-x-2">
+								<TouchableOpacity style={[styles.cancelButton, shadowBoxBlack()]} onPress={handleSave}>
+									<Text style={styles.cancelText}>{textButton}</Text>
+								</TouchableOpacity>
+							</View>
+						)}
 					</View>
 				</View>
 			</TouchableWithoutFeedback>

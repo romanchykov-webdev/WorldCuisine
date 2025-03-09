@@ -31,6 +31,7 @@ import ButtonSmallCustom from "../components/Buttons/ButtonSmallCustom";
 import RecipeIngredients from "../components/recipeDetails/RecipeIngredients";
 import RecipeInstructions from "../components/recipeDetails/RecipeInstructions";
 import SelectLangComponent from "../components/recipeDetails/SelectLangComponent";
+import SocialLinksComponent from "../components/recipeDetails/SocialLinksComponent";
 import SubscriptionsComponent from "../components/recipeDetails/SubscriptionsComponent";
 import i18n from "../lang/i18n";
 
@@ -547,27 +548,44 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 							{/*    instructions  end*/}
 
 							{/*    recipe video*/}
-							<View className="mb-5">
+							{(recipeDish?.video?.strYoutube || recipeDish?.video?.strYouVideo) && (
+								<View className="mb-5">
+									<VideoCustom video={recipeDish?.video} />
+								</View>
+							)}
+							{/* <View className="mb-5">
 								{(recipeDish?.video?.strYoutube !== null ||
 									recipeDish?.video?.strYouVideo !== null) && (
 									<VideoCustom video={recipeDish?.video} />
 								)}
-							</View>
-
+							</View> */}
 							{/*    recipe video end*/}
 
 							{/* LinkCopyrightComponent */}
 							{recipeDish?.link_copyright && (
-								<LinkCopyrightComponent linkCopyright={recipeDish?.link_copyright} />
+								<View className="mb-5">
+									<LinkCopyrightComponent linkCopyright={recipeDish?.link_copyright} />
+								</View>
 							)}
 
 							{/* MapСoordinatesComponent */}
 							{recipeDish?.map_coordinates && (
-								<MapСoordinatesComponent mapСoordinates={recipeDish?.map_coordinates} />
+								<View className="mb-5">
+									<MapСoordinatesComponent mapСoordinates={recipeDish?.map_coordinates} />
+								</View>
+							)}
+							{/* social_links block */}
+							{(recipeDish?.social_links.facebook ||
+								recipeDish?.social_links.tikTok ||
+								recipeDish?.social_links.instagram) && (
+								<View className="mb-5 mt-5">
+									{/* <SocialMediaEmbedComponent previewUrl={recipeDish?.social_links} /> */}
+									<SocialLinksComponent socialLinks={recipeDish?.social_links} />
+								</View>
 							)}
 
 							{/*accordion comments*/}
-							<View ref={commentsRef}>
+							<View ref={commentsRef} className="mb-10">
 								{isPreview === false && (
 									<CommentsComponent
 										recepId={id}

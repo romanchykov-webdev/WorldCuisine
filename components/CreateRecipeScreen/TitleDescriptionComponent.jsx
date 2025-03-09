@@ -2,12 +2,20 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { hp } from "../../constants/responsiveScreen";
 
-const TitleDescriptionComponent = ({ slyleWrapper, titleVisual = false, styleTitle, titleText, discriptionVisual = false, stileDescripton, descriptionText }) => {
+const TitleDescriptionComponent = ({
+	slyleWrapper,
+	titleVisual = false,
+	styleTitle,
+	titleText,
+	descriptionVisual = false,
+	stileDescripton,
+	descriptionText,
+}) => {
 	return (
 		<View style={[styles.wrapper, slyleWrapper]}>
 			{titleVisual && <Text style={[styles.title, styleTitle]}>{titleText}</Text>}
 
-			{discriptionVisual && <Text style={[styles.description, stileDescripton]}>{descriptionText}</Text>}
+			{descriptionVisual && <Text style={[styles.description, stileDescripton]}>{descriptionText}</Text>}
 		</View>
 	);
 };

@@ -267,7 +267,7 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 			<TitleDescriptionComponent
 				titleText={i18n.t("Recipe Description")}
 				titleVisual={true}
-				discriptionVisual={true}
+				descriptionVisual={true}
 				descriptionText={i18n.t("Here you can write a recipe as text or in bullet points")}
 			/>
 

@@ -12,7 +12,15 @@ import { useDebounce } from "../../../constants/halperFunctions";
 import i18n from "../../../lang/i18n";
 import TitleDescriptionComponent from "../TitleDescriptionComponent";
 
-const IngredientsCreateRecipe = ({ styleInput, placeholderText, placeholderColor, langApp, measurement, totalLangRecipe, setTotalRecipe }) => {
+const IngredientsCreateRecipe = ({
+	styleInput,
+	placeholderText,
+	placeholderColor,
+	langApp,
+	measurement,
+	totalLangRecipe,
+	setTotalRecipe,
+}) => {
 	// console.log("measurement",measurement)
 	// console.log(totalLangRecipe)
 	const [isModalVisible, setIsModalVisible] = useState(false);
@@ -148,11 +156,20 @@ const IngredientsCreateRecipe = ({ styleInput, placeholderText, placeholderColor
 
 	return (
 		<View>
-			<TitleDescriptionComponent titleVisual={true} titleText={i18n.t("Ingredients")} discriptionVisual={true} descriptionText={i18n.t("Add all the ingredients and their quantities to prepare the recipe")} />
+			<TitleDescriptionComponent
+				titleVisual={true}
+				titleText={i18n.t("Ingredients")}
+				descriptionVisual={true}
+				descriptionText={i18n.t("Add all the ingredients and their quantities to prepare the recipe")}
+			/>
 
 			{Object.keys(ingredients.lang).length > 0 && (
 				<View>
-					<ListIngredientsCreateRecipe ingredients={ingredients} setIngredients={setIngredients} totalLangRecipe={totalLangRecipe} />
+					<ListIngredientsCreateRecipe
+						ingredients={ingredients}
+						setIngredients={setIngredients}
+						totalLangRecipe={totalLangRecipe}
+					/>
 				</View>
 			)}
 
@@ -163,7 +180,13 @@ const IngredientsCreateRecipe = ({ styleInput, placeholderText, placeholderColor
 						return (
 							<View key={index}>
 								<StərɪskCustomComponent />
-								<InputCustom styleInput={styleInput} placeholderText={`${placeholderText} ${lang}`} placeholderColor={placeholderColor} value={ingredient.ingredient[lang] || ""} handleChange={(value) => handleInputChange(lang, value)} />
+								<InputCustom
+									styleInput={styleInput}
+									placeholderText={`${placeholderText} ${lang}`}
+									placeholderColor={placeholderColor}
+									value={ingredient.ingredient[lang] || ""}
+									handleChange={(value) => handleInputChange(lang, value)}
+								/>
 							</View>
 						);
 					})}
@@ -181,7 +204,15 @@ const IngredientsCreateRecipe = ({ styleInput, placeholderText, placeholderColor
 			</View>
 
 			{/* Модальное окно */}
-			<ModalCustom isModalVisible={isModalVisible} setIsModalVisible={setIsModalVisible} animationType="fade" ingredient={ingredient} setIngredient={setIngredient} array={measurementLangApp} onPressHandler={handleSelectUnit} />
+			<ModalCustom
+				isModalVisible={isModalVisible}
+				setIsModalVisible={setIsModalVisible}
+				animationType="fade"
+				ingredient={ingredient}
+				setIngredient={setIngredient}
+				array={measurementLangApp}
+				onPressHandler={handleSelectUnit}
+			/>
 		</View>
 	);
 };

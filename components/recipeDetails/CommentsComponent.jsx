@@ -166,7 +166,7 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 	};
 
 	return (
-		<View className="rounded-[10]   my-4">
+		<View className="rounded-[10]   ">
 			{/*input */}
 			{user !== null && (
 				<View

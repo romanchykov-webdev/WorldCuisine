@@ -4,7 +4,15 @@ import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFe
 import i18n from "../lang/i18n";
 import TitleDescriptionComponent from "./CreateRecipeScreen/TitleDescriptionComponent";
 
-const ModalCustom = ({ isModalVisible, setIsModalVisible, animationType = "fade", ingredient, setIngredient, array, onPressHandler }) => {
+const ModalCustom = ({
+	isModalVisible,
+	setIsModalVisible,
+	animationType = "fade",
+	ingredient,
+	setIngredient,
+	array,
+	onPressHandler,
+}) => {
 	return (
 		<Modal
 			animationType={animationType}
@@ -17,7 +25,14 @@ const ModalCustom = ({ isModalVisible, setIsModalVisible, animationType = "fade"
 				<View style={styles.modalOverlay}>
 					<View style={styles.modalContent}>
 						<View>
-							<TitleDescriptionComponent titleVisual={true} styleTitle={{ textAlign: "center" }} titleText={i18n.t("Choose")} discriptionVisual={true} stileDescripton={{ textAlign: "center" }} descriptionText={i18n.t("Select the unit of measurement")} />
+							<TitleDescriptionComponent
+								titleVisual={true}
+								styleTitle={{ textAlign: "center" }}
+								titleText={i18n.t("Choose")}
+								descriptionVisual={true}
+								stileDescripton={{ textAlign: "center" }}
+								descriptionText={i18n.t("Select the unit of measurement")}
+							/>
 
 							<Text className="text-xl text-center mb-2">{ingredient.quantity}</Text>
 							<Slider

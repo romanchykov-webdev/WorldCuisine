@@ -6,7 +6,6 @@ import {
 	SafeAreaView,
 	ScrollView,
 	StyleSheet,
-	Text,
 	TouchableOpacity,
 	View,
 } from "react-native";
@@ -32,6 +31,7 @@ import { getMeasurementCreateRecipeMyDB } from "../../service/getDataFromDB";
 
 // import recipe preview
 import { useRouter } from "expo-router";
+import AddLinkSocialComponent from "../../components/CreateRecipeScreen/AddLinkSocialComponent";
 import TitleDescriptionComponent from "../../components/CreateRecipeScreen/TitleDescriptionComponent";
 import LoadingComponent from "../../components/loadingComponent";
 import TitleScrean from "../../components/TitleScrean";
@@ -64,6 +64,7 @@ const CreateRecipeScreen = () => {
 		ingredients: null,
 		instructions: null,
 		video: null,
+		social_links: null,
 		source_reference: null,
 		tags: null,
 		link_copyright: null,
@@ -78,7 +79,7 @@ const CreateRecipeScreen = () => {
 	});
 
 	useEffect(() => {
-		// console.log("totalRecipe", JSON.stringify(totalRecipe));
+		console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
 
 	// console.log('creating recipe language', language)
@@ -301,7 +302,12 @@ const CreateRecipeScreen = () => {
 							{/*    add recipe link video*/}
 							<View className="mb-10">
 								<AddLinkVideo setTotalRecipe={setTotalRecipe} />
-								<Text>add anase social tiktok facebuok instagram telegram </Text>
+								{/* <Text>add anase social tiktok facebuok instagram telegram </Text> */}
+							</View>
+
+							{/* add links social facebook instargra tiktok */}
+							<View className="mb-10">
+								<AddLinkSocialComponent setTotalRecipe={setTotalRecipe} />
 							</View>
 
 							{/*    add link to the author*/}

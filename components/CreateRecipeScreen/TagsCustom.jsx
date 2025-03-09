@@ -84,7 +84,14 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 				</View>
 			)}
 
-			<TitleDescriptionComponent titleVisual={true} titleText={i18n.t("Tags")} discriptionVisual={true} descriptionText={i18n.t("Tags improve recipe search in the database because: They allow you to quickly find recipes by key characteristics")} />
+			<TitleDescriptionComponent
+				titleVisual={true}
+				titleText={i18n.t("Tags")}
+				descriptionVisual={true}
+				descriptionText={i18n.t(
+					"Tags improve recipe search in the database because: They allow you to quickly find recipes by key characteristics"
+				)}
+			/>
 
 			<View className="flex-row gap-x-2 items-center ">
 				<View className="relative flex-1">

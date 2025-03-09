@@ -23,6 +23,11 @@
 	"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe": "Тег, має бути щонайменше один, але чим більше тегів, тим легше користувачеві знайти ваш рецепт",
 	"Please enter the tag": "Будь ласка, введіть тег",
 	"This tag already exists": "Цей тег уже існує",
+	"Please enter a valid link": "Будь ласка, введіть дійсне посилання",
+	"Invalid link": "Недійсне посилання",
+	"from Facebook, Instagram, or TikTok": "з Facebook, Instagram або TikTok",
+	"Link already added": "Посилання вже додано",
+	"If you want to update or change the link": "Якщо ви хочете оновити або змінити посилання, спочатку видаліть його, а потім можете додати нове",
 
 	"---Alert-END--": "---Alert-END--",
 
@@ -147,6 +152,8 @@
 	"Insert the link to your video": "Вставте лінк на ваше відео",
 	"Add link to video": "Додати посилання на відео",
 	"Add link": "Додати посилання",
+	"Here you can add links to Facebook, Instagram, TikTok": "Тут ви можете додати посилання на Facebook, Instagram, TikTok",
+	"If you want to add links to your facebook instagram tiktok": "Якщо ви хочете додати посилання на ваш Facebook, Instagram, TikTok",
 	"Link to the author": "Посилання на автора",
 	"If you have a link to a video stored on YouTube or Google Drive": "Якщо у вас є посилання на відео, збережене на YouTube або Google Drive.",
 	"If this recipe is available on another resource, you can add a link to it": "Якщо цей рецепт є на іншому ресурсі, ви можете додати на нього посилання",

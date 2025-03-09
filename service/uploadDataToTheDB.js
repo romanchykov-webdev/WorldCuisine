@@ -324,6 +324,7 @@ export const uploadRecipeToTheServer = async (totalRecipe) => {
 			ingredients: recipeData.ingredients,
 			instructions: recipeData.instructions,
 			video: recipeData.video,
+			social_links: recipeData.social_links,
 			source_reference: recipeData.source_reference,
 			tags: recipeData.tags,
 			published_id: recipeData.published_id,
