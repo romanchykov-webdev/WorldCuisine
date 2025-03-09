@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, SafeAreaView, ScrollView, TouchableOpacity, Alert, FlatList} from 'react-native';
 import {useRouter} from "expo-router";
 import ButtonBack from "../components/ButtonBack";
 
@@ -21,16 +21,17 @@ import {logOut} from "../service/userService";
 
 // translate
 import i18n from '../lang/i18n'
-import LanguagesWrapper from "../components/LanguagesWrapper";
+import {getAllMyLikedRecipes} from "../service/getDataFromDB";
+import RecipeLikedItem from "../components/profile/RecipeLikedItem";
 
 
 const ProfileScreen = () => {
-    const {setAuth, user, setUserData} = useAuth();
+    const {setAuth, user} = useAuth();
 
     // change lang
-    const [lang, setLang] = useState('en'); // Устанавливаем язык
+    // const [lang, setLang] = useState('en'); // Устанавливаем язык
 
-
+    const [dataInProf, setDataInProf] = useState(null);
 
     // console.log('Profile user',user)
 
@@ -104,190 +105,208 @@ const ProfileScreen = () => {
     }
 
     // handleMyFavorite
-    const handleMyFavorite = () => {
-        console.log('handleMyFavorite')
+    const handleMyLiked = async () => {
+        console.log('handleMyFavorite user.id',user.id)
+
+        const res=await getAllMyLikedRecipes(user.id)
+        setDataInProf(res.data)
+        // console.log('ProfileScreen handleMyLiked',res.data)
     }
 
     return (
-        <SafeAreaView
-            contentContainerStyle={{flex: 1}}
-            // className="bg-red-500"
-        >
-            {
-                isAuth
-                    ? (
-                        <ScrollView
-                            showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{paddingHorizontal: 20}}
-                        >
-                            <View className="flex-row justify-between items-center">
-                                <View style={shadowBoxBlack()}>
 
-                                    <ButtonBack/>
-                                </View>
+           <>
+               {
+                   isAuth
+                       ? (
+                      <>
+                          <SafeAreaView
+                              contentContainerStyle={{flex: 1,}}
+                              // className="bg-red-500"
+                          >
+                              <ScrollView
+                                  showsVerticalScrollIndicator={false}
+                                  contentContainerStyle={{paddingHorizontal: 20,marginTop:60}}
+                              >
+                                  <View className="flex-row justify-between items-center">
+                                      <View style={shadowBoxBlack()}>
 
-                                <Text style={{fontSize:hp(2)}}>
-                                    {i18n.t('Profile')}
-                                </Text>
+                                          <ButtonBack/>
+                                      </View>
 
-                                <TouchableOpacity
-                                    onPress={handleLogUot}
-                                    style={shadowBoxBlack()}
-                                    className="bg-white p-3 border-[1px] border-neutral-300 rounded-full"
-                                >
-                                    <ArrowLeftEndOnRectangleIcon size={30} color="red"/>
-                                </TouchableOpacity>
-                            </View>
+                                      <Text style={{fontSize:hp(2)}}>
+                                          {i18n.t('Profile')}
+                                      </Text>
 
+                                      <TouchableOpacity
+                                          onPress={handleLogUot}
+                                          style={shadowBoxBlack()}
+                                          className="bg-white p-3 border-[1px] border-neutral-300 rounded-full"
+                                      >
+                                          <ArrowLeftEndOnRectangleIcon size={30} color="red"/>
+                                      </TouchableOpacity>
+                                  </View>
 
-                            {/*    avatar and user name*/}
-                            <View className=" gap-y-5 items-center mb-5 ">
+                                  {/*    avatar and user name*/}
+                                  <View className=" gap-y-5 items-center mb-5 ">
 
-                                {/*avatar*/}
-                                <View className="relative ">
-                                    <View style={shadowBoxBlack()}>
-                                        {/*<Image*/}
-                                        {/*    source={require('../assets/img/user_icon.png')}*/}
-                                        {/*    // source={avatarSource}*/}
-                                        {/*    style={{width: wp(50), height: wp(50), borderRadius: '50%', marginBottom: 10}}*/}
-                                        {/*    contentFit="cover"*/}
-                                        {/*    transition={1000}*/}
-                                        {/*    // onLoad={loadingImage}*/}
-                                        {/*/>*/}
-                                        <AvatarCustom
-                                            uri={user?.avatar}
-                                            size={wp(50)}
-                                            style={{borderWidth: 0.2}}
-                                            rounded={150}
-                                        />
-                                    </View>
-                                    <View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
-                                        <TouchableOpacity
-                                            onPress={updateProfile}
-                                            className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
-                                        >
+                                      {/*avatar*/}
+                                      <View className="relative ">
+                                          <View style={shadowBoxBlack()}>
 
-                                            <PencilSquareIcon size={30} color='grey'/>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                                              <AvatarCustom
+                                                  uri={user?.avatar}
+                                                  size={wp(50)}
+                                                  style={{borderWidth: 0.2}}
+                                                  rounded={150}
+                                              />
+                                          </View>
+                                          <View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
+                                              <TouchableOpacity
+                                                  onPress={updateProfile}
+                                                  className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
+                                              >
 
-                                {/*userName*/}
-                                <Text>{user?.user_name}</Text>
+                                                  <PencilSquareIcon size={30} color='grey'/>
+                                              </TouchableOpacity>
+                                          </View>
+                                      </View>
+
+                                      {/*userName*/}
+                                      <Text>{user?.user_name}</Text>
 
 
-                            </View>
+                                  </View>
 
-                            {/*change lang app*/}
+                                  {/*change lang app*/}
+                                  {/*   update profile   may posts may like  may rating*/}
+                                  <View className="flex-row mb-5 items-center justify-around">
 
+                                      {/*may recipe*/}
+                                      <TouchableOpacity
+                                          onPress={handleMyPost}
+                                          style={shadowBoxBlack()}
+                                          className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+                                      >
+                                          <CreditCardIcon size={45} color='green'/>
+                                          <Text style={{fontSize: 8}}>May recipes</Text>
+                                      </TouchableOpacity>
 
-                            {/*   update profile   may posts may like  may rating*/}
-                            <View className="flex-row mb-5 items-center justify-around">
+                                      {/*may favorite*/}
+                                      <TouchableOpacity
+                                          onPress={()=>router.push('(main)/CreateRecipeScreen')}
+                                          style={shadowBoxBlack()}
+                                          className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+                                      >
+                                          {/*<BellIcon size={45} color='gold'/>*/}
+                                          <PencilSquareIcon size={45} color='gold'/>
+                                          <Text style={{fontSize: 8}}>Create recipe</Text>
+                                      </TouchableOpacity>
 
-                                {/*may posts*/}
-                                <TouchableOpacity
-                                    onPress={handleMyPost}
-                                    style={shadowBoxBlack()}
-                                    className="items-center p-2 bg-neutral-200 rounded-[15]"
-                                >
-                                    <CreditCardIcon size={45} color='green'/>
-                                    <Text style={{fontSize: 8}}>May recipes</Text>
-                                </TouchableOpacity>
-
-                                {/*may favorite*/}
-                                <TouchableOpacity
-                                    onPress={handleMyFavorite}
-                                    style={shadowBoxBlack()}
-                                    className="items-center p-2 bg-neutral-200 rounded-[15]"
-                                >
-                                    <BellIcon size={45} color='gold'/>
-                                    <Text style={{fontSize: 8}}>May Favorite</Text>
-                                </TouchableOpacity>
-
-                                {/*may Favorite*/}
-                                <TouchableOpacity
-                                    onPress={handleMyFavorite}
-                                    style={shadowBoxBlack()}
-                                    className="items-center p-2 bg-neutral-200 rounded-[15]"
-                                >
-                                    <HeartIcon size={45} color='red'/>
-                                    <Text style={{fontSize: 8}}>May Favorite</Text>
-                                </TouchableOpacity>
-                            </View>
-
-
-                        </ScrollView>
-
-                    )
-                    : (
-
-                        <ScrollView
-                            showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{paddingHorizontal: 20, flex: 1}}
-                            className="h-full"
-                        >
-                            {/*button go tu back*/}
-                            <View style={shadowBoxBlack()}
-                                  className="mt-5"
-                            >
-
-                                <ButtonBack/>
-                            </View>
+                                      {/*may Favorite*/}
+                                      <TouchableOpacity
+                                          onPress={handleMyLiked}
+                                          style={shadowBoxBlack()}
+                                          className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+                                      >
+                                          <HeartIcon size={45} color='red'/>
+                                          <Text style={{fontSize: 8}}>Liked</Text>
+                                      </TouchableOpacity>
+                                  </View>
 
 
-                            {/*change lang*/}
-                            <View className=" h-full flex-1 justify-center
+                              </ScrollView>
+                              {
+                                  dataInProf &&(
+                                      <FlatList
+                                          contentContainerStyle={{paddingHorizontal: 20,marginTop:20}}
+                                          showsVerticalScrollIndicator={false}
+                                          data={dataInProf}
+                                          renderItem={( item ) => <RecipeLikedItem item={item} />}
+                                          keyExtractor={(item) => item.id.toString()}
+                                      />
+                                  )
+                              }
+
+                          </SafeAreaView>
+
+                      </>
+
+                       )
+                       : (
+
+                           <SafeAreaView
+                               contentContainerStyle={{flex: 1,}}
+                               // className="bg-red-500"
+                           >
+                               <ScrollView
+                                   showsVerticalScrollIndicator={false}
+                                   contentContainerStyle={{paddingHorizontal: 20, flex: 1}}
+                                   className="h-full"
+                               >
+                                   {/*button go tu back*/}
+                                   <View style={shadowBoxBlack()}
+                                         className="mt-5"
+                                   >
+
+                                       <ButtonBack/>
+                                   </View>
+
+
+                                   {/*change lang*/}
+                                   <View className=" h-full flex-1 justify-center
                             {/*bg-red-500*/}
                             ">
 
-                                {/*block login and sign up*/}
-                                <View
-                                    className="mb-10 w-full flex-row   gap-10 justify-center
+                                       {/*block login and sign up*/}
+                                       <View
+                                           className="mb-10 w-full flex-row   gap-10 justify-center
                                     {/*bg-red-500*/}
                                     "
-                                    style={{ flexWrap: 'wrap' }} // Добавляем перенос строк
-                                >
-                                    {/*    log in*/}
-                                    <TouchableOpacity
-                                        onPress={() => router.push('/(auth)/LogInScreen')}
-                                        style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
-                                    >
-                                        <Text>{i18n.t('Log In')}</Text>
-                                    </TouchableOpacity>
+                                           style={{ flexWrap: 'wrap' }} // Добавляем перенос строк
+                                       >
+                                           {/*    log in*/}
+                                           <TouchableOpacity
+                                               onPress={() => router.push('/(auth)/LogInScreen')}
+                                               style={shadowBoxBlack()}
+                                               className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
+                                           >
+                                               <Text>{i18n.t('Log In')}</Text>
+                                           </TouchableOpacity>
 
-                                    {/*    sign Up*/}
+                                           {/*    sign Up*/}
 
-                                    <TouchableOpacity
-                                        onPress={() => router.push('/(auth)/RegistrationScreen')}
-                                        style={shadowBoxBlack()}
-                                        className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
-                                    >
-                                        <Text>{i18n.t('Sign Up')}</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                           <TouchableOpacity
+                                               onPress={() => router.push('/(auth)/RegistrationScreen')}
+                                               style={shadowBoxBlack()}
+                                               className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
+                                           >
+                                               <Text>{i18n.t('Sign Up')}</Text>
+                                           </TouchableOpacity>
+                                       </View>
 
-                                {/*<TouchableOpacity*/}
-                                {/*    onPress={() => router.push('/ChangeLangScreen')}*/}
-                                {/*    style={shadowBoxBlack()}*/}
-                                {/*    className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
-                                {/*>*/}
-                                {/*    <Text>Change language App</Text>*/}
-                                {/*</TouchableOpacity>*/}
-                                {/*<View>*/}
-                                {/*    /!*Select lang*!/*/}
-                                {/*    <LanguagesWrapper setLang={setLang} lang={lang}/>*/}
-                                {/*</View>*/}
-                            </View>
-                        </ScrollView>
+                                       {/*<TouchableOpacity*/}
+                                       {/*    onPress={() => router.push('/ChangeLangScreen')}*/}
+                                       {/*    style={shadowBoxBlack()}*/}
+                                       {/*    className="p-5 items-center justify-center flex-row w-full border-[1px] border-neutral-300 rounded-full bg-amber-300"*/}
+                                       {/*>*/}
+                                       {/*    <Text>Change language App</Text>*/}
+                                       {/*</TouchableOpacity>*/}
+                                       {/*<View>*/}
+                                       {/*    /!*Select lang*!/*/}
+                                       {/*    <LanguagesWrapper setLang={setLang} lang={lang}/>*/}
+                                       {/*</View>*/}
+                                   </View>
+                               </ScrollView>
+                           </SafeAreaView>
 
-                    )
-            }
+                       )
+               }
+           </>
 
-        </SafeAreaView>
+
     );
 };
 
-const styles = StyleSheet.create({})
 
 export default ProfileScreen;
