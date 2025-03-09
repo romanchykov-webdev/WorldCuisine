@@ -161,5 +161,12 @@
 	"Preview": "Предпросмотр",
 	"Publish": "Опубликовать",
 
-	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
+	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--",
+
+	"---SubscribeComponent---": "---SubscribeComponent---",
+
+	"Subscribe": "Подписаться",
+	"Unsubscribe": "Отменить подписку",
+
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
 }

@@ -1,7 +1,16 @@
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+	ActivityIndicator,
+	Alert,
+	SafeAreaView,
+	ScrollView,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import { CameraIcon } from "react-native-heroicons/mini";
 import ButtonBack from "../../components/ButtonBack";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
@@ -64,10 +73,10 @@ const EditProfile = () => {
 		if (result) {
 			// Сжимаем изображение перед использованием
 			const compressedImage = await compressImage(result.assets[0].uri, 0.5, 200, 200);
-			console.log("EditProfile compressedImage", compressedImage);
+			// console.log("EditProfile compressedImage", compressedImage);
 
 			setUser({ ...user, avatar: compressedImage });
-			console.log("EditProfile user", user);
+			// console.log("EditProfile user", user);
 			// console.log('Compressed image:', compressedImage);
 			// setUser({...user, avatar: result.assets[0]});
 			// console.log('user avatar update', user)
@@ -152,7 +161,11 @@ const EditProfile = () => {
 	};
 
 	return (
-		<ScrollView keyboardDismissMode={"on-drag"} contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: 60 }} showsVerticalScrollIndicator={false}>
+		<ScrollView
+			keyboardDismissMode={"on-drag"}
+			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: 60 }}
+			showsVerticalScrollIndicator={false}
+		>
 			<SafeAreaView>
 				{/*header*/}
 				<View className="flex-row items-center justify-center pt-5 pb-5 ">
@@ -181,7 +194,10 @@ const EditProfile = () => {
 							}}
 						/>
 						<View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
-							<TouchableOpacity onPress={updateAvatar} className="bg-white p-2 border-[1px] border-neutral-300 rounded-full">
+							<TouchableOpacity
+								onPress={updateAvatar}
+								className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
+							>
 								<CameraIcon size={30} color="grey" />
 							</TouchableOpacity>
 						</View>
@@ -192,7 +208,11 @@ const EditProfile = () => {
 					className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
 					// style={shadowBoxBlack()}
 				>
-					<TextInput value={user.user_name} onChangeText={(value) => setUser({ ...user, user_name: value })} className="text-neutral-500 text-xl p-3" />
+					<TextInput
+						value={user.user_name}
+						onChangeText={(value) => setUser({ ...user, user_name: value })}
+						className="text-neutral-500 text-xl p-3"
+					/>
 				</View>
 
 				<View className="mb-5">
@@ -211,13 +231,29 @@ const EditProfile = () => {
 				{/*button update profile*/}
 				{/*{*/}
 				{/*    buttonUpdate &&(*/}
-				<TouchableOpacity onPress={handleSubmit} style={shadowBoxBlack()} className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center">
-					{loading ? <ActivityIndicator color="green" size={20} /> : <Text className="text-neutral-700 text-xl">{i18n.t("Update your Profile")}</Text>}
+				<TouchableOpacity
+					onPress={handleSubmit}
+					style={shadowBoxBlack()}
+					className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center"
+				>
+					{loading ? (
+						<ActivityIndicator color="green" size={20} />
+					) : (
+						<Text className="text-neutral-700 text-xl">{i18n.t("Update your Profile")}</Text>
+					)}
 				</TouchableOpacity>
 
 				{/*    delete profile*/}
-				<TouchableOpacity onPress={handleDeleteProfile} style={shadowBoxBlack()} className="bg-rose-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center mt-20">
-					{loading ? <ActivityIndicator color="green" size={20} /> : <Text className="text-neutral-700 text-xl">{i18n.t("Delete your Profile")} ?</Text>}
+				<TouchableOpacity
+					onPress={handleDeleteProfile}
+					style={shadowBoxBlack()}
+					className="bg-rose-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center mt-20"
+				>
+					{loading ? (
+						<ActivityIndicator color="green" size={20} />
+					) : (
+						<Text className="text-neutral-700 text-xl">{i18n.t("Delete your Profile")} ?</Text>
+					)}
 				</TouchableOpacity>
 			</SafeAreaView>
 		</ScrollView>

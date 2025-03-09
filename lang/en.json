@@ -166,5 +166,12 @@
 	"Preview": "Preview",
 	"Publish": "Publish",
 
-	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
+	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--",
+
+	"---SubscribeComponent---": "---SubscribeComponent---",
+
+	"Subscribe": "Subscribe",
+	"Unsubscribe": "Unsubscribe",
+
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
 }

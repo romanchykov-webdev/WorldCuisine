@@ -307,7 +307,7 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
 		// Проверяем, существует ли запись
 		const liked = data.length > 0;
-		console.log("checkIfUserLikedRecipe liked:", liked);
+		// console.log("checkIfUserLikedRecipe liked:", liked);
 
 		return { success: true, liked };
 	} catch (error) {
@@ -318,7 +318,7 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
 //Добавление рейтинга в таблицу recipe_ratings
 export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
-	console.log("addRecipeRatingMyDB", rating);
+	// console.log("addRecipeRatingMyDB", rating);
 
 	try {
 		const { data, error } = await supabase.from("recipe_ratings").upsert(
@@ -336,7 +336,7 @@ export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
 			return { success: false, msg: error.message };
 		}
 
-		console.log("Добавленный или обновленный рейтинг:", data);
+		// console.log("Добавленный или обновленный рейтинг:", data);
 		return { success: true };
 	} catch (error) {
 		console.error("Unexpected error:", error.message);
@@ -406,7 +406,7 @@ export const getMeasurementCreateRecipeMyDB = async () => {
 // get creatore recipe data for section subscribe
 export const getCreatoreRecipeDateMyDB = async (publishedId) => {
 	try {
-		console.log("getCreatoreRecipeDateMyDB", publishedId);
+		// console.log("getCreatoreRecipeDateMyDB", publishedId);
 
 		let { data, error } = await supabase
 			.from("users")
@@ -423,6 +423,68 @@ export const getCreatoreRecipeDateMyDB = async (publishedId) => {
 		return { success: true, data };
 	} catch (error) {
 		console.error("Error getMeasurementCreateRecipeMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
+
+// Проверка статуса подписки
+export const getSubscriptionCheckDateMyDB = async (subscriber_id, creator_id) => {
+	try {
+		// console.log("getSubscriptionCheckDateMyDB subscriber_id", subscriber_id);
+		// console.log("getSubscriptionCheckDateMyDB creator_id", creator_id);
+
+		const { data, error } = await supabase
+			.from("subscriptions")
+			.select("*")
+			.eq("subscriber_id", subscriber_id)
+			.eq("creator_id", creator_id);
+
+		if (error) {
+			console.error("Error checking subscription:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		return { success: true, data: data.length > 0 ? data[0] : null };
+	} catch (error) {
+		console.error("Error getSubscriptionCheckDateMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
+
+// Подписка на создателя
+export const subscribeToCreatorMyDB = async (subscriber_id, creator_id) => {
+	try {
+		const { data, error } = await supabase.from("subscriptions").insert([{ subscriber_id, creator_id }]).select();
+
+		if (error) {
+			console.error("Error subscribing:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		return { success: true, data };
+	} catch (error) {
+		console.error("Error subscribeToCreatorMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
+
+// Отписка от создателя
+export const unsubscribeFromCreatorMyDB = async (subscriber_id, creator_id) => {
+	try {
+		const { error } = await supabase
+			.from("subscriptions")
+			.delete()
+			.eq("subscriber_id", subscriber_id)
+			.eq("creator_id", creator_id);
+
+		if (error) {
+			console.error("Error unsubscribing:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		return { success: true };
+	} catch (error) {
+		console.error("Error unsubscribeFromCreatorMyDB:", error.message);
 		return { success: false, msg: error.message };
 	}
 };

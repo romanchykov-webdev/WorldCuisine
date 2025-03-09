@@ -157,8 +157,8 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 	};
 
 	const removeStepRecipe = (item) => {
-		console.log("remove stepRecipe", item);
-		console.log("remove stepRecipe recipeArray", recipeArray);
+		// console.log("remove stepRecipe", item);
+		// console.log("remove stepRecipe recipeArray", recipeArray);
 
 		setRecipeArray((prevArray) => {
 			const updatedArray = { ...prevArray }; // Создаем копию текущего состояния
@@ -172,7 +172,7 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 				}
 			});
 
-			console.log("Updated recipeArray after removal:", updatedArray);
+			// console.log("Updated recipeArray after removal:", updatedArray);
 			return updatedArray; // Возвращаем обновленный объект
 		});
 	};

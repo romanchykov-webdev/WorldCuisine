@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import { shadowBoxBlack } from "../../constants/shadow";
 
 const SocialLinksComponent = ({ socialLinks }) => {
-	console.log("SocialLinksComponent socialLinks", socialLinks);
+	// console.log("SocialLinksComponent socialLinks", socialLinks);
 	const handleOpenOriginal = (value) => {
 		Linking.openURL(value).catch((err) => console.error("Failed to open URL:", err));
 	};

@@ -24,7 +24,7 @@ export const deleteFile = async (filePath) => {
 	try {
 		// Убедитесь, что filePath — это строка
 		if (typeof filePath !== "string" || !filePath) {
-			console.log("Invalid filePath for deletion:", filePath);
+			// console.log("Invalid filePath for deletion:", filePath);
 			return { success: false, msg: "Invalid file path" };
 		}
 

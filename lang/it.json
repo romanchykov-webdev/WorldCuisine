@@ -165,5 +165,12 @@
 	"Preview": "Anteprima",
 	"Publish": "Pubblicare",
 
-	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
+	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--",
+
+	"---SubscribeComponent---": "---SubscribeComponent---",
+
+	"Subscribe": "Iscriviti",
+	"Unsubscribe": "Annullare l'iscrizione",
+
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
 }
