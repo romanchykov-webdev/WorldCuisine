@@ -488,3 +488,12 @@ export const unsubscribeFromCreatorMyDB = async (subscriber_id, creator_id) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+// get all my recipes
+export const getAllMyRecipesMyDB = async (creatore_id) => {
+	try {
+	} catch (error) {
+		console.error("Error getAllMyRecipesMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};

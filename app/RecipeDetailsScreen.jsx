@@ -48,22 +48,21 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 
 	const [recipeDish, setRecipeDish] = useState(null);
 
+	const [rating, setRating] = useState(0);
+
+	const scrollViewRef = useRef(null);
+	const commentsRef = useRef(null);
 	// const [dataSource, setDataSource] = useState("unknown"); // Состояние для источника данных
 
 	const { user, language, previewRecipeReady, setPreviewRecipeReady } = useAuth();
 
-	const params = useLocalSearchParams();
-
-	const [rating, setRating] = useState(0);
 	// console.log("RecipeDetailsScreen rating", rating);
 	// console.log("RecipeDetailsScreen recipeDish", JSON.stringify(recipeDish, null));
-
-	const scrollViewRef = useRef(null);
-	const commentsRef = useRef(null);
 
 	// console.log('RecipeDetailsScreen setAuth',user);
 
 	// const { id, langApp } = useLocalSearchParams();
+	const params = useLocalSearchParams();
 	const { id, currentLang, totalRecipe: totalRecipeString, preview } = params;
 
 	const [langApp, setLangApp] = useState(

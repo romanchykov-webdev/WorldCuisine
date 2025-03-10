@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ButtonBack from "../components/ButtonBack";
 
-import { hp, wp } from "../constants/responsiveScreen";
+import { wp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 
 import { ArrowLeftEndOnRectangleIcon, CreditCardIcon, HeartIcon, PencilSquareIcon } from "react-native-heroicons/mini";
@@ -14,8 +14,8 @@ import { logOut } from "../service/userService";
 
 // translate
 import RecipeLikedItem from "../components/profile/RecipeLikedItem";
+import TitleScrean from "../components/TitleScrean";
 import i18n from "../lang/i18n";
-import { getAllMyLikedRecipes } from "../service/getDataFromDB";
 
 const ProfileScreen = () => {
 	const { setAuth, user } = useAuth();
@@ -80,15 +80,21 @@ const ProfileScreen = () => {
 
 	// console.log('newUserName Input',newUserName)
 
-	const handleMyPost = () => {
+	const handleMyRecipes = () => {
 		console.log("handleMyPost");
+		router.push({
+			pathname: "(main)/AllRecipesBayCreator", // Путь к экрану AllRecipesBayCreator
+			params: {
+				crearote_id: user?.id, // Передаем данные как строку
+			},
+		});
 	};
 
 	// handleMyFavorite
 	const handleMyLiked = async () => {
 		console.log("handleMyFavorite user.id", user.id);
 
-		const res = await getAllMyLikedRecipes(user.id);
+		// const res = await getAllMyLikedRecipes(user.id);
 		setDataInProf(res.data);
 		// console.log('ProfileScreen handleMyLiked',res.data)
 	};
@@ -110,7 +116,7 @@ const ProfileScreen = () => {
 									<ButtonBack />
 								</View>
 
-								<Text style={{ fontSize: hp(2) }}>{i18n.t("Profile")}</Text>
+								<TitleScrean title={i18n.t("Profile")} />
 
 								<TouchableOpacity
 									onPress={handleLogUot}
@@ -152,12 +158,12 @@ const ProfileScreen = () => {
 							<View className="flex-row mb-5 items-center justify-around">
 								{/*may recipe*/}
 								<TouchableOpacity
-									onPress={handleMyPost}
+									onPress={handleMyRecipes}
 									style={shadowBoxBlack()}
 									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 								>
 									<CreditCardIcon size={45} color="green" />
-									<Text style={{ fontSize: 8 }}>May recipes</Text>
+									<Text style={{ fontSize: 8 }}>{i18n.t("My recipes")}</Text>
 								</TouchableOpacity>
 
 								{/*may favorite*/}
@@ -168,7 +174,7 @@ const ProfileScreen = () => {
 								>
 									{/*<BellIcon size={45} color='gold'/>*/}
 									<PencilSquareIcon size={45} color="gold" />
-									<Text style={{ fontSize: 8 }}>Create recipe</Text>
+									<Text style={{ fontSize: 8 }}>{i18n.t("Create recipe")}</Text>
 								</TouchableOpacity>
 
 								{/*may Favorite*/}
@@ -178,7 +184,7 @@ const ProfileScreen = () => {
 									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 								>
 									<HeartIcon size={45} color="red" />
-									<Text style={{ fontSize: 8 }}>Liked</Text>
+									<Text style={{ fontSize: 8 }}>{i18n.t("Liked")}</Text>
 								</TouchableOpacity>
 							</View>
 						</ScrollView>
