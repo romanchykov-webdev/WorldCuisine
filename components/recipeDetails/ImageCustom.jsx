@@ -4,7 +4,7 @@ import { wp } from "../../constants/responsiveScreen";
 import AvatarCustom from "../AvatarCustom";
 
 const ImageCustom = ({ image, isPreview }) => {
-	console.log("ImageCustom", image);
+	// console.log("ImageCustom", image);
 
 	return (
 		<View className="mb-5 mt-2">

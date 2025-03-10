@@ -21,7 +21,7 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 
 	const scrollX = useRef(new Animated.Value(0)).current;
 
-	console.log("ImageSliderCustom images", images);
+	// console.log("ImageSliderCustom images", images);
 
 	const animatedValues = useRef(images.map(() => new Animated.Value(0))).current; // Массив Animated.Value для индикаторов
 
@@ -52,7 +52,9 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 					showsHorizontalScrollIndicator={false}
 					pagingEnabled={true}
 					onMomentumScrollEnd={handleMomentumScrollEnd} // Отслеживание конца скролла
-					onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], { useNativeDriver: true })}
+					onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
+						useNativeDriver: true,
+					})}
 					renderItem={({ item, index }) => {
 						const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 

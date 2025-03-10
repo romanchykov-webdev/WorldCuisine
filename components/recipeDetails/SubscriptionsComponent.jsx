@@ -6,7 +6,12 @@ import { myFormatNumber, showCustomAlert } from "../../constants/halperFunctions
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
-import { getCreatoreRecipeDateMyDB } from "../../service/getDataFromDB";
+import {
+	getCreatoreRecipeDateMyDB,
+	getSubscriptionCheckDateMyDB,
+	subscribeToCreatorMyDB,
+	unsubscribeFromCreatorMyDB,
+} from "../../service/getDataFromDB";
 import AvatarCustom from "../AvatarCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
@@ -24,181 +29,142 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 
 	// get creator data componennt SubscriptionsComponent
 	const [creatorData, setCreatorData] = useState({
-		creaotorId: null,
-		creaotorName: null,
-		creaotorAvatar: null,
-		creaotorSubscribers: null,
+		creatorId: null,
+		creatorName: null,
+		creatorAvatar: null,
+		creatorSubscribers: null,
 	});
 
-	// useEffect(() => {
-	// 	// let mounted = true;
-
-	// 	const fetchCreatorData = async () => {
-	// 		try {
-	// 			// Приоритет 1: Режим предпросмотра
-	// 			if (isPreview) {
-	// 				// if (mounted) {
-	// 				setCreatorData({
-	// 					creatorId: subscriber?.id,
-	// 					creatorName: subscriber.user_name,
-	// 					creatorAvatar: subscriber.avatar,
-	// 					creatorSubscribers: subscriber.subscribers,
-	// 				});
-	// 				// }
-	// 				return; // Прерываем выполнение, если данные из предпросмотра
-	// 			}
-
-	// 			// Приоритет 2: Текущий пользователь является создателем
-	// 			if (subscriberId === creatorId) {
-	// 				// if (mounted) {
-	// 				setCreatorData({
-	// 					creatorId: subscriber?.id,
-	// 					creatorName: subscriber.user_name,
-	// 					creatorAvatar: subscriber.avatar,
-	// 					creatorSubscribers: subscriber.subscribers,
-	// 				});
-	// 				// }
-	// 				return; // Прерываем выполнение, если данные из subscriber
-	// 			}
-
-	// 			// Приоритет 3: Запрос к серверу для другого пользователя
-	// 			if (!isPreview && subscriberId !== creatorId) {
-	// 				const data = await getCreatorData(creatorId); // Предполагаемый запрос
-	// 				// if (mounted && data) {
-	// 				setCreatorData({
-	// 					creatorId: data.id,
-	// 					creatorName: data.user_name,
-	// 					creatorAvatar: data.avatar,
-	// 					creatorSubscribers: data.subscribers,
-	// 				});
-	// 				// }
-	// 			}
-	// 		} catch (error) {
-	// 			console.error("Error fetching creator data:", error);
-	// 			// if (mounted) {
-	// 			setCreatorData({
-	// 				creatorId: null,
-	// 				creatorName: "Unknown",
-	// 				creatorAvatar: null,
-	// 				creatorSubscribers: 0,
-	// 			}); // Установка значений по умолчанию при ошибке
-	// 			// }
-	// 		}
-	// 	};
-
-	// 	fetchCreatorData();
-
-	// 	// return () => {
-	// 	// 	mounted = false;
-	// 	// };
-	// }, [isPreview, subscriberId, creatorId, subscriber]);
+	// Состояние подписки
+	const [isSubscribed, setIsSubscribed] = useState(false);
+	console.log("isSubscribed", isSubscribed);
 
 	useEffect(() => {
-		// if preview
+		// Если режим предпросмотра
 		if (isPreview) {
 			setCreatorData({
 				creatorId: subscriber?.id,
-				creaotorName: subscriber?.user_name,
-				creaotorAvatar: subscriber?.avatar,
-				creaotorSubscribers: subscriber?.subscribers,
+				creatorName: subscriber?.user_name,
+				creatorAvatar: subscriber?.avatar,
+				creatorSubscribers: subscriber?.subscribers,
 			});
 			return;
 		}
 
-		// if subscriber?.id === creatorId
+		// Если subscriber совпадает с creator
 		if (subscriber?.id === creatorId) {
 			setCreatorData({
 				creatorId: subscriber?.id,
-				creaotorName: subscriber?.user_name,
-				creaotorAvatar: subscriber?.avatar,
-				creaotorSubscribers: subscriber?.subscribers,
+				creatorName: subscriber?.user_name,
+				creatorAvatar: subscriber?.avatar,
+				creatorSubscribers: subscriber?.subscribers,
 			});
 			return;
 		}
 
-		// if subscriber?.id !== creatorId For other users------
+		// Для других пользователей
 		if (subscriber?.id !== creatorId) {
 			fetchGetDataCreator(creatorId);
+			checkSubscriptionStatus();
 			// console.log("creatorData", creatorData);
 		}
 	}, [isPreview, creatorId, subscriber]);
 
+	// Получение данных о создателе
 	const fetchGetDataCreator = async (creatorId) => {
 		try {
-			const { data: res } = await getCreatoreRecipeDateMyDB(creatorId);
-			console.log("fetchGetDataCreator res", res);
+			const { data, success, msg } = await getCreatoreRecipeDateMyDB(creatorId);
+			if (!success) throw new Error(msg);
 
 			setCreatorData({
 				creatorId: creatorId,
-				creaotorName: res?.user_name,
-				creaotorAvatar: res?.avatar,
-				creaotorSubscribers: res?.subscribers,
+				creatorName: data?.user_name,
+				creatorAvatar: data?.avatar,
+				creatorSubscribers: data?.subscribers,
 			});
 		} catch (error) {
 			console.error("Error:", error);
 		}
 	};
 
-	// console.log("creatorId", creatorId);
+	// Проверка статуса подписки
+	const checkSubscriptionStatus = async () => {
+		if (!subscriberId || !creatorId) return;
+		try {
+			const { data, success, msg } = await getSubscriptionCheckDateMyDB(subscriberId, creatorId);
+			if (!success) throw new Error(msg);
 
+			setIsSubscribed(!!data); // Устанавливаем true, если запись существует
+		} catch (error) {
+			console.error("Error checking subscription:", error);
+			setIsSubscribed(false); // По умолчанию считаем, что не подписан при ошибке
+		}
+	};
+
+	// Обработка подписки/отписки
 	const handleSubscribe = async () => {
-		if (isPreview) return; //if prewiew true
-		if (subscriber?.id === creatorId) return;
-		// console.log("ok");
-		// console.log("subscriber", subscriber);
-		// console.log("subscriberId", subscriberId);
-		// console.log("creatorId", creatorId);
-		// const cleanKey = (key) => key.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
-		// const titleModal = i18n.t(cleanKey("To subscribe, you need to log in or create an account"));
-		// console.log(titleModal);
-
-		if (subscriber === null) {
+		if (isPreview) return; // Если режим предпросмотра
+		if (subscriber?.id === creatorId) return; // Если сам на себя
+		if (!subscriber) {
 			showCustomAlert("Subscribe", `${i18n.t("To subscribe, you need to log in or create an account")}`, router);
+			return;
+		}
+
+		try {
+			if (isSubscribed) {
+				// Отписка
+				const { success, msg } = await unsubscribeFromCreatorMyDB(subscriberId, creatorId);
+				if (!success) throw new Error(msg);
+
+				setIsSubscribed(false);
+				// Перезапрашиваем данные о создателе, так как триггер обновил subscribers
+				await fetchGetDataCreator(creatorId);
+				// showCustomAlert("Success", "You have unsubscribed.");
+			} else {
+				// Подписка
+				const { success, msg } = await subscribeToCreatorMyDB(subscriberId, creatorId);
+				if (!success) throw new Error(msg);
+
+				setIsSubscribed(true);
+				// Перезапрашиваем данные о создателе, так как триггер обновил subscribers
+				await fetchGetDataCreator(creatorId);
+				// showCustomAlert("Success", "You have subscribed.");
+			}
+		} catch (error) {
+			console.error("Error handling subscription:", error);
+			showCustomAlert("Error", "Failed to update subscription. Please try again.");
 		}
 	};
 
 	const handleGetAllRecipeCreator = () => {
 		if (isPreview) return;
-
 		router.push({
-			pathname: "(main)/AllRecipesBayCreator", // Путь к экрану RecipeDetailsScreen
-			params: {
-				creatorId, // Передаем данные как строку
-			},
+			pathname: "(main)/AllRecipesBayCreator",
+			params: { creatorId },
 		});
 	};
+
 	return (
 		<View className="flex-row items-center justify-between gap-x-3 mb-5 ">
-			{/*block avatar subscribe recipe*/}
+			{/* Блок аватара и информации */}
 			<View className=" flex-1 m-w-[50%] flex-row items-center justify-start gap-x-3 ">
 				<View style={shadowBoxBlack()} className="items-center relative">
 					<TouchableOpacity onPress={() => handleGetAllRecipeCreator()}>
-						<AvatarCustom size={hp(10)} uri={creatorData.creaotorAvatar} />
+						<AvatarCustom size={hp(10)} uri={creatorData?.creatorAvatar} />
 					</TouchableOpacity>
-
-					{/*<Text*/}
-					{/*    numberOfLines={1}*/}
-					{/*    style={{maxWidth:hp(10),overflow:"hidden",fontSize:12}}*/}
-					{/*    className="absolute bottom-[-18]"*/}
-
-					{/*>*/}
-					{/*    userName*/}
-					{/*</Text>*/}
 				</View>
 
 				<View className="w-full  overflow-hidden flex-1">
 					<View className="flex-row items-center">
-						{/*<DocumentTextIcon color="grey"/>*/}
-						{/*<Text className="text-xs font-bold" numberOfLines={1}> - {myFormatNumber(1)}</Text>*/}
 						<Text numberOfLines={1} style={{ fontSize: 14 }} className="font-bold">
-							{creatorData.creaotorName}
+							{creatorData.creatorName}
 						</Text>
 					</View>
 					<View className="flex-row items-center">
 						<UsersIcon color="grey" />
 						<Text className="text-xs font-bold" numberOfLines={1}>
 							{" "}
-							- {myFormatNumber(creatorData.creaotorSubscribers)}
+							- {myFormatNumber(creatorData.creatorSubscribers || 0)}
 						</Text>
 					</View>
 				</View>
@@ -206,12 +172,12 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 
 			<TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}>
 				<ButtonSmallCustom
-					title="Subscribe"
-					bg={"green"}
-					// icon={PlusIcon}
+					title={isSubscribed ? `${i18n.t("Unsubscribe")}` : `${i18n.t("Subscribe")}`}
+					bg={isSubscribed ? "red" : "green"}
 					w="100%"
 					h={60}
 					buttonText={true}
+					styleText={{ fontSize: 12, marginLeft: 0 }}
 				/>
 			</TouchableOpacity>
 		</View>

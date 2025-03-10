@@ -116,6 +116,13 @@
 	"Recipe video": "Video ricetta",
 	"Your comment": "Il tuo commento",
 
+	"---IsReview---": "---IsReview---",
+
+	"Refactor": "Rifattorizzare",
+	"Back and publish": "Indietro e pubblica",
+
+	"---IsReview-END-": "---IsReview-END-",
+
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
@@ -165,5 +172,12 @@
 	"Preview": "Anteprima",
 	"Publish": "Pubblicare",
 
-	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
+	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--",
+
+	"---SubscribeComponent---": "---SubscribeComponent---",
+
+	"Subscribe": "Iscriviti",
+	"Unsubscribe": "Annullare l'iscrizione",
+
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
 }

@@ -55,8 +55,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	const params = useLocalSearchParams();
 
 	const [rating, setRating] = useState(0);
-	console.log("RecipeDetailsScreen rating", rating);
-	console.log("RecipeDetailsScreen recipeDish", JSON.stringify(recipeDish, null));
+	// console.log("RecipeDetailsScreen rating", rating);
+	// console.log("RecipeDetailsScreen recipeDish", JSON.stringify(recipeDish, null));
 
 	const scrollViewRef = useRef(null);
 	const commentsRef = useRef(null);
@@ -610,7 +610,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											h={60}
 											buttonText={true}
 											bg="yellow"
-											title={"Refactor"}
+											title={i18n.t("Refactor")}
 										/>
 									</TouchableOpacity>
 
@@ -627,7 +627,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											h={60}
 											buttonText={true}
 											bg="green"
-											title={"Back to publishet"}
+											title={i18n.t("Back and publish")}
 										/>
 									</TouchableOpacity>
 								</View>

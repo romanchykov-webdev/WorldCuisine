@@ -75,7 +75,7 @@ export const deleteUser = async (userId) => {
 			return { success: false, msg: "Failed to trigger delete_user_cascade." };
 		}
 
-		console.log("User successfully deleted from auth.users. Trigger handled cascading delete.");
+		// console.log("User successfully deleted from auth.users. Trigger handled cascading delete.");
 		return { success: true };
 	} catch (error) {
 		console.error("Unexpected error:", error);

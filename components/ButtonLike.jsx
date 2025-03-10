@@ -13,7 +13,7 @@ const ButtonLike = ({ user, recipeId, isPreview, totalCountLike }) => {
 	// console.log('ButtonLike user.id',user.id)
 	// console.log('ButtonLike recipeId',recipeId)
 	// console.log("ButtonLike preview", isPreview);
-	console.log("ButtonLike totalCountLike", totalCountLike);
+	// console.log("ButtonLike totalCountLike", totalCountLike);
 
 	const [isLike, setIsLike] = useState(false);
 

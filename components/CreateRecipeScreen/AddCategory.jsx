@@ -18,7 +18,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 	});
 
 	useEffect(() => {
-		console.log("AddCategory subCategory", subCategory);
+		// console.log("AddCategory subCategory", subCategory);
 	}, [subCategory]);
 
 	const handleCategory = (cat) => {

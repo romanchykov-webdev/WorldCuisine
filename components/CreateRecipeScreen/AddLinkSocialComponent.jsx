@@ -106,7 +106,7 @@ const AddLinkSocialComponent = ({ setTotalRecipe }) => {
 				[
 					{
 						text: `${i18n.t("No")}`,
-						onPress: () => console.log("Replacement canceled"),
+						onPress: () => {},
 						style: "cancel",
 					},
 					{

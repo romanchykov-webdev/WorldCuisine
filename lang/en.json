@@ -117,6 +117,14 @@
 	"Recipe Description": "Recipe Description",
 	"Recipe video": "Recipe video",
 	"Your comment": "Your comment",
+
+	"---IsReview---": "---IsReview---",
+
+	"Refactor": "Refactor",
+	"Back and publish": "Back and publish",
+
+	"---IsReview-END-": "---IsReview-END-",
+
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
@@ -166,5 +174,12 @@
 	"Preview": "Preview",
 	"Publish": "Publish",
 
-	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--"
+	"---CreateRecipeScreen-END--": "---CreateRecipeScreen-END--",
+
+	"---SubscribeComponent---": "---SubscribeComponent---",
+
+	"Subscribe": "Subscribe",
+	"Unsubscribe": "Unsubscribe",
+
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
 }

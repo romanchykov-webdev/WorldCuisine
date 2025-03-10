@@ -7,7 +7,7 @@ export const showCustomAlert = (title, message, router) => {
 	Alert.alert(title, message, [
 		{
 			text: "Cancel",
-			onPress: () => console.log("modal cancelled"),
+			onPress: () => {},
 			style: "cancel",
 		},
 		{
@@ -129,7 +129,18 @@ export const useDebounce = (value, delay) => {
 // функция проверки структуры данных totalRecipe
 export const validateRecipeStructure = (recipe) => {
 	// Проверка базовых обязательных полей
-	const requiredFields = ["category", "image_header", "title", "area", "rating", "likes", "comments", "recipe_metrics", "ingredients", "published_id"];
+	const requiredFields = [
+		"category",
+		"image_header",
+		"title",
+		"area",
+		"rating",
+		"likes",
+		"comments",
+		"recipe_metrics",
+		"ingredients",
+		"published_id",
+	];
 
 	for (const field of requiredFields) {
 		if (!recipe?.hasOwnProperty(field)) {
@@ -141,7 +152,14 @@ export const validateRecipeStructure = (recipe) => {
 	}
 
 	// Проверка типа данных
-	if (typeof recipe.category !== "string" || typeof recipe.image_header !== "string" || typeof recipe.rating !== "number" || typeof recipe.likes !== "number" || typeof recipe.comments !== "number" || typeof recipe.published_id !== "string") {
+	if (
+		typeof recipe.category !== "string" ||
+		typeof recipe.image_header !== "string" ||
+		typeof recipe.rating !== "number" ||
+		typeof recipe.likes !== "number" ||
+		typeof recipe.comments !== "number" ||
+		typeof recipe.published_id !== "string"
+	) {
 		return {
 			isValid: false,
 			message: `${i18n.t("All required fields marked must be filled in")} \u2736.`,
@@ -180,7 +198,8 @@ export const validateRecipeStructure = (recipe) => {
 		) {
 			return {
 				isValid: false,
-				message: "Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.",
+				message:
+					"Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.",
 			};
 		}
 	}
@@ -211,14 +230,23 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof value === "string" && value.trim() === "") {
 				return {
 					isValid: false,
-					message: `${i18n.t("Add the name of the country where the recipe comes from, for the language")} "${key}" .`,
+					message: `${i18n.t(
+						"Add the name of the country where the recipe comes from, for the language"
+					)} "${key}" .`,
 				};
 			}
 		}
 	}
 
 	// Проверка recipe_metrics (объект с time, persons, calories, difficulty)
-	if (typeof recipe.recipe_metrics !== "object" || recipe.recipe_metrics === null || !recipe.recipe_metrics.hasOwnProperty("time") || !recipe.recipe_metrics.hasOwnProperty("persons") || !recipe.recipe_metrics.hasOwnProperty("calories") || !recipe.recipe_metrics.hasOwnProperty("difficulty")) {
+	if (
+		typeof recipe.recipe_metrics !== "object" ||
+		recipe.recipe_metrics === null ||
+		!recipe.recipe_metrics.hasOwnProperty("time") ||
+		!recipe.recipe_metrics.hasOwnProperty("persons") ||
+		!recipe.recipe_metrics.hasOwnProperty("calories") ||
+		!recipe.recipe_metrics.hasOwnProperty("difficulty")
+	) {
 		return {
 			isValid: false,
 			message: "Поле recipe_metrics должно содержать time, persons, calories, difficulty.",
@@ -226,7 +254,11 @@ export const validateRecipeStructure = (recipe) => {
 	}
 
 	// Проверка ingredients (объект с lang и массивами ингредиентов)
-	if (typeof recipe.ingredients !== "object" || !recipe.ingredients.hasOwnProperty("lang") || typeof recipe.ingredients.lang !== "object") {
+	if (
+		typeof recipe.ingredients !== "object" ||
+		!recipe.ingredients.hasOwnProperty("lang") ||
+		typeof recipe.ingredients.lang !== "object"
+	) {
 		return {
 			isValid: false,
 			message: `${i18n.t("At least one ingredient is required")}`,
@@ -251,10 +283,17 @@ export const validateRecipeStructure = (recipe) => {
 		}
 
 		for (const ingredient of ingredientsArray) {
-			if (typeof ingredient !== "object" || !ingredient.hasOwnProperty("unit") || !ingredient.hasOwnProperty("quantity") || !ingredient.hasOwnProperty("ingredient")) {
+			if (
+				typeof ingredient !== "object" ||
+				!ingredient.hasOwnProperty("unit") ||
+				!ingredient.hasOwnProperty("quantity") ||
+				!ingredient.hasOwnProperty("ingredient")
+			) {
 				return {
 					isValid: false,
-					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("quantity")} ${i18n.t("or")} ${i18n.t("measure of measurement")}.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t(
+						"You forgot to add"
+					)} ${i18n.t("quantity")} ${i18n.t("or")} ${i18n.t("measure of measurement")}.`,
 				};
 			}
 
@@ -262,14 +301,18 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof ingredient.unit === "string" && ingredient.unit.trim() === "") {
 				return {
 					isValid: false,
-					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("measure of measurement")}.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t(
+						"You forgot to add"
+					)} ${i18n.t("measure of measurement")}.`,
 				};
 			}
 
 			if (typeof ingredient.ingredient === "string" && ingredient.ingredient.trim() === "") {
 				return {
 					isValid: false,
-					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("title")}.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t(
+						"You forgot to add"
+					)} ${i18n.t("title")}.`,
 				};
 			}
 
@@ -277,7 +320,9 @@ export const validateRecipeStructure = (recipe) => {
 			if (typeof ingredient.quantity === "string" && ingredient.quantity.trim() === "") {
 				return {
 					isValid: false,
-					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t("You forgot to add")} ${i18n.t("quantity")}.`,
+					message: `${i18n.t("For the ingredient in the language")} "${lang}". ${i18n.t(
+						"You forgot to add"
+					)} ${i18n.t("quantity")}.`,
 				};
 			}
 		}
@@ -324,13 +369,17 @@ export const validateRecipeStructure = (recipe) => {
 		if (!Array.isArray(recipe.tags)) {
 			return {
 				isValid: false,
-				message: `${i18n.t("A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe")}`,
+				message: `${i18n.t(
+					"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe"
+				)}`,
 			};
 		}
 		if (recipe.tags.length < 1) {
 			return {
 				isValid: false,
-				message: `${i18n.t("A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe")}`,
+				message: `${i18n.t(
+					"A tag, there must be at least one, but the more tags, the easier it is for the user to find your recipe"
+				)}`,
 			};
 		}
 		if (!recipe.tags.every((tag) => typeof tag === "string")) {
