@@ -610,7 +610,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											h={60}
 											buttonText={true}
 											bg="yellow"
-											title={"Refactor"}
+											title={i18n.t("Refactor")}
 										/>
 									</TouchableOpacity>
 
@@ -627,7 +627,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 											h={60}
 											buttonText={true}
 											bg="green"
-											title={"Back to publishet"}
+											title={i18n.t("Back and publish")}
 										/>
 									</TouchableOpacity>
 								</View>

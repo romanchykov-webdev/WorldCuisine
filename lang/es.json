@@ -118,6 +118,13 @@
 	"Recipe video": "Video de receta",
 	"Your comment": "Tu comentario",
 
+	"---IsReview---": "---IsReview---",
+
+	"Refactor": "Refactorizar",
+	"Back and publish": "Volver y publicar",
+
+	"---IsReview-END-": "---IsReview-END-",
+
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",

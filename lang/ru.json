@@ -112,6 +112,13 @@
 	"Recipe video": "Видео рецепта",
 	"Your comment": "Ваш комментарий",
 
+	"---IsReview---": "---IsReview---",
+
+	"Refactor": "Рефакторинг",
+	"Back and publish": "Назад и опубликовать",
+
+	"---IsReview-END-": "---IsReview-END-",
+
 	"---RecipeDetailsScreen-END--": "---RecipeDetailsScreen-END--",
 
 	"---CreateRecipeScreen---": "---CreateRecipeScreen---",
