@@ -85,7 +85,7 @@ const ProfileScreen = () => {
 		router.push({
 			pathname: "(main)/AllRecipesBayCreator", // Путь к экрану AllRecipesBayCreator
 			params: {
-				crearote_id: user?.id, // Передаем данные как строку
+				creator_id: user?.id, // Передаем данные как строку
 			},
 		});
 	};

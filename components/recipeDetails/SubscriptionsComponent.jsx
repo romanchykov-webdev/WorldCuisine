@@ -18,9 +18,9 @@ import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) => {
 	const subscriberId = subscriber?.id;
 
-	// console.log("SubscriptionsComponent subscriber ", subscriber);
+	console.log("SubscriptionsComponent subscriber ", subscriber);
 	// console.log("SubscriptionsComponent subscriber id", subscriber?.id);
-	// console.log("SubscriptionsComponent creatorId id", creatorId);
+	console.log("SubscriptionsComponent creatorId id", creatorId);
 	// console.log("SubscriptionsComponent isPreview", isPreview);
 
 	const router = useRouter();
@@ -67,12 +67,15 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 			fetchGetDataCreator(creatorId);
 			checkSubscriptionStatus();
 			// console.log("creatorData", creatorData);
+			console.log("allRecipeBayCreatore");
 		}
-	}, [isPreview, creatorId, subscriber]);
+	}, [isPreview, creatorId, subscriber, allRecipeBayCreatore]);
 
 	// Получение данных о создателе
 	const fetchGetDataCreator = async (creatorId) => {
 		try {
+			// console.log("fetchGetDataCreator creatorId", creatorId);
+
 			const { data, success, msg } = await getCreatoreRecipeDateMyDB(creatorId);
 			if (!success) throw new Error(msg);
 
@@ -140,7 +143,7 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 		if (isPreview) return;
 		router.push({
 			pathname: "(main)/AllRecipesBayCreator",
-			params: { creatorId },
+			params: { creator_id: creatorId },
 		});
 	};
 
