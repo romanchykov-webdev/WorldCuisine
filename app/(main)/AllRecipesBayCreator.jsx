@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
 import ButtonBack from "../../components/ButtonBack";
 import SubscriptionsComponent from "../../components/recipeDetails/SubscriptionsComponent";
@@ -11,6 +11,11 @@ import { useAuth } from "../../contexts/AuthContext";
 
 import Icon from "react-native-vector-icons/Entypo";
 import LoadingComponent from "../../components/loadingComponent";
+import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
+import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
+import i18n from "../../lang/i18n";
+import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
+import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const AllRecipesBayCreator = () => {
 	const params = useLocalSearchParams();
@@ -27,17 +32,77 @@ const AllRecipesBayCreator = () => {
 	// loading
 	const [loading, setLoading] = useState(true);
 
+	// all recipe bay creator
+	const [allRecipesCreator, setAllRecipesCreator] = useState([]);
+
+	// object for filter categoryes
+	const [obFilterCategory, setObFilterCategory] = useState({});
+
+	// get al ceripe bay creatir
+	const featGetAllRecipeBayCreator = async (creator_id) => {
+		try {
+			// console.log("featGetAllRecipeBayCreator creator_id:", creator_id);
+			setLoading(true);
+			const res = await getAllRecipesBayCreatoreListMyDB(creator_id);
+
+			if (res?.success) {
+				// console.log("featGetAlßlRecipeBayCreator res:", res.data);
+
+				//
+				setObFilterCategory(createCategoryPointObject(res.data));
+
+				//
+				setAllRecipesCreator(res.data);
+
+				// timeuot
+				setTimeout(() => {
+					setLoading(false);
+				}, 1000);
+			}
+		} catch (error) {
+			console.error("Error in featGetAllRecipeBayCreator:", error);
+			throw error; // Пробрасываем ошибку, чтобы её можно было обработать снаружи
+		}
+	};
+
 	// Переносим логику в useEffect
 	useEffect(() => {
 		if (userData?.id === creator_id) {
 			setHeaderAllRecipe(false);
 			console.log("headerAllCeripe", headerAllCeripe);
 		}
-	}, [userData, creator_id]); // Зависимости: эффект сработает при изменении userData или crearote_id
+		if (!toggleFolderList) {
+			featGetAllRecipeBayCreator(creator_id);
+		} else {
+			fetchCategoryRecipeMasonry();
+		}
+	}, [userData, creator_id, toggleFolderList]); // Зависимости: эффект сработает при изменении userData или crearote_id
 
-	console.log("AllRecipesBayCreator params", params);
-	console.log("AllRecipesBayCreator creator_id", creator_id);
-	console.log("AllRecipesBayCreator userData", userData);
+	// for folder
+	const [categoryRecipes, setCategoryRecipes] = useState([]);
+
+	const { language: langDev } = useAuth();
+	useEffect(() => {
+		i18n.locale = langDev; // Устанавливаем текущий язык
+	}, [langDev]);
+
+	const fetchCategoryRecipeMasonry = async () => {
+		setLoading(true);
+		const res = await getCategoryRecipeMasonryMyDB(userData?.lang ?? langDev);
+
+		// const res = await getCategoryRecipeMasonryMyDB("ru");
+		// console.log("fetchCategoryRecipeMasonry", JSON.stringify(res.data, null));
+		// setCategoryRecipes(res.data);
+		setCategoryRecipes(filterCategoryRecipesBySubcategories(res.data, obFilterCategory));
+		// timeuot
+		setTimeout(() => {
+			setLoading(false);
+		}, 1000);
+	};
+
+	// console.log("AllRecipesBayCreator params", params);
+	// console.log("AllRecipesBayCreator creator_id", creator_id);
+	// console.log("AllRecipesBayCreator userData", userData);
 
 	return (
 		<SafeAreaView>
@@ -69,7 +134,13 @@ const AllRecipesBayCreator = () => {
 						<TitleScrean title={"Ваши рецепты"} styleTitle={{ textAlign: "center", fontSize: hp(3) }} />
 					)}
 
-					{headerAllCeripe && <SubscriptionsComponent subscriber={userData?.id} creatorId={creator_id} />}
+					{headerAllCeripe && (
+						<SubscriptionsComponent
+							subscriber={userData}
+							creatorId={creator_id}
+							allRecipeBayCreatore={true}
+						/>
+					)}
 				</View>
 
 				{/* section foldr list */}
@@ -94,12 +165,24 @@ const AllRecipesBayCreator = () => {
 
 					{/* section data */}
 				</View>
-				<View className="bg-red-500 flex-1">
+				<View className=" flex-1">
 					{loading ? (
-						<LoadingComponent />
+						<LoadingComponent color="green" />
 					) : (
 						<View>
-							<Text></Text>
+							{toggleFolderList ? (
+								<RecipesMasonryComponent
+									categoryRecipes={categoryRecipes}
+									langApp={userData?.lang ?? langDev}
+									isScreanAlrecipeBayCreatore={true}
+									isScreanAllRecibeData={allRecipesCreator}
+								/>
+							) : (
+								<AllRecipesPointScreen
+									isScreanAlrecipeBayCreatore={true}
+									isScreanAllRecibeData={allRecipesCreator}
+								/>
+							)}
 						</View>
 					)}
 				</View>
