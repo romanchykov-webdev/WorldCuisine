@@ -91,12 +91,13 @@ const ProfileScreen = () => {
 	};
 
 	// handleMyFavorite
-	const handleMyLiked = async () => {
-		console.log("handleMyFavorite user.id", user.id);
+	const handleMyLiked = () => {
+		// console.log("handleMyFavorite user.id", user?.id);
 
 		// const res = await getAllMyLikedRecipes(user.id);
-		setDataInProf(res.data);
+		// setDataInProf(res.data);
 		// console.log('ProfileScreen handleMyLiked',res.data)
+		router.push("(main)/FavoriteScrean");
 	};
 
 	return (

@@ -69,7 +69,7 @@ const AllRecipesBayCreator = () => {
 	useEffect(() => {
 		if (userData?.id === creator_id) {
 			setHeaderAllRecipe(false);
-			console.log("headerAllCeripe", headerAllCeripe);
+			// console.log("headerAllCeripe", headerAllCeripe);
 		}
 		if (!toggleFolderList) {
 			featGetAllRecipeBayCreator(creator_id);
