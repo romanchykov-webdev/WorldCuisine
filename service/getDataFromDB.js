@@ -514,3 +514,50 @@ export const getAllRecipesBayCreatoreListMyDB = async (creatore_id) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+// get all favorite recipe
+export const getAllFavoriteIdisMyDB = async (user_id) => {
+	try {
+		let { data, error } = await supabase.from("recipes_likes").select("recipe_id_like").eq("user_id_like", user_id);
+		// Сортировка по дате создания (от новых к старым)
+		// .order("created_at", { ascending: false });
+
+		if (error) {
+			console.error("Error fetching recipes:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		// console.log("getAllFavoriteListMyDB, user_id", user_id);
+		// console.log("getAllFavoriteListMyDB, data", data);
+
+		// Извлекаем только значения recipe_id_like в массив
+		const recipe_ids = data.map((item) => item.recipe_id_like);
+		console.log("getAllFavoriteListMyDB, recipe_ids", recipe_ids);
+
+		return { success: true, data: recipe_ids };
+	} catch (error) {
+		console.error("Error in getAllFavoriteListMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
+
+// Функция для получения рецептов по ID
+
+export const getAllFavoriteListMyDB = async (recipeIds) => {
+	try {
+		const { data, error } = await supabase.from("short_desc").select("*").in("full_recipe_id", recipeIds); // Фильтр по массиву ID
+		// .order("created_at", { ascending: false }); // Опционально: сортировка по дате
+
+		if (error) {
+			console.error("Error fetching recipes by IDs:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		return { success: true, data };
+	} catch (error) {
+		console.error("Error in getAllFavorite:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
+
+["b4e7cadc-927c-4cde-9190-3804e04178da", "e3cf0a69-9ed9-4af4-9412-780ace57defd"];

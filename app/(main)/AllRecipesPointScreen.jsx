@@ -16,7 +16,12 @@ import { shadowBoxBlack, shadowText } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import { getAllRecipesPointMasonryMyDB } from "../../service/getDataFromDB";
 
-const AllRecipesPointScreen = ({ isScreanAlrecipeBayCreatore = false, isScreanAllRecibeData = [] }) => {
+const AllRecipesPointScreen = ({
+	isScreanAlrecipeBayCreatore = false,
+	isScreanAllRecibeData = [],
+	isScreanFavorite = false,
+	allFavoriteRecipes = [],
+}) => {
 	const { point, langApp } = useLocalSearchParams();
 
 	// console.log('AllRecipesPointScreen langApp',langApp)
@@ -39,7 +44,7 @@ const AllRecipesPointScreen = ({ isScreanAlrecipeBayCreatore = false, isScreanAl
 	};
 
 	useEffect(() => {
-		if (!isScreanAlrecipeBayCreatore) {
+		if (!isScreanAlrecipeBayCreatore && !isScreanFavorite) {
 			fetchGetAllRecipesPointMasonryMyDB();
 		}
 	}, [point]);
@@ -47,14 +52,21 @@ const AllRecipesPointScreen = ({ isScreanAlrecipeBayCreatore = false, isScreanAl
 	useEffect(() => {
 		if (isScreanAlrecipeBayCreatore) {
 			setAllRecipes(isScreanAllRecibeData);
-			console.log("isScreanAlrecipeBayCreatore", allRecipes);
+			// console.log("isScreanAlrecipeBayCreatore", allRecipes);
 		}
 	}, [isScreanAlrecipeBayCreatore]);
+
+	useEffect(() => {
+		if (isScreanFavorite) {
+			setAllRecipes(allFavoriteRecipes);
+			// console.log("FavoriteScrean", allRecipes);
+		}
+	}, [isScreanFavorite]);
 
 	return (
 		<SafeAreaView>
 			<ScrollView>
-				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore ? null : "p-[20]"}`}>
+				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore || isScreanFavorite ? null : "p-[20]"}`}>
 					{/* block header*/}
 					{!isScreanAlrecipeBayCreatore && (
 						<View className=" items-center justify-center mb-5">
@@ -79,8 +91,9 @@ const AllRecipesPointScreen = ({ isScreanAlrecipeBayCreatore = false, isScreanAl
 						// categories === 0 ? null : (
 						// categories.lenght === 0 ||
 						allRecipes?.length == 0 ? (
-							!isScreanAlrecipeBayCreatore ? (
-								<LoadingComponent size="large" color="gray" />
+							// prettier-ignore
+							(!isScreanAlrecipeBayCreatore && !isScreanFavorite) ? (
+								<LoadingComponent size="large" color="green" />
 							) : null
 						) : (
 							<MasonryList
