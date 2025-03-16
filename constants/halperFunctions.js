@@ -426,3 +426,40 @@ export const validateRecipeStructure = (recipe) => {
 
 	return { isValid: true, message: "Структура данных корректна." };
 };
+
+// AllRecipBayCreator screan
+//
+// ключи будут значениями поля category из массива, а значения — соответствующими полями point
+export const createCategoryPointObject = (recipes) => {
+	//
+	const result = {};
+
+	recipes.forEach((recipe) => {
+		const { category, point } = recipe;
+		if (!result[category]) {
+			result[category] = []; // Инициализируем массив, если категория новая
+		}
+		if (!result[category].includes(point)) {
+			result[category].push(point); // Добавляем point, если его ещё нет
+		}
+	});
+	// console.log("createCategoryPointObject result", result);
+
+	return result;
+};
+
+//
+// отфильтровать subcategories в categoryRecipes так, чтобы остались только те подкатегории, чьи point точно соответствуют значениям из массивов в obFilterCategory
+export const filterCategoryRecipesBySubcategories = (categoryRecipes, obFilterCategory) => {
+	// Объединяем все значения из obFilterCategory в один массив
+	const allowedPoints = Object.values(obFilterCategory).flat();
+
+	return categoryRecipes
+		.map((category) => ({
+			...category, // Копируем все свойства категории
+			subcategories: category.subcategories.filter(
+				(sub) => allowedPoints.includes(sub.point) // Оставляем только подкатегории с нужными point
+			),
+		}))
+		.filter((category) => category.subcategories.length > 0); // Убираем категории без подкатегорий
+};

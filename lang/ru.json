@@ -81,6 +81,10 @@
 	"Log In": "Авторизоваться",
 	"Sign Up": "Зарегистрироваться",
 
+	"Create recipe": "Создать рецепт",
+	"My recipes": "Мои рецепты",
+	"Liked": "Избранные",
+
 	"---Profile-END--": "---Profile-END--",
 
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -175,5 +179,11 @@
 	"Subscribe": "Подписаться",
 	"Unsubscribe": "Отменить подписку",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Ваши рецепты",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }

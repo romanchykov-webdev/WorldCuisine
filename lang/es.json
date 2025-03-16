@@ -85,6 +85,10 @@
 	"Log In": "Acceso",
 	"Sign Up": "Inscribirse",
 
+	"Create recipe": "Crear receta",
+	"My recipes": "Mis recetas",
+	"Liked": "Gustados",
+
 	"---Profile-END--": "---Profile-END--",
 
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -181,5 +185,11 @@
 	"Subscribe": "Suscribirse",
 	"Unsubscribe": "Cancelar suscripción",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Tus recetas",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }

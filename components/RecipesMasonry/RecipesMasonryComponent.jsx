@@ -10,7 +10,7 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import AvatarCustom from "../AvatarCustom";
 
-const RecipesMasonryComponent = ({ categoryRecipes, langApp }) => {
+const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBayCreatore = false }) => {
 	// console.log('RecipesMasonryComponent', categoryRecipes);
 	// console.log("RecipesMasonryComponent", langApp);
 	useEffect(() => {}, [langApp]);
@@ -46,12 +46,7 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp }) => {
 					keyExtractor={(_, index) => index.toString()}
 					numColumns={2}
 					renderItem={({ item, i }) => (
-						<CardItem
-							item={item}
-							index={i}
-							onPress={handleSubCategory}
-							langApp={langApp}
-						/>
+						<CardItem item={item} index={i} onPress={handleSubCategory} langApp={langApp} />
 					)}
 				/>
 			) : (
@@ -85,10 +80,7 @@ const CardItem = ({ item, index, onPress, langApp }) => {
 				}),
 			]}
 		>
-			<TouchableOpacity
-				onPress={() => onPress(item)}
-				className="rounded-full relative items-center"
-			>
+			<TouchableOpacity onPress={() => onPress(item)} className="rounded-full relative items-center">
 				<AvatarCustom
 					uri={item.image}
 					style={{
@@ -109,9 +101,7 @@ const CardItem = ({ item, index, onPress, langApp }) => {
 					start={{ x: 0.5, y: 0.2 }}
 					end={{ x: 0.5, y: 1 }}
 				/>
-				<Text className="absolute bottom-[20] text-white font-semibold">
-					{item.name}
-				</Text>
+				<Text className="absolute bottom-[20] text-white font-semibold">{item.name}</Text>
 			</TouchableOpacity>
 		</Animated.View>
 	);
@@ -140,16 +130,12 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 						<ArrowUturnLeftIcon size={30} color="gray" />
 					</TouchableOpacity>
 				)}
-				<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">
-					{item?.name}
-				</Text>
+				<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">{item?.name}</Text>
 			</View>
 
 			<MasonryList
 				data={item.subcategories || []}
-				keyExtractor={(subItem, index) =>
-					subItem.name + index.toString()
-				} // Используем уникальный ключ
+				keyExtractor={(subItem, index) => subItem.name + index.toString()} // Используем уникальный ключ
 				numColumns={2}
 				renderItem={({ item, i }) => {
 					// console.log('SubCategoryView',i)
@@ -192,9 +178,7 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 									start={{ x: 0.5, y: 0.2 }}
 									end={{ x: 0.5, y: 1 }}
 								/>
-								<Text className="absolute bottom-[10] text-white font-semibold">
-									{item.name}
-								</Text>
+								<Text className="absolute bottom-[10] text-white font-semibold">{item.name}</Text>
 							</TouchableOpacity>
 						</Animated.View>
 					);

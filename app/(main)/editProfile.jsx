@@ -15,7 +15,7 @@ import { CameraIcon } from "react-native-heroicons/mini";
 import ButtonBack from "../../components/ButtonBack";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
 import ThemeWrapper from "../../components/ThemeWrapper";
-import { hp, wp } from "../../constants/responsiveScreen";
+import { wp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImageSrc, uploadFile } from "../../service/imageServices";
@@ -27,6 +27,7 @@ import { compressImage } from "../../lib/imageUtils";
 import { Image } from "expo-image";
 
 // translate
+import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
 
 const EditProfile = () => {
@@ -172,7 +173,7 @@ const EditProfile = () => {
 					<View className="absolute left-0">
 						<ButtonBack />
 					</View>
-					<Text style={{ fontSize: hp(2) }}>{i18n.t("Edit Profile")} !</Text>
+					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={{ fontSize: 20 }} />
 				</View>
 
 				{/*avatar*/}

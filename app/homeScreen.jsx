@@ -75,6 +75,7 @@ const HomeScreen = () => {
 	// }
 
 	const [categoryRecipes, setCategoryRecipes] = useState([]);
+
 	const fetchCategoryRecipeMasonry = async () => {
 		const res = await getCategoryRecipeMasonryMyDB(user?.lang ?? langDev);
 		// const res = await getCategoryRecipeMasonryMyDB("ru");

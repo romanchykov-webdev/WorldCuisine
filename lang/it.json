@@ -83,6 +83,10 @@
 	"Log In": "Login",
 	"Sign Up": "Iscrizione",
 
+	"Create recipe": "Creare ricetta",
+	"My recipes": "Le mie ricette",
+	"Liked": "Piaciuti",
+
 	"---Profile-END--": "---Profile-END--",
 
 	"---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -179,5 +183,11 @@
 	"Subscribe": "Iscriviti",
 	"Unsubscribe": "Annullare l'iscrizione",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Le tue ricette",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }

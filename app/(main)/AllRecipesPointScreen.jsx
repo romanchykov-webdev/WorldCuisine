@@ -16,7 +16,7 @@ import { shadowBoxBlack, shadowText } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import { getAllRecipesPointMasonryMyDB } from "../../service/getDataFromDB";
 
-const AllRecipesPointScreen = () => {
+const AllRecipesPointScreen = ({ isScreanAlrecipeBayCreatore = false, isScreanAllRecibeData = [] }) => {
 	const { point, langApp } = useLocalSearchParams();
 
 	// console.log('AllRecipesPointScreen langApp',langApp)
@@ -39,24 +39,39 @@ const AllRecipesPointScreen = () => {
 	};
 
 	useEffect(() => {
-		fetchGetAllRecipesPointMasonryMyDB();
+		if (!isScreanAlrecipeBayCreatore) {
+			fetchGetAllRecipesPointMasonryMyDB();
+		}
 	}, [point]);
+
+	useEffect(() => {
+		if (isScreanAlrecipeBayCreatore) {
+			setAllRecipes(isScreanAllRecibeData);
+			console.log("isScreanAlrecipeBayCreatore", allRecipes);
+		}
+	}, [isScreanAlrecipeBayCreatore]);
 
 	return (
 		<SafeAreaView>
 			<ScrollView>
-				<View className="gap-y-3 p-[20]">
+				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore ? null : "p-[20]"}`}>
 					{/* block header*/}
-					<View className=" items-center justify-center mb-5">
-						{/* button back */}
-						<Animated.View entering={FadeInLeft.delay(300).springify().damping(30)} className="absolute left-0">
-							<ButtonBack />
-						</Animated.View>
-						{/* title header screan */}
-						<Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
-							<TitleScrean title={i18n.t("Recipes")} />
-						</Animated.View>
-					</View>
+					{!isScreanAlrecipeBayCreatore && (
+						<View className=" items-center justify-center mb-5">
+							{/* button back */}
+							<Animated.View
+								entering={FadeInLeft.delay(300).springify().damping(30)}
+								className="absolute left-0"
+							>
+								<ButtonBack />
+							</Animated.View>
+							{/* title header screan */}
+							<Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
+								<TitleScrean title={i18n.t("Recipes")} />
+							</Animated.View>
+						</View>
+					)}
+
 					{/* block header end*/}
 
 					{/*    masonry*/}
@@ -64,7 +79,9 @@ const AllRecipesPointScreen = () => {
 						// categories === 0 ? null : (
 						// categories.lenght === 0 ||
 						allRecipes?.length == 0 ? (
-							<LoadingComponent size="large" color="gray" />
+							!isScreanAlrecipeBayCreatore ? (
+								<LoadingComponent size="large" color="gray" />
+							) : null
 						) : (
 							<MasonryList
 								// data={mealData}
@@ -74,7 +91,9 @@ const AllRecipesPointScreen = () => {
 								numColumns={column}
 								style={{ gap: 10 }}
 								showsVerticalScrollIndicator={false}
-								renderItem={({ item, i }) => <RecipePointItem item={item} index={i} langApp={langApp} />}
+								renderItem={({ item, i }) => (
+									<RecipePointItem item={item} index={i} langApp={langApp} />
+								)}
 								// refreshing={isLoadingNext}
 								// onRefresh={() => refetch({first: ITEM_CNT})}
 								onEndReachedThreshold={0.1}
@@ -99,7 +118,9 @@ const RecipePointItem = ({ item, index, langApp }) => {
 
 	// Находим название категории в зависимости от выбранного языка
 
-	const categoryTitle = Array.isArray(item.title.lang) ? item.title.lang.find((it) => it.lang === langApp)?.name || item.title.strTitle : item.title.strTitle;
+	const categoryTitle = Array.isArray(item.title.lang)
+		? item.title.lang.find((it) => it.lang === langApp)?.name || item.title.strTitle
+		: item.title.strTitle;
 
 	// console.log('categoryTitle',categoryTitle)
 
@@ -137,7 +158,9 @@ const RecipePointItem = ({ item, index, langApp }) => {
 						radius: 1, // Радиус размытия тени (по умолчанию 5px)
 						elevation: 3, // Высота "подъема" для создания тени на Android (по умолчанию 6)
 					})}
-					className={`${item?.video ? "justify-between" : "justify-end"} items-start flex-row w-full absolute top-2 left-0 z-10 px-5 
+					className={`${
+						item?.video ? "justify-between" : "justify-end"
+					} items-start flex-row w-full absolute top-2 left-0 z-10 px-5 
                     `}
 				>
 					{item?.video && <PlayCircleIcon size={25} color="red" />}
@@ -145,7 +168,12 @@ const RecipePointItem = ({ item, index, langApp }) => {
 					{/* if item?.published_user not null {} */}
 					{item?.published_user && (
 						<View className=" items-center ">
-							<AvatarCustom uri={item?.published_user?.avatar} size={25} style={{ borderWidth: 0.2 }} rounded={50} />
+							<AvatarCustom
+								uri={item?.published_user?.avatar}
+								size={25}
+								style={{ borderWidth: 0.2 }}
+								rounded={50}
+							/>
 							<Text
 								style={{
 									fontSize: 6,

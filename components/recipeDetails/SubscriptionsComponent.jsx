@@ -15,7 +15,7 @@ import {
 import AvatarCustom from "../AvatarCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
-const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) => {
+const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allRecipeBayCreatore = false }) => {
 	const subscriberId = subscriber?.id;
 
 	// console.log("SubscriptionsComponent subscriber ", subscriber);
@@ -37,7 +37,7 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 
 	// Состояние подписки
 	const [isSubscribed, setIsSubscribed] = useState(false);
-	console.log("isSubscribed", isSubscribed);
+	// console.log("isSubscribed", isSubscribed);
 
 	useEffect(() => {
 		// Если режим предпросмотра
@@ -67,12 +67,25 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 			fetchGetDataCreator(creatorId);
 			checkSubscriptionStatus();
 			// console.log("creatorData", creatorData);
+			// console.log("allRecipeBayCreatore", allRecipeBayCreatore);
 		}
-	}, [isPreview, creatorId, subscriber]);
+	}, [isPreview, creatorId, subscriber, subscriberId]);
+
+	useEffect(() => {
+		if (subscriberId) {
+			// fetchGetDataCreator(creatorId);
+			checkSubscriptionStatus();
+			// console.log("creatorData", creatorId);
+			// console.log("allRecipeBayCreatore subscriberId", subscriberId);
+			// console.log("allRecipeBayCreatore", allRecipeBayCreatore);
+		}
+	}, [allRecipeBayCreatore, subscriberId]);
 
 	// Получение данных о создателе
 	const fetchGetDataCreator = async (creatorId) => {
 		try {
+			// console.log("fetchGetDataCreator creatorId", creatorId);
+
 			const { data, success, msg } = await getCreatoreRecipeDateMyDB(creatorId);
 			if (!success) throw new Error(msg);
 
@@ -91,6 +104,8 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 	const checkSubscriptionStatus = async () => {
 		if (!subscriberId || !creatorId) return;
 		try {
+			// console.log("checkSubscriptionStatus subscriberId", subscriberId);
+
 			const { data, success, msg } = await getSubscriptionCheckDateMyDB(subscriberId, creatorId);
 			if (!success) throw new Error(msg);
 
@@ -140,21 +155,32 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 		if (isPreview) return;
 		router.push({
 			pathname: "(main)/AllRecipesBayCreator",
-			params: { creatorId },
+			params: { creator_id: creatorId },
 		});
 	};
 
 	return (
-		<View className="flex-row items-center justify-between gap-x-3 mb-5 ">
+		<View
+			className={`${
+				allRecipeBayCreatore ? "flex-col gap-y-5" : "flex-row justify-between gap-x-3"
+			} items-center  mb-5 flex-1`}
+		>
 			{/* Блок аватара и информации */}
-			<View className=" flex-1 m-w-[50%] flex-row items-center justify-start gap-x-3 ">
+			{/* <View className={`flex-1 m-w-[50%] flex-row items-center justify-start gap-x-3 `}> */}
+			<View
+				className={`${
+					allRecipeBayCreatore
+						? "w-full flex-col gap-y-2"
+						: "m-w-[50%] flex-row flex-1 items-center justify-start gap-x-3"
+				}   `}
+			>
 				<View style={shadowBoxBlack()} className="items-center relative">
-					<TouchableOpacity onPress={() => handleGetAllRecipeCreator()}>
-						<AvatarCustom size={hp(10)} uri={creatorData?.creatorAvatar} />
+					<TouchableOpacity onPress={() => (!allRecipeBayCreatore ? handleGetAllRecipeCreator() : null)}>
+						<AvatarCustom size={hp(allRecipeBayCreatore ? 20 : 10)} uri={creatorData?.creatorAvatar} />
 					</TouchableOpacity>
 				</View>
 
-				<View className="w-full  overflow-hidden flex-1">
+				<View className={`${allRecipeBayCreatore ? "items-center" : "overflow-hidden w-full   flex-1"}`}>
 					<View className="flex-row items-center">
 						<Text numberOfLines={1} style={{ fontSize: 14 }} className="font-bold">
 							{creatorData.creatorName}
@@ -170,14 +196,19 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false }) =>
 				</View>
 			</View>
 
-			<TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}>
+			{/* <TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}> */}
+			<TouchableOpacity
+				onPress={handleSubscribe}
+				className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}
+				style={shadowBoxBlack()}
+			>
 				<ButtonSmallCustom
 					title={isSubscribed ? `${i18n.t("Unsubscribe")}` : `${i18n.t("Subscribe")}`}
 					bg={isSubscribed ? "red" : "green"}
 					w="100%"
 					h={60}
 					buttonText={true}
-					styleText={{ fontSize: 12, marginLeft: 0 }}
+					styleText={{ fontSize: 12, margin: 0 }}
 				/>
 			</TouchableOpacity>
 		</View>

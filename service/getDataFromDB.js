@@ -488,3 +488,29 @@ export const unsubscribeFromCreatorMyDB = async (subscriber_id, creator_id) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+// get all my recipes
+export const getAllRecipesBayCreatoreListMyDB = async (creatore_id) => {
+	try {
+		let { data, error } = await supabase
+			.from("short_desc")
+			.select("*")
+			// Фильтр по creatore_id
+			.eq("published_id", creatore_id)
+			// Сортировка по дате создания (от новых к старым)
+			.order("created_at", { ascending: false });
+
+		if (error) {
+			console.error("Error fetching recipes:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		// console.log("getAllRecipesBayCreatoreListMyDB creatore_id:", creatore_id);
+		// console.log("Recipes found:", all_recipes_description);
+
+		return { success: true, data };
+	} catch (error) {
+		console.error("Error in getAllRecipesBayCreatoreListMyDB:", error.message);
+		return { success: false, msg: error.message };
+	}
+};
