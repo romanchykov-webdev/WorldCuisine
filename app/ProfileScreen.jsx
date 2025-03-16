@@ -164,7 +164,9 @@ const ProfileScreen = () => {
 									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 								>
 									<CreditCardIcon size={45} color="green" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("My recipes")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("My recipes")}
+									</Text>
 								</TouchableOpacity>
 
 								{/*may favorite*/}
@@ -175,7 +177,9 @@ const ProfileScreen = () => {
 								>
 									{/*<BellIcon size={45} color='gold'/>*/}
 									<PencilSquareIcon size={45} color="gold" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("Create recipe")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("Create recipe")}
+									</Text>
 								</TouchableOpacity>
 
 								{/*may Favorite*/}
@@ -185,7 +189,9 @@ const ProfileScreen = () => {
 									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 								>
 									<HeartIcon size={45} color="red" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("Liked")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("Liked")}
+									</Text>
 								</TouchableOpacity>
 							</View>
 						</ScrollView>

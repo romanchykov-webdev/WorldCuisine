@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 // Получить все категории
@@ -161,7 +162,7 @@ export const getAllCommentsMyDB = async (id) => {
 		let { data, error } = await supabase
 			.from("comments")
 			.select("*")
-			.eq("postId", id) // Фильтр по id
+			.eq("post_id", id) // Фильтр по id
 			.order("created_at", { ascending: false }); // Сортировка от нового к старому
 
 		if (error) {
@@ -212,9 +213,9 @@ export const getAllUserIdCommentedMyDB = async (ids) => {
 
 //отправка комментария на рецепт
 export const addNewCommentToRecipeMyDB = async ({ postId, userIdCommented, comment }) => {
-	// console.log('getAllCommentsMyDB postId', postId)
-	// console.log('getAllCommentsMyDB userIdCommented', userIdCommented)
-	// console.log('getAllCommentsMyDB comment', comment)
+	// console.log("getAllCommentsMyDB postId", postId);
+	// console.log("getAllCommentsMyDB userIdCommented", userIdCommented);
+	// console.log("getAllCommentsMyDB comment", comment);
 	try {
 		// increment_comment_count
 
@@ -222,8 +223,8 @@ export const addNewCommentToRecipeMyDB = async ({ postId, userIdCommented, comme
 			.from("comments")
 			.insert([
 				{
-					postId, // ID поста
-					userIdCommented, // ID пользователя
+					post_id: postId, // ID поста
+					user_id_commented: userIdCommented, // ID пользователя
 					comment, // Текст комментария
 				},
 			])
@@ -532,7 +533,7 @@ export const getAllFavoriteIdisMyDB = async (user_id) => {
 
 		// Извлекаем только значения recipe_id_like в массив
 		const recipe_ids = data.map((item) => item.recipe_id_like);
-		console.log("getAllFavoriteListMyDB, recipe_ids", recipe_ids);
+		// console.log("getAllFavoriteListMyDB, recipe_ids", recipe_ids);
 
 		return { success: true, data: recipe_ids };
 	} catch (error) {
@@ -560,4 +561,39 @@ export const getAllFavoriteListMyDB = async (recipeIds) => {
 	}
 };
 
-["b4e7cadc-927c-4cde-9190-3804e04178da", "e3cf0a69-9ed9-4af4-9412-780ace57defd"];
+// Подписка на уведомления
+export const useNotifications = (userId, onNewNotification) => {
+	useEffect(() => {
+		const subscription = supabase
+			.channel("notifications-channel")
+			.on(
+				"postgres_changes",
+				{
+					event: "INSERT",
+					schema: "public",
+					table: "notifications",
+					filter: `user_id=eq.${userId}`,
+				},
+				async (payload) => {
+					const { actor_id, message } = payload.new;
+					// Получаем данные о комментаторе (avatar и user_name)
+					const { data: userData } = await supabase
+						.from("users")
+						.select("user_name, avatar")
+						.eq("id", actor_id)
+						.single();
+
+					onNewNotification({
+						...payload.new,
+						actorName: userData?.user_name || "Аноним",
+						actorAvatar: userData?.avatar || null,
+					});
+				}
+			)
+			.subscribe();
+
+		return () => {
+			supabase.removeChannel(subscription);
+		};
+	}, [userId, onNewNotification]);
+};

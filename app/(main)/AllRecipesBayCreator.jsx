@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
 import ButtonBack from "../../components/ButtonBack";
 import SubscriptionsComponent from "../../components/recipeDetails/SubscriptionsComponent";
@@ -9,15 +9,23 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 
+import { useRouter } from "expo-router";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Entypo";
+import IconComent from "react-native-vector-icons/EvilIcons";
 import LoadingComponent from "../../components/loadingComponent";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
-import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
+import {
+	createCategoryPointObject,
+	filterCategoryRecipesBySubcategories,
+	myFormatNumber,
+} from "../../constants/halperFunctions";
 import i18n from "../../lang/i18n";
 import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const AllRecipesBayCreator = () => {
+	const router = useRouter();
 	const params = useLocalSearchParams();
 
 	const { user: userData } = useAuth();
@@ -37,6 +45,9 @@ const AllRecipesBayCreator = () => {
 
 	// object for filter categoryes
 	const [obFilterCategory, setObFilterCategory] = useState({});
+
+	// comment count
+	const [commentCount, setCommentCount] = useState(0);
 
 	// get al ceripe bay creatir
 	const featGetAllRecipeBayCreator = async (creator_id) => {
@@ -65,7 +76,7 @@ const AllRecipesBayCreator = () => {
 		}
 	};
 
-	// Переносим логику в useEffect
+	//
 	useEffect(() => {
 		if (userData?.id === creator_id) {
 			setHeaderAllRecipe(false);
@@ -103,6 +114,44 @@ const AllRecipesBayCreator = () => {
 	// console.log("AllRecipesBayCreator params", params);
 	// console.log("AllRecipesBayCreator creator_id", creator_id);
 	// console.log("AllRecipesBayCreator userData", userData);
+
+	// Подписка на уведомления
+	// const handleNewNotification = useCallback(async (notification) => {
+	// 	const { actor_id, message, recipe_id } = notification;
+	// 	const { data: userData } = await supabase.from("users").select("user_name, avatar").eq("id", actor_id).single();
+
+	// 	setCommentCount((prev) => prev + 1); // Увеличиваем счётчик комментариев
+	// 	Toast.show({
+	// 		type: "info",
+	// 		text1: "Новый комментарий",
+	// 		text2: `${userData?.user_name || "Аноним"}: ${message.split(": ")[1] || message}`,
+	// 		position: "bottom",
+	// 		visibilityTime: 4000,
+	// 		props: {
+	// 			avatar: userData?.avatar ? `https://your-supabase-storage-url/${userData.avatar}` : null,
+	// 		},
+	// 	});
+	// }, []);
+
+	// useEffect(() => {
+	// 	const subscription = supabase
+	// 		.channel("notifications-channel")
+	// 		.on(
+	// 			"postgres_changes",
+	// 			{
+	// 				event: "INSERT",
+	// 				schema: "public",
+	// 				table: "notifications",
+	// 				filter: `user_id=eq.${userData?.id}`,
+	// 			},
+	// 			(payload) => handleNewNotification(payload.new)
+	// 		)
+	// 		.subscribe();
+
+	// 	return () => {
+	// 		supabase.removeChannel(subscription);
+	// 	};
+	// }, [userData?.id, handleNewNotification]);
 
 	return (
 		<SafeAreaView>
@@ -151,7 +200,9 @@ const AllRecipesBayCreator = () => {
 					{/* folder */}
 					<TouchableOpacity
 						onPress={() => setToggleFolderList((prev) => !prev)}
-						className={`p-5 ${toggleFolderList ? "bg-amber-300" : "bg-white"}  rounded-full `}
+						className={`w-[70] h-[70] justify-center items-center ${
+							toggleFolderList ? "bg-amber-300" : "bg-white"
+						}  rounded-full `}
 						style={shadowBoxBlack()}
 					>
 						<Icon name="folder" size={30} color="bg-amber-300" />
@@ -160,10 +211,36 @@ const AllRecipesBayCreator = () => {
 					{/* list/ */}
 					<TouchableOpacity
 						onPress={() => setToggleFolderList((prev) => !prev)}
-						className={`p-5 ${toggleFolderList ? "bg-white" : "bg-amber-300"}  rounded-full `}
+						className={`w-[70] h-[70] justify-center items-center ${
+							toggleFolderList ? "bg-white" : "bg-amber-300"
+						}  rounded-full `}
 						style={shadowBoxBlack()}
 					>
 						<Icon name="list" size={30} color="grey" />
+					</TouchableOpacity>
+
+					{/* coments */}
+					<TouchableOpacity
+						onPress={() => router.push("(main)/NewCommentsScrean")}
+						className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+						style={shadowBoxBlack()}
+					>
+						<IconComent name="comment" size={40} color="grey" />
+						<Text className="absolute" style={{ fontSize: 12 }}>
+							+{myFormatNumber(commentCount)}
+						</Text>
+					</TouchableOpacity>
+
+					{/* Like */}
+					<TouchableOpacity
+						// onPress={() => setToggleFolderList((prev) => !prev)}
+						className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+						style={shadowBoxBlack()}
+					>
+						<Icon name="heart" size={40} color="red" />
+						<Text className="absolute" style={{ fontSize: 12 }}>
+							+{myFormatNumber(1200)}
+						</Text>
 					</TouchableOpacity>
 
 					{/* section data */}
@@ -173,6 +250,14 @@ const AllRecipesBayCreator = () => {
 						<LoadingComponent color="green" />
 					) : (
 						<View>
+							{allRecipesCreator.length === 0 && (
+								<Animated.Text
+									className="text-lg font-bold text-center"
+									entering={FadeInDown.delay(500).springify().damping(30)}
+								>
+									{i18n.t("You don't have any published recipes yet")}
+								</Animated.Text>
+							)}
 							{toggleFolderList ? (
 								<RecipesMasonryComponent
 									categoryRecipes={categoryRecipes}

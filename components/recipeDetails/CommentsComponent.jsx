@@ -38,7 +38,7 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 			setCommentsAll(res.data);
 
 			// Извлекаем все userIdCommented из массива commentsAll
-			const usersId = res.data.map((comment) => comment.userIdCommented);
+			const usersId = res.data.map((comment) => comment.user_id_commented);
 			setUserIdCommented(usersId);
 
 			// if (user?.id === comment?.userIdCommented || user?.id === publishedId) {
@@ -56,14 +56,14 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 
 		// Объединение данных
 		const mergedData = commentsAll.map((comment) => {
-			const user = res.data.find((user) => user.id === comment.userIdCommented);
+			const user = res.data.find((user) => user.id === comment.user_id_commented);
 			return {
 				...comment,
 				...(user ? { avatar: user.avatar, user_name: user.user_name } : {}),
 			};
 		});
 
-		// console.log('Merged Data:', mergedData);
+		console.log("Merged Data:", mergedData);
 
 		setAllDataComments(mergedData);
 	};
@@ -80,36 +80,63 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 	// Check if the current user is the owner
 	useEffect(() => {}, [allDataComments]);
 
+	// const addNewComment = async () => {
+	// 	// console.log('inputText recepId',recepId)
+	// 	// console.log('inputText user.id',user.id)
+	// 	// console.log('inputText comment',inputText)
+
+	// 	// addNewCommentToRecipeMyDB(postId,userIdCommented,comment)
+
+	// 	setLoading(true);
+	// 	if (inputText === "") {
+	// 		Alert.alert("Comment", "Write a comment");
+	// 	} else {
+	// 		if (recepId && user?.id && inputText) {
+	// 			await addNewCommentToRecipeMyDB({ postId: recepId, userIdCommented: user?.id, comment: inputText });
+	// 		}
+
+	// 		setTimeout(() => {
+	// 			setLoading(false);
+	// 			setCommentsAll([inputText, ...commentsAll]);
+
+	// 			setInputText("");
+	// 		}, 1000);
+
+	// 		updateLikeCommentCount("updateCommentsCount");
+	// 		await fetchComments();
+	// 	}
+
+	// 	// console.log('commentsAll',commentsAll)
+
+	// 	// add comments to the server
+	// };
+
+	//
 	const addNewComment = async () => {
-		// console.log('inputText recepId',recepId)
-		// console.log('inputText user.id',user.id)
-		// console.log('inputText comment',inputText)
-
-		// addNewCommentToRecipeMyDB(postId,userIdCommented,comment)
-
 		setLoading(true);
 		if (inputText === "") {
 			Alert.alert("Comment", "Write a comment");
 		} else {
 			if (recepId && user?.id && inputText) {
-				await addNewCommentToRecipeMyDB({ postId: recepId, userIdCommented: user?.id, comment: inputText });
+				const { success, data } = await addNewCommentToRecipeMyDB({
+					postId: recepId,
+					userIdCommented: user?.id,
+					comment: inputText,
+				});
+				if (success && data) {
+					setCommentsAll((prev) => [data[0], ...prev]); // Обновляем состояние с данными из базы
+					setInputText("");
+				}
 			}
-
 			setTimeout(() => {
 				setLoading(false);
-				setCommentsAll([inputText, ...commentsAll]);
-
-				setInputText("");
 			}, 1000);
-
 			updateLikeCommentCount("updateCommentsCount");
-			await fetchComments();
+			await fetchComments(); // Синхронизация с сервером
 		}
-
-		// console.log('commentsAll',commentsAll)
-
-		// add comments to the server
 	};
+
+	//
 	const changeText = (value) => {
 		setInputText(value);
 		// console.log(inputText)

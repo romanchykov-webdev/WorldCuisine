@@ -191,6 +191,14 @@
 
 	"Your recipes": "Ваші рецепти",
 	"There are no recipes you like yet": "There are no recipes you like yet",
+	"You don't have any published recipes yet": "У вас ще немає опублікованих рецептів",
 
-	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--",
+
+	"---NewCommentsScrean---": "---NewCommentsScrean---",
+
+	"Last Comments": "Останні коментарі",
+	"Open recipe": "Відкрити рецепт",
+
+	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--"
 }
