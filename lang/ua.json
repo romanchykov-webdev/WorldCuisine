@@ -185,5 +185,11 @@
 	"Subscribe": "Подписаться",
 	"Unsubscribe": "Скасувати підписку",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Ваші рецепти",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }

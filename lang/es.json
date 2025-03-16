@@ -185,5 +185,11 @@
 	"Subscribe": "Suscribirse",
 	"Unsubscribe": "Cancelar suscripción",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Tus recetas",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }

@@ -131,7 +131,10 @@ const AllRecipesBayCreator = () => {
 					</View>
 					{/* Остальные элементы */}
 					{!headerAllCeripe && (
-						<TitleScrean title={"Ваши рецепты"} styleTitle={{ textAlign: "center", fontSize: hp(3) }} />
+						<TitleScrean
+							title={i18n.t("Your recipes")}
+							styleTitle={{ textAlign: "center", fontSize: hp(3) }}
+						/>
 					)}
 
 					{headerAllCeripe && (

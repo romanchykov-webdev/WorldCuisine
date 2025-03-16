@@ -179,5 +179,11 @@
 	"Subscribe": "Подписаться",
 	"Unsubscribe": "Отменить подписку",
 
-	"---SubscribeComponent-END--": "---SubscribeComponent-END--"
+	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
+
+	"---AllRecipeScrean---": "---AllRecipeScrean---",
+
+	"Your recipes": "Ваши рецепты",
+
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
 }
