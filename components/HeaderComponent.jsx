@@ -3,7 +3,7 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Cog6ToothIcon } from "react-native-heroicons/mini";
 import Icon from "react-native-vector-icons/Entypo";
-import IconComent from "react-native-vector-icons/EvilIcons";
+// import IconComent from "react-native-vector-icons/EvilIcons";
 import { hp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 import AvatarCustom from "./AvatarCustom";
@@ -11,7 +11,7 @@ import AvatarCustom from "./AvatarCustom";
 // for translate
 import i18n from "../lang/i18n";
 
-const HeaderComponent = ({ isAuth, user }) => {
+const HeaderComponent = ({ isAuth, user, unreadCount }) => {
 	const router = useRouter();
 
 	// console.log('HeaderComponent user',user)
@@ -50,8 +50,9 @@ const HeaderComponent = ({ isAuth, user }) => {
 									rounded={50}
 								/>
 								<View className="  absolute left-[-10]">
-									<Icon name="heart" size={20} color="red" />
-									<IconComent name="comment" size={20} color="red" />
+									{unreadCount > 0 && <Icon name="heart" size={20} color="red" />}
+
+									{/* <IconComent name="comment" size={20} color="red" /> */}
 								</View>
 							</View>
 						</TouchableOpacity>

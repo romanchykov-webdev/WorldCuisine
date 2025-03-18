@@ -17,8 +17,10 @@ import RecipeLikedItem from "../components/profile/RecipeLikedItem";
 import TitleScrean from "../components/TitleScrean";
 import i18n from "../lang/i18n";
 
+import Icon from "react-native-vector-icons/Entypo";
+
 const ProfileScreen = () => {
-	const { setAuth, user } = useAuth();
+	const { setAuth, user, unreadCount } = useAuth();
 
 	// change lang
 	// const [lang, setLang] = useState('en'); // Устанавливаем язык
@@ -161,12 +163,17 @@ const ProfileScreen = () => {
 								<TouchableOpacity
 									onPress={handleMyRecipes}
 									style={shadowBoxBlack()}
-									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
 								>
 									<CreditCardIcon size={45} color="green" />
 									<Text numberOfLines={1} style={{ fontSize: 8 }}>
 										{i18n.t("My recipes")}
 									</Text>
+									<View className="absolute top-[-10]  w-full items-center justify-between">
+										{unreadCount > 0 && (
+											<Icon name="heart" size={20} color="red" className="self-start" />
+										)}
+									</View>
 								</TouchableOpacity>
 
 								{/*may favorite*/}

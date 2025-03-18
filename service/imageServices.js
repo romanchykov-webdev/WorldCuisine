@@ -19,6 +19,15 @@ export const getSupabaseFileUrl = (filePath) => {
 	return null;
 };
 
+//
+export const getRecipeImageUrl = (imagePath) => {
+	if (imagePath) {
+		// Используем бакет uploads_image, оставляем recipes_images/ как часть пути
+		return `${supabaseUrl}/storage/v1/object/public/uploads_image/${imagePath}`;
+	}
+	return "https://via.placeholder.com/300";
+};
+
 // Удалить файл из хранилища
 export const deleteFile = async (filePath) => {
 	try {

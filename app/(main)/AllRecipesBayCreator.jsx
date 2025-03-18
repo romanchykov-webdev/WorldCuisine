@@ -28,7 +28,7 @@ const AllRecipesBayCreator = () => {
 	const router = useRouter();
 	const params = useLocalSearchParams();
 
-	const { user: userData } = useAuth();
+	const { user: userData, unreadCount } = useAuth();
 
 	const { creator_id } = params;
 
@@ -47,7 +47,7 @@ const AllRecipesBayCreator = () => {
 	const [obFilterCategory, setObFilterCategory] = useState({});
 
 	// comment count
-	const [commentCount, setCommentCount] = useState(0);
+	const [commentCount, setCommentCount] = useState(unreadCount);
 
 	// get al ceripe bay creatir
 	const featGetAllRecipeBayCreator = async (creator_id) => {
@@ -220,16 +220,18 @@ const AllRecipesBayCreator = () => {
 					</TouchableOpacity>
 
 					{/* coments */}
-					<TouchableOpacity
-						onPress={() => router.push("(main)/NewCommentsScrean")}
-						className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
-						style={shadowBoxBlack()}
-					>
-						<IconComent name="comment" size={40} color="grey" />
-						<Text className="absolute" style={{ fontSize: 12 }}>
-							+{myFormatNumber(commentCount)}
-						</Text>
-					</TouchableOpacity>
+					{commentCount > 0 && (
+						<TouchableOpacity
+							onPress={() => router.push("(main)/NewCommentsScrean")}
+							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+							style={shadowBoxBlack()}
+						>
+							<IconComent name="comment" size={40} color="grey" />
+							<Text className="absolute" style={{ fontSize: 12 }}>
+								+{myFormatNumber(commentCount)}
+							</Text>
+						</TouchableOpacity>
+					)}
 
 					{/* Like */}
 					<TouchableOpacity

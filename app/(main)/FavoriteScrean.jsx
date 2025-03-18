@@ -11,7 +11,7 @@ import { getAllFavoriteIdisMyDB, getAllFavoriteListMyDB } from "../../service/ge
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const FavoriteScrean = () => {
-	const { user } = useAuth();
+	const { user, setQuontityOfComments } = useAuth();
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);

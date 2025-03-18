@@ -14,7 +14,7 @@ import i18n from "../lang/i18n";
 import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
 
 const HomeScreen = () => {
-	const { user } = useAuth();
+	const { user, unreadCount } = useAuth();
 	// const router = useRouter();
 
 	const { language: langDev } = useAuth();
@@ -150,7 +150,7 @@ const HomeScreen = () => {
 				) : (
 					<>
 						{/*avatar snd ball*/}
-						<HeaderComponent isAuth={isAuth} user={user} />
+						<HeaderComponent isAuth={isAuth} user={user} unreadCount={unreadCount} />
 
 						{/*    greetings and punchline*/}
 						<View gap-y-2>

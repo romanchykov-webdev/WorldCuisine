@@ -1,5 +1,16 @@
-import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+	Animated,
+	ImageBackground,
+	SafeAreaView,
+	ScrollView,
+	StyleSheet,
+	Switch,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import AvatarCustom from "../../components/AvatarCustom";
 import ButtonBack from "../../components/ButtonBack";
 import TitleScrean from "../../components/TitleScrean";
@@ -7,95 +18,220 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
+import { supabase } from "../../lib/supabase";
+import { getRecipeImageUrl } from "../../service/imageServices";
 
 const NewCommentsScrean = () => {
-	const { newComments, newLikes, markAsRead } = useAuth();
+	const { user, markAsRead, unreadCount } = useAuth();
+	const navigation = useNavigation();
+	const [notifications, setNotifications] = useState([]);
+	console.log("NewCommentsScrean notifications", notifications);
 
-	console.log("NewCommentsScrean newComments", newComments);
-	console.log("NewCommentsScrean newLikes", newLikes);
-	console.log("NewCommentsScrean markAsRead", markAsRead);
+	const [loading, setLoading] = useState(false);
+	const [errorMessage, setErrorMessage] = useState(null);
+	const animatedHeights = useRef({});
 
-	// Сброс уведомлений при открытии экрана
-	// useEffect(() => {
-	// 	if (recipeId) {
-	// 		// markAsRead("comment", recipeId); // Сбрасываем уведомление о комментариях
-	// 		// markAsRead("like", recipeId); // Сбрасываем уведомление о лайках
-	// 	}
-	// }, [recipeId, markAsRead]);
+	useEffect(() => {
+		if (!user?.id) {
+			console.log("User ID is not available:", user);
+			setErrorMessage("User ID is not available");
+			return;
+		}
+
+		setLoading(true);
+		setErrorMessage(null);
+		const fetchNotifications = async () => {
+			// console.log("Fetching notifications for user_id:", user.id);
+			try {
+				const { data, error } = await supabase
+					.from("notifications")
+					.select(
+						`
+            id,
+            recipe_id,
+            message,
+            created_at,
+            is_read,
+            type,
+            actor_id,
+            user_id,
+            users(user_name, avatar),
+            all_recipes_description(title, image_header)
+          `
+					)
+					.eq("user_id", user.id)
+					.eq("is_read", false)
+					.eq("type", "comment")
+					.order("created_at", { ascending: false });
+
+				if (error) {
+					console.error("Error fetching notifications:", error.message, error.details);
+					setErrorMessage(`Error: ${error.message}`);
+				} else {
+					// console.log("Raw fetched data:", data);c
+					const validNotifications = Array.isArray(data) ? data : [];
+					// console.log("Processed notifications:", validNotifications);
+					setNotifications(validNotifications);
+
+					validNotifications.forEach((notification) => {
+						if (!animatedHeights.current[notification.id]) {
+							animatedHeights.current[notification.id] = new Animated.Value(150);
+						}
+					});
+				}
+			} catch (e) {
+				console.error("Unexpected error:", e.message);
+				setErrorMessage(`Unexpected error: ${e.message}`);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchNotifications();
+	}, [user?.id]);
+
+	const toggleReadStatus = async (notificationId, recipeId) => {
+		try {
+			Animated.timing(animatedHeights.current[notificationId], {
+				toValue: 0,
+				duration: 300,
+				useNativeDriver: false,
+			}).start(() => {
+				// Обновляем только конкретное уведомление в Supabase
+				supabase
+					.from("notifications")
+					.update({ is_read: true })
+					.eq("id", notificationId)
+					.then(({ error }) => {
+						if (error) {
+							console.error("Error marking notification as read:", error.message);
+							return;
+						}
+
+						// Удаляем уведомление из состояния
+						setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+
+						// Передаём notificationId в markAsRead
+						markAsRead("comment", recipeId, notificationId);
+					});
+			});
+		} catch (error) {
+			console.error("Unexpected error in toggleReadStatus:", error.message);
+		}
+	};
+
+	const navigateToRecipe = (recipeId) => {
+		navigation.navigate("RecipeScreen", { recipeId });
+	};
+
+	// console.log("notification notifications", notifications);
+
 	return (
 		<SafeAreaView>
-			{/* headerSection */}
 			<View className="px-[20] border-b border-b-neutral-300">
 				<View style={shadowBoxBlack()} className="mb-5">
 					<ButtonBack />
 				</View>
-
-				<View className="items-center ">
-					<TitleScrean title={`${i18n.t("Last Comments")}`} styleTitle={{ textAlign: "center" }} />
+				<View className="items-center">
+					<TitleScrean
+						title={`${i18n.t("Last Comments")} (${unreadCount})`}
+						styleTitle={{ textAlign: "center" }}
+					/>
 				</View>
 			</View>
 			<ScrollView
 				contentContainerStyle={{
 					paddingHorizontal: 20,
 					marginBottom: 20,
-					// backgroundColor: "red",
 					minHeight: hp(100),
 				}}
 				showsVerticalScrollIndicator={false}
 				keyboardDismissMode={"on-drag"}
 			>
-				{/* section last comments */}
 				<View className="gap-y-5">
-					{/* component comment */}
-					<View
-						className="w-auto border-2 p-2 h-[150] bg-white border-neutral-500 rounded-[12] gap-x-2 "
-						style={shadowBoxBlack()}
-					>
-						<Text className="text-center text-xl">Name recipe</Text>
-						<View className="flex-row items-center gap-x-2">
-							<AvatarCustom size={hp(10)} />
-
-							{/* block  */}
-							<View className="flex-1 ">
-								<Text className="flex-1 " numberOfLines={7} ellipsizeMode="tail">
-									Lorem ipsum, dolor sit amet consectetur adipisicing elit. Blanditiis repellat dicta
-									ipsa velit, neque, distinctio eos doloremque architecto minima earum vitae illum!
-									Corporis possimus, consectetur ipsum cupiditate, ratione alias expedita, blanditiis
-									eligendi velit veniam quidem. Facere, quia amet! Explicabo hic praesentium ipsum
-									modi magnam sit eligendi provident voluptatibus repellat a? Lorem ipsum, dolor sit
-									amet consectetur adipisicing elit. Blanditiis repellat dicta ipsa velit, neque,
-									distinctio eos doloremque architecto minima earum vitae illum! Corporis possimus,
-									consectetur ipsum cupiditate, ratione alias expedita, blanditiis eligendi velit
-									veniam quidem. Facere, quia amet! Explicabo hic praesentium ipsum modi magnam sit
-									eligendi provident voluptatibus repellatrepellat a? Lorem ipsum, dolor sit amet
-									consectetur adipisicing elit. Blanditiis repellat dicta ipsa velit, neque,
-									distinctio eos doloremque architecto minima earum vitae illum! Corporis possimus,
-									consectetur ipsum cupiditate, ratione alias expedita, blanditiis eligendi velit
-									veniam quidem. Facere, quia amet! Explicabo hic praesentium ipsum modi magnam sit
-									eligendi provident voluptatibus repellatrepellat a? Lorem ipsum, dolor sit amet
-									consectetur adipisicing elit. Blanditiis repellat dicta ipsa velit, neque,
-									distinctio eos doloremque architecto minima earum vitae illum! Corporis possimus,
-									consectetur ipsum cupiditate, ratione alias expedita, blanditiis eligendi velit
-									veniam quidem. Facere, quia amet! Explicabo hic praesentium ipsum modi magnam sit
-									eligendi provident voluptatibus repellat a?
-								</Text>
-							</View>
-						</View>
-						<View className="flex-row flex-1 justify-between items-center mt-1 ">
-							<Text className="" style={{ fontSize: 12 }}>
-								15-03-2025 17:55
-							</Text>
-							<Text className="" style={{ fontSize: 12 }}>
-								{i18n.t("Open recipe")} ...
-							</Text>
-						</View>
-					</View>
+					{loading ? (
+						<Text className="text-center text-lg mt-5">Loading...</Text>
+					) : errorMessage ? (
+						<Text className="text-center text-lg mt-5 text-red-500">{errorMessage}</Text>
+					) : notifications.length > 0 ? (
+						notifications.map((notification) => {
+							const imageUrl = getRecipeImageUrl(notification.all_recipes_description?.image_header);
+							// console.log("Recipe image URL for notification", notification.id, ":", imageUrl);
+							return (
+								<Animated.View
+									key={notification.id}
+									style={{
+										height: animatedHeights.current[notification.id] || 150,
+										overflow: "hidden",
+									}}
+								>
+									<ImageBackground
+										source={{
+											uri: imageUrl,
+										}}
+										style={styles.cardBackground}
+										imageStyle={{ borderRadius: 12, opacity: 0.3 }}
+										onError={(e) => console.log("ImageBackground error:", e.nativeEvent.error)}
+									>
+										<View
+											className="w-auto border-2 p-2 h-[150] bg-white border-neutral-500 rounded-[12] gap-x-2"
+											style={shadowBoxBlack()}
+										>
+											<View className="flex-row justify-between items-center">
+												<Text className="text-xl">
+													{notification.users?.user_name || "Unknown User"}
+												</Text>
+												<Switch
+													value={false}
+													onValueChange={() =>
+														toggleReadStatus(notification.id, notification.recipe_id)
+													}
+													thumbColor={false ? "#f4f3f4" : "#f4f3f4"}
+													trackColor={{
+														false: "#767577",
+														true: "#00FF00",
+													}}
+												/>
+											</View>
+											<View className="flex-row items-center gap-x-2">
+												<AvatarCustom uri={notification.users?.avatar} size={hp(10)} />
+												<View className="flex-1">
+													<Text className="flex-1" numberOfLines={7} ellipsizeMode="tail">
+														{notification.message}
+													</Text>
+												</View>
+											</View>
+											<View className="flex-row flex-1 justify-between items-center mt-1">
+												<Text className="" style={{ fontSize: 12 }}>
+													{new Date(notification.created_at).toLocaleString()}
+												</Text>
+												<TouchableOpacity
+													onPress={() => navigateToRecipe(notification.recipe_id)}
+												>
+													<Text className="" style={{ fontSize: 12 }}>
+														{i18n.t("Open recipe")} ...
+													</Text>
+												</TouchableOpacity>
+											</View>
+										</View>
+									</ImageBackground>
+								</Animated.View>
+							);
+						})
+					) : (
+						<Text className="text-center text-lg mt-5">No new comments</Text>
+					)}
 				</View>
 			</ScrollView>
 		</SafeAreaView>
 	);
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	cardBackground: {
+		borderRadius: 12,
+		overflow: "hidden",
+	},
+});
 
 export default NewCommentsScrean;
