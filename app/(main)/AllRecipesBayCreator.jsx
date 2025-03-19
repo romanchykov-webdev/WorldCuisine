@@ -199,7 +199,7 @@ const AllRecipesBayCreator = () => {
 				<View className="flex-row items-center justify-around mb-5">
 					{/* folder */}
 					<TouchableOpacity
-						onPress={() => setToggleFolderList((prev) => !prev)}
+						onPress={() => setToggleFolderList(true)}
 						className={`w-[70] h-[70] justify-center items-center ${
 							toggleFolderList ? "bg-amber-300" : "bg-white"
 						}  rounded-full `}
@@ -210,7 +210,7 @@ const AllRecipesBayCreator = () => {
 
 					{/* list/ */}
 					<TouchableOpacity
-						onPress={() => setToggleFolderList((prev) => !prev)}
+						onPress={() => setToggleFolderList(false)}
 						className={`w-[70] h-[70] justify-center items-center ${
 							toggleFolderList ? "bg-white" : "bg-amber-300"
 						}  rounded-full `}
@@ -226,7 +226,7 @@ const AllRecipesBayCreator = () => {
 							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
 							style={shadowBoxBlack()}
 						>
-							<IconComent name="comment" size={40} color="grey" />
+							<IconComent name="comment" size={50} color="red" />
 							<Text className="absolute" style={{ fontSize: 12 }}>
 								+{myFormatNumber(commentCount)}
 							</Text>
@@ -239,7 +239,7 @@ const AllRecipesBayCreator = () => {
 						className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
 						style={shadowBoxBlack()}
 					>
-						<Icon name="heart" size={40} color="red" />
+						<Icon name="heart" size={50} color="red" />
 						<Text className="absolute" style={{ fontSize: 12 }}>
 							+{myFormatNumber(1200)}
 						</Text>

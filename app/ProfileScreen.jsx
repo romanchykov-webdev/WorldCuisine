@@ -17,7 +17,8 @@ import RecipeLikedItem from "../components/profile/RecipeLikedItem";
 import TitleScrean from "../components/TitleScrean";
 import i18n from "../lang/i18n";
 
-import Icon from "react-native-vector-icons/Entypo";
+// import Icon from "react-native-vector-icons/Entypo";
+import IconComent from "react-native-vector-icons/EvilIcons";
 
 const ProfileScreen = () => {
 	const { setAuth, user, unreadCount } = useAuth();
@@ -171,8 +172,9 @@ const ProfileScreen = () => {
 									</Text>
 									<View className="absolute top-[-10]  w-full items-center justify-between">
 										{unreadCount > 0 && (
-											<Icon name="heart" size={20} color="red" className="self-start" />
+											<IconComent name="comment" size={20} color="red" className="self-end" />
 										)}
+										{/* <Icon name="heart" size={20} color="red" className="self-start" /> */}
 									</View>
 								</TouchableOpacity>
 

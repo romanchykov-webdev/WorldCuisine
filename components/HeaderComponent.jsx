@@ -2,8 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Cog6ToothIcon } from "react-native-heroicons/mini";
-import Icon from "react-native-vector-icons/Entypo";
-// import IconComent from "react-native-vector-icons/EvilIcons";
+import IconComent from "react-native-vector-icons/EvilIcons";
 import { hp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 import AvatarCustom from "./AvatarCustom";
@@ -50,9 +49,9 @@ const HeaderComponent = ({ isAuth, user, unreadCount }) => {
 									rounded={50}
 								/>
 								<View className="  absolute left-[-10]">
-									{unreadCount > 0 && <Icon name="heart" size={20} color="red" />}
+									{unreadCount > 0 && <IconComent name="comment" size={20} color="red" />}
 
-									{/* <IconComent name="comment" size={20} color="red" /> */}
+									{/* <Icon name="heart" size={20} color="red" /> */}
 								</View>
 							</View>
 						</TouchableOpacity>
