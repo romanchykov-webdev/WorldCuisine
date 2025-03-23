@@ -200,5 +200,11 @@
 	"Last Comments": "Last Comments",
 	"Open recipe": "Open recipe",
 
-	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--"
+	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--",
+
+	"---NewLikessScrean---": "---NewLikessScrean---",
+
+	"Your recipes were liked by users": "Your recipes were liked by users",
+
+	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--"
 }

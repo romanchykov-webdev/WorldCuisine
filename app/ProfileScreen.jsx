@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ButtonBack from "../components/ButtonBack";
 
 import { wp } from "../constants/responsiveScreen";
@@ -17,11 +17,10 @@ import RecipeLikedItem from "../components/profile/RecipeLikedItem";
 import TitleScrean from "../components/TitleScrean";
 import i18n from "../lang/i18n";
 
-// import Icon from "react-native-vector-icons/Entypo";
-import IconComent from "react-native-vector-icons/EvilIcons";
+import { default as Icon, default as IconComent } from "react-native-vector-icons/EvilIcons";
 
 const ProfileScreen = () => {
-	const { setAuth, user, unreadCount } = useAuth();
+	const { setAuth, user, unreadCommentsCount, unreadLikesCount } = useAuth();
 
 	// change lang
 	// const [lang, setLang] = useState('en'); // Устанавливаем язык
@@ -113,7 +112,10 @@ const ProfileScreen = () => {
 					>
 						<ScrollView
 							showsVerticalScrollIndicator={false}
-							contentContainerStyle={{ paddingHorizontal: 20, marginTop: 60 }}
+							contentContainerStyle={{
+								paddingHorizontal: 20,
+								marginTop: Platform.OS === "ios" ? null : 60,
+							}}
 						>
 							<View className="flex-row justify-between items-center">
 								<View style={shadowBoxBlack()}>
@@ -170,11 +172,13 @@ const ProfileScreen = () => {
 									<Text numberOfLines={1} style={{ fontSize: 8 }}>
 										{i18n.t("My recipes")}
 									</Text>
-									<View className="absolute top-[-10]  w-full items-center justify-between">
-										{unreadCount > 0 && (
-											<IconComent name="comment" size={20} color="red" className="self-end" />
+									<View className="absolute top-[-10] flex-row  w-full items-center justify-between">
+										{unreadCommentsCount > 0 && (
+											<IconComent name="comment" size={25} color="red" className="self-end" />
 										)}
-										{/* <Icon name="heart" size={20} color="red" className="self-start" /> */}
+										{unreadLikesCount > 0 && (
+											<Icon name="heart" size={25} color="red" className="self-start" />
+										)}
 									</View>
 								</TouchableOpacity>
 

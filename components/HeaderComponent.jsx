@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Cog6ToothIcon } from "react-native-heroicons/mini";
-import IconComent from "react-native-vector-icons/EvilIcons";
+import { default as Icon, default as IconComent } from "react-native-vector-icons/EvilIcons";
 import { hp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 import AvatarCustom from "./AvatarCustom";
@@ -10,7 +10,7 @@ import AvatarCustom from "./AvatarCustom";
 // for translate
 import i18n from "../lang/i18n";
 
-const HeaderComponent = ({ isAuth, user, unreadCount }) => {
+const HeaderComponent = ({ isAuth, user, unreadCommentsCount, unreadLikesCount }) => {
 	const router = useRouter();
 
 	// console.log('HeaderComponent user',user)
@@ -48,9 +48,9 @@ const HeaderComponent = ({ isAuth, user, unreadCount }) => {
 									style={{ borderWidth: 0.2 }}
 									rounded={50}
 								/>
-								<View className="  absolute left-[-10]">
-									{unreadCount > 0 && <IconComent name="comment" size={20} color="red" />}
-
+								<View className="  absolute left-[-10] gap-y-5 top-[-5px]">
+									{unreadCommentsCount > 0 && <IconComent name="comment" size={20} color="red" />}
+									{unreadLikesCount > 0 && <Icon name="heart" size={20} color="red" />}
 									{/* <Icon name="heart" size={20} color="red" /> */}
 								</View>
 							</View>

@@ -2,7 +2,7 @@ import MasonryList from "@react-native-seoul/masonry-list";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon, PlayCircleIcon, StarIcon } from "react-native-heroicons/outline";
 import Animated, { FadeInDown, FadeInLeft, FadeInUp } from "react-native-reanimated";
 import AvatarCustom from "../../components/AvatarCustom";
@@ -65,7 +65,7 @@ const AllRecipesPointScreen = ({
 
 	return (
 		<SafeAreaView>
-			<ScrollView>
+			<ScrollView contentContainerStyle={{ marginTop: Platform.OS === "ios" ? null : 30 }}>
 				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore || isScreanFavorite ? null : "p-[20]"}`}>
 					{/* block header*/}
 					{!isScreanAlrecipeBayCreatore && (

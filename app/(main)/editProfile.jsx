@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
+	Platform,
 	SafeAreaView,
 	ScrollView,
 	Text,
@@ -33,6 +34,8 @@ import i18n from "../../lang/i18n";
 const EditProfile = () => {
 	const { user: currentUser, setAuth, setUserData } = useAuth();
 	const router = useRouter();
+
+	// console.log("EditProfile currentUser", currentUser);
 
 	const [loading, setLoading] = useState(false);
 
@@ -87,40 +90,75 @@ const EditProfile = () => {
 	};
 
 	// console.log('avatar', user.avatar);
+
+	// const handleSubmit = async () => {
+	// 	setLoading(true);
+
+	// 	let userData = { ...user };
+
+	// 	let { user_name, lang, theme, avatar } = userData;
+	// 	// console.log('user avatar',currentUser?.avatar)
+
+	// 	//upload user avatar
+	// 	if (typeof avatar == "object") {
+	// 		//     upload image
+	// 		// console.log('upload avatar handleSubmit', avatar)
+	// 		// let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
+	// 		let imageRes = await uploadFile(`profiles/${currentUser.id}`, avatar?.uri, true, currentUser?.avatar);
+	// 		if (imageRes.success) {
+	// 			userData.avatar = imageRes.data;
+	// 		} else {
+	// 			userData.avatar = null;
+	// 		}
+	// 	}
+
+	// 	console.log("before submit", userData);
+
+	// 	const res = await updateUser(currentUser?.id, userData);
+
+	// 	// // update user data
+	// 	// // console.log('EditProfile res',res)
+
+	// 	if (res.success) {
+	// 		setUserData({ ...currentUser, ...userData });
+	// 	}
+
+	// 	setLoading(false);
+
+	// 	// console.log('submit userData avatar',userData?.avatar)
+	// };
+
 	const handleSubmit = async () => {
 		setLoading(true);
 
 		let userData = { ...user };
-		let { user_name, lang, theme, avatar } = userData;
-		// console.log('user avatar',currentUser?.avatar)
 
-		//upload user avatar
-		if (typeof avatar == "object") {
-			//     upload image
-			// console.log('upload avatar handleSubmit', avatar)
+		let { user_name, lang, theme, avatar } = userData;
+
+		// Загрузка аватара, если он был изменен
+		if (typeof avatar === "object" && avatar?.uri) {
+			const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.png`;
+			// let imageRes = await uploadFile(uniqueFilePath, avatar.uri, true, currentUser?.avatar);
 			let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
 			if (imageRes.success) {
 				userData.avatar = imageRes.data;
 			} else {
-				userData.avatar = null;
+				console.error("Failed to upload avatar:", imageRes.msg);
+				userData.avatar = currentUser?.avatar; // Оставляем старый аватар при ошибке
 			}
 		}
 
-		console.log("before submit", userData);
+		// console.log("before submit", userData);
 
 		const res = await updateUser(currentUser?.id, userData);
 
-		// // update user data
-		// // console.log('EditProfile res',res)
-
 		if (res.success) {
-			// setUserData({...currentUser, ...user})
 			setUserData({ ...currentUser, ...userData });
+		} else {
+			console.error("Failed to update user:", res.msg);
 		}
 
 		setLoading(false);
-
-		// console.log('submit userData avatar',userData?.avatar)
 	};
 
 	const DeleteAccount = async () => {
@@ -164,7 +202,7 @@ const EditProfile = () => {
 	return (
 		<ScrollView
 			keyboardDismissMode={"on-drag"}
-			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: 60 }}
+			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: Platform.OS === "ios" ? null : 60 }}
 			showsVerticalScrollIndicator={false}
 		>
 			<SafeAreaView>

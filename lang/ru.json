@@ -194,5 +194,11 @@
 	"Last Comments": "Последние комментарии",
 	"Open recipe": "Открыть рецепт",
 
-	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--"
+	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--",
+
+	"---NewLikessScrean---": "---NewLikessScrean---",
+
+	"Your recipes were liked by users": "Ваши рецепты понравились пользователям",
+
+	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--"
 }

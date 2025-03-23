@@ -189,7 +189,11 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 
 	// Проверьте, является ли пользователь владельцем поста или автором комментария
 	const canDeleteComment = (comment) => {
-		return user?.id === comment?.userIdCommented || user?.id === publishedId;
+		// console.log("CommentsComponent canDeleteComment user?.id", user?.id);
+		// console.log("CommentsComponent canDeleteComment comment?.userIdCommented", comment?.userIdCommented);
+		// console.log("CommentsComponent canDeleteComment publishedId", publishedId);
+
+		return user?.id === comment?.user_id_commented || user?.id === publishedId;
 	};
 
 	return (
