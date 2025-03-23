@@ -10,7 +10,7 @@ const AvatarCustom = ({
 	style = {},
 	isPreview = false,
 	// rounded = 'rounded-full'
-	rounded = "100%",
+	rounded = size / 2,
 }) => {
 	// console.log("AvatarCustom uri", uri);
 	return (
@@ -18,11 +18,8 @@ const AvatarCustom = ({
 			source={isPreview ? uri : getUserImageSrc(uri)}
 			// source={getUserImageSrc(uri)}
 			transition={100}
-			style={[
-				styles.avatar,
-				{ height: size, width: size, borderRadius: rounded },
-				style,
-			]}
+			className="rounded-full"
+			style={[styles.avatar, { height: size, width: size, borderRadius: rounded }, style]}
 			contentFit="cover" // Заменяем resizeMode на contentFit для 'expo-image'
 		/>
 	);

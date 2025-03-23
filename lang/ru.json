@@ -185,6 +185,20 @@
 
 	"Your recipes": "Ваши рецепты",
 	"There are no recipes you like yet": "У вас пока нет понравившихся рецептов",
+	"You don't have any published recipes yet": "У вас еще нет опубликованных рецептов",
 
-	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--"
+	"---AllRecipeScrean-End--": "---AllRecipeScrean-End--",
+
+	"---NewCommentsScrean---": "---NewCommentsScrean---",
+
+	"Last Comments": "Последние комментарии",
+	"Open recipe": "Открыть рецепт",
+
+	"---NewCommentsScrean-END--": "---NewCommentsScrean-END--",
+
+	"---NewLikessScrean---": "---NewLikessScrean---",
+
+	"Your recipes were liked by users": "Ваши рецепты понравились пользователям",
+
+	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--"
 }

@@ -19,6 +19,15 @@ export const getSupabaseFileUrl = (filePath) => {
 	return null;
 };
 
+//
+export const getRecipeImageUrl = (imagePath) => {
+	if (imagePath) {
+		// Используем бакет uploads_image, оставляем recipes_images/ как часть пути
+		return `${supabaseUrl}/storage/v1/object/public/uploads_image/${imagePath}`;
+	}
+	return "https://via.placeholder.com/300";
+};
+
 // Удалить файл из хранилища
 export const deleteFile = async (filePath) => {
 	try {
@@ -117,6 +126,38 @@ export const deleteFile = async (filePath) => {
 // 	return `/${folderName}/${new Date().getTime()}${isImage ? ".png" : ".mp4"}`;
 // };
 
+// export const uploadFile = async (filePath, fileUri, isImage = true, oldFilePath = null) => {
+// 	try {
+// 		// Удаляем старый файл, если передан путь
+// 		if (oldFilePath) {
+// 			await deleteFile(oldFilePath);
+// 		}
+
+// 		// Используем переданный filePath напрямую (например, recipes_images/Meat/Beef_1709641234567/1.jpg)
+// 		const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
+// 			encoding: FileSystem.EncodingType.Base64,
+// 		});
+
+// 		const imageData = decode(fileBase64); // array buffer
+
+// 		const { data, error } = await supabase.storage.from("uploads_image").upload(filePath, imageData, {
+// 			cacheControl: "3600",
+// 			upsert: false,
+// 			contentType: isImage ? "image/*" : "video/*",
+// 		});
+
+// 		if (error) {
+// 			console.log("File upload error", error);
+// 			return { success: false, msg: "Could not upload media" };
+// 		}
+
+// 		return { success: true, data: data.path };
+// 	} catch (error) {
+// 		console.log("File upload error", error);
+// 		return { success: false, msg: "Could not upload media" };
+// 	}
+// };
+
 export const uploadFile = async (filePath, fileUri, isImage = true, oldFilePath = null) => {
 	try {
 		// Удаляем старый файл, если передан путь
@@ -124,14 +165,18 @@ export const uploadFile = async (filePath, fileUri, isImage = true, oldFilePath 
 			await deleteFile(oldFilePath);
 		}
 
-		// Используем переданный filePath напрямую (например, recipes_images/Meat/Beef_1709641234567/1.jpg)
+		// Добавляем уникальный суффикс к пути файла
+		const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+		const fileExtension = isImage ? ".png" : ".mp4"; // или другое расширение
+		const uniqueFilePath = `${filePath}/${uniqueSuffix}${fileExtension}`;
+
 		const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
 			encoding: FileSystem.EncodingType.Base64,
 		});
 
-		const imageData = decode(fileBase64); // array buffer
+		const imageData = decode(fileBase64);
 
-		const { data, error } = await supabase.storage.from("uploads_image").upload(filePath, imageData, {
+		const { data, error } = await supabase.storage.from("uploads_image").upload(uniqueFilePath, imageData, {
 			cacheControl: "3600",
 			upsert: false,
 			contentType: isImage ? "image/*" : "video/*",

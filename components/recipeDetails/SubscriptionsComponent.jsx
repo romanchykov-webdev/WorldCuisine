@@ -175,7 +175,10 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allR
 				}   `}
 			>
 				<View style={shadowBoxBlack()} className="items-center relative">
-					<TouchableOpacity onPress={() => (!allRecipeBayCreatore ? handleGetAllRecipeCreator() : null)}>
+					<TouchableOpacity
+						onPress={() => (!allRecipeBayCreatore ? handleGetAllRecipeCreator() : null)}
+						// className=" rounded-full border-2 border-neutral-500"
+					>
 						<AvatarCustom size={hp(allRecipeBayCreatore ? 20 : 10)} uri={creatorData?.creatorAvatar} />
 					</TouchableOpacity>
 				</View>

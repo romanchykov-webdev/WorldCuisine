@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { Platform, RefreshControl, ScrollView, Text, View } from "react-native";
 import HeaderComponent from "../components/HeaderComponent";
 import SearchComponent from "../components/SearchComponent";
 import { hp, wp } from "../constants/responsiveScreen";
@@ -14,7 +14,7 @@ import i18n from "../lang/i18n";
 import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
 
 const HomeScreen = () => {
-	const { user } = useAuth();
+	const { user, unreadCommentsCount, unreadLikesCount } = useAuth();
 	// const router = useRouter();
 
 	const { language: langDev } = useAuth();
@@ -23,7 +23,8 @@ const HomeScreen = () => {
 	}, [langDev]);
 	// console.log("HomeScreen langDev", langDev);
 	// console.log("HomeScreen requiredFields", requiredFields);
-	// console.log("HomeScreen");
+	// console.log("HomeScreen unreadCommentsCount", unreadCommentsCount);
+	// console.log("HomeScreen unreadLikesCount", unreadLikesCount);
 
 	const [isAuth, setIsAuth] = useState(null);
 	const [isRefreshing, setIsRefreshing] = useState(false); // Состояние для отслеживания процесса обновления
@@ -124,7 +125,7 @@ const HomeScreen = () => {
 			<StatusBar style="dark" />
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				contentContainerStyle={{ paddingBottom: 50, marginTop: 15 }}
+				contentContainerStyle={{ paddingBottom: 50, marginTop: Platform.OS === "ios" ? 15 : 30 }}
 				className="gap-y-6 pt-14 mx-4 relative"
 				refreshControl={
 					<RefreshControl
@@ -150,7 +151,12 @@ const HomeScreen = () => {
 				) : (
 					<>
 						{/*avatar snd ball*/}
-						<HeaderComponent isAuth={isAuth} user={user} />
+						<HeaderComponent
+							isAuth={isAuth}
+							user={user}
+							unreadCommentsCount={unreadCommentsCount}
+							unreadLikesCount={unreadLikesCount}
+						/>
 
 						{/*    greetings and punchline*/}
 						<View gap-y-2>

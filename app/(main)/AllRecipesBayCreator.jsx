@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
 import ButtonBack from "../../components/ButtonBack";
 import SubscriptionsComponent from "../../components/recipeDetails/SubscriptionsComponent";
@@ -9,18 +9,27 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 
+import { useRouter } from "expo-router";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Entypo";
+import IconComent from "react-native-vector-icons/EvilIcons";
 import LoadingComponent from "../../components/loadingComponent";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
-import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
+import {
+	createCategoryPointObject,
+	filterCategoryRecipesBySubcategories,
+	myFormatNumber,
+} from "../../constants/halperFunctions";
 import i18n from "../../lang/i18n";
 import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const AllRecipesBayCreator = () => {
+	const router = useRouter();
 	const params = useLocalSearchParams();
 
-	const { user: userData } = useAuth();
+	const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev } = useAuth();
+	// console.log("AllRecipesBayCreator unreadCommentsCount", unreadCommentsCount);
 
 	const { creator_id } = params;
 
@@ -37,6 +46,12 @@ const AllRecipesBayCreator = () => {
 
 	// object for filter categoryes
 	const [obFilterCategory, setObFilterCategory] = useState({});
+
+	// comment count
+	// const [commentCount, setCommentCount] = useState(unreadCommentsCount);
+
+	// for folder
+	const [categoryRecipes, setCategoryRecipes] = useState([]);
 
 	// get al ceripe bay creatir
 	const featGetAllRecipeBayCreator = async (creator_id) => {
@@ -65,7 +80,7 @@ const AllRecipesBayCreator = () => {
 		}
 	};
 
-	// Переносим логику в useEffect
+	//
 	useEffect(() => {
 		if (userData?.id === creator_id) {
 			setHeaderAllRecipe(false);
@@ -78,10 +93,6 @@ const AllRecipesBayCreator = () => {
 		}
 	}, [userData, creator_id, toggleFolderList]); // Зависимости: эффект сработает при изменении userData или crearote_id
 
-	// for folder
-	const [categoryRecipes, setCategoryRecipes] = useState([]);
-
-	const { language: langDev } = useAuth();
 	useEffect(() => {
 		i18n.locale = langDev; // Устанавливаем текущий язык
 	}, [langDev]);
@@ -111,6 +122,7 @@ const AllRecipesBayCreator = () => {
 					paddingHorizontal: 20,
 					marginBottom: 20,
 					// backgroundColor: "red",
+					marginTop: Platform.OS === "ios" ? null : 60,
 					minHeight: hp(100),
 				}}
 				showsVerticalScrollIndicator={false}
@@ -122,7 +134,7 @@ const AllRecipesBayCreator = () => {
 						headerAllCeripe ? null : "flex-row mb-5"
 					} items-center justify-center `}
 				>
-					{/* Перемещённый блок в начало */}
+					{/*  */}
 					<View
 						className={`${headerAllCeripe ? "mb-10 self-start" : "absolute left-0"}`}
 						style={shadowBoxBlack()}
@@ -148,23 +160,59 @@ const AllRecipesBayCreator = () => {
 
 				{/* section foldr list */}
 				<View className="flex-row items-center justify-around mb-5">
-					{/* folder */}
-					<TouchableOpacity
-						onPress={() => setToggleFolderList((prev) => !prev)}
-						className={`p-5 ${toggleFolderList ? "bg-amber-300" : "bg-white"}  rounded-full `}
-						style={shadowBoxBlack()}
-					>
-						<Icon name="folder" size={30} color="bg-amber-300" />
-					</TouchableOpacity>
+					{allRecipesCreator.length > 0 && (
+						<>
+							{/* folder */}
+							<TouchableOpacity
+								onPress={() => setToggleFolderList(true)}
+								className={`w-[70] h-[70] justify-center items-center ${
+									toggleFolderList ? "bg-amber-300" : "bg-white"
+								}  rounded-full `}
+								style={shadowBoxBlack()}
+							>
+								<Icon name="folder" size={30} color="bg-amber-300" />
+							</TouchableOpacity>
 
-					{/* list/ */}
-					<TouchableOpacity
-						onPress={() => setToggleFolderList((prev) => !prev)}
-						className={`p-5 ${toggleFolderList ? "bg-white" : "bg-amber-300"}  rounded-full `}
-						style={shadowBoxBlack()}
-					>
-						<Icon name="list" size={30} color="grey" />
-					</TouchableOpacity>
+							{/* list/ */}
+							<TouchableOpacity
+								onPress={() => setToggleFolderList(false)}
+								className={`w-[70] h-[70] justify-center items-center ${
+									toggleFolderList ? "bg-white" : "bg-amber-300"
+								}  rounded-full `}
+								style={shadowBoxBlack()}
+							>
+								<Icon name="list" size={30} color="grey" />
+							</TouchableOpacity>
+						</>
+					)}
+
+					{/* coments */}
+					{unreadCommentsCount > 0 && (
+						<TouchableOpacity
+							onPress={() => router.push("(main)/NewCommentsScrean")}
+							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+							style={shadowBoxBlack()}
+						>
+							<IconComent name="comment" size={50} color="red" />
+							<Text className="absolute" style={{ fontSize: 12 }}>
+								+ {myFormatNumber(unreadCommentsCount)}
+							</Text>
+						</TouchableOpacity>
+					)}
+
+					{/* Like */}
+					{unreadLikesCount > 0 && (
+						<TouchableOpacity
+							onPress={() => router.push("(main)/NewLikesScrean")}
+							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+							style={shadowBoxBlack()}
+						>
+							<Icon name="heart" size={50} color="red" />
+							<Text className="absolute" style={{ fontSize: 12 }}>
+								+ {myFormatNumber(unreadLikesCount)}
+							</Text>
+						</TouchableOpacity>
+					)}
 
 					{/* section data */}
 				</View>
@@ -173,7 +221,14 @@ const AllRecipesBayCreator = () => {
 						<LoadingComponent color="green" />
 					) : (
 						<View>
-							{toggleFolderList ? (
+							{allRecipesCreator.length === 0 ? (
+								<Animated.Text
+									className="text-lg font-bold text-center"
+									entering={FadeInDown.delay(500).springify().damping(30)}
+								>
+									{i18n.t("You don't have any published recipes yet")}
+								</Animated.Text>
+							) : toggleFolderList ? (
 								<RecipesMasonryComponent
 									categoryRecipes={categoryRecipes}
 									langApp={userData?.lang ?? langDev}

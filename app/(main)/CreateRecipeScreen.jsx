@@ -213,6 +213,7 @@ const CreateRecipeScreen = () => {
 							contentContainerStyle={{
 								paddingHorizontal: 20,
 								marginBottom: 20,
+								marginTop: Platform.OS === "ios" ? null : 60,
 							}}
 							showsVerticalScrollIndicator={false}
 							keyboardDismissMode={"on-drag"}

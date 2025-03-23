@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import ButtonBack from "../components/ButtonBack";
 
 import { wp } from "../constants/responsiveScreen";
@@ -17,8 +17,10 @@ import RecipeLikedItem from "../components/profile/RecipeLikedItem";
 import TitleScrean from "../components/TitleScrean";
 import i18n from "../lang/i18n";
 
+import { default as Icon, default as IconComent } from "react-native-vector-icons/EvilIcons";
+
 const ProfileScreen = () => {
-	const { setAuth, user } = useAuth();
+	const { setAuth, user, unreadCommentsCount, unreadLikesCount } = useAuth();
 
 	// change lang
 	// const [lang, setLang] = useState('en'); // Устанавливаем язык
@@ -110,7 +112,10 @@ const ProfileScreen = () => {
 					>
 						<ScrollView
 							showsVerticalScrollIndicator={false}
-							contentContainerStyle={{ paddingHorizontal: 20, marginTop: 60 }}
+							contentContainerStyle={{
+								paddingHorizontal: 20,
+								marginTop: Platform.OS === "ios" ? null : 60,
+							}}
 						>
 							<View className="flex-row justify-between items-center">
 								<View style={shadowBoxBlack()}>
@@ -161,10 +166,20 @@ const ProfileScreen = () => {
 								<TouchableOpacity
 									onPress={handleMyRecipes}
 									style={shadowBoxBlack()}
-									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
 								>
 									<CreditCardIcon size={45} color="green" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("My recipes")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("My recipes")}
+									</Text>
+									<View className="absolute top-[-10] flex-row  w-full items-center justify-between">
+										{unreadCommentsCount > 0 && (
+											<IconComent name="comment" size={25} color="red" className="self-end" />
+										)}
+										{unreadLikesCount > 0 && (
+											<Icon name="heart" size={25} color="red" className="self-start" />
+										)}
+									</View>
 								</TouchableOpacity>
 
 								{/*may favorite*/}
@@ -175,7 +190,9 @@ const ProfileScreen = () => {
 								>
 									{/*<BellIcon size={45} color='gold'/>*/}
 									<PencilSquareIcon size={45} color="gold" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("Create recipe")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("Create recipe")}
+									</Text>
 								</TouchableOpacity>
 
 								{/*may Favorite*/}
@@ -185,7 +202,9 @@ const ProfileScreen = () => {
 									className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 								>
 									<HeartIcon size={45} color="red" />
-									<Text style={{ fontSize: 8 }}>{i18n.t("Liked")}</Text>
+									<Text numberOfLines={1} style={{ fontSize: 8 }}>
+										{i18n.t("Liked")}
+									</Text>
 								</TouchableOpacity>
 							</View>
 						</ScrollView>

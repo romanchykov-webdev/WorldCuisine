@@ -64,7 +64,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	// const { id, langApp } = useLocalSearchParams();
 	const params = useLocalSearchParams();
 	const { id, currentLang, totalRecipe: totalRecipeString, preview } = params;
-	console.log("RecipeDetailsScreen params", params);
+	// console.log("RecipeDetailsScreen params", params);
 
 	const [langApp, setLangApp] = useState(
 		// user?.lang ?? currentLang ?? language

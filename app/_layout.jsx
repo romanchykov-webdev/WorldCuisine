@@ -88,6 +88,8 @@ const RootLayout = () => {
 			<Stack.Screen name="(main)/AllRecipesPointScreen" options={{ headerShown: false }} />
 			<Stack.Screen name="(main)/AllRecipesBayCreator" options={{ headerShown: false }} />
 			<Stack.Screen name="(main)/FavoriteScrean" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/NewCommentsScrean" options={{ headerShown: false }} />
+			<Stack.Screen name="(main)/NewLikesScrean" options={{ headerShown: false }} />
 		</Stack>
 	);
 };
