@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Switch, Text, TouchableOpacity, View } from "react-native";
-import Icon from "react-native-vector-icons/EvilIcons";
+import Icon from "react-native-vector-icons/Entypo";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import { createPulseAnimation } from "../../utils/animations";
@@ -16,8 +16,8 @@ const NotificationItem = ({
 	isLiked = false,
 }) => {
 	// console.log("NotificationItem isLiked ", isLiked);
-	console.log("NotificationItem isLiked:", isLiked);
-	console.log("NotificationItem item.type:", item.type);
+	// console.log("NotificationItem isLiked:", isLiked);
+	// console.log("NotificationItem item.type:", item.type);
 
 	const pulseAnim = useRef({});
 
@@ -29,7 +29,7 @@ const NotificationItem = ({
 			createPulseAnimation({
 				id: item.id,
 				animationRef: pulseAnim,
-				duration: 1500,
+				duration: 1400,
 				scaleFrom: 1,
 				scaleTo: 1.5,
 				useNativeDriver: true,
@@ -94,9 +94,9 @@ const NotificationItem = ({
 							</View>
 						) : (
 							// Для лайков показываем только аватар и пустое место
-							<View className="flex-row items-center gap-x-2">
+							<View className="flex-row items-center gap-x-2 relative">
 								<AvatarCustom uri={item.users?.avatar} size={60} />
-								<View className="flex-1 items-center relative ">
+								<View className="flex-1 items-center absolute left-[40%] ">
 									{/* <Icon name="heart" size={80} color="red" className="  mr-[60px]" /> */}
 									<Animated.View
 										style={{
