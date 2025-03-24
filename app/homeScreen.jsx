@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { Platform, RefreshControl, ScrollView, Text, View } from "react-native";
+import { Platform, RefreshControl, SafeAreaView, ScrollView, Text, View } from "react-native";
 import HeaderComponent from "../components/HeaderComponent";
 import SearchComponent from "../components/SearchComponent";
 import { hp, wp } from "../constants/responsiveScreen";
@@ -121,12 +121,16 @@ const HomeScreen = () => {
 	// console.log('homescreen categories',categories)
 
 	return (
-		<View className="flex-1">
+		<SafeAreaView>
 			<StatusBar style="dark" />
 			<ScrollView
 				showsVerticalScrollIndicator={false}
-				contentContainerStyle={{ paddingBottom: 50, marginTop: Platform.OS === "ios" ? 15 : 30 }}
-				className="gap-y-6 pt-14 mx-4 relative"
+				contentContainerStyle={{
+					paddingHorizontal: 20,
+					marginBottom: 20,
+					marginTop: Platform.OS === "ios" ? 15 : 30,
+				}}
+				className=" relative"
 				refreshControl={
 					<RefreshControl
 						refreshing={isRefreshing}
@@ -212,7 +216,7 @@ const HomeScreen = () => {
 					</>
 				)}
 			</ScrollView>
-		</View>
+		</SafeAreaView>
 	);
 };
 

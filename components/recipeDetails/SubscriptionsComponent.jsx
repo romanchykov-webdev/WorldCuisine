@@ -200,20 +200,33 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allR
 			</View>
 
 			{/* <TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}> */}
-			<TouchableOpacity
-				onPress={handleSubscribe}
-				className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}
-				style={shadowBoxBlack()}
-			>
-				<ButtonSmallCustom
-					title={isSubscribed ? `${i18n.t("Unsubscribe")}` : `${i18n.t("Subscribe")}`}
-					bg={isSubscribed ? "red" : "green"}
-					w="100%"
-					h={60}
-					buttonText={true}
-					styleText={{ fontSize: 12, margin: 0 }}
-				/>
-			</TouchableOpacity>
+			{subscriber?.id === creatorId ? (
+				<View className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}>
+					<ButtonSmallCustom
+						title={i18n.t("Your recipe")}
+						bg={isSubscribed ? "red" : "grey"}
+						w="100%"
+						h={60}
+						buttonText={true}
+						styleText={{ fontSize: 12, margin: 0 }}
+					/>
+				</View>
+			) : (
+				<TouchableOpacity
+					onPress={handleSubscribe}
+					className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}
+					style={shadowBoxBlack()}
+				>
+					<ButtonSmallCustom
+						title={isSubscribed ? `${i18n.t("Unsubscribe")}` : `${i18n.t("Subscribe")}`}
+						bg={isSubscribed ? "red" : "green"}
+						w="100%"
+						h={60}
+						buttonText={true}
+						styleText={{ fontSize: 12, margin: 0 }}
+					/>
+				</TouchableOpacity>
+			)}
 		</View>
 	);
 };
