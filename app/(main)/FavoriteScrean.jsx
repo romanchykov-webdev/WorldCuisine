@@ -1,27 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import { StyleSheet, View } from "react-native";
+import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated";
 import ButtonBack from "../../components/ButtonBack";
+import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
+
 import LoadingComponent from "../../components/loadingComponent";
-import { hp } from "../../constants/responsiveScreen";
-import { shadowBoxBlack } from "../../constants/shadow";
+import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
+import TitleScrean from "../../components/TitleScrean";
+import WrapperComponent from "../../components/WrapperComponent";
+import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
-import { getAllFavoriteIdisMyDB, getAllFavoriteListMyDB } from "../../service/getDataFromDB";
+import {
+	getAllFavoriteIdisMyDB,
+	getAllFavoriteListMyDB,
+	getCategoryRecipeMasonryMyDB,
+} from "../../service/getDataFromDB";
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const FavoriteScrean = () => {
-	const { user, setQuontityOfComments } = useAuth();
+	const { user } = useAuth();
 
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-	// console.log("FavoriteScrean user", user);
+	const [toggleFolderList, setToggleFolderList] = useState(false);
+	const [allFavoriteRecipes, setAllFavoriteRecipes] = useState([]);
+	const [categoryRecipes, setCategoryRecipes] = useState([]);
+	const [obFilterCategory, setObFilterCategory] = useState({});
 
-	const [allFavoriteRecipe, setAllFavoriteRecipe] = useState([]);
-
+	// Загрузка всех избранных рецептов
 	const fetchLikedRecipes = async (userId) => {
 		try {
-			// Шаг 1: Получаем ID лайкнутых рецептов
 			const likedIdsResponse = await getAllFavoriteIdisMyDB(userId);
 			if (!likedIdsResponse.success) {
 				return { success: false, msg: likedIdsResponse.msg };
@@ -32,7 +41,6 @@ const FavoriteScrean = () => {
 				return { success: true, data: [], msg: "No liked recipes found" };
 			}
 
-			// Шаг 2: Получаем сами рецепты по ID
 			const recipesResponse = await getAllFavoriteListMyDB(recipeIds);
 			if (!recipesResponse.success) {
 				return { success: false, msg: recipesResponse.msg };
@@ -45,68 +53,137 @@ const FavoriteScrean = () => {
 		}
 	};
 
-	useEffect(() => {
-		const loadLikedRecipes = async () => {
-			setLoading(true);
-			const response = await fetchLikedRecipes(user?.id);
-
-			setTimeout(() => {
-				setLoading(false);
-			}, 1000);
-
-			if (response.success) {
-				setAllFavoriteRecipe(response.data);
-				console.log("response.success response.data", response.data);
-			} else {
-				setError(response.msg);
+	// Загрузка категорий и фильтрация избранных рецептов
+	const fetchCategoryRecipes = async (lang) => {
+		try {
+			const categoriesResponse = await getCategoryRecipeMasonryMyDB(lang);
+			if (!categoriesResponse.success) {
+				return { success: false, msg: categoriesResponse.msg };
 			}
+
+			const allCategories = categoriesResponse.data; // Массив категорий из categories_masonry
+			const filteredCategories = filterCategoryRecipesBySubcategories(allCategories, obFilterCategory);
+			return { success: true, data: filteredCategories };
+		} catch (error) {
+			console.error("Error in fetchCategoryRecipes:", error.message);
+			return { success: false, msg: error.message };
+		}
+	};
+
+	useEffect(() => {
+		const loadData = async () => {
+			setLoading(true);
+			const likedRecipesResponse = await fetchLikedRecipes(user?.id);
+
+			if (likedRecipesResponse.success) {
+				setAllFavoriteRecipes(likedRecipesResponse.data);
+				const filterObject = createCategoryPointObject(likedRecipesResponse.data);
+				setObFilterCategory(filterObject);
+
+				if (toggleFolderList && likedRecipesResponse.data.length > 0) {
+					const categoryResponse = await fetchCategoryRecipes(user?.lang || "en");
+					if (categoryResponse.success) {
+						setCategoryRecipes(categoryResponse.data);
+					} else {
+						setError(categoryResponse.msg);
+					}
+				}
+			} else {
+				setError(likedRecipesResponse.msg);
+			}
+
+			setTimeout(() => setLoading(false), 1000);
 		};
 
-		loadLikedRecipes();
-	}, [user?.id]);
+		loadData();
+	}, [user?.id, toggleFolderList]);
 
-	if (loading) {
-		return <LoadingComponent color="green" />;
-	}
+	const handleToggleChange = (newValue) => {
+		setToggleFolderList(newValue);
+	};
 
-	// if (error) {
-	// 	return <Text>Ошибка: {error}</Text>;
+	// if (loading) {
+	// 	return <LoadingComponent color="green" />;
 	// }
 
-	// if (allFavoriteRecipe.length === 0) {
-	// 	return;
+	// if (error) {
+	// 	return (
+	// 		<WrapperComponent>
+	// 			<View className="h-full w-full">
+	// 				<Animated.View entering={FadeInDown.springify()} style={shadowBoxBlack()}>
+	// 					<ButtonBack />
+	// 				</Animated.View>
+	// 				<Animated.Text
+	// 					entering={FadeInDown.springify().delay(100)}
+	// 					className="mt-5 text-center text-lg font-bold text-red-500"
+	// 				>
+	// 					{i18n.t("Error")}: {error}
+	// 				</Animated.Text>
+	// 			</View>
+	// 		</WrapperComponent>
+	// 	);
 	// }
 
 	return (
-		<SafeAreaView>
-			<ScrollView
-				contentContainerStyle={{
-					paddingHorizontal: 20,
-					marginBottom: 20,
-					minHeight: hp(100),
-				}}
-				showsVerticalScrollIndicator={false}
-				keyboardDismissMode="on-drag"
-			>
-				<View className="h-full w-full ">
-					{allFavoriteRecipe.length === 0 ? (
-						<View className="">
-							<Animated.View entering={FadeInDown.springify()} style={shadowBoxBlack()}>
+		<WrapperComponent>
+			<View className="flex-1">
+				{/* {allFavoriteRecipes.length === 0 ? (
+					<View>
+						<Animated.View entering={FadeInDown.springify()} style={shadowBoxBlack()}>
+							<ButtonBack />
+						</Animated.View>
+						<Animated.Text
+							entering={FadeInDown.springify().delay(100)}
+							className="mt-5 text-center text-lg font-bold"
+						>
+							{i18n.t("There are no recipes you like yet")}
+						</Animated.Text>
+					</View>
+				) : ( */}
+				<View>
+					<View className=" mb-5">
+						<View className=" items-center justify-center mb-5">
+							{/* button back */}
+							<Animated.View
+								entering={FadeInLeft.delay(300).springify().damping(30)}
+								className="absolute left-0"
+							>
 								<ButtonBack />
 							</Animated.View>
-							<Animated.Text
-								entering={FadeInDown.springify().delay(100)}
-								className="mt-5 text-center text-lg font-bold"
-							>
-								{i18n.t("There are no recipes you like yet")}
-							</Animated.Text>
+							{/* title header screan */}
+							<Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
+								<TitleScrean title={i18n.t("Liked")} />
+							</Animated.View>
 						</View>
-					) : (
-						<AllRecipesPointScreen isScreanFavorite={true} allFavoriteRecipes={allFavoriteRecipe} />
-					)}
+						<ToggleListCategoryComponent
+							toggleFolderList={toggleFolderList}
+							onToggleChange={handleToggleChange}
+							hasRecipes={allFavoriteRecipes.length > 0}
+						/>
+					</View>
+					<View>
+						{loading ? (
+							<LoadingComponent color="green" />
+						) : toggleFolderList ? (
+							<RecipesMasonryComponent
+								categoryRecipes={categoryRecipes}
+								langApp={user?.lang || "en"}
+								isScreanFavorite={true}
+								isScreanAllRecibeData={allFavoriteRecipes}
+							/>
+						) : (
+							<AllRecipesPointScreen
+								allFavoriteRecipes={allFavoriteRecipes}
+								isFavoriteScrean={true}
+								isScreanAlrecipeBayCreatore={true}
+								titleVisible={false}
+							/>
+						)}
+					</View>
 				</View>
-			</ScrollView>
-		</SafeAreaView>
+				{/* )} */}
+			</View>
+		</WrapperComponent>
 	);
 };
 

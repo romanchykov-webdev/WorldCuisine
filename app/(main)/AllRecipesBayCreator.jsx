@@ -14,6 +14,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Entypo";
 import IconComent from "react-native-vector-icons/EvilIcons";
 import LoadingComponent from "../../components/loadingComponent";
+import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
 import {
 	createCategoryPointObject,
@@ -80,23 +81,7 @@ const AllRecipesBayCreator = () => {
 		}
 	};
 
-	//
-	useEffect(() => {
-		if (userData?.id === creator_id) {
-			setHeaderAllRecipe(false);
-			// console.log("headerAllCeripe", headerAllCeripe);
-		}
-		if (!toggleFolderList) {
-			featGetAllRecipeBayCreator(creator_id);
-		} else {
-			fetchCategoryRecipeMasonry();
-		}
-	}, [userData, creator_id, toggleFolderList]); // Зависимости: эффект сработает при изменении userData или crearote_id
-
-	useEffect(() => {
-		i18n.locale = langDev; // Устанавливаем текущий язык
-	}, [langDev]);
-
+	// get al ceripe bay category
 	const fetchCategoryRecipeMasonry = async () => {
 		setLoading(true);
 		const res = await getCategoryRecipeMasonryMyDB(userData?.lang ?? langDev);
@@ -109,6 +94,27 @@ const AllRecipesBayCreator = () => {
 		setTimeout(() => {
 			setLoading(false);
 		}, 1000);
+	};
+
+	//
+	useEffect(() => {
+		if (userData?.id === creator_id) {
+			setHeaderAllRecipe(false);
+			// console.log("headerAllCeripe", headerAllCeripe);
+		}
+		if (!toggleFolderList) {
+			featGetAllRecipeBayCreator(creator_id);
+		} else {
+			fetchCategoryRecipeMasonry();
+		}
+	}, [userData, creator_id, toggleFolderList]);
+
+	useEffect(() => {
+		i18n.locale = langDev; // Устанавливаем текущий язык
+	}, [langDev]);
+
+	const handleToggleChange = (newValue) => {
+		setToggleFolderList(newValue); // Обновляем состояние в родителе
 	};
 
 	// console.log("AllRecipesBayCreator params", params);
@@ -135,18 +141,21 @@ const AllRecipesBayCreator = () => {
 					} items-center justify-center `}
 				>
 					{/*  */}
-					<View
+					<Animated.View
+						entering={FadeInDown.springify().delay(100)}
 						className={`${headerAllCeripe ? "mb-10 self-start" : "absolute left-0"}`}
 						style={shadowBoxBlack()}
 					>
 						<ButtonBack />
-					</View>
+					</Animated.View>
 					{/* Остальные элементы */}
 					{!headerAllCeripe && (
-						<TitleScrean
-							title={i18n.t("Your recipes")}
-							styleTitle={{ textAlign: "center", fontSize: hp(3) }}
-						/>
+						<Animated.View entering={FadeInDown.springify().delay(200)}>
+							<TitleScrean
+								title={i18n.t("Your recipes")}
+								styleTitle={{ textAlign: "center", fontSize: hp(3) }}
+							/>
+						</Animated.View>
 					)}
 
 					{headerAllCeripe && (
@@ -160,59 +169,59 @@ const AllRecipesBayCreator = () => {
 
 				{/* section foldr list */}
 				<View className="flex-row items-center justify-around mb-5">
-					{allRecipesCreator.length > 0 && (
-						<>
-							{/* folder */}
-							<TouchableOpacity
-								onPress={() => setToggleFolderList(true)}
-								className={`w-[70] h-[70] justify-center items-center ${
-									toggleFolderList ? "bg-amber-300" : "bg-white"
-								}  rounded-full `}
-								style={shadowBoxBlack()}
-							>
-								<Icon name="folder" size={30} color="bg-amber-300" />
-							</TouchableOpacity>
+					{/* Toggle section */}
+					<View className="flex-1">
+						<ToggleListCategoryComponent
+							toggleFolderList={toggleFolderList}
+							onToggleChange={handleToggleChange}
+							hasRecipes={allRecipesCreator.length > 0}
+						/>
+					</View>
 
-							{/* list/ */}
-							<TouchableOpacity
-								onPress={() => setToggleFolderList(false)}
-								className={`w-[70] h-[70] justify-center items-center ${
-									toggleFolderList ? "bg-white" : "bg-amber-300"
-								}  rounded-full `}
-								style={shadowBoxBlack()}
-							>
-								<Icon name="list" size={30} color="grey" />
-							</TouchableOpacity>
-						</>
-					)}
-
-					{/* coments */}
-					{unreadCommentsCount > 0 && (
-						<TouchableOpacity
-							onPress={() => router.push("(main)/NewCommentsScrean")}
-							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
-							style={shadowBoxBlack()}
+					{unreadCommentsCount > 0 || unreadLikesCount > 0 ? (
+						<View
+							// className={`flex-${
+							// 	unreadCommentsCount > 0 && unreadLikesCount > 0 ? "1" : "1/2"
+							// } flex-row items-center  justify-around bg-red-300`}
+							className={`flex-row  items-center justify-around ${
+								unreadCommentsCount > 0 && unreadLikesCount > 0
+									? "flex-1" // 100% ширины, если оба > 0
+									: "w-[30%]" // 30% ширины, если только один > 0
+							}`}
 						>
-							<IconComent name="comment" size={50} color="red" />
-							<Text className="absolute" style={{ fontSize: 12 }}>
-								+ {myFormatNumber(unreadCommentsCount)}
-							</Text>
-						</TouchableOpacity>
-					)}
+							{/* coments */}
+							{unreadCommentsCount > 0 && (
+								<Animated.View entering={FadeInDown.springify().delay(500)}>
+									<TouchableOpacity
+										onPress={() => router.push("(main)/NewCommentsScrean")}
+										className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+										style={shadowBoxBlack()}
+									>
+										<IconComent name="comment" size={50} color="red" />
+										<Text className="absolute" style={{ fontSize: 12 }}>
+											+ {myFormatNumber(unreadCommentsCount)}
+										</Text>
+									</TouchableOpacity>
+								</Animated.View>
+							)}
 
-					{/* Like */}
-					{unreadLikesCount > 0 && (
-						<TouchableOpacity
-							onPress={() => router.push("(main)/NewLikesScrean")}
-							className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
-							style={shadowBoxBlack()}
-						>
-							<Icon name="heart" size={50} color="red" />
-							<Text className="absolute" style={{ fontSize: 12 }}>
-								+ {myFormatNumber(unreadLikesCount)}
-							</Text>
-						</TouchableOpacity>
-					)}
+							{/* Like */}
+							{unreadLikesCount > 0 && (
+								<Animated.View entering={FadeInDown.springify().delay(600)}>
+									<TouchableOpacity
+										onPress={() => router.push("(main)/NewLikesScrean")}
+										className={`w-[70] h-[70] relative justify-center items-center bg-white  rounded-full `}
+										style={shadowBoxBlack()}
+									>
+										<Icon name="heart" size={50} color="red" />
+										<Text className="absolute" style={{ fontSize: 12 }}>
+											+ {myFormatNumber(unreadLikesCount)}
+										</Text>
+									</TouchableOpacity>
+								</Animated.View>
+							)}
+						</View>
+					) : null}
 
 					{/* section data */}
 				</View>
@@ -238,6 +247,7 @@ const AllRecipesBayCreator = () => {
 							) : (
 								<AllRecipesPointScreen
 									isScreanAlrecipeBayCreatore={true}
+									titleVisible={false}
 									isScreanAllRecibeData={allRecipesCreator}
 								/>
 							)}

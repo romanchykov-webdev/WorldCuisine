@@ -19,12 +19,14 @@ import { getAllRecipesPointMasonryMyDB } from "../../service/getDataFromDB";
 const AllRecipesPointScreen = ({
 	isScreanAlrecipeBayCreatore = false,
 	isScreanAllRecibeData = [],
-	isScreanFavorite = false,
+	isFavoriteScrean = false,
 	allFavoriteRecipes = [],
+	titleVisible = true,
 }) => {
 	const { point, langApp } = useLocalSearchParams();
 
 	// console.log('AllRecipesPointScreen langApp',langApp)
+	// console.log("AllRecipesPointScreen isFavoriteScrean", isFavoriteScrean);
 
 	const [column, setColumn] = useState(0);
 	useEffect(() => {
@@ -44,7 +46,7 @@ const AllRecipesPointScreen = ({
 	};
 
 	useEffect(() => {
-		if (!isScreanAlrecipeBayCreatore && !isScreanFavorite) {
+		if (!isScreanAlrecipeBayCreatore && !isFavoriteScrean) {
 			fetchGetAllRecipesPointMasonryMyDB();
 		}
 	}, [point]);
@@ -57,18 +59,18 @@ const AllRecipesPointScreen = ({
 	}, [isScreanAlrecipeBayCreatore]);
 
 	useEffect(() => {
-		if (isScreanFavorite) {
+		if (isFavoriteScrean) {
 			setAllRecipes(allFavoriteRecipes);
 			// console.log("FavoriteScrean", allRecipes);
 		}
-	}, [isScreanFavorite]);
+	}, [isFavoriteScrean]);
 
 	return (
 		<SafeAreaView>
 			<ScrollView contentContainerStyle={{ marginTop: Platform.OS === "ios" ? null : 30 }}>
-				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore || isScreanFavorite ? null : "p-[20]"}`}>
+				<View className={`gap-y-3 ${isScreanAlrecipeBayCreatore || isFavoriteScrean ? null : "p-[20]"}`}>
 					{/* block header*/}
-					{!isScreanAlrecipeBayCreatore && (
+					{titleVisible && (
 						<View className=" items-center justify-center mb-5">
 							{/* button back */}
 							<Animated.View
@@ -92,7 +94,7 @@ const AllRecipesPointScreen = ({
 						// categories.lenght === 0 ||
 						allRecipes?.length == 0 ? (
 							// prettier-ignore
-							(!isScreanAlrecipeBayCreatore && !isScreanFavorite) ? (
+							(!isScreanAlrecipeBayCreatore && !isFavoriteScrean) ? (
 								<LoadingComponent size="large" color="green" />
 							) : null
 						) : (
