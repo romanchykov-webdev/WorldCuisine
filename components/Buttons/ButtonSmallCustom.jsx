@@ -17,7 +17,7 @@ const ButtonSmallCustom = ({
 }) => {
 	return (
 		<View
-			className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden"
+			className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden bg-red-500"
 			style={{
 				backgroundColor: bg,
 				width: w,
@@ -44,8 +44,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		color: "black",
 		marginLeft: 10,
-
-		// padding:20,
+		textAlign: "center",
 	},
 });
 

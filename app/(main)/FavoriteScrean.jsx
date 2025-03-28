@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Animated, { FadeInLeft, FadeInUp } from "react-native-reanimated";
-import ButtonBack from "../../components/ButtonBack";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
 
+import HeaderScreanComponent from "../../components/HeaderScreanComponent";
 import LoadingComponent from "../../components/loadingComponent";
 import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
-import TitleScrean from "../../components/TitleScrean";
 import WrapperComponent from "../../components/WrapperComponent";
 import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
 import { useAuth } from "../../contexts/AuthContext";
@@ -142,25 +140,15 @@ const FavoriteScrean = () => {
 				) : ( */}
 				<View>
 					<View className=" mb-5">
-						<View className=" items-center justify-center mb-5">
-							{/* button back */}
-							<Animated.View
-								entering={FadeInLeft.delay(300).springify().damping(30)}
-								className="absolute left-0"
-							>
-								<ButtonBack />
-							</Animated.View>
-							{/* title header screan */}
-							<Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
-								<TitleScrean title={i18n.t("Liked")} />
-							</Animated.View>
-						</View>
+						<HeaderScreanComponent titleScreanText={i18n.t("Liked")} />
+						{/*  */}
 						<ToggleListCategoryComponent
 							toggleFolderList={toggleFolderList}
 							onToggleChange={handleToggleChange}
 							hasRecipes={allFavoriteRecipes.length > 0}
 						/>
 					</View>
+
 					<View>
 						{loading ? (
 							<LoadingComponent color="green" />

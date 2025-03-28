@@ -47,6 +47,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	const [loading, setLoading] = useState(true);
 
 	const [recipeDish, setRecipeDish] = useState(null);
+	// console.log("RecipeDetailsScreen recipeDish", recipeDish);
 
 	const [rating, setRating] = useState(0);
 
@@ -354,6 +355,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 									isPreview={isPreview}
 									subscriber={user ?? null}
 									creatorId={recipeDish?.published_id}
+									recipe_id={recipeDish?.id}
 								/>
 							</Animated.View>
 

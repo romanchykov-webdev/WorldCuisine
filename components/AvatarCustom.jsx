@@ -9,13 +9,14 @@ const AvatarCustom = ({
 	size = hp(4.5),
 	style = {},
 	isPreview = false,
+	RefactorImageHeader = false,
 	// rounded = 'rounded-full'
 	rounded = size / 2,
 }) => {
 	// console.log("AvatarCustom uri", uri);
 	return (
 		<Image
-			source={isPreview ? uri : getUserImageSrc(uri)}
+			source={isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri)}
 			// source={getUserImageSrc(uri)}
 			transition={100}
 			className="rounded-full"
@@ -28,8 +29,8 @@ const AvatarCustom = ({
 const styles = StyleSheet.create({
 	avatar: {
 		borderCurve: "continuous",
-		borderColor: "black",
-		borderWidth: 1,
+		// borderColor: "black",
+		// borderWidth: 1,
 	},
 });
 

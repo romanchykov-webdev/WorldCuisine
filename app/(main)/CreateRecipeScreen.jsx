@@ -41,16 +41,6 @@ import { uploadRecipeToTheServer } from "../../service/uploadDataToTheDB";
 const CreateRecipeScreen = () => {
 	const { user: userData, language, setRequiredFields, previewRecipeReady, setPreviewRecipeReady } = useAuth();
 
-	const router = useRouter();
-
-	const [uploadRecipe, setUploadRecipe] = useState(false);
-
-	const [loadingUpload, setLoadingUpload] = useState(false);
-
-	// console.log("userData",userData.id)
-	// console.log("userData", userData);
-	// console.log("previewRecipeReady", previewRecipeReady);
-
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
 		category_id: null,
@@ -78,22 +68,17 @@ const CreateRecipeScreen = () => {
 		point: null,
 	});
 
+	const router = useRouter();
+
+	// const [uploadRecipe, setUploadRecipe] = useState(false);
+
+	const [loadingUpload, setLoadingUpload] = useState(false);
+
+	const [loadingRecipe, setLoadingRecipe] = useState(false);
+
 	useEffect(() => {
 		// console.log("totalRecipe", JSON.stringify(totalRecipe));
 	}, [totalRecipe]);
-
-	// console.log('creating recipe language', language)
-	// console.log('creating recipe userData', userData.lang)
-
-	// modal Preview
-	const [isModalVisible, setIsModalVisible] = useState(false);
-
-	const openModalPreview = () => {
-		setIsModalVisible(true);
-	};
-	const closeModal = () => {
-		setIsModalVisible(false);
-	};
 
 	const langApp = userData.lang ?? language;
 	// console.log('CreateRecipeScreen',langApp)
@@ -165,33 +150,6 @@ const CreateRecipeScreen = () => {
 			setPreviewRecipeReady(false);
 
 			setLoadingUpload(false);
-
-			// обнуляем объект
-			// setTotalRecipe({
-			// 	category: null,
-			// 	category_id: null,
-			// 	image_header: null,
-			// 	area: null,
-			// 	title: null,
-			// 	rating: 0,
-			// 	likes: 0,
-			// 	comments: 0,
-			// 	recipe_metrics: null,
-			// 	ingredients: null,
-			// 	instructions: null,
-			// 	video: null,
-			// 	source_reference: null,
-			// 	tags: null,
-			// 	link_copyright: null,
-			// 	map_coordinates: null,
-			// 	published_id: userData.id,
-			// 	published_user: {
-			// 		avatar: userData?.avatar,
-			// 		user_id: userData?.id,
-			// 		user_name: userData?.user_name,
-			// 	},
-			// 	point: null,
-			// });
 		} else {
 			Alert.alert("Error", res.msg);
 		}
@@ -199,7 +157,7 @@ const CreateRecipeScreen = () => {
 
 	return (
 		<>
-			{uploadRecipe ? (
+			{loadingRecipe ? (
 				<LoadingComponent color="green" />
 			) : (
 				<SafeAreaView

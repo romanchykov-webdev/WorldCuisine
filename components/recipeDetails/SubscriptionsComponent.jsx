@@ -1,9 +1,9 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { UsersIcon } from "react-native-heroicons/mini";
 import { myFormatNumber, showCustomAlert } from "../../constants/halperFunctions";
-import { hp } from "../../constants/responsiveScreen";
+import { hp, wp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import {
@@ -15,7 +15,13 @@ import {
 import AvatarCustom from "../AvatarCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 
-const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allRecipeBayCreatore = false }) => {
+const SubscriptionsComponent = ({
+	subscriber,
+	creatorId,
+	isPreview = false,
+	allRecipeBayCreatore = false,
+	recipe_id,
+}) => {
 	const subscriberId = subscriber?.id;
 
 	// console.log("SubscriptionsComponent subscriber ", subscriber);
@@ -159,6 +165,32 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allR
 		});
 	};
 
+	const nandleRefactorRecipe = () => {
+		// console.log("SubscriptionsComponent recipe_id", recipe_id);
+
+		Alert.alert(`${i18n.t("Do you want to edit?")}`, `${i18n.t("Do you really want to edit your recipe?")}`, [
+			{
+				text: `${i18n.t("Cancel")}`,
+				style: "cancel",
+				onPress: () => {},
+			},
+			{
+				text: `${i18n.t("Edit")}`,
+				onPress: () =>
+					router.push({
+						pathname: "(main)/RefactorRecipeScrean",
+						params: { recipe_id: recipe_id, isRefactorRecipe: true },
+					}),
+				style: "descructive",
+			},
+		]);
+
+		// router.push({
+		// 	pathname: "(main)/CreateRecipeScreen",
+		// 	params: {recipe_id:recipe_id},
+		// });
+	};
+
 	return (
 		<View
 			className={`${
@@ -202,28 +234,30 @@ const SubscriptionsComponent = ({ subscriber, creatorId, isPreview = false, allR
 			{/* <TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}> */}
 			{subscriber?.id === creatorId ? (
 				<View className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}>
-					<ButtonSmallCustom
-						title={i18n.t("Your recipe")}
-						bg={isSubscribed ? "red" : "grey"}
-						w="100%"
-						h={60}
-						buttonText={true}
-						styleText={{ fontSize: 12, margin: 0 }}
-					/>
+					<TouchableOpacity style={shadowBoxBlack()} onPress={nandleRefactorRecipe}>
+						<ButtonSmallCustom
+							title={i18n.t("Edit recipe")}
+							bg={"pink"}
+							w="100%"
+							h={60}
+							buttonText={true}
+							styleText={{ fontSize: 12, marginLeft: 0 }}
+						/>
+					</TouchableOpacity>
 				</View>
 			) : (
 				<TouchableOpacity
 					onPress={handleSubscribe}
-					className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}
+					className={`${allRecipeBayCreatore ? "items-center flex-1 " : "flex-1 m-w-[50%] "}`}
 					style={shadowBoxBlack()}
 				>
 					<ButtonSmallCustom
 						title={isSubscribed ? `${i18n.t("Unsubscribe")}` : `${i18n.t("Subscribe")}`}
 						bg={isSubscribed ? "red" : "green"}
-						w="100%"
+						w={allRecipeBayCreatore ? wp(80) : "100%"}
 						h={60}
 						buttonText={true}
-						styleText={{ fontSize: 12, margin: 0 }}
+						styleText={{ fontSize: 12, marginLeft: 0 }}
 					/>
 				</TouchableOpacity>
 			)}

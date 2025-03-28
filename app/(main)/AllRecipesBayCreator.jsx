@@ -2,9 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
-import ButtonBack from "../../components/ButtonBack";
 import SubscriptionsComponent from "../../components/recipeDetails/SubscriptionsComponent";
-import TitleScrean from "../../components/TitleScrean";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
@@ -13,6 +11,7 @@ import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Entypo";
 import IconComent from "react-native-vector-icons/EvilIcons";
+
 import LoadingComponent from "../../components/loadingComponent";
 import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
@@ -24,6 +23,8 @@ import {
 import i18n from "../../lang/i18n";
 import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
+
+import HeaderScreanComponent from "../../components/HeaderScreanComponent";
 
 const AllRecipesBayCreator = () => {
 	const router = useRouter();
@@ -141,22 +142,27 @@ const AllRecipesBayCreator = () => {
 					} items-center justify-center `}
 				>
 					{/*  */}
-					<Animated.View
+					{/* <Animated.View
 						entering={FadeInDown.springify().delay(100)}
 						className={`${headerAllCeripe ? "mb-10 self-start" : "absolute left-0"}`}
 						style={shadowBoxBlack()}
 					>
 						<ButtonBack />
-					</Animated.View>
+					</Animated.View> */}
 					{/* Остальные элементы */}
-					{!headerAllCeripe && (
+					{/* {!headerAllCeripe && (
 						<Animated.View entering={FadeInDown.springify().delay(200)}>
 							<TitleScrean
 								title={i18n.t("Your recipes")}
 								styleTitle={{ textAlign: "center", fontSize: hp(3) }}
 							/>
 						</Animated.View>
-					)}
+					)} */}
+					<HeaderScreanComponent
+						fontSizeTitle={3}
+						headerAllCeripe={headerAllCeripe}
+						titleScreanText={i18n.t("Your recipes")}
+					/>
 
 					{headerAllCeripe && (
 						<SubscriptionsComponent

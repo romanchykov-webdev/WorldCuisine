@@ -94,7 +94,7 @@ export const getAllRecipesPointMasonryMyDB = async (point) => {
 
 //получение description рецепта
 export const getRecipesDescriptionMyDB = async (id) => {
-	// console.log("getRecipesDescriptionMyDB receps id",id)
+	// console.log("getRecipesDescriptionMyDB receps id", id);
 	// console.log('ok:',tableCategory)
 	// if (tableCategory.includes(' ')) {
 	//     console.log('Строка содержит пробелы');

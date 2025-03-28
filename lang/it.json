@@ -3,6 +3,7 @@
 
 	"Cancel": "Annulla",
 	"Ok": "Ok",
+	"Edit": "Modificare",
 	"Are you sure you want to delete this comment?": "Sei sicuro di voler eliminare questo commento?",
 	"Remove comment": "Rimuovi commento",
 	"You haven't added an image": "Non hai aggiunto un'immagine.",
@@ -183,6 +184,9 @@
 	"Subscribe": "Iscriviti",
 	"Unsubscribe": "Annullare l'iscrizione",
 	"Your recipe": "La tua ricetta",
+	"Edit recipe": "Modificare la ricetta",
+	"Do you want to edit?": "Vuoi modificare?",
+	"Do you really want to edit your recipe?": "Vuoi davvero modificare la tua ricetta?",
 
 	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
 
