@@ -1,18 +1,52 @@
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PencilSquareIcon } from "react-native-heroicons/outline";
 import HeaderScreanComponent from "../../components/HeaderScreanComponent";
 import WrapperComponent from "../../components/WrapperComponent";
-import { getRecipesDescriptionMyDB } from "../../service/getDataFromDB";
+import { getRecipesDescriptionMyDB, updateRecipeMyDB } from "../../service/getDataFromDB";
 
+import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
 import LoadingComponent from "../../components/loadingComponent";
 import SelectLangComponent from "../../components/recipeDetails/SelectLangComponent";
+import RefactorAreaComponent from "../../components/RefactorRecipeScrean/RefactorAreaComponent";
 import RefactorImageHeader from "../../components/RefactorRecipeScrean/RefactorImageHeader";
-import RefactorTitleAria from "../../components/RefactorRecipeScrean/RefactorTitleAria";
+import RefactorTagsComponent from "../../components/RefactorRecipeScrean/RefactorTagsComponent";
+import RefactorTitle from "../../components/RefactorRecipeScrean/RefactorTitle";
+import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
+import i18n from "../../lang/i18n";
+import { uploadFile } from "../../service/imageServices";
+
+// Функция для глубокого сравнения двух значений
+const areEqual = (a, b) => {
+	// Если это один и тот же объект или оба undefined/null
+	if (a === b) return true;
+
+	// Если один из них null или undefined, а другой нет
+	if (a == null || b == null) return false;
+
+	// Если это массивы
+	if (Array.isArray(a) && Array.isArray(b)) {
+		if (a.length !== b.length) return false;
+		return a.every((item, index) => areEqual(item, b[index]));
+	}
+
+	// Если это объекты
+	if (typeof a === "object" && typeof b === "object") {
+		const keysA = Object.keys(a);
+		const keysB = Object.keys(b);
+		if (keysA.length !== keysB.length) return false;
+		return keysA.every((key) => areEqual(a[key], b[key]));
+	}
+
+	// Для примитивных типов
+	return a === b;
+};
 
 const RefactorRecipeScrean = () => {
+	const router = useRouter();
+
 	const { user } = useAuth();
 
 	const [langApp, setLangApp] = useState(user?.lang);
@@ -20,6 +54,8 @@ const RefactorRecipeScrean = () => {
 	const [loading, setLoading] = useState(true);
 
 	const [recipeDish, setRecipeDish] = useState(null);
+
+	const [originalRecipe, setOriginalRecipe] = useState(null); // Исходный рецепт
 
 	const params = useLocalSearchParams();
 
@@ -35,6 +71,9 @@ const RefactorRecipeScrean = () => {
 			//
 			if (res.success && res.data.length > 0) {
 				setRecipeDish(res.data[0]);
+
+				// setOriginalRecipe(res.data[0]); // Сохраняем исходный рецепт
+				setOriginalRecipe(JSON.parse(JSON.stringify(res.data[0]))); // Глубокая копия
 				// console.log("RefactorRecipeScrean res.data[0]", JSON.stringify(res.data[0], null));
 			} else {
 				Alert.alert("Error", "Recipe not found");
@@ -58,6 +97,156 @@ const RefactorRecipeScrean = () => {
 		}
 	}, [recipe_id, isRefactorRecipe]);
 
+	/*
+    *  надо создать микс createRecipe Screan c recipedetailsscrean
+     чтобы нидит как деталь рецепта но свозможностью редактировать тоесть стиреть или изменить
+    
+    */
+
+	const handleLangChange = (lang) => {
+		console.log("RefactorRecipeScrean handleLangChange lang", lang);
+
+		setLangApp(lang);
+	};
+	// console.log("RefactorRecipeScrean recipeDish?.area", recipeDish?.area);
+
+	// update image header
+	const handleImageUpdate = (newImage) => {
+		setRecipeDish((prev) => ({ ...prev, image_header: newImage }));
+		// console.log("handleImageUpdate recipeDish.image_header", recipeDish.image_header);
+	};
+
+	// update header title
+	const updateHeaderTitle = async (newTitle, lang) => {
+		setRecipeDish((prev) => {
+			const updatedDish = { ...prev };
+
+			// Находим индекс записи для указанного языка
+			const langIndex = updatedDish.title.lang.findIndex((item) => item.lang === lang);
+
+			// Если язык существует, обновляем его; если нет, добавляем новый
+			if (langIndex !== -1) {
+				updatedDish.title.lang[langIndex] = {
+					...updatedDish.title.lang[langIndex],
+					name: newTitle,
+				};
+			} else {
+				updatedDish.title.lang.push({
+					lang: lang,
+					name: newTitle,
+				});
+			}
+
+			// Обновляем strTitle, если изменяется английский язык
+			if (lang === "en") {
+				updatedDish.title.strTitle = newTitle;
+			}
+			// console.log("RefactorRecipeScrean updateHeaderTitle updatedDish", JSON.stringify(updatedDish, null, 2));
+			return updatedDish;
+		});
+
+		// console.log("Обновленный заголовок:", newTitle, "для языка:", lang);
+	};
+	// update area text
+	const updateAreaText = async (text, lang) => {
+		setRecipeDish((prev) => ({
+			...prev,
+			area: { ...prev.area, [lang]: text },
+		}));
+	};
+
+	// update tags
+	const updateTags = async (newTags) => {
+		setRecipeDish((prev) => ({
+			...prev,
+			tags: newTags,
+		}));
+	};
+
+	// Функция для получения измененных полей
+	const getChangedFields = async () => {
+		const changedFields = {};
+		// console.log("recipeDish before comparison:", JSON.stringify(recipeDish, null, 2));
+		// console.log("originalRecipe before comparison:", JSON.stringify(originalRecipe, null, 2));
+
+		// Проверяем каждое поле на изменение
+		for (const key in recipeDish) {
+			if (key === "rating" || key === "likes" || key === "comments") continue; // Пропускаем неизменяемые поля
+
+			if (!areEqual(recipeDish[key], originalRecipe[key])) {
+				if (key === "image_header" && recipeDish[key].startsWith("file://")) {
+					// Загружаем новое изображение, если это локальный файл
+					const headerExtension = recipeDish[key].split(".").pop() || "jpg";
+					const cleanCategory = recipeDish.category
+						.replace(/[^a-zA-Z0-9а-яА-ЯёЁ _-]/g, "")
+						.trim()
+						.replaceAll(" ", "_");
+					const cleanSubCategory = recipeDish.point
+						.replace(recipeDish.category, "")
+						.trim()
+						.replaceAll(" ", "_")
+						.replace(/[^a-zA-Z0-9а-яА-ЯёЁ _-]/g, "");
+					const folderName = `${new Date().toISOString().replace(/[^0-9]/g, "")}_${recipeDish.published_id}`;
+					const headerPath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${folderName}/header.${headerExtension}`;
+					const imageRes = await uploadFile(headerPath, recipeDish[key], true);
+					if (imageRes.success) {
+						changedFields[key] = imageRes.data; // Сохраняем путь
+					} else {
+						throw new Error(`Failed to upload image_header: ${imageRes.msg}`);
+					}
+				} else {
+					changedFields[key] = recipeDish[key];
+				}
+			}
+		}
+
+		return changedFields;
+	};
+
+	// save refactor recipe
+	const saveRefactor = async () => {
+		try {
+			setLoading(true);
+
+			// Валидация полной структуры рецепта
+			//   const validationResult = validateRecipeStructure(recipeDish);
+			//   if (!validationResult.isValid) {
+			// 	Alert.alert("Ошибка валидации", validationResult.message);
+			// 	return;
+			//   }
+
+			// Получаем только измененные поля
+			const changedFields = await getChangedFields();
+			// console.log("Changed fields:", JSON.stringify(changedFields, null, 2));
+
+			if (Object.keys(changedFields).length === 0) {
+				Alert.alert("Информация", "Ничего не изменено");
+				return;
+			}
+
+			// Отправляем только измененные поля
+			const response = await updateRecipeMyDB({ id: recipeDish.id, ...changedFields });
+			if (response.success) {
+				// Обновляем исходный рецепт после успешного сохранения
+				setOriginalRecipe({ ...recipeDish });
+				Alert.alert("Успех", "Рецепт успешно сохранен!");
+			} else {
+				throw new Error(response.msg || "Ошибка при сохранении рецепта");
+			}
+
+			// паосле сохранения переходим на экран рецепта
+			router.replace({
+				pathname: "RecipeDetailsScreen",
+				params: { id: recipeDish.id },
+			});
+		} catch (error) {
+			console.error("Ошибка при сохранении:", error);
+			Alert.alert("Ошибка", error.message || "Не удалось сохранить рецепт");
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	// Пока данные загружаются, показываем только индикатор загрузки
 	if (loading) {
 		return (
@@ -79,28 +268,11 @@ const RefactorRecipeScrean = () => {
 		);
 	}
 
-	/*
-    *  надо создать микс createRecipe Screan c recipedetailsscrean
-     чтобы нидит как деталь рецепта но свозможностью редактировать тоесть стиреть или изменить
-    
-    */
-
-	const handleLangChange = (lang) => {
-		setLangApp(lang);
-	};
-	// console.log("RefactorRecipeScrean recipeDish?.area", recipeDish?.area);
-
-	// update image header
-	const handleImageUpdate = (newImage) => {
-		setRecipeDish((prev) => ({ ...prev, image_header: newImage }));
-		console.log("handleImageUpdate recipeDish.image_header", recipeDish.image_header);
-	};
-
 	return (
 		<WrapperComponent>
 			<View className="gap-y-5">
 				{/* header */}
-				<HeaderScreanComponent titleScreanText={"refactor"} />
+				<HeaderScreanComponent titleScreanText={i18n.t("Edit")} />
 
 				{/* section select lang */}
 				<SelectLangComponent
@@ -113,33 +285,44 @@ const RefactorRecipeScrean = () => {
 				<RefactorImageHeader
 					imageUri={recipeDish?.image_header}
 					onImageUpdate={handleImageUpdate}
-					icon={PencilSquareIcon}
-					test={recipeDish}
+					Icon={PencilSquareIcon}
 				/>
 
 				{/*    dish and description*/}
-				<RefactorTitleAria title={recipeDish?.title} area={recipeDish?.area} langApp={langApp} />
-				{/* <View className="px-4 flex justify-between gap-y-5 ">
+				<RefactorTitle
+					title={recipeDish?.title}
+					// area={recipeDish?.area}
+					langApp={langApp}
+					updateHeaderTitle={updateHeaderTitle}
+					// updateAreaText={updateAreaText}
+					Icon={PencilSquareIcon}
+				/>
 
-					<View className="gap-y-2">
-						<Text style={[{ fontSize: hp(2.7) }]} className="font-bold  text-neutral-700">
+				{/* refactor Area */}
+				<RefactorAreaComponent
+					area={recipeDish?.area}
+					langApp={langApp}
+					updateAreaText={updateAreaText}
+					Icon={PencilSquareIcon}
+				/>
 
-							{recipeDish?.title?.lang.find((item) => item.lang === langApp)?.name ||
-								recipeDish?.title?.strTitle}
-						</Text>
-						<Text style={{ fontSize: hp(1.8) }} className="font-medium text-neutral-500">
+				{/* tags */}
+				<RefactorTagsComponent tags={recipeDish?.tags} updateTags={updateTags} langApp={langApp} />
 
-							{recipeDish?.area?.[langApp]}
-						</Text>
-						<TextInput
-							value={
-								recipeDish?.title?.lang.find((item) => item.lang === langApp)?.name ||
-								recipeDish?.title?.strTitle
-							}
-						/>
-					</View>
-				</View> */}
-				{/*    dish and description  end*/}
+				{/* block time person cal level */}
+
+				{/* verif reafactor and save */}
+				<View className="flex-1 flex-row justify-center mt-10 gap-x-2">
+					{/* cancel */}
+					<TouchableOpacity style={shadowBoxBlack()} className="flex-1">
+						<ButtonSmallCustom buttonText={true} title={i18n.t("Cancel")} w={"100%"} h={60} bg="red" />
+					</TouchableOpacity>
+
+					{/* Save */}
+					<TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={saveRefactor}>
+						<ButtonSmallCustom buttonText={true} title={i18n.t("Save")} w={"100%"} h={60} bg="green" />
+					</TouchableOpacity>
+				</View>
 			</View>
 		</WrapperComponent>
 	);

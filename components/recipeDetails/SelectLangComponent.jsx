@@ -16,7 +16,7 @@ const SelectLangComponent = ({ recipeDishArea, handleLangChange, langApp }) => {
 			{areaKeys &&
 				areaKeys.length > 1 &&
 				areaKeys.map((item) => {
-					console.log("SelectLangComponent item", item);
+					// console.log("SelectLangComponent item", item);
 
 					const lang = item.toUpperCase();
 					return (

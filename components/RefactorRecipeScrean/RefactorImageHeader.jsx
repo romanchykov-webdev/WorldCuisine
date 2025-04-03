@@ -7,7 +7,7 @@ import AvatarCustom from "../AvatarCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import LoadingComponent from "../loadingComponent";
 
-const RefactorImageHeader = ({ imageUri, icon: Icon, onImageUpdate, test }) => {
+const RefactorImageHeader = ({ imageUri, Icon, onImageUpdate }) => {
 	const [loading, setLoading] = useState(false);
 	const [newImage, setNewImage] = useState(false);
 

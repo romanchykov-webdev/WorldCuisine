@@ -32,6 +32,8 @@ const AllRecipesBayCreator = () => {
 
 	const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev } = useAuth();
 	// console.log("AllRecipesBayCreator unreadCommentsCount", unreadCommentsCount);
+	// console.log("AllRecipesBayCreator langDev", langDev);
+	// console.log("AllRecipesBayCreator userData?.lang", userData?.lang);
 
 	const { creator_id } = params;
 
@@ -45,6 +47,8 @@ const AllRecipesBayCreator = () => {
 
 	// all recipe bay creator
 	const [allRecipesCreator, setAllRecipesCreator] = useState([]);
+
+	// console.log("AllRecipesBayCreator allRecipesCreator", JSON.stringify(allRecipesCreator, null));
 
 	// object for filter categoryes
 	const [obFilterCategory, setObFilterCategory] = useState({});
@@ -61,7 +65,7 @@ const AllRecipesBayCreator = () => {
 			// console.log("featGetAllRecipeBayCreator creator_id:", creator_id);
 			setLoading(true);
 			const res = await getAllRecipesBayCreatoreListMyDB(creator_id);
-
+			// console.log("featGetAllRecipeBayCreator res", res);
 			if (res?.success) {
 				// console.log("featGetAlßlRecipeBayCreator res:", res.data);
 
@@ -86,6 +90,7 @@ const AllRecipesBayCreator = () => {
 	const fetchCategoryRecipeMasonry = async () => {
 		setLoading(true);
 		const res = await getCategoryRecipeMasonryMyDB(userData?.lang ?? langDev);
+		// console.log("res", res);
 
 		// const res = await getCategoryRecipeMasonryMyDB("ru");
 		// console.log("fetchCategoryRecipeMasonry", JSON.stringify(res.data, null));

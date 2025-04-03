@@ -543,7 +543,6 @@ export const getAllFavoriteIdisMyDB = async (user_id) => {
 };
 
 // Функция для получения рецептов по ID
-
 export const getAllFavoriteListMyDB = async (recipeIds) => {
 	try {
 		const { data, error } = await supabase.from("short_desc").select("*").in("full_recipe_id", recipeIds); // Фильтр по массиву ID
@@ -596,4 +595,33 @@ export const useNotifications = (userId, onNewNotification) => {
 			supabase.removeChannel(subscription);
 		};
 	}, [userId, onNewNotification]);
+};
+
+// функция для обновления рецепта
+export const updateRecipeMyDB = async (recipe) => {
+	try {
+		if (!recipe.id) {
+			throw new Error("ID рецепта отсутствует");
+		}
+
+		// Убираем id из объекта для обновления
+		const { id, ...fieldsToUpdate } = recipe;
+
+		const { data, error } = await supabase
+			.from("all_recipes_description")
+			.update(fieldsToUpdate)
+			.eq("id", id)
+			.select();
+
+		if (error) {
+			console.error("Ошибка при обновлении рецепта:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		console.log("Рецепт успешно обновлен:", JSON.stringify(data[0], null, 2));
+		return { success: true, data: data[0] };
+	} catch (error) {
+		console.error("Неожиданная ошибка при обновлении рецепта:", error.message);
+		return { success: false, msg: error.message };
+	}
 };
