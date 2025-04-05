@@ -20,9 +20,11 @@ const IngredientsCreateRecipe = ({
 	measurement,
 	totalLangRecipe,
 	setTotalRecipe,
+	// refactorRecipe = null, // По умолчанию пустой объект если это создание нового рецепта
 }) => {
 	// console.log("measurement",measurement)
 	// console.log(totalLangRecipe)
+	// console.log(refactorRecipe);
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
 	// массив по ключу
@@ -30,7 +32,7 @@ const IngredientsCreateRecipe = ({
 	// console.log(measurementLangApp)
 
 	// const [ingredients, setIngredients] = useState([]);
-	const [ingredients, setIngredients] = useState({ lang: {} }); // Новая структура
+	const [ingredients, setIngredients] = useState({ lang: {} }); // Новая структура Начальное состояние
 
 	// console.log("IngredientsCreateRecipe totalLangRecipe ", totalLangRecipe?.length);
 	// console.log("IngredientsCreateRecipe ingredients ", ingredients);
@@ -50,6 +52,23 @@ const IngredientsCreateRecipe = ({
 	// 	// "ingredient": Array(totalLangRecipe.length).fill('') // Инициализируем пустыми строками
 	// });
 
+	// Синхронизация ingredients с refactorRecipe при загрузке или изменении
+	// useEffect(() => {
+	// 	if (refactorRecipe) {
+	// 		// Если переданы данные редактирования, используем их
+	// 		// console.log("refactorRecipe", refactorRecipe);
+
+	// 		setIngredients(refactorRecipe);
+	// 		console.log("IngredientsCreateRecipe useEfect refactorRecipe not null ", refactorRecipe);
+	// 	} else {
+	// 		// Если это создание нового рецепта, инициализируем пустую структуру для всех языков
+	// 		setIngredients({
+	// 			lang: totalLangRecipe.reduce((acc, lang) => ({ ...acc, [lang]: [] }), {}),
+	// 		});
+	// 		console.log("IngredientsCreateRecipe useEfect refactorRecipe  null ", refactorRecipe);
+	// 	}
+	// }, [refactorRecipe, totalLangRecipe]);
+
 	const [ingredient, setIngredient] = useState({
 		unit: totalLangRecipe.reduce((acc, lang) => ({ ...acc, [lang]: "" }), {}),
 		quantity: "1", // Изменено на строку для соответствия желаемой структуре
@@ -58,6 +77,7 @@ const IngredientsCreateRecipe = ({
 
 	const debouncedValue = useDebounce(ingredients, 1000);
 
+	// Обновление единиц измерения для текущего языка
 	useEffect(() => {
 		if (measurement[langApp]) {
 			setMeasurementLangApp(
@@ -162,7 +182,25 @@ const IngredientsCreateRecipe = ({
 				descriptionVisual={true}
 				descriptionText={i18n.t("Add all the ingredients and their quantities to prepare the recipe")}
 			/>
-
+			{/* {refactorRecipe ? (
+				<View>
+					<ListIngredientsCreateRecipe
+						ingredients={ingredients}
+						setIngredients={setIngredients}
+						totalLangRecipe={totalLangRecipe}
+					/>
+				</View>
+			) : (
+				Object.keys(ingredients.lang).length > 0 && (
+					<View>
+						<ListIngredientsCreateRecipe
+							ingredients={ingredients}
+							setIngredients={setIngredients}
+							totalLangRecipe={totalLangRecipe}
+						/>
+					</View>
+				)
+			)} */}
 			{Object.keys(ingredients.lang).length > 0 && (
 				<View>
 					<ListIngredientsCreateRecipe

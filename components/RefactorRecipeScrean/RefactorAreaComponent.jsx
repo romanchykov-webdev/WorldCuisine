@@ -37,7 +37,7 @@ const RefactorAreaComponent = ({ area, langApp, updateAreaText, Icon }) => {
 			{/* Модальное окно для региона */}
 			<ModalEditComponent
 				visible={modalVisible}
-				initialText={displayArea}
+				initialData={displayArea}
 				lang={langApp}
 				type="area"
 				onSave={handleSave}

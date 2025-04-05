@@ -74,7 +74,7 @@ const RefactorTagsComponent = ({ tags, updateTags, langApp }) => {
 			{/* Модальное окно для региона */}
 			<ModalEditComponent
 				visible={modalVisible}
-				initialText={newTag}
+				initialData={newTag}
 				lang={langApp}
 				type="tags"
 				onSave={handleSave}

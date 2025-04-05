@@ -4,15 +4,22 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PencilSquareIcon } from "react-native-heroicons/outline";
 import HeaderScreanComponent from "../../components/HeaderScreanComponent";
 import WrapperComponent from "../../components/WrapperComponent";
-import { getRecipesDescriptionMyDB, updateRecipeMyDB } from "../../service/getDataFromDB";
+import {
+	getMeasurementCreateRecipeMyDB,
+	getRecipesDescriptionMyDB,
+	updateRecipeMyDB,
+} from "../../service/getDataFromDB";
 
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
+import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import LoadingComponent from "../../components/loadingComponent";
 import SelectLangComponent from "../../components/recipeDetails/SelectLangComponent";
 import RefactorAreaComponent from "../../components/RefactorRecipeScrean/RefactorAreaComponent";
 import RefactorImageHeader from "../../components/RefactorRecipeScrean/RefactorImageHeader";
+import RefactorIngredientsComponent from "../../components/RefactorRecipeScrean/RefactorIngredientsComponent";
 import RefactorTagsComponent from "../../components/RefactorRecipeScrean/RefactorTagsComponent";
 import RefactorTitle from "../../components/RefactorRecipeScrean/RefactorTitle";
+import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
@@ -59,10 +66,14 @@ const RefactorRecipeScrean = () => {
 
 	const params = useLocalSearchParams();
 
+	// Инициализируем totalLangRecipe с текущим языком
+	const [totalLangRecipe, setTotalLangRecipe] = useState([langApp]);
+
 	// console.log(params);
 	const { recipe_id, isRefactorRecipe } = params;
 
 	// console.log("RefactorRecipeScrean recipe_id", recipe_id);
+	// console.log("RefactorRecipeScrean isRefactorRecipe", isRefactorRecipe);
 	// console.log("RefactorRecipeScrean isRefactorRecipe", isRefactorRecipe);
 
 	const fetchGetRecipeForRefactoring = async (id) => {
@@ -74,7 +85,12 @@ const RefactorRecipeScrean = () => {
 
 				// setOriginalRecipe(res.data[0]); // Сохраняем исходный рецепт
 				setOriginalRecipe(JSON.parse(JSON.stringify(res.data[0]))); // Глубокая копия
-				// console.log("RefactorRecipeScrean res.data[0]", JSON.stringify(res.data[0], null));
+				console.log("RefactorRecipeScrean res.data[0]", JSON.stringify(res.data[0], null));
+
+				// Обновляем totalLangRecipe, добавляя все языки из ingredients
+				const ingredientLangs = res.data[0]?.ingredients?.lang ? Object.keys(res.data[0].ingredients.lang) : [];
+				const uniqueLangs = [...new Set([langApp, ...ingredientLangs])];
+				setTotalLangRecipe(uniqueLangs);
 			} else {
 				Alert.alert("Error", "Recipe not found");
 			}
@@ -88,10 +104,20 @@ const RefactorRecipeScrean = () => {
 		}
 	};
 
+	const [measurement, setMeasurement] = useState([]);
+
+	// get all
+	const fetchMeasurement = async () => {
+		const res = await getMeasurementCreateRecipeMyDB();
+		// console.log(res.data);
+		setMeasurement(res.data[0].lang);
+	};
+
 	useEffect(() => {
 		if (recipe_id && isRefactorRecipe) {
 			setLoading(true);
 			fetchGetRecipeForRefactoring(recipe_id);
+			fetchMeasurement();
 		} else {
 			setLoading(false);
 		}
@@ -160,6 +186,24 @@ const RefactorRecipeScrean = () => {
 		setRecipeDish((prev) => ({
 			...prev,
 			tags: newTags,
+		}));
+	};
+
+	// изменения ингредиентов
+	// const updateIngredients = (newIngredients) => {
+	// 	console.log("RefactorRecipeScrean updateIngredients", newIngredients);
+	// 	setRecipeDish((prev) => ({
+	// 		...prev,
+	// 		ingredients: newIngredients,
+	// 	}));
+	// };
+	const updateIngredients = (updatedData, lang) => {
+		// console.log("RefactorRecipeScrean updatedData", updatedData);
+		// console.log("RefactorRecipeScrean lang", lang);
+		// console.log("RefactorRecipeScrean recipeDish.ingredients", JSON.stringify(recipeDish.ingredients, null));
+		setRecipeDish((prev) => ({
+			...prev,
+			ingredients: updatedData,
 		}));
 	};
 
@@ -267,6 +311,7 @@ const RefactorRecipeScrean = () => {
 			</WrapperComponent>
 		);
 	}
+	// console.log("recipeDish?.ingredients", recipeDish);
 
 	return (
 		<WrapperComponent>
@@ -310,7 +355,18 @@ const RefactorRecipeScrean = () => {
 				<RefactorTagsComponent tags={recipeDish?.tags} updateTags={updateTags} langApp={langApp} />
 
 				{/* block time person cal level */}
+				<View className="mb-5">
+					<SelectCreateRecipeScreenCustom setTotalRecipe={setRecipeDish} />
+				</View>
 
+				{/*    Ingredients*/}
+				<RefactorIngredientsComponent
+					langApp={langApp}
+					ingredients={recipeDish?.ingredients}
+					updateIngredients={updateIngredients}
+					iconRefactor={PencilSquareIcon}
+					measurement={measurement}
+				/>
 				{/* verif reafactor and save */}
 				<View className="flex-1 flex-row justify-center mt-10 gap-x-2">
 					{/* cancel */}
@@ -328,6 +384,15 @@ const RefactorRecipeScrean = () => {
 	);
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	styleInput: {
+		fontSize: hp(2),
+		flex: 1,
+		borderWidth: 1,
+		borderColor: "grey",
+		padding: 20,
+		borderRadius: 15,
+	},
+});
 
 export default RefactorRecipeScrean;

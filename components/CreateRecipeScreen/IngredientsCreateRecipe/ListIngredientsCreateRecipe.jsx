@@ -4,11 +4,7 @@ import { TrashIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../../constants/shadow";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 
-const ListIngredientsCreateRecipe = ({
-	ingredients,
-	setIngredients,
-	totalLangRecipe,
-}) => {
+const ListIngredientsCreateRecipe = ({ ingredients, setIngredients, totalLangRecipe }) => {
 	// console.log("ListIngredientsCreateRecipe ingredients", ingredients)
 	// console.log("ListIngredientsCreateRecipe totalLangRecipe", totalLangRecipe)
 
@@ -52,25 +48,16 @@ const ListIngredientsCreateRecipe = ({
 				<View className="mb-2">
 					<Text className="mb-2 text-xl text-neutral-700 font-bold">
 						Вид на языке
-						<Text className="capitalize text-amber-500">
-							{" "}
-							{changeLang}
-						</Text>
+						<Text className="capitalize text-amber-500"> {changeLang}</Text>
 					</Text>
 
 					<View className="flex-row flex-wrap gap-x-2 mb-2 items-center justify-around">
 						{totalLangRecipe.map((item, index) => {
 							return (
 								<TouchableOpacity
-									style={
-										changeLang === item
-											? shadowBoxBlack()
-											: null
-									}
+									style={changeLang === item ? shadowBoxBlack() : null}
 									className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${
-										changeLang === item
-											? `bg-amber-500`
-											: `bg-transparent`
+										changeLang === item ? `bg-amber-500` : `bg-transparent`
 									} `}
 									key={index}
 									onPress={() => {
@@ -149,31 +136,16 @@ const ListIngredientsCreateRecipe = ({
 			<View>
 				{ingredients.lang && ingredients.lang[changeLang] ? (
 					ingredients.lang[changeLang].map((ingredient, index) => (
-						<View
-							key={index}
-							className="flex-row gap-x-4 items-center mb-2"
-						>
-							<View
-								style={{ height: 20, width: 20 }}
-								className="bg-amber-300 rounded-full"
-							/>
+						<View key={index} className="flex-row gap-x-4 items-center mb-2">
+							<View style={{ height: 20, width: 20 }} className="bg-amber-300 rounded-full" />
 							<View className="flex-row flex-1 gap-x-2">
-								<Text
-									style={{ fontSize: 16 }}
-									className="font-extrabold text-neutral-700"
-								>
+								<Text style={{ fontSize: 16 }} className="font-extrabold text-neutral-700">
 									{ingredient.ingredient}
 								</Text>
-								<Text
-									style={{ fontSize: 16 }}
-									className="font-medium text-neutral-600"
-								>
+								<Text style={{ fontSize: 16 }} className="font-medium text-neutral-600">
 									- {ingredient.quantity}
 								</Text>
-								<Text
-									style={{ fontSize: 16 }}
-									className="font-medium text-neutral-600 capitalize"
-								>
+								<Text style={{ fontSize: 16 }} className="font-medium text-neutral-600 capitalize">
 									{ingredient.unit}
 								</Text>
 							</View>
@@ -181,15 +153,9 @@ const ListIngredientsCreateRecipe = ({
 							<View className="flex-row gap-x-3">
 								<TouchableOpacity
 									style={shadowBoxBlack()}
-									onPress={() =>
-										removeIngredient(changeLang, index)
-									}
+									onPress={() => removeIngredient(changeLang, index)}
 								>
-									<ButtonSmallCustom
-										icon={TrashIcon}
-										size={20}
-										bg="#EF4444"
-									/>
+									<ButtonSmallCustom icon={TrashIcon} size={20} bg="#EF4444" />
 								</TouchableOpacity>
 							</View>
 						</View>

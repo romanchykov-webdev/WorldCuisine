@@ -45,7 +45,7 @@ const RefactorTitle = ({ title, langApp, updateHeaderTitle, Icon }) => {
 			{/* Модальное окно */}
 			<ModalEditComponent
 				visible={modalVisible}
-				initialText={displayTitle}
+				initialData={displayTitle}
 				lang={langApp}
 				type="title"
 				onSave={handleSave}
