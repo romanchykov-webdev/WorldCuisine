@@ -7,6 +7,7 @@ import WrapperComponent from "../../components/WrapperComponent";
 import { getMeasurementCreateRecipeMyDB, getRecipesDescriptionMyDB } from "../../service/getDataFromDB";
 
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
+import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import LoadingComponent from "../../components/loadingComponent";
 import SelectLangComponent from "../../components/recipeDetails/SelectLangComponent";
@@ -20,7 +21,6 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
-import { updateRecipeToTheServer } from "../../service/uploadDataToTheDB";
 
 // Функция для глубокого сравнения двух значений
 const areEqual = (a, b) => {
@@ -212,6 +212,19 @@ const RefactorRecipeScrean = () => {
 		}));
 	};
 
+	const updateLinkVideo = (updateVideo) => {
+		// Проверяем, изменилось ли значение, чтобы избежать лишних обновлений
+		setRecipeDish((prev) => {
+			if (areEqual(prev.video, updateVideo)) {
+				return prev; // Если значение не изменилось, не обновляем состояние
+			}
+			return {
+				...prev,
+				video: updateVideo,
+			};
+		});
+	};
+
 	// Функция для получения измененных полей
 	// const getChangedFields = async () => {
 	// 	const changedFields = {};
@@ -322,6 +335,7 @@ const RefactorRecipeScrean = () => {
 				Alert.alert("Информация", "Ничего не изменено");
 				return;
 			}
+			console.log("saveRefactor changedFields", changedFields);
 
 			// Отправляем только изменённые поля
 			const response = await updateRecipeToTheServer(recipeDish.id, changedFields);
@@ -433,6 +447,17 @@ const RefactorRecipeScrean = () => {
 					onUpdateDescription={onUpdateDescription}
 					recipe={recipeDish}
 				/>
+
+				{/*    add recipe link video*/}
+				<View className="mb-10">
+					<AddLinkVideo
+						oldLinkVideo={recipeDish?.video}
+						refactorRecipescrean={true}
+						updateLinkVideo={updateLinkVideo}
+					/>
+					{/* <Text>add anase social tiktok facebuok instagram telegram </Text> */}
+				</View>
+
 				{/* verif reafactor and save */}
 				<View className="flex-1 flex-row justify-center mt-10 gap-x-2">
 					{/* cancel */}

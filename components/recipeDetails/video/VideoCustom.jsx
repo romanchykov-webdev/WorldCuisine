@@ -15,7 +15,7 @@ import i18n from "../../../lang/i18n";
 import TitleDescriptionComponent from "../../CreateRecipeScreen/TitleDescriptionComponent";
 
 const VideoCustom = ({ video }) => {
-	// console.log("VideoCustom video", video)
+	console.log("VideoCustom video", video);
 
 	const [loadingVideo, setLoadingVideo] = useState(true);
 	// getYoutobeVideoId
@@ -91,7 +91,10 @@ const VideoCustom = ({ video }) => {
 					// entering={FadeInDown.delay(900)}
 					>
 						{/*    player*/}
-						<View style={[{ height: hp(24) }]} className="rounded-[20] overflow-hidden border-2 border-neutral-700">
+						<View
+							style={[{ height: hp(24) }]}
+							className="rounded-[20] overflow-hidden border-2 border-neutral-700"
+						>
 							{loadingVideo ? (
 								<LoadingComponent />
 							) : (
@@ -107,12 +110,20 @@ const VideoCustom = ({ video }) => {
 				{youVideoLink != null && (
 					<View>
 						{/*    player*/}
-						<View style={[{ height: hp(24) }]} className="rounded-[20] overflow-hidden border-2 border-neutral-700">
+						<View
+							style={[{ height: hp(24) }]}
+							className="rounded-[20] overflow-hidden border-2 border-neutral-700"
+						>
 							{loadingVideo ? (
 								<LoadingComponent />
 							) : (
 								<>
-									<VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture />
+									<VideoView
+										style={styles.video}
+										player={player}
+										allowsFullscreen
+										allowsPictureInPicture
+									/>
 									<View style={styles.controlsContainer}></View>
 								</>
 							)}

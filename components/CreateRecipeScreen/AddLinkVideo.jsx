@@ -14,10 +14,11 @@ import i18n from "../../lang/i18n";
 import ButtonClearInputCustomComponent from "../ButtonClearInputCustomComponent";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
-const AddLinkVideo = ({ setTotalRecipe }) => {
+const AddLinkVideo = ({ setTotalRecipe, refactorRecipescrean = false, oldLinkVideo = {}, updateLinkVideo }) => {
 	// https://www.youtube.com/watch?v=q4xBdh4Cjfk
 	// https://youtu.be/q4xBdh4Cjfk?si=9mRK-JSkw-wIfwZz
 	// https://youtu.be/itSxa5_-1cE?si=ZIi0QSI7Z8LytxlB
+	console.log("AddLinkVideo oldLinkVideo", oldLinkVideo);
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -38,11 +39,37 @@ const AddLinkVideo = ({ setTotalRecipe }) => {
 	}, [linkVideo]);
 
 	useEffect(() => {
-		setTotalRecipe((prevRecipe) => ({
-			...prevRecipe,
-			video: debouncedValue,
-		}));
-	}, [debouncedValue]);
+		if (refactorRecipescrean && oldLinkVideo) {
+			// Проверяем, отличается ли oldLinkVideo от текущего linkVideo
+			if (
+				(oldLinkVideo.strYouVideo !== linkVideo.strYouVideo ||
+					oldLinkVideo.strYoutube !== linkVideo.strYoutube) &&
+				(oldLinkVideo.strYouVideo !== null || oldLinkVideo.strYoutube !== null)
+			) {
+				setLinkVideo({
+					strYoutube: oldLinkVideo.strYoutube || null,
+					strYouVideo: oldLinkVideo.strYouVideo || null,
+				});
+			}
+		}
+	}, [refactorRecipescrean, oldLinkVideo]); // Зависимость от oldLinkVideo
+
+	// Обновление родительского состояния при изменении debouncedValue
+	useEffect(() => {
+		if (refactorRecipescrean) {
+			// В режиме редактирования передаём изменения через updateLinkVideo
+			if (updateLinkVideo) {
+				updateLinkVideo(linkVideo); // Передаём текущее значение linkVideo
+			}
+		} else {
+			// В режиме создания обновляем totalRecipe
+			setTotalRecipe((prevRecipe) => ({
+				...prevRecipe,
+				video: debouncedValue,
+			}));
+		}
+		console.log("linkVideo", linkVideo);
+	}, [debouncedValue, refactorRecipescrean, setTotalRecipe, updateLinkVideo, linkVideo]);
 
 	const closeModal = () => {
 		setIsModalVisible(false);
@@ -50,10 +77,12 @@ const AddLinkVideo = ({ setTotalRecipe }) => {
 
 	const handleSave = () => {
 		setIsModalVisible(false);
+
 		if (inputLink.trim() === "") {
 			setInputLink("");
 			return;
 		}
+
 		if (link === "YouTube") {
 			setLinkVideo({
 				strYoutube: inputLink,
@@ -82,11 +111,11 @@ const AddLinkVideo = ({ setTotalRecipe }) => {
 	};
 
 	const removeLink = async () => {
-		setInputLink("");
-		// setLinkVideo({
-		//     "strYoutube": null,
-		//     "strYouVideo": null,
-		// })
+		// setInputLink("");
+		setLinkVideo({
+			strYoutube: null,
+			strYouVideo: null,
+		});
 		// setIsModalVisible(false)
 		// setLink(null)
 	};
