@@ -11,13 +11,24 @@ const AvatarCustom = ({
 	isPreview = false,
 	RefactorImageHeader = false,
 	// rounded = 'rounded-full'
+
 	rounded = size / 2,
 }) => {
 	// console.log("AvatarCustom uri", uri);
+
+	// Проверяем, является ли uri локальным файлом, полным URL или серверным путём
+	const isLocalFile = uri?.startsWith("file://");
+	const isFullUrl = uri?.startsWith("http://") || uri?.startsWith("https://");
+
+	// Если это локальный файл, полный URL, isPreview или RefactorImageHeader, используем uri напрямую
+	// Иначе предполагаем, что это серверный путь, и используем getUserImageSrc
+	const source = isLocalFile || isFullUrl || isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri);
+	// console.log("AvatarCustom source", source);
+
 	return (
 		<Image
-			source={isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri)}
-			// source={getUserImageSrc(uri)}
+			// source={isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri)}
+			source={source}
 			transition={100}
 			className="rounded-full"
 			style={[styles.avatar, { height: size, width: size, borderRadius: rounded }, style]}

@@ -234,7 +234,7 @@ const SubscriptionsComponent = ({
 			{/* <TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}> */}
 			{subscriber?.id === creatorId ? (
 				<View className={`${allRecipeBayCreatore ? "items-center flex-1 bg-green-500" : "flex-1 m-w-[50%] "}`}>
-					<TouchableOpacity style={shadowBoxBlack()} onPress={nandleRefactorRecipe}>
+					<TouchableOpacity style={shadowBoxBlack()} onPress={isPreview ? null : nandleRefactorRecipe}>
 						<ButtonSmallCustom
 							title={i18n.t("Edit recipe")}
 							bg={"pink"}

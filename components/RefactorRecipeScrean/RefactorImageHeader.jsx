@@ -11,6 +11,8 @@ const RefactorImageHeader = ({ imageUri, Icon, onImageUpdate }) => {
 	const [loading, setLoading] = useState(false);
 	const [newImage, setNewImage] = useState(false);
 
+	// console.log("RefactorImageHeader imageUri", imageUri);
+
 	const { image, pickImage } = useSingleImagePicker(imageUri, setLoading, 0.5);
 
 	const handleRefactorImage = async () => {
@@ -43,7 +45,7 @@ const RefactorImageHeader = ({ imageUri, Icon, onImageUpdate }) => {
 				style={shadowBoxBlack()}
 				className="absolute top-[10px] right-[-10px]"
 			>
-				<ButtonSmallCustom icon={Icon} bg="red" />
+				<ButtonSmallCustom icon={Icon} tupeButton="refactor" />
 			</TouchableOpacity>
 		</View>
 	);

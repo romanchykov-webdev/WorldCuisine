@@ -38,7 +38,7 @@ const RefactorTitle = ({ title, langApp, updateHeaderTitle, Icon }) => {
 					style={shadowBoxBlack()}
 					// className="absolute top-[-5px] right-0"
 				>
-					<ButtonSmallCustom icon={Icon} bg="red" size={15} w={30} h={30} />
+					<ButtonSmallCustom icon={Icon} tupeButton="refactor" size={15} w={30} h={30} />
 				</TouchableOpacity>
 			</View>
 

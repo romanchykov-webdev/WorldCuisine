@@ -205,6 +205,9 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		textAlign: "center",
 	},
+	flatList: {
+		maxHeight: hp(40), // Ограничиваем высоту до 60% экрана
+	},
 });
 
 export default ModalEditComponent;

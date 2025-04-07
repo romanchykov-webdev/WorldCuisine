@@ -21,7 +21,7 @@ const RefactorTagsComponent = ({ tags, updateTags, langApp }) => {
 		// Синхронизируем arrTags с tags при изменении пропса
 		setArrTags(tags || []);
 	}, [tags]);
-	console.log("RefactorTagsComponent arrTags", arrTags);
+	// console.log("RefactorTagsComponent arrTags", arrTags);
 
 	// Добавление нового тега
 	const handleSave = (tagText) => {
@@ -68,7 +68,7 @@ const RefactorTagsComponent = ({ tags, updateTags, langApp }) => {
 			</View>
 
 			<TouchableOpacity onPress={() => setModalVisible(true)} style={shadowBoxBlack()}>
-				<ButtonSmallCustom icon={PlusIcon} bg="green" />
+				<ButtonSmallCustom icon={PlusIcon} tupeButton="add" />
 			</TouchableOpacity>
 
 			{/* Модальное окно для региона */}

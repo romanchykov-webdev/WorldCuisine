@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { TrashIcon } from "react-native-heroicons/outline";
+import { PlusIcon, TrashIcon } from "react-native-heroicons/outline";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import TitleDescriptionComponent from "../CreateRecipeScreen/TitleDescriptionComponent";
 import ModalEditComponent from "./ModalEditComponent";
+import RefactorAddIngredientModal from "./RefactorAddIngredientModal";
 
 const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients, iconRefactor, measurement }) => {
+	// console.log("RefactorIngredientsComponent handleSave ingredients", Object.keys(ingredients.lang));
+	// console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
+
+	const [newIngredient, setNewIngredient] = useState("");
+
 	//
 	const [modalVisible, setModalVisible] = useState(false);
 
@@ -15,20 +21,46 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 
 	const [selectedIndex, setSelectedIndex] = useState(null);
 
+	const [addModalVisible, setAddModalVisible] = useState(false);
+
+	const [quontityLang, setQuontityLang] = useState([]);
+	useEffect(() => {
+		setQuontityLang(Object.keys(ingredients.lang));
+	}, []);
+
 	const refactorIngredient = (ingredient, index) => {
-		console.log("Refactor ingredient:", ingredient);
+		// console.log("Refactor ingredient:", ingredient);
 		setSelectedIngredient(ingredient);
 		setSelectedIndex(index);
+
 		setModalVisible(true);
 	};
 
-	const handleSave = (updatedData, lang) => {
-		// Обновляем ингредиенты через переданную функцию updateIngredients
-		// console.log("RefactorIngredientsComponent handleSave updatedData", updatedData);
-		// console.log("RefactorIngredientsComponent handleSave lang", lang);
-		// console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
+	const handleAddNewIngredient = () => {
+		setAddModalVisible(true);
+	};
 
-		// Обновляем ингредиенты, заменяя объект на selectedIndex новым updatedData
+	// const handleSave = (updatedData, lang) => {
+	// 	// Обновляем ингредиенты через переданную функцию updateIngredients
+	// 	// console.log("RefactorIngredientsComponent handleSave updatedData", updatedData);
+	// 	// console.log("RefactorIngredientsComponent handleSave lang", lang);
+	// 	// console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
+
+	// 	// Обновляем ингредиенты, заменяя объект на selectedIndex новым updatedData
+	// 	const updatedIngredients = {
+	// 		...ingredients,
+	// 		lang: {
+	// 			...ingredients.lang,
+	// 			[lang]: ingredients.lang[lang].map((item, idx) => (idx === selectedIndex ? updatedData : item)),
+	// 		},
+	// 	};
+
+	// 	// Передаем обновленные ингредиенты в updateIngredients
+	// 	updateIngredients(updatedIngredients, lang);
+	// 	setModalVisible(false);
+	// };
+
+	const handleSave = (updatedData, lang) => {
 		const updatedIngredients = {
 			...ingredients,
 			lang: {
@@ -40,6 +72,18 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 		// Передаем обновленные ингредиенты в updateIngredients
 		updateIngredients(updatedIngredients, lang);
 		setModalVisible(false);
+	};
+
+	const handleAddSave = (updatedData) => {
+		const updatedIngredients = { ...ingredients };
+		for (const language of quontityLang) {
+			updatedIngredients.lang[language] = updatedIngredients.lang[language] || [];
+			updatedIngredients.lang[language].push(
+				updatedData[language] || { ingredient: "", quantity: "1", unit: "" }
+			);
+		}
+		updateIngredients(updatedIngredients, langApp);
+		setAddModalVisible(false);
 	};
 
 	const handleDelete = (index, lang) => {
@@ -56,7 +100,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 	return (
 		<View className="mb-5">
 			<TitleDescriptionComponent titleVisual={true} titleText={i18n.t("Ingredients")} />
-			<View>
+			<View className="mb-5">
 				{ingredients.lang[langApp]?.map((ingredient, index) => (
 					<View key={index} className="flex-row gap-x-4 items-center mb-2">
 						<View className="flex-1 flex-row flex-wrap gap-x-2">
@@ -79,17 +123,24 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 								style={shadowBoxBlack()}
 								onPress={() => refactorIngredient(ingredient, index)}
 							>
-								<ButtonSmallCustom icon={iconRefactor} size={20} bg="#EF4444" />
+								<ButtonSmallCustom icon={iconRefactor} size={20} tupeButton="refactor" />
 							</TouchableOpacity>
 						</View>
 						{/* Блок удаления */}
 						<View className="flex-row gap-x-3">
 							<TouchableOpacity style={shadowBoxBlack()} onPress={() => handleDelete(index)}>
-								<ButtonSmallCustom icon={TrashIcon} size={20} bg="#EF4444" />
+								<ButtonSmallCustom icon={TrashIcon} size={20} tupeButton="remove" />
 							</TouchableOpacity>
 						</View>
 					</View>
 				))}
+			</View>
+
+			{/* New ingredient */}
+			<View>
+				<TouchableOpacity style={shadowBoxBlack()} onPress={handleAddNewIngredient}>
+					<ButtonSmallCustom tupeButton="add" w={"100%"} h={60} icon={PlusIcon} size={40} />
+				</TouchableOpacity>
 			</View>
 
 			{/* Модальное окно для редактирования ингредиента */}
@@ -100,6 +151,15 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 				type="ingredients"
 				onSave={handleSave}
 				onClose={() => setModalVisible(false)}
+				measurement={measurement}
+				quontityLang={quontityLang}
+			/>
+			{/* Modal для добавления */}
+			<RefactorAddIngredientModal
+				visible={addModalVisible}
+				onClose={() => setAddModalVisible(false)}
+				onSave={handleAddSave}
+				quontityLang={quontityLang}
 				measurement={measurement}
 			/>
 		</View>

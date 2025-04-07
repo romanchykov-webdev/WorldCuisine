@@ -25,21 +25,42 @@ const UploadHeaderImage = ({
 	//  кастомный хук
 	const { addImageRecipeList } = useImagePicker(addImage, setAddImage, setLoadingCompresImg);
 
+	// const handleImagePick = async () => {
+	// 	const imageUrl = await addImageRecipeList();
+	// 	if (imageUrl) {
+	// 		setTotalRecipe((prevRecipe) => ({
+	// 			...prevRecipe,
+	// 			image_header: imageUrl,
+	// 		}));
+	// 	}
+	// };
+
+	// const handlerRemoveHeaderImage = () => {
+	// 	setAddImage([]);
+	// };
+
 	const handleImagePick = async () => {
 		const imageUrl = await addImageRecipeList();
 		if (imageUrl) {
-			setTotalRecipe((prevRecipe) => ({
-				...prevRecipe,
-				image_header: imageUrl,
-			}));
+			setAddImage([{ uri: imageUrl }]);
+			setTotalRecipe((prevRecipe) => {
+				const updatedRecipe = { ...prevRecipe, image_header: imageUrl };
+				console.log("UploadHeaderImage: After pick, totalRecipe.image_header:", updatedRecipe.image_header);
+				return updatedRecipe;
+			});
 		}
 	};
 
-	useEffect(() => {}, [addImage]);
-
 	const handlerRemoveHeaderImage = () => {
 		setAddImage([]);
+		setTotalRecipe((prevRecipe) => {
+			const updatedRecipe = { ...prevRecipe, image_header: null };
+			console.log("UploadHeaderImage: After remove, totalRecipe.image_header:", updatedRecipe.image_header);
+			return updatedRecipe;
+		});
 	};
+	useEffect(() => {}, [addImage]);
+
 	return (
 		<View className="mb-5 relative">
 			<StərɪskCustomComponent />

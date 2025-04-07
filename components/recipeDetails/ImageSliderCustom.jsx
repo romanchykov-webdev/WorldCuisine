@@ -3,41 +3,55 @@ import { Animated, StyleSheet, View } from "react-native";
 import { wp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { getUserImageSrc } from "../../service/imageServices";
-// import {sliderImages} from '../constants'
-// import {shadowBox, shadowBoxBlack} from "../hooks";
-// import {sliderImagesArray} from "../constants/sliderImg";
 
-// const {width, height} = Dimensions.get('window');
 const width = wp(100);
-// const ITEM_WIDTH = width * 0.8;
 const ITEM_WIDTH = width * 0.9;
 const ITEM_HEIGHT = ITEM_WIDTH * 1.47;
-// const ITEM_HEIGHT = 200;
 
-const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
-	// console.log("createRecipe",createRecipe)
-
-	const [activeIndex, setActiveIndex] = useState(0); // Состояние для активного индекса
-
-	const scrollX = useRef(new Animated.Value(0)).current;
-
+const ImageSliderCustom = ({ images, createRecipe = false, isPreview, refactorScrean = false }) => {
 	// console.log("ImageSliderCustom images", images);
 
-	const animatedValues = useRef(images.map(() => new Animated.Value(0))).current; // Массив Animated.Value для индикаторов
+	// Нормализуем данные: преобразуем массив строк или объектов в массив объектов { uri: string }
+	const normalizedImages = images.map((item) => {
+		if (typeof item === "string") {
+			return { uri: item };
+		}
+		return item;
+	});
 
+	const [activeIndex, setActiveIndex] = useState(0);
+	const scrollX = useRef(new Animated.Value(0)).current;
+	// const animatedValuesRef = useRef([]);
+	// Инициализируем animatedValues сразу при создании компонента
+	const animatedValuesRef = useRef(
+		normalizedImages.map((_, index) => new Animated.Value(index === 0 ? 1 : 0)) // Первый индикатор активен
+	).current;
+
+	// Обновляем анимацию при изменении activeIndex
 	useEffect(() => {
-		animatedValues.forEach((animatedValue, index) => {
+		animatedValuesRef.forEach((animatedValue, index) => {
 			Animated.timing(animatedValue, {
-				toValue: index === activeIndex ? 1 : 0, // 1 для активного индикатора, 0 для остальных
-				duration: 300, // Длительность анимации
+				toValue: index === activeIndex ? 1 : 0,
+				duration: 300,
 				useNativeDriver: false,
 			}).start();
 		});
-	}, [activeIndex]);
+	}, [activeIndex]); // Зависимость только от activeIndex
+
+	// Синхронизируем animatedValues при изменении normalizedImages
+	useEffect(() => {
+		// Если длина normalizedImages изменилась, обновляем animatedValues
+		if (animatedValuesRef.length !== normalizedImages.length) {
+			animatedValuesRef.length = 0; // Очищаем массив
+			normalizedImages.forEach((_, index) => {
+				animatedValuesRef.push(new Animated.Value(index === activeIndex ? 1 : 0));
+			});
+		}
+	}, [normalizedImages]);
 
 	const handleMomentumScrollEnd = (event) => {
 		const offsetX = event.nativeEvent.contentOffset.x;
-		const newIndex = Math.round(offsetX / width); // Вычисление активного индекса
+		const newIndex = Math.round(offsetX / width);
 		setActiveIndex(newIndex);
 	};
 
@@ -45,62 +59,88 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 		<View className="mt-2">
 			<View style={{ borderRadius: 25, overflow: "hidden", height: 300 }}>
 				<Animated.FlatList
-					// data={sliderImages}
-					data={images}
+					data={normalizedImages}
 					keyExtractor={(_, index) => index.toString()}
 					horizontal
 					showsHorizontalScrollIndicator={false}
 					pagingEnabled={true}
-					onMomentumScrollEnd={handleMomentumScrollEnd} // Отслеживание конца скролла
+					onMomentumScrollEnd={handleMomentumScrollEnd}
 					onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }], {
 						useNativeDriver: true,
 					})}
 					renderItem={({ item, index }) => {
 						const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
-						// for translate x
 						const translateX = scrollX.interpolate({
 							inputRange,
 							outputRange: [-width * 0.7, 0, width * 0.7],
 						});
 
-						// for scale
 						const scale = scrollX.interpolate({
 							inputRange,
 							outputRange: [1, 1.5, 1],
 						});
-						// console.log('item',item)
-						return (
-							<View
-								style={[
-									{
+
+						const uri = item.uri;
+						if (!uri) {
+							// console.log("ImageSliderCustom: uri is undefined for item", item);
+							return (
+								<View
+									style={{
 										width,
 										justifyContent: "center",
 										alignItems: "center",
-										// paddingVertical: 15
-									},
-								]}
+									}}
+								>
+									<View
+										style={{
+											height: 300,
+											width: ITEM_WIDTH * 1.2,
+											overflow: "hidden",
+											alignItems: "center",
+											borderRadius: 25,
+										}}
+									>
+										<Animated.Image
+											source={require("../../assets/img/ratatouille.png")} // путь к placeholder-изображению
+											style={{
+												width: ITEM_WIDTH * 1.4,
+												height: 300,
+												resizeMode: "cover",
+												transform: [{ translateX }, { scale }],
+											}}
+										/>
+									</View>
+								</View>
+							);
+						}
 
-								// className="bg-red-500"
+						const isLocalFile = uri?.startsWith("file://");
+						const isFullUrl = uri?.startsWith("http://") || uri?.startsWith("https://");
+						const sourceUri =
+							isLocalFile || isFullUrl || isPreview || refactorScrean ? uri : getUserImageSrc(uri);
+						// console.log("ImageSliderCustom item", item, "sourceUri", sourceUri);
+
+						return (
+							<View
+								style={{
+									width,
+									justifyContent: "center",
+									alignItems: "center",
+								}}
 							>
 								<View
 									style={{
 										height: 300,
-										width: ITEM_WIDTH * 1.2, // Ширина чуть больше для перекрытия
+										width: ITEM_WIDTH * 1.2,
 										overflow: "hidden",
 										alignItems: "center",
 										borderRadius: 25,
 									}}
 								>
 									<Animated.Image
-										// source={{ uri: item }}
-
-										source={{
-											uri: createRecipe || isPreview ? item.uri : getUserImageSrc(item),
-										}}
-										// onLoad={() => handleImageLoad(index)}
+										source={{ uri: sourceUri }}
 										style={{
-											// borderRadius: '30px',
 											width: ITEM_WIDTH * 1.4,
 											height: 300,
 											resizeMode: "cover",
@@ -119,22 +159,28 @@ const ImageSliderCustom = ({ images, createRecipe = false, isPreview }) => {
 				<View
 					className="gap-2 flex-row"
 					style={shadowBoxBlack({
-						color: "#000", // Цвет тени для блоков (по умолчанию чёрный)
-						offset: { width: 2, height: 2 }, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
-						opacity: 0.5, // Прозрачность тени (по умолчанию 30%)
-						radius: 2, // Радиус размытия тени (по умолчанию 5px)
-						elevation: 2, // Высота "подъема" для создания тени на Android (по умолчанию 6)
+						color: "#000",
+						offset: { width: 2, height: 2 },
+						opacity: 0.5,
+						radius: 2,
+						elevation: 2,
 					})}
 				>
-					{images.map((_, index) => {
-						const animatedWidth = animatedValues[index].interpolate({
+					{normalizedImages.map((_, index) => {
+						// Проверяем, существует ли animatedValues для этого индекса
+						if (!animatedValuesRef[index]) {
+							console.log(`animatedValues[${index}] is undefined`);
+							return null; // Пропускаем индикатор, если animatedValue не существует
+						}
+
+						const animatedWidth = animatedValuesRef[index].interpolate({
 							inputRange: [0, 1],
-							outputRange: [10, 20], // Анимация ширины от 5 до 10
+							outputRange: [10, 20],
 						});
 
-						const animatedColor = animatedValues[index].interpolate({
+						const animatedColor = animatedValuesRef[index].interpolate({
 							inputRange: [0, 1],
-							outputRange: ["#1C1C1E", "#f59e0b"], // Анимация цвета от светлого к темному
+							outputRange: ["#1C1C1E", "#f59e0b"],
 						});
 
 						return (
@@ -164,8 +210,8 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 	},
 	activeIndicator: {
-		width: 20, // Увеличенная ширина для активного индикатора
-		backgroundColor: "#000", // Более темный цвет для активного индикатора
+		width: 20,
+		backgroundColor: "#000",
 	},
 });
 
