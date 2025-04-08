@@ -15,7 +15,7 @@ import i18n from "../../../lang/i18n";
 import TitleDescriptionComponent from "../../CreateRecipeScreen/TitleDescriptionComponent";
 
 const VideoCustom = ({ video }) => {
-	console.log("VideoCustom video", video);
+	// console.log("VideoCustom video", video);
 
 	const [loadingVideo, setLoadingVideo] = useState(true);
 	// getYoutobeVideoId

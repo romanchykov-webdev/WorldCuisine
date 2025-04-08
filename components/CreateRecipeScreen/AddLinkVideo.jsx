@@ -18,7 +18,7 @@ const AddLinkVideo = ({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
 	// https://www.youtube.com/watch?v=q4xBdh4Cjfk
 	// https://youtu.be/q4xBdh4Cjfk?si=9mRK-JSkw-wIfwZz
 	// https://youtu.be/itSxa5_-1cE?si=ZIi0QSI7Z8LytxlB
-	console.log("AddLinkVideo oldLinkVideo", oldLinkVideo);
+	// console.log("AddLinkVideo oldLinkVideo", oldLinkVideo);
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -68,7 +68,7 @@ const AddLinkVideo = ({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
 				video: debouncedValue,
 			}));
 		}
-		console.log("linkVideo", linkVideo);
+		// console.log("linkVideo", linkVideo);
 	}, [debouncedValue, refactorRecipescrean, setTotalRecipe, updateLinkVideo, linkVideo]);
 
 	const closeModal = () => {

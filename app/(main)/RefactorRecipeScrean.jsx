@@ -7,6 +7,7 @@ import WrapperComponent from "../../components/WrapperComponent";
 import { getMeasurementCreateRecipeMyDB, getRecipesDescriptionMyDB } from "../../service/getDataFromDB";
 
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
+import AddLinkSocialComponent from "../../components/CreateRecipeScreen/AddLinkSocialComponent";
 import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import LoadingComponent from "../../components/loadingComponent";
@@ -222,6 +223,19 @@ const RefactorRecipeScrean = () => {
 			return {
 				...prev,
 				video: updateVideo,
+			};
+		});
+	};
+
+	const updateSocialLinks = (updateSocialLink) => {
+		console.log("RefactorRecipeScrean updateSocialLinks", updateSocialLink);
+		setRecipeDish((prev) => {
+			if (areEqual(prev.social_links, updateSocialLink)) {
+				return prev;
+			}
+			return {
+				...prev,
+				social_links: { ...updateSocialLink },
 			};
 		});
 	};
@@ -457,6 +471,14 @@ const RefactorRecipeScrean = () => {
 						updateLinkVideo={updateLinkVideo}
 					/>
 					{/* <Text>add anase social tiktok facebuok instagram telegram </Text> */}
+				</View>
+				{/* add links social facebook instargra tiktok */}
+				<View className="mb-10">
+					<AddLinkSocialComponent
+						refactorRecipescrean={true}
+						oldSocialLinks={recipeDish?.social_links}
+						updateSocialLinks={updateSocialLinks}
+					/>
 				</View>
 
 				{/* verif reafactor and save */}

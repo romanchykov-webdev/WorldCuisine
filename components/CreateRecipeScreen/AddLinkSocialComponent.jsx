@@ -10,7 +10,12 @@ import InputComponent from "../InputComponent";
 import SocialMediaEmbedComponent from "./SocialMediaEmbedComponent";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
-const AddLinkSocialComponent = ({ setTotalRecipe }) => {
+const AddLinkSocialComponent = ({
+	setTotalRecipe,
+	refactorRecipescrean = false,
+	oldSocialLinks,
+	updateSocialLinks,
+}) => {
 	const [inputValue, setInputValue] = useState("");
 
 	// // opacity for animatio
@@ -19,22 +24,39 @@ const AddLinkSocialComponent = ({ setTotalRecipe }) => {
 	// const animatedStyle = useAnimatedStyle(() => ({
 	// 	opacity: opacity.value,
 	// }));
+	console.log("AddLinkSocialComponent oldSocialLinks", oldSocialLinks);
 
 	const [previewUrl, setPreviewUrl] = useState({
 		facebook: null,
 		instagram: null,
-		tikTok: null,
+		tiktok: null,
 	});
+
+	// Инициализация previewUrl только при первом рендере или изменении oldSocialLinks
+	useEffect(() => {
+		if (refactorRecipescrean && oldSocialLinks) {
+			setPreviewUrl((prev) => ({
+				...prev,
+				facebook: oldSocialLinks.facebook || null,
+				instagram: oldSocialLinks.instagram || null,
+				tiktok: oldSocialLinks.tiktok || null,
+			}));
+		}
+	}, []);
 
 	// Добавляем дебонсированное значение
 	const debouncedValue = useDebounce(previewUrl, 1000);
 
 	useEffect(() => {
-		setTotalRecipe((prevRecipe) => ({
-			...prevRecipe,
-			social_links: debouncedValue,
-		}));
-	}, [debouncedValue]);
+		if (refactorRecipescrean && updateSocialLinks) {
+			updateSocialLinks(previewUrl); // Передаём текущее значение напрямую
+		} else if (setTotalRecipe) {
+			setTotalRecipe((prevRecipe) => ({
+				...prevRecipe,
+				social_links: debouncedValue,
+			}));
+		}
+	}, [debouncedValue, refactorRecipescrean, updateSocialLinks, setTotalRecipe]);
 	// -------------------------------
 
 	// useEffect(() => {
@@ -145,7 +167,7 @@ const AddLinkSocialComponent = ({ setTotalRecipe }) => {
 			/>
 
 			{/* block visual link social */}
-			{(previewUrl.facebook || previewUrl.instagram || previewUrl.tikTok) && (
+			{(previewUrl.facebook || previewUrl.instagram || previewUrl.tiktok) && (
 				<View className="">
 					<SocialMediaEmbedComponent previewUrl={previewUrl} setPreviewUrl={setPreviewUrl} />
 				</View>
