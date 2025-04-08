@@ -92,7 +92,7 @@ const VideoCustom = ({ video }) => {
 					>
 						{/*    player*/}
 						<View
-							style={[{ height: hp(24) }]}
+							style={[{ height: 200 }]}
 							className="rounded-[20] overflow-hidden border-2 border-neutral-700"
 						>
 							{loadingVideo ? (

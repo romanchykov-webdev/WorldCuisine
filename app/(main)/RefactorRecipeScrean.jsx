@@ -21,6 +21,7 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
+import { updateRecipeToTheServer } from "../../service/uploadDataToTheDB";
 
 // Функция для глубокого сравнения двух значений
 const areEqual = (a, b) => {
