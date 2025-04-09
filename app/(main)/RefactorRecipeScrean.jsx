@@ -9,6 +9,8 @@ import { getMeasurementCreateRecipeMyDB, getRecipesDescriptionMyDB } from "../..
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
 import AddLinkSocialComponent from "../../components/CreateRecipeScreen/AddLinkSocialComponent";
 import AddLinkVideo from "../../components/CreateRecipeScreen/AddLinkVideo";
+import AddPointGoogleMaps from "../../components/CreateRecipeScreen/AddPintGoogleMaps";
+import LinkToTheCopyright from "../../components/CreateRecipeScreen/LinkToTheCopyright";
 import SelectCreateRecipeScreenCustom from "../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom";
 import LoadingComponent from "../../components/loadingComponent";
 import SelectLangComponent from "../../components/recipeDetails/SelectLangComponent";
@@ -200,7 +202,7 @@ const RefactorRecipeScrean = () => {
 	const updateIngredients = (updatedData, lang) => {
 		// console.log("RefactorRecipeScrean updatedData", updatedData);
 		// console.log("RefactorRecipeScrean lang", lang);
-		console.log("RefactorRecipeScrean recipeDish.ingredients", JSON.stringify(recipeDish.ingredients, null));
+		// console.log("RefactorRecipeScrean recipeDish.ingredients", JSON.stringify(recipeDish.ingredients, null));
 		setRecipeDish((prev) => ({
 			...prev,
 			ingredients: updatedData,
@@ -227,8 +229,9 @@ const RefactorRecipeScrean = () => {
 		});
 	};
 
+	// updateSocialLinks
 	const updateSocialLinks = (updateSocialLink) => {
-		console.log("RefactorRecipeScrean updateSocialLinks", updateSocialLink);
+		// console.log("RefactorRecipeScrean updateSocialLinks", updateSocialLink);
 		setRecipeDish((prev) => {
 			if (areEqual(prev.social_links, updateSocialLink)) {
 				return prev;
@@ -238,6 +241,24 @@ const RefactorRecipeScrean = () => {
 				social_links: { ...updateSocialLink },
 			};
 		});
+	};
+
+	// updateCopyring
+	const updateCopyring = (updateOldCopering) => {
+		console.log("RefactorRecipeScrean updateSocialLinks", updateOldCopering);
+		setRecipeDish((prev) => {
+			if (areEqual(prev.link_copyright, updateOldCopering)) {
+				return prev;
+			}
+			return {
+				...prev,
+				link_copyright: updateOldCopering,
+			};
+		});
+	};
+
+	const updateCoordinates = (updatePoint) => {
+		console.log("RefactorRecipeScrean updatePointMap", updatePoint);
 	};
 
 	// Функция для получения измененных полей
@@ -346,13 +367,13 @@ const RefactorRecipeScrean = () => {
 			const changedFields = getChangedFields();
 			console.log("saveRefactor: Changed fields:", JSON.stringify(changedFields, null, 2));
 
-			if (Object.keys(changedFields).length === 0) {
-				Alert.alert("Информация", "Ничего не изменено");
-				return;
-			}
-			console.log("saveRefactor changedFields", changedFields);
+			// if (Object.keys(changedFields).length === 0) {
+			// 	Alert.alert("Информация", "Ничего не изменено");
+			// 	return;
+			// }
+			// console.log("saveRefactor changedFields", changedFields);
 
-			// Отправляем только изменённые поля
+			// // Отправляем только изменённые поля
 			const response = await updateRecipeToTheServer(recipeDish.id, changedFields);
 			if (response.success) {
 				setOriginalRecipe(response.data); // Обновляем исходный рецепт
@@ -416,28 +437,32 @@ const RefactorRecipeScrean = () => {
 				/>
 
 				{/*    dish and description*/}
-				<RefactorTitle
-					title={recipeDish?.title}
-					// area={recipeDish?.area}
-					langApp={langApp}
-					updateHeaderTitle={updateHeaderTitle}
-					// updateAreaText={updateAreaText}
-					Icon={PencilSquareIcon}
-				/>
+				<View className="mb-10">
+					<RefactorTitle
+						title={recipeDish?.title}
+						// area={recipeDish?.area}
+						langApp={langApp}
+						updateHeaderTitle={updateHeaderTitle}
+						// updateAreaText={updateAreaText}
+						Icon={PencilSquareIcon}
+					/>
+				</View>
 
 				{/* refactor Area */}
-				<RefactorAreaComponent
-					area={recipeDish?.area}
-					langApp={langApp}
-					updateAreaText={updateAreaText}
-					Icon={PencilSquareIcon}
-				/>
+				<View className="mb-10">
+					<RefactorAreaComponent
+						area={recipeDish?.area}
+						langApp={langApp}
+						updateAreaText={updateAreaText}
+						Icon={PencilSquareIcon}
+					/>
+				</View>
 
 				{/* tags */}
 				<RefactorTagsComponent tags={recipeDish?.tags} updateTags={updateTags} langApp={langApp} />
 
 				{/* block time person cal level */}
-				<View className="mb-5">
+				<View className="mb-10">
 					<SelectCreateRecipeScreenCustom
 						setTotalRecipe={setRecipeDish}
 						recipeDish={recipeDish}
@@ -446,22 +471,26 @@ const RefactorRecipeScrean = () => {
 				</View>
 
 				{/*    Ingredients*/}
-				<RefactorIngredientsComponent
-					langApp={langApp}
-					ingredients={recipeDish?.ingredients}
-					updateIngredients={updateIngredients}
-					iconRefactor={PencilSquareIcon}
-					measurement={measurement}
-				/>
+				<View className="mb-10">
+					<RefactorIngredientsComponent
+						langApp={langApp}
+						ingredients={recipeDish?.ingredients}
+						updateIngredients={updateIngredients}
+						iconRefactor={PencilSquareIcon}
+						measurement={measurement}
+					/>
+				</View>
 
 				{/* descritpion recipe */}
-				<RefactorDescriptionRecipe
-					descriptionsRecipe={recipeDish?.instructions}
-					langApp={langApp}
-					Icon={PencilSquareIcon}
-					onUpdateDescription={onUpdateDescription}
-					recipe={recipeDish}
-				/>
+				<View className="mb-10">
+					<RefactorDescriptionRecipe
+						descriptionsRecipe={recipeDish?.instructions}
+						langApp={langApp}
+						Icon={PencilSquareIcon}
+						onUpdateDescription={onUpdateDescription}
+						recipe={recipeDish}
+					/>
+				</View>
 
 				{/*    add recipe link video*/}
 				<View className="mb-10">
@@ -472,7 +501,21 @@ const RefactorRecipeScrean = () => {
 					/>
 					{/* <Text>add anase social tiktok facebuok instagram telegram </Text> */}
 				</View>
-				{/* add links social facebook instargra tiktok */}
+
+				{/*    add Update link to the author*/}
+				<LinkToTheCopyright
+					oldCopyring={recipeDish?.link_copyright}
+					updateCopyring={updateCopyring}
+					refactorRecipescrean={true}
+				/>
+
+				{/*    AddPintGoogleMaps    */}
+				<AddPointGoogleMaps
+					oldCoordinates={recipeDish?.map_coordinates}
+					refactorRecipescrean={true}
+					updateCoordinates={updateCoordinates}
+				/>
+				{/* add update links social facebook instargra tiktok */}
 				<View className="mb-10">
 					<AddLinkSocialComponent
 						refactorRecipescrean={true}
@@ -482,9 +525,9 @@ const RefactorRecipeScrean = () => {
 				</View>
 
 				{/* verif reafactor and save */}
-				<View className="flex-1 flex-row justify-center mt-10 gap-x-2">
+				<View className="flex-1 flex-row justify-center mt-5  mb-10 gap-x-2">
 					{/* cancel */}
-					<TouchableOpacity style={shadowBoxBlack()} className="flex-1">
+					<TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={() => router.back()}>
 						<ButtonSmallCustom buttonText={true} title={i18n.t("Cancel")} w={"100%"} h={60} bg="red" />
 					</TouchableOpacity>
 

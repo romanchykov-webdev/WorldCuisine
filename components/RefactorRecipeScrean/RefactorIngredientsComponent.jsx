@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PlusIcon, TrashIcon } from "react-native-heroicons/outline";
 import { shadowBoxBlack } from "../../constants/shadow";
 import i18n from "../../lang/i18n";
@@ -40,6 +40,60 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 		setAddModalVisible(true);
 	};
 
+	// // Функция валидации ингредиентов
+	// const validateIngredientData = (ingredientsByLang, quantity, unit, quontityLang) => {
+	// 	const isQuantityValid = quantity !== "" && parseFloat(quantity) > 0; // Проверяем, что quantity не пустое и больше 0
+	// 	const isUnitValid = unit !== ""; // Проверяем, что unit не пустое
+	// 	const areIngredientsValid = quontityLang.every(
+	// 		(langItem) => ingredientsByLang[langItem]?.ingredient?.trim() !== ""
+	// 	); // Проверяем, что все ингредиенты заполнены
+
+	// 	if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
+	// 		Alert.alert(
+	// 			i18n.t("Attention"),
+	// 			`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+	// 		);
+	// 		return false;
+	// 	}
+	// 	return true;
+	// };
+	// Функция валидации ингредиентов
+	const validateIngredientData = (data, quontityLang) => {
+		// Если это объект с несколькими языками (для добавления)
+		if (typeof data === "object" && !("ingredient" in data)) {
+			const isQuantityValid =
+				data[quontityLang[0]]?.quantity !== "" && parseFloat(data[quontityLang[0]]?.quantity) > 0;
+			const isUnitValid = data[quontityLang[0]]?.unit !== "";
+			const areIngredientsValid = quontityLang.every((langItem) => data[langItem]?.ingredient?.trim() !== "");
+
+			if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
+				Alert.alert(
+					i18n.t("Attention"),
+					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+				);
+				return false;
+			}
+			return true;
+		}
+
+		// Если это объект одного ингредиента (для редактирования)
+		if ("ingredient" in data) {
+			const isQuantityValid = data.quantity !== "" && parseFloat(data.quantity) > 0;
+			const isUnitValid = data.unit !== "";
+			const isIngredientValid = data.ingredient.trim() !== "";
+
+			if (!isQuantityValid || !isUnitValid || !isIngredientValid) {
+				Alert.alert(
+					i18n.t("Attention"),
+					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+				);
+				return false;
+			}
+			return true;
+		}
+
+		return false; // На случай некорректных данных
+	};
 	// const handleSave = (updatedData, lang) => {
 	// 	// Обновляем ингредиенты через переданную функцию updateIngredients
 	// 	// console.log("RefactorIngredientsComponent handleSave updatedData", updatedData);
@@ -153,6 +207,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 				onClose={() => setModalVisible(false)}
 				measurement={measurement}
 				quontityLang={quontityLang}
+				validateIngredientData={validateIngredientData}
 			/>
 			{/* Modal для добавления */}
 			<RefactorAddIngredientModal
@@ -161,6 +216,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 				onSave={handleAddSave}
 				quontityLang={quontityLang}
 				measurement={measurement}
+				validateIngredientData={validateIngredientData}
 			/>
 		</View>
 	);

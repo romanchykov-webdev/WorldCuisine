@@ -13,15 +13,17 @@ import i18n from "../../lang/i18n";
 import ButtonClearInputCustomComponent from "../ButtonClearInputCustomComponent";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
-const LinkToTheCopyright = ({ setTotalRecipe }) => {
+const LinkToTheCopyright = ({ setTotalRecipe, refactorRecipescrean = false, oldCopyring, updateCopyring }) => {
 	const [inputText, setInputText] = useState("");
 
 	const [linkCopyright, setLinkCopyright] = useState("");
 
+	// Добавляем дебонсированное значение
 	const debouncedValue = useDebounce(linkCopyright, 1000);
 
 	const addLinkCopyright = () => {
 		// console.log("addLinkCopyright");
+		setInputText("");
 		setLinkCopyright(inputText);
 	};
 
@@ -29,12 +31,21 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 		setInputText("");
 		setLinkCopyright("");
 	};
+	useEffect(() => {
+		if (refactorRecipescrean && oldCopyring) {
+			setLinkCopyright(oldCopyring);
+		}
+	}, []);
 
 	useEffect(() => {
-		setTotalRecipe((prevRecipe) => ({
-			...prevRecipe,
-			link_copyright: debouncedValue,
-		}));
+		if (refactorRecipescrean && updateCopyring) {
+			updateCopyring(linkCopyright);
+		} else {
+			setTotalRecipe((prevRecipe) => ({
+				...prevRecipe,
+				link_copyright: debouncedValue,
+			}));
+		}
 	}, [debouncedValue]);
 
 	return (
@@ -51,7 +62,7 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 					<LinkCopyrightComponent linkCopyright={linkCopyright} />
 
 					<TouchableOpacity style={shadowBoxBlack()} onPress={removeLinkCopyright}>
-						<ButtonSmallCustom w={30} h={30} icon={TrashIcon} bg={"red"} />
+						<ButtonSmallCustom w={30} h={30} icon={TrashIcon} tupeButton="remove" />
 					</TouchableOpacity>
 				</View>
 			)}
@@ -75,7 +86,7 @@ const LinkToTheCopyright = ({ setTotalRecipe }) => {
 					)}
 				</View>
 				<TouchableOpacity style={shadowBoxBlack()} onPress={addLinkCopyright}>
-					<ButtonSmallCustom icon={PlusIcon} bg={"green"} h={60} w={60} />
+					<ButtonSmallCustom icon={PlusIcon} tupeButton="add" h={60} w={60} />
 				</TouchableOpacity>
 			</View>
 		</View>

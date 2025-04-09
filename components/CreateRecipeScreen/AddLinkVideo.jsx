@@ -137,7 +137,7 @@ const AddLinkVideo = ({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
 						className="absolute top-0 right-0 justify-center items-center"
 						onPress={removeVideo}
 					>
-						<ButtonSmallCustom buttonText={false} icon={TrashIcon} bg="red" w={30} h={30} />
+						<ButtonSmallCustom buttonText={false} icon={TrashIcon} tupeButton="remove" w={30} h={30} />
 					</TouchableOpacity>
 				</View>
 			)}

@@ -4,7 +4,14 @@ import { hp } from "../../constants/responsiveScreen";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 
-const RefactorAddIngredientModal = ({ visible, onClose, onSave, quontityLang = [], measurement }) => {
+const RefactorAddIngredientModal = ({
+	visible,
+	onClose,
+	onSave,
+	quontityLang = [],
+	measurement,
+	validateIngredientData,
+}) => {
 	const [ingredientsByLang, setIngredientsByLang] = useState({});
 	const [quantity, setQuantity] = useState("1");
 	const [unit, setUnit] = useState("");
@@ -38,12 +45,50 @@ const RefactorAddIngredientModal = ({ visible, onClose, onSave, quontityLang = [
 	}, [measurement]);
 
 	const handleSave = () => {
+		// Проверка на заполненность всех полей
+		// const isQuantityValid = quantity > 0; // Проверяем, что количество больше 0
+		// const isUnitValid = unit !== ""; // Проверяем, что единица измерения выбрана
+		// const areIngredientsValid = quontityLang.every(
+		// (langItem) => ingredientsByLang[langItem]?.ingredient?.trim() !== ""
+		// ); // Проверяем, что все ингредиенты заполнены
+
+		// console.log("RefactorAddIngredientModal handleSave areIngredientsValid", areIngredientsValid);
+		// console.log("RefactorAddIngredientModal handleSave quantity", quantity);
+		// console.log("RefactorAddIngredientModal handleSave unit", unit);
+		// console.log("RefactorAddIngredientModal handleSave isQuantityValid", isQuantityValid);
+
+		// if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
+		// Alert.alert(
+		// 	i18n.t("Attention"),
+		// 	`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+		// );
+		// } else {
+		// 	const updatedData = { ...ingredientsByLang };
+		// 	quontityLang.forEach((langItem) => {
+		// 		updatedData[langItem] = { ...updatedData[langItem], quantity, unit };
+		// 	});
+		// 	onSave(updatedData);
+		// 	onClose();
+		// }
+
+		// Используем общую функцию валидации else true avanti else false alert
+		// if (validateIngredientData(ingredientsByLang, quantity, unit, quontityLang)) {
+		// 	const updatedData = { ...ingredientsByLang };
+		// 	quontityLang.forEach((langItem) => {
+		// 		updatedData[langItem] = { ...updatedData[langItem], quantity, unit };
+		// 	});
+		// 	onSave(updatedData);
+		// 	onClose();
+		// }
 		const updatedData = { ...ingredientsByLang };
 		quontityLang.forEach((langItem) => {
 			updatedData[langItem] = { ...updatedData[langItem], quantity, unit };
 		});
-		onSave(updatedData);
-		onClose();
+
+		if (validateIngredientData(updatedData, quontityLang)) {
+			onSave(updatedData);
+			onClose();
+		}
 	};
 
 	const handleIngredientChange = (langItem, value) => {

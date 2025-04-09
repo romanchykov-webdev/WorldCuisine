@@ -12,7 +12,7 @@ import { useDebounce } from "../../constants/halperFunctions";
 import i18n from "../../lang/i18n";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
-const AddPointGoogleMaps = ({ setTotalRecipe }) => {
+const AddPointGoogleMaps = ({ setTotalRecipe, refactorRecipescrean = false, oldCoordinates, updateCoordinates }) => {
 	const [marker, setMarker] = useState(null);
 	const [mapVisible, setMapVisible] = useState(false);
 
@@ -25,6 +25,13 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	const handleMapPress = (event) => {
 		setMarker(event.nativeEvent.coordinate);
 	};
+
+	// if refactorRecipescrean = true
+	useEffect(() => {
+		if (refactorRecipescrean && oldCoordinates) {
+			setMarker(oldCoordinates);
+		}
+	}, []);
 
 	// Открытие карты с выбранными координатами
 	const openMap = () => {
@@ -39,10 +46,13 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 	};
 
 	useEffect(() => {
-		setTotalRecipe((prevRecipe) => ({
-			...prevRecipe,
-			map_coordinates: debouncedValue,
-		}));
+		if (refactorRecipescrean && updateCoordinates) {
+		} else {
+			setTotalRecipe((prevRecipe) => ({
+				...prevRecipe,
+				map_coordinates: debouncedValue,
+			}));
+		}
 	}, [debouncedValue]);
 
 	return (
@@ -60,7 +70,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 					</View>
 
 					<TouchableOpacity onPress={() => setMarker(null)}>
-						<ButtonSmallCustom bg="red" icon={TrashIcon} w={60} h={60} />
+						<ButtonSmallCustom tupeButton="remove" icon={TrashIcon} w={60} h={60} />
 					</TouchableOpacity>
 				</Animated.View>
 			)}
@@ -81,7 +91,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe }) => {
 				{/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}*/}
 				{/*</Text>*/}
 				<ButtonSmallCustom
-					bg="green"
+					tupeButton="add"
 					h={60}
 					w="100%"
 					title={

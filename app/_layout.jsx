@@ -19,14 +19,17 @@ const _layout = () => {
 
 const RootLayout = () => {
 	const router = useRouter();
-
+	console.log("_layout rerender");
 	const { setAuth, setUserData } = useAuth();
 
-	const [isLoading, setIsLoading] = useState(true); // Добавляем состояние загрузки
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
+		console.log("useEffect triggered");
 		const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
 			// console.log("session:", session);
+			console.log("onAuthStateChange event:", _event, "session:", session);
+			console.log("isLoading before:", isLoading);
 
 			if (session) {
 				setAuth(session?.user);
@@ -44,12 +47,14 @@ const RootLayout = () => {
 			}
 
 			setTimeout(() => {
+				console.log("isLoading set to false");
 				setIsLoading(false); // Загрузка завершена
 			}, 2000);
 		});
 
 		// Отписка от подписчика при размонтировании
 		return () => {
+			console.log("Unsubscribing from auth listener");
 			authListener.subscription.unsubscribe();
 		};
 	}, []);

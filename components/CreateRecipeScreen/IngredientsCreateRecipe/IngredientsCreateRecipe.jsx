@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { PlusIcon, ScaleIcon } from "react-native-heroicons/mini";
+import { PlusIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../../constants/shadow";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 import ModalCustom from "../../ModalCustom";
@@ -232,11 +232,11 @@ const IngredientsCreateRecipe = ({
 
 				<View className="flex-row gap-x-2">
 					<TouchableOpacity onPress={() => setIsModalVisible(true)} style={shadowBoxBlack()}>
-						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} bg="#8B5CF6" />
+						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} tupeButton="remove" />
 					</TouchableOpacity>
 
 					<TouchableOpacity style={shadowBoxBlack()} onPress={addIngredient}>
-						<ButtonSmallCustom w={60} h={60} icon={PlusIcon} size={20} bg="#22C55E" />
+						<ButtonSmallCustom w={60} h={60} icon={PlusIcon} size={20} tupeButton="add" />
 					</TouchableOpacity>
 				</View>
 			</View>

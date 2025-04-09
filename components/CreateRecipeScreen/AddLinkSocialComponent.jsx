@@ -24,7 +24,7 @@ const AddLinkSocialComponent = ({
 	// const animatedStyle = useAnimatedStyle(() => ({
 	// 	opacity: opacity.value,
 	// }));
-	console.log("AddLinkSocialComponent oldSocialLinks", oldSocialLinks);
+	// console.log("AddLinkSocialComponent oldSocialLinks", oldSocialLinks);
 
 	const [previewUrl, setPreviewUrl] = useState({
 		facebook: null,
@@ -37,9 +37,9 @@ const AddLinkSocialComponent = ({
 		if (refactorRecipescrean && oldSocialLinks) {
 			setPreviewUrl((prev) => ({
 				...prev,
-				facebook: oldSocialLinks.facebook || null,
-				instagram: oldSocialLinks.instagram || null,
-				tiktok: oldSocialLinks.tiktok || null,
+				facebook: oldSocialLinks.facebook,
+				instagram: oldSocialLinks.instagram,
+				tiktok: oldSocialLinks.tiktok,
 			}));
 		}
 	}, []);
@@ -198,7 +198,7 @@ const AddLinkSocialComponent = ({
 
 				{/* button Add link to social */}
 				<TouchableOpacity onPress={handleAddLink} style={shadowBoxBlack()}>
-					<ButtonSmallCustom icon={PlusIcon} bg="green" w={60} h={60} />
+					<ButtonSmallCustom icon={PlusIcon} tupeButton="add" w={60} h={60} />
 				</TouchableOpacity>
 			</View>
 		</View>

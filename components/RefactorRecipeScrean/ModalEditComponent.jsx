@@ -5,7 +5,19 @@ import { hp } from "../../constants/responsiveScreen";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 
-const ModalEditComponent = ({ visible, initialData, lang, type, onSave, onClose, measurement }) => {
+const ModalEditComponent = ({
+	visible,
+	initialData,
+	lang,
+	type,
+	onSave,
+	onClose,
+	measurement,
+	quontityLang,
+	validateIngredientData,
+}) => {
+	// console.log("ModalEditComponent lang", lang);
+
 	// Для простого текста (например, теги, заголовки)
 	const { language: appLang } = useAuth();
 	const [text, setText] = useState("");
@@ -50,15 +62,20 @@ const ModalEditComponent = ({ visible, initialData, lang, type, onSave, onClose,
 				quantity,
 				unit,
 			};
+
+			if (validateIngredientData(updatedIngredient, quontityLang)) {
+				onSave(updatedIngredient, lang);
+				onClose();
+			}
 			// console.log("ModalEditComponent handleSave updatedIngredient", updatedIngredient);
 			// console.log("ModalEditComponent handleSave lang", lang);
 
-			onSave(updatedIngredient, lang);
+			// onSave(updatedIngredient, lang);
 		} else {
 			// Для других типов возвращаем текст
 			onSave(text, lang);
+			onClose();
 		}
-		onClose();
 	};
 
 	const handleSelectUnit = (key, val) => {
@@ -71,7 +88,7 @@ const ModalEditComponent = ({ visible, initialData, lang, type, onSave, onClose,
 			titleModal = `${i18n.t("Add new tag")}`;
 			break;
 		case "ingredients":
-			titleModal = `Edit Ingredient (${lang?.toUpperCase() || ""})`;
+			titleModal = `${i18n.t("Edit Ingredient")} (${lang?.toUpperCase() || ""})`;
 			break;
 		default:
 			titleModal = `${i18n.t("Edit")} ${lang?.toUpperCase() || ""}`;
@@ -168,6 +185,7 @@ const styles = StyleSheet.create({
 		fontSize: hp(2.5),
 		fontWeight: "bold",
 		marginBottom: 15,
+		textAlign: "center",
 	},
 	input: {
 		width: "100%",
