@@ -1,4 +1,4 @@
-import { Stack, useRouter } from "expo-router";
+import { Stack, usePathname, useRouter } from "expo-router";
 import "../global.css";
 
 import { useEffect, useState } from "react";
@@ -19,70 +19,116 @@ const _layout = () => {
 
 const RootLayout = () => {
 	const router = useRouter();
-	console.log("_layout rerender");
-	const { setAuth, setUserData } = useAuth();
+
+	// const { setAuth, setUserData } = useAuth();
+	const pathname = usePathname();
+	const { setAuth } = useAuth(); // Изменено: используем только setAuth
 
 	const [isLoading, setIsLoading] = useState(true);
 
-	useEffect(() => {
-		console.log("useEffect triggered");
-		const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-			// console.log("session:", session);
-			console.log("onAuthStateChange event:", _event, "session:", session);
-			console.log("isLoading before:", isLoading);
+	const [initialRoute, setInitialRoute] = useState(null); // Храним начальный маршрут
 
-			if (session) {
-				setAuth(session?.user);
-				try {
-					await updateUserData(session?.user);
-				} catch (error) {
-					console.error("Ошибка при обновлении данных пользователя:", error);
+	useEffect(() => {
+		// console.log("useEffect triggered, pathname:", pathname);
+		let isMounted = true;
+
+		const checkInitialSession = async () => {
+			try {
+				const {
+					data: { session },
+				} = await supabase.auth.getSession();
+				// console.log("Initial session:", session);
+
+				if (!isMounted) return;
+
+				let authData = null;
+				let route = "/homeScreen";
+
+				if (session) {
+					const res = await getUserData(session.user.id);
+					authData = res.success ? { ...session.user, ...res.data } : session.user;
+					// route = "/homeScreen";
+					// console.log("Setting auth with:", authData);
 				}
 
-				router.replace("/homeScreen");
-			} else {
+				// Объединяем setState для минимизации ререндеров
+				setAuth(authData);
+				setInitialRoute(route);
+				setTimeout(() => {
+					setIsLoading(false);
+				}, 3000);
+			} catch (error) {
+				console.error("Error checking initial session:", error);
+				if (!isMounted) return;
 				setAuth(null);
-				router.replace("/homeScreen");
-				// router.replace("/(main)/welcome");
+				setInitialRoute("/homeScreen"); // Даже при ошибке перенаправляем на homeScreen
+				// setInitialRoute("/(main)/welcome");
+				setTimeout(() => {
+					setIsLoading(false);
+				}, 3000);
 			}
+		};
 
-			setTimeout(() => {
-				console.log("isLoading set to false");
-				setIsLoading(false); // Загрузка завершена
-			}, 2000);
+		checkInitialSession();
+
+		const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+			// console.log("onAuthStateChange event:", _event, "session:", session);
+
+			if (!isMounted) return;
+
+			if (_event === "SIGNED_IN" && session && _event !== "INITIAL_SESSION") {
+				try {
+					const res = await getUserData(session.user.id);
+					const authData = res.success ? { ...session.user, ...res.data } : session.user;
+					// console.log("Setting auth with:", authData);
+					setAuth(authData);
+					if (pathname === "/" || pathname === "/(main)/welcome") {
+						router.replace("/homeScreen");
+					}
+				} catch (error) {
+					console.error("Error updating user data on sign in:", error);
+				}
+			} else if (_event === "SIGNED_OUT") {
+				setAuth(null);
+				if (pathname !== "/(main)/welcome") {
+					router.replace("/(main)/welcome");
+				}
+			}
 		});
 
-		// Отписка от подписчика при размонтировании
 		return () => {
-			console.log("Unsubscribing from auth listener");
+			// console.log("Unsubscribing from auth listener");
+			isMounted = false;
 			authListener.subscription.unsubscribe();
 		};
-	}, []);
+	}, [pathname, setAuth]);
 
-	// get update userData
-	const updateUserData = async (user) => {
-		let res = await getUserData(user?.id);
-		// console.log('user Data layout:', res)
-
-		if (res.success) {
-			setUserData(res?.data);
+	// Добавляем useEffect для перенаправления после загрузки
+	useEffect(() => {
+		if (!isLoading) {
+			router.replace("/homeScreen"); // Перенаправляем всех на homeScreen после завершения загрузки
 		}
-	};
-	//
-	// if (isLoading) {
-	// 	// Показываем страницу индекса (или индикатор загрузки), пока идет проверка
-	// 	return (
-	// 		<Stack>
-	// 			<Stack.Screen name="index" options={{ headerShown: false }} />
-	// 		</Stack>
-	// 	);
-	// }
+	}, [isLoading]);
+
+	// Если ещё загружаемся, показываем только индексный экран
+	if (isLoading) {
+		return (
+			<Stack>
+				<Stack.Screen name="index" options={{ headerShown: false }} />
+			</Stack>
+		);
+	}
+
+	/*
+	 *	Пропс initialRouteName в <Stack>
+	 *	задаёт начальный маршрут, основанный
+	 *	на результате проверки сессии.
+	 */
 
 	return (
-		<Stack>
+		<Stack initialRouteName={initialRoute}>
 			<Stack.Screen name="index" options={{ headerShown: false }} />
 			<Stack.Screen name="(main)/welcome" options={{ headerShown: false }} />
-
 			<Stack.Screen name="homeScreen" options={{ headerShown: false }} />
 			<Stack.Screen name="RecipeDetailsScreen" options={{ headerShown: false }} />
 			<Stack.Screen name="ProfileScreen" options={{ headerShown: false }} />
