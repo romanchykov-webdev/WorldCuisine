@@ -2,9 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { ScrollView } from "react-native-gesture-handler";
-import ButtonBack from "../../components/ButtonBack";
 import SubscriptionsComponent from "../../components/recipeDetails/SubscriptionsComponent";
-import TitleScrean from "../../components/TitleScrean";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
@@ -13,6 +11,7 @@ import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Icon from "react-native-vector-icons/Entypo";
 import IconComent from "react-native-vector-icons/EvilIcons";
+
 import LoadingComponent from "../../components/loadingComponent";
 import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
 import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
@@ -25,12 +24,16 @@ import i18n from "../../lang/i18n";
 import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
+import HeaderScreanComponent from "../../components/HeaderScreanComponent";
+
 const AllRecipesBayCreator = () => {
 	const router = useRouter();
 	const params = useLocalSearchParams();
 
 	const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev } = useAuth();
 	// console.log("AllRecipesBayCreator unreadCommentsCount", unreadCommentsCount);
+	// console.log("AllRecipesBayCreator langDev", langDev);
+	// console.log("AllRecipesBayCreator userData?.lang", userData?.lang);
 
 	const { creator_id } = params;
 
@@ -44,6 +47,8 @@ const AllRecipesBayCreator = () => {
 
 	// all recipe bay creator
 	const [allRecipesCreator, setAllRecipesCreator] = useState([]);
+
+	// console.log("AllRecipesBayCreator allRecipesCreator", JSON.stringify(allRecipesCreator, null));
 
 	// object for filter categoryes
 	const [obFilterCategory, setObFilterCategory] = useState({});
@@ -60,7 +65,7 @@ const AllRecipesBayCreator = () => {
 			// console.log("featGetAllRecipeBayCreator creator_id:", creator_id);
 			setLoading(true);
 			const res = await getAllRecipesBayCreatoreListMyDB(creator_id);
-
+			// console.log("featGetAllRecipeBayCreator res", res);
 			if (res?.success) {
 				// console.log("featGetAlßlRecipeBayCreator res:", res.data);
 
@@ -85,6 +90,7 @@ const AllRecipesBayCreator = () => {
 	const fetchCategoryRecipeMasonry = async () => {
 		setLoading(true);
 		const res = await getCategoryRecipeMasonryMyDB(userData?.lang ?? langDev);
+		// console.log("res", res);
 
 		// const res = await getCategoryRecipeMasonryMyDB("ru");
 		// console.log("fetchCategoryRecipeMasonry", JSON.stringify(res.data, null));
@@ -141,22 +147,27 @@ const AllRecipesBayCreator = () => {
 					} items-center justify-center `}
 				>
 					{/*  */}
-					<Animated.View
+					{/* <Animated.View
 						entering={FadeInDown.springify().delay(100)}
 						className={`${headerAllCeripe ? "mb-10 self-start" : "absolute left-0"}`}
 						style={shadowBoxBlack()}
 					>
 						<ButtonBack />
-					</Animated.View>
+					</Animated.View> */}
 					{/* Остальные элементы */}
-					{!headerAllCeripe && (
+					{/* {!headerAllCeripe && (
 						<Animated.View entering={FadeInDown.springify().delay(200)}>
 							<TitleScrean
 								title={i18n.t("Your recipes")}
 								styleTitle={{ textAlign: "center", fontSize: hp(3) }}
 							/>
 						</Animated.View>
-					)}
+					)} */}
+					<HeaderScreanComponent
+						fontSizeTitle={3}
+						headerAllCeripe={headerAllCeripe}
+						titleScreanText={i18n.t("Your recipes")}
+					/>
 
 					{headerAllCeripe && (
 						<SubscriptionsComponent

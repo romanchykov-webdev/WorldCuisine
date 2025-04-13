@@ -239,7 +239,11 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 													}}
 													style={shadowBoxBlack()}
 												>
-													<ButtonSmallCustom icon={TrashIcon} color="white" bg="#EF4444" />
+													<ButtonSmallCustom
+														icon={TrashIcon}
+														color="white"
+														tupeButton="remove"
+													/>
 												</TouchableOpacity>
 											</View>
 

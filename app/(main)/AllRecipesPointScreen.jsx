@@ -13,6 +13,7 @@ import { getDeviceType } from "../../constants/getWidthDevice";
 import { myFormatNumber } from "../../constants/halperFunctions";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack, shadowText } from "../../constants/shadow";
+import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 import { getAllRecipesPointMasonryMyDB } from "../../service/getDataFromDB";
 
@@ -23,9 +24,10 @@ const AllRecipesPointScreen = ({
 	allFavoriteRecipes = [],
 	titleVisible = true,
 }) => {
-	const { point, langApp } = useLocalSearchParams();
+	const { point } = useLocalSearchParams();
+	const { language: langApp } = useAuth();
 
-	// console.log('AllRecipesPointScreen langApp',langApp)
+	// console.log("AllRecipesPointScreen langApp", langApp);
 	// console.log("AllRecipesPointScreen isFavoriteScrean", isFavoriteScrean);
 
 	const [column, setColumn] = useState(0);
@@ -125,7 +127,7 @@ const AllRecipesPointScreen = ({
 const RecipePointItem = ({ item, index, langApp }) => {
 	// console.log('index', index)
 	// console.log('CardItem item', item)
-	// console.log('CardItem langApp', langApp)
+	// console.log("CardItem langApp", langApp);
 	const router = useRouter();
 
 	const isEven = index % 3 === 0;

@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 // Получить все категории
+/**
+ * Получает все категории из таблицы "categories".
+ */
 export const getCategoriesMyDB = async () => {
 	try {
 		const { data, error } = await supabase.from("categories").select("*");
@@ -18,6 +21,10 @@ export const getCategoriesMyDB = async () => {
 };
 
 //получение всех рецептов в категории
+/**
+ * Получает все рецепты из таблицы "short_desc" по указанной категории.
+ * @param {string} category - Название категории.
+ */
 export const getRecipesMyDB = async (category) => {
 	// console.log("getRecipesMyDB category",category)
 	try {
@@ -43,6 +50,10 @@ export const getRecipesMyDB = async (category) => {
 };
 
 //получение всех категории getCategoryRecipeMasonryMyDB
+/**
+ * Получает все категории Masonry с переводом на нужный язык.
+ * @param {string} langDew - Язык (например, "en", "ru").
+ */
 export const getCategoryRecipeMasonryMyDB = async (langDew) => {
 	// console.log("getCategoryRecipeMasonryMyDB langDew", langDew);
 
@@ -68,6 +79,10 @@ export const getCategoryRecipeMasonryMyDB = async (langDew) => {
 };
 
 //получение всех под категории getCategoryRecipeMasonryMyDB
+/**
+ * Получает все рецепты из таблицы "short_desc" по указанной точке (point).
+ * @param {string} point - Идентификатор подкатегории или фильтра.
+ */
 export const getAllRecipesPointMasonryMyDB = async (point) => {
 	try {
 		// let { data, error } = await supabase.from("shortDesc").select("*").eq("point", point);
@@ -93,8 +108,14 @@ export const getAllRecipesPointMasonryMyDB = async (point) => {
 };
 
 //получение description рецепта
+/**
+ * Получает рейтинг и/или количество комментариев рецепта по ID.
+ * @param {object} param
+ * @param {number} param.id - ID рецепта.
+ * @param {string} param.payload - Какой параметр получить (например, "updateCommentsCount").
+ */
 export const getRecipesDescriptionMyDB = async (id) => {
-	// console.log("getRecipesDescriptionMyDB receps id",id)
+	// console.log("getRecipesDescriptionMyDB receps id", id);
 	// console.log('ok:',tableCategory)
 	// if (tableCategory.includes(' ')) {
 	//     console.log('Строка содержит пробелы');
@@ -122,6 +143,10 @@ export const getRecipesDescriptionMyDB = async (id) => {
 };
 
 //получение description рецепта его количества комментариев и рейтинга
+/**
+ * Получает все комментарии к рецепту, отсортированные от новых к старым.
+ * @param {number} id - ID рецепта.
+ */
 export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 	// console.log("getRecipesDescriptionLikeRatingMyDB recipe id",id)
 	// console.log("getRecipesDescriptionLikeRatingMyDB recipe payload",payload)
@@ -156,6 +181,10 @@ export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 };
 
 //получение all comments рецепта
+/**
+ * Получает данные пользователей (аватар и имя), оставивших комментарии.
+ * @param {number[]} ids - Массив ID пользователей.
+ */
 export const getAllCommentsMyDB = async (id) => {
 	// console.log('getAllCommentsMyDB id',id)
 	try {
@@ -212,6 +241,13 @@ export const getAllUserIdCommentedMyDB = async (ids) => {
 };
 
 //отправка комментария на рецепт
+/**
+ * Добавляет новый комментарий к рецепту.
+ * @param {object} param
+ * @param {number} param.postId - ID рецепта.
+ * @param {number} param.userIdCommented - ID пользователя.
+ * @param {string} param.comment - Текст комментария.
+ */
 export const addNewCommentToRecipeMyDB = async ({ postId, userIdCommented, comment }) => {
 	// console.log("getAllCommentsMyDB postId", postId);
 	// console.log("getAllCommentsMyDB userIdCommented", userIdCommented);
@@ -247,6 +283,10 @@ export const addNewCommentToRecipeMyDB = async ({ postId, userIdCommented, comme
 };
 
 //удаление комментария
+/**
+ * Удаляет комментарий по его ID.
+ * @param {number} commentId - ID комментария.
+ */
 export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 	try {
 		const { error } = await supabase.from("comments").delete().eq("id", commentId); // Фильтруем по id комментария
@@ -266,6 +306,13 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 };
 
 // добавление лайка рецепту
+/**
+ * Добавляет или удаляет лайк к рецепту с использованием RPC-функции Supabase `toggle_recipe_like`.
+ * Если пользователь уже поставил лайк — он будет убран, иначе лайк добавится.
+ * @param {object} param
+ * @param {number} param.recipeId - ID рецепта.
+ * @param {number} param.userIdLike - ID пользователя.
+ */
 export const addLikeRecipeMyDB = async ({ recipeId, userIdLike }) => {
 	try {
 		const { data, error } = await supabase.rpc("toggle_recipe_like", {
@@ -289,6 +336,12 @@ export const addLikeRecipeMyDB = async ({ recipeId, userIdLike }) => {
 };
 
 // проверка ставил ли пользователь лайк этому рецепту
+/**
+ * Проверяет, поставил ли пользователь лайк конкретному рецепту.
+ * @param {object} param
+ * @param {number} param.recipeId - ID рецепта.
+ * @param {number} param.userId - ID пользователя.
+ */
 export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 	// console.log('checkIfUserLikedRecipe recipeId', recipeId);
 	// console.log('checkIfUserLikedRecipe userId', userId);
@@ -318,6 +371,9 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 };
 
 //Добавление рейтинга в таблицу recipe_ratings
+/**
+ * Добавляет рейтинг рецепту (в твоем коде начало этой функции, но тело не показано).
+ */
 export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
 	// console.log("addRecipeRatingMyDB", rating);
 
@@ -543,7 +599,6 @@ export const getAllFavoriteIdisMyDB = async (user_id) => {
 };
 
 // Функция для получения рецептов по ID
-
 export const getAllFavoriteListMyDB = async (recipeIds) => {
 	try {
 		const { data, error } = await supabase.from("short_desc").select("*").in("full_recipe_id", recipeIds); // Фильтр по массиву ID
@@ -596,4 +651,33 @@ export const useNotifications = (userId, onNewNotification) => {
 			supabase.removeChannel(subscription);
 		};
 	}, [userId, onNewNotification]);
+};
+
+// функция для обновления рецепта
+export const updateRecipeMyDB = async (recipe) => {
+	try {
+		if (!recipe.id) {
+			throw new Error("ID рецепта отсутствует");
+		}
+
+		// Убираем id из объекта для обновления
+		const { id, ...fieldsToUpdate } = recipe;
+
+		const { data, error } = await supabase
+			.from("all_recipes_description")
+			.update(fieldsToUpdate)
+			.eq("id", id)
+			.select();
+
+		if (error) {
+			console.error("Ошибка при обновлении рецепта:", error.message);
+			return { success: false, msg: error.message };
+		}
+
+		console.log("Рецепт успешно обновлен:", JSON.stringify(data[0], null, 2));
+		return { success: true, data: data[0] };
+	} catch (error) {
+		console.error("Неожиданная ошибка при обновлении рецепта:", error.message);
+		return { success: false, msg: error.message };
+	}
 };

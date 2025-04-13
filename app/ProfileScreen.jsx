@@ -232,28 +232,28 @@ const ProfileScreen = () => {
 				// 	>
 				<WrapperComponent>
 					{/*button go tu back*/}
-					<View style={shadowBoxBlack()} className="mt-5">
+					<View style={shadowBoxBlack()}>
 						<ButtonBack />
 					</View>
 
 					{/*change lang*/}
 					<View
-						className=" h-full flex-1 justify-center
-                            {/*bg-red-500*/}
+						className="  flex-1 justify-center
+                            
                             "
 					>
 						{/*block login and sign up*/}
 						<View
-							className="mb-10 w-full flex-row   gap-10 justify-center
+							className="mb-10 w-full   gap-10 justify-center 
                                     {/*bg-red-500*/}
                                     "
-							style={{ flexWrap: "wrap" }} // Добавляем перенос строк
+							// style={{ flexWrap: "wrap" }} // Добавляем перенос строк
 						>
 							{/*    log in*/}
 							<TouchableOpacity
 								onPress={() => router.push("/(auth)/LogInScreen")}
 								style={shadowBoxBlack()}
-								className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
+								className="p-5 pl-10 pr-10 w-full items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300 "
 							>
 								<Text>{i18n.t("Log In")}</Text>
 							</TouchableOpacity>
@@ -263,7 +263,7 @@ const ProfileScreen = () => {
 							<TouchableOpacity
 								onPress={() => router.push("/(auth)/RegistrationScreen")}
 								style={shadowBoxBlack()}
-								className="p-5 pl-10 pr-10 items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
+								className="p-5 pl-10 pr-10 w-full items-center justify-center  border-[1px] border-neutral-300 rounded-full bg-amber-300"
 							>
 								<Text>{i18n.t("Sign Up")}</Text>
 							</TouchableOpacity>

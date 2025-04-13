@@ -11,7 +11,9 @@ import ModalCreateRecipe from "./ModalCreateRecipe";
 import { useDebounce } from "../../constants/halperFunctions";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
 
-const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
+const SelectCreateRecipeScreenCustom = ({ setTotalRecipe, recipeDish = {}, reafctorScrean = false }) => {
+	// console.log("SelectCreateRecipeScreenCustom setTotalRecipe", JSON.stringify(recipeDish, null));
+
 	const [modalTitle, setModalTitle] = useState("");
 	const [modalDescription, setModalDescription] = useState("");
 	const [modalArray, setModalArray] = useState([]);
@@ -22,6 +24,17 @@ const SelectCreateRecipeScreenCustom = ({ setTotalRecipe }) => {
 		calorie: 1,
 		level: "Easy",
 	});
+
+	useEffect(() => {
+		if (reafctorScrean && Object.keys(recipeDish).length > 0) {
+			setModalSelectItem({
+				time: recipeDish?.recipe_metrics.time.value,
+				person: recipeDish?.recipe_metrics.persons.value,
+				calorie: recipeDish?.recipe_metrics.calories.value,
+				level: recipeDish?.recipe_metrics.difficulty.value,
+			});
+		}
+	}, [reafctorScrean]);
 
 	const [isModalVisible, setIsModalVisible] = useState(false);
 

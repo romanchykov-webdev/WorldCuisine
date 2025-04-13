@@ -1,6 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+// Объект с соответствиями значений tupeButton и цветов
+const buttonTypeColors = {
+	remove: "red",
+	refactor: "purple",
+	add: "green",
+	default: "white", // цвет по умолчанию, если tupeButton не указан или не соответствует
+};
+
 const ButtonSmallCustom = ({
 	styleWrapperButton,
 	w = 40,
@@ -14,12 +22,15 @@ const ButtonSmallCustom = ({
 	styleIcon,
 	buttonText = false,
 	iconVisual = false,
+	tupeButton = false,
 }) => {
+	// Определяем цвет фона: если tupeButton задан и есть в buttonTypeColors, берем его, иначе bg
+	const backgroundColor = tupeButton && buttonTypeColors[tupeButton] ? buttonTypeColors[tupeButton] : bg;
 	return (
 		<View
-			className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden"
+			className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden bg-red-500"
 			style={{
-				backgroundColor: bg,
+				backgroundColor: backgroundColor,
 				width: w,
 				height: h,
 				...styleWrapperButton,
@@ -44,8 +55,7 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		color: "black",
 		marginLeft: 10,
-
-		// padding:20,
+		textAlign: "center",
 	},
 });
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { PlusIcon, ScaleIcon } from "react-native-heroicons/mini";
+import { PlusIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../../constants/shadow";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 import ModalCustom from "../../ModalCustom";
@@ -20,9 +20,11 @@ const IngredientsCreateRecipe = ({
 	measurement,
 	totalLangRecipe,
 	setTotalRecipe,
+	// refactorRecipe = null, // По умолчанию пустой объект если это создание нового рецепта
 }) => {
 	// console.log("measurement",measurement)
 	// console.log(totalLangRecipe)
+	// console.log(refactorRecipe);
 	const [isModalVisible, setIsModalVisible] = useState(false);
 
 	// массив по ключу
@@ -30,7 +32,7 @@ const IngredientsCreateRecipe = ({
 	// console.log(measurementLangApp)
 
 	// const [ingredients, setIngredients] = useState([]);
-	const [ingredients, setIngredients] = useState({ lang: {} }); // Новая структура
+	const [ingredients, setIngredients] = useState({ lang: {} }); // Новая структура Начальное состояние
 
 	// console.log("IngredientsCreateRecipe totalLangRecipe ", totalLangRecipe?.length);
 	// console.log("IngredientsCreateRecipe ingredients ", ingredients);
@@ -50,6 +52,23 @@ const IngredientsCreateRecipe = ({
 	// 	// "ingredient": Array(totalLangRecipe.length).fill('') // Инициализируем пустыми строками
 	// });
 
+	// Синхронизация ingredients с refactorRecipe при загрузке или изменении
+	// useEffect(() => {
+	// 	if (refactorRecipe) {
+	// 		// Если переданы данные редактирования, используем их
+	// 		// console.log("refactorRecipe", refactorRecipe);
+
+	// 		setIngredients(refactorRecipe);
+	// 		console.log("IngredientsCreateRecipe useEfect refactorRecipe not null ", refactorRecipe);
+	// 	} else {
+	// 		// Если это создание нового рецепта, инициализируем пустую структуру для всех языков
+	// 		setIngredients({
+	// 			lang: totalLangRecipe.reduce((acc, lang) => ({ ...acc, [lang]: [] }), {}),
+	// 		});
+	// 		console.log("IngredientsCreateRecipe useEfect refactorRecipe  null ", refactorRecipe);
+	// 	}
+	// }, [refactorRecipe, totalLangRecipe]);
+
 	const [ingredient, setIngredient] = useState({
 		unit: totalLangRecipe.reduce((acc, lang) => ({ ...acc, [lang]: "" }), {}),
 		quantity: "1", // Изменено на строку для соответствия желаемой структуре
@@ -58,6 +77,7 @@ const IngredientsCreateRecipe = ({
 
 	const debouncedValue = useDebounce(ingredients, 1000);
 
+	// Обновление единиц измерения для текущего языка
 	useEffect(() => {
 		if (measurement[langApp]) {
 			setMeasurementLangApp(
@@ -162,7 +182,25 @@ const IngredientsCreateRecipe = ({
 				descriptionVisual={true}
 				descriptionText={i18n.t("Add all the ingredients and their quantities to prepare the recipe")}
 			/>
-
+			{/* {refactorRecipe ? (
+				<View>
+					<ListIngredientsCreateRecipe
+						ingredients={ingredients}
+						setIngredients={setIngredients}
+						totalLangRecipe={totalLangRecipe}
+					/>
+				</View>
+			) : (
+				Object.keys(ingredients.lang).length > 0 && (
+					<View>
+						<ListIngredientsCreateRecipe
+							ingredients={ingredients}
+							setIngredients={setIngredients}
+							totalLangRecipe={totalLangRecipe}
+						/>
+					</View>
+				)
+			)} */}
 			{Object.keys(ingredients.lang).length > 0 && (
 				<View>
 					<ListIngredientsCreateRecipe
@@ -194,11 +232,11 @@ const IngredientsCreateRecipe = ({
 
 				<View className="flex-row gap-x-2">
 					<TouchableOpacity onPress={() => setIsModalVisible(true)} style={shadowBoxBlack()}>
-						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} bg="#8B5CF6" />
+						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} tupeButton="remove" />
 					</TouchableOpacity>
 
 					<TouchableOpacity style={shadowBoxBlack()} onPress={addIngredient}>
-						<ButtonSmallCustom w={60} h={60} icon={PlusIcon} size={20} bg="#22C55E" />
+						<ButtonSmallCustom w={60} h={60} icon={PlusIcon} size={20} tupeButton="add" />
 					</TouchableOpacity>
 				</View>
 			</View>

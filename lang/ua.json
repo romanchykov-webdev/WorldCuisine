@@ -3,6 +3,16 @@
 
 	"Cancel": "Скасувати",
 	"Ok": "Ok",
+	"Edit": "Редагувати",
+	"Save": "Зберегти",
+	"Attention": "Увага",
+	"Edit Ingredient": "Редагувати інгредієнт",
+	"Please fill in all fields": "Будь ласка, заповніть усі поля",
+	"ingredient name, quantity, and unit": "назва інгредієнта, кількість і одиниця виміру",
+	"Add new tag": "Додати новий тег",
+	"Add New Step": "Додати новий крок",
+	"Add new ingredient": "Додати новий інгредієнт",
+	"There must be at least one tag": "Повинен бути щонайменше один тег",
 	"Are you sure you want to delete this comment?": "Ви впевнені, що хочете видалити цей коментар?",
 	"Remove comment": "Видалити коментар",
 	"You haven't added an image": "Ви не додали зображення.",
@@ -185,6 +195,9 @@
 	"Subscribe": "Подписаться",
 	"Unsubscribe": "Скасувати підписку",
 	"Your recipe": "Ваш рецепт",
+	"Edit recipe": "Редагувати рецепт",
+	"Do you want to edit?": "Ви хочете редагувати?",
+	"Do you really want to edit your recipe?": "Ви справді хочете відредагувати свій рецепт?",
 
 	"---SubscribeComponent-END--": "---SubscribeComponent-END--",
 

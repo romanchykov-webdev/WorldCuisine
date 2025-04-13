@@ -1,9 +1,8 @@
-import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowUpOnSquareStackIcon, TrashIcon } from "react-native-heroicons/mini";
 import i18n from "../../lang/i18n";
-import { compressImage100 } from "../../lib/imageUtils";
+import { useImagePicker } from "../../lib/imageUtils";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import LoadingComponent from "../loadingComponent";
 import StərɪskCustomComponent from "../StərɪskCustomComponent";
@@ -23,70 +22,45 @@ const UploadHeaderImage = ({
 
 	const [loadingCompresImg, setLoadingCompresImg] = useState(false);
 
-	const addImageRecipeList = async () => {
-		// console.log('Add Recipe List');
-		if (addImage.length >= 5) {
-			Alert.alert(`${i18n.t("You have reached the image limit for one item")}`);
-			return;
-		}
+	//  кастомный хук
+	const { addImageRecipeList } = useImagePicker(addImage, setAddImage, setLoadingCompresImg);
 
-		setLoadingCompresImg(true);
+	// const handleImagePick = async () => {
+	// 	const imageUrl = await addImageRecipeList();
+	// 	if (imageUrl) {
+	// 		setTotalRecipe((prevRecipe) => ({
+	// 			...prevRecipe,
+	// 			image_header: imageUrl,
+	// 		}));
+	// 	}
+	// };
 
-		let res = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ["images"],
-			allowsEditing: true,
-			aspect: [1, 1],
-			quality: 1,
-		});
+	// const handlerRemoveHeaderImage = () => {
+	// 	setAddImage([]);
+	// };
 
-		if (res && res.assets && res.assets[0]) {
-			const originalUri = res.assets[0].uri;
-
-			// Получаем размер оригинального изображения
-			const originalRes = await fetch(originalUri);
-			const originalBlob = await originalRes.blob();
-			const originalSizeInMB = (originalBlob.size / (1024 * 1024)).toFixed(2);
-			// console.log(`Original image size: ${originalSizeInMB} MB`);
-
-			// Сжимаем изображение перед использованием
-			// const compressedImage = await compressImage(originalUri, 1, 300, 300);
-			const compressedImage = await compressImage100(originalUri, 0.3);
-
-			// Получаем размер сжатого изображения
-			const compressedResponse = await fetch(compressedImage.uri);
-			const compressedBlob = await compressedResponse.blob();
-			const compressedSizeInMB = (compressedBlob.size / (1024 * 1024)).toFixed(2);
-			// console.log(`Compressed image size: ${compressedSizeInMB} MB`);
-
-			// Обновляем состояние
-			setAddImage((prev) => [...prev, compressedImage]);
-
-			// Выводим обновленный список изображений
-			// console.log('add image for recipe list', addImages);
-
-			// console.log("addImage",addImage)
-
-			// Выводим информацию в alert
-			Alert.alert(
-				"Size image",
-				`Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`
-			);
-			setTotalRecipe((prevRecipe) => ({
-				...prevRecipe,
-				image_header: compressedResponse.url,
-			}));
-			setLoadingCompresImg(false);
-		} else {
-			// console.error("Image selection canceled or failed", result);
-			Alert.alert(`${i18n.t("You haven't added an image")}`);
+	const handleImagePick = async () => {
+		const imageUrl = await addImageRecipeList();
+		if (imageUrl) {
+			setAddImage([{ uri: imageUrl }]);
+			setTotalRecipe((prevRecipe) => {
+				const updatedRecipe = { ...prevRecipe, image_header: imageUrl };
+				console.log("UploadHeaderImage: After pick, totalRecipe.image_header:", updatedRecipe.image_header);
+				return updatedRecipe;
+			});
 		}
 	};
-
-	useEffect(() => {}, [addImage]);
 
 	const handlerRemoveHeaderImage = () => {
 		setAddImage([]);
+		setTotalRecipe((prevRecipe) => {
+			const updatedRecipe = { ...prevRecipe, image_header: null };
+			console.log("UploadHeaderImage: After remove, totalRecipe.image_header:", updatedRecipe.image_header);
+			return updatedRecipe;
+		});
 	};
+	useEffect(() => {}, [addImage]);
+
 	return (
 		<View className="mb-5 relative">
 			<StərɪskCustomComponent />
@@ -100,7 +74,7 @@ const UploadHeaderImage = ({
 				</View>
 			) : (
 				<TouchableOpacity
-					onPress={addImageRecipeList}
+					onPress={handleImagePick}
 					className="border-2 border-neutral-200 w-full h-[200]  rounded-[15] justify-center "
 				>
 					<View className="items-center">
