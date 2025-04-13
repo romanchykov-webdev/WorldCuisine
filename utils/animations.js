@@ -98,4 +98,52 @@ const createPulseAnimation = ({
 	Animated.loop(pulse).start();
 };
 
-export { createFadeAnimation, createHeightCollapseAnimation, createPulseAnimation };
+const createPulseAnimationCircle = ({
+	scaleAnim,
+	opacityAnim,
+	duration = 1200,
+	scaleFrom = 0,
+	scaleTo = 1,
+	opacityFrom = 0,
+	opacityTo = 1,
+	useNativeDriver = true,
+}) => {
+	// Создаем одну волну
+	const wave = Animated.parallel([
+		Animated.timing(scaleAnim, {
+			toValue: scaleTo,
+			duration: duration,
+			useNativeDriver,
+		}),
+		Animated.sequence([
+			Animated.timing(opacityAnim, {
+				toValue: opacityTo,
+				duration: duration / 2,
+				useNativeDriver,
+			}),
+			Animated.timing(opacityAnim, {
+				toValue: opacityFrom,
+				duration: duration / 2,
+				useNativeDriver,
+			}),
+		]),
+	]);
+
+	// Зацикливаем волну
+	const loop = Animated.loop(wave);
+
+	// Запускаем анимацию
+	loop.start();
+
+	// Возвращаем объект для управления циклом
+	return {
+		start: () => loop.start(),
+		stop: () => {
+			loop.stop();
+			scaleAnim.setValue(scaleFrom);
+			opacityAnim.setValue(opacityFrom);
+		},
+	};
+};
+
+export { createFadeAnimation, createHeightCollapseAnimation, createPulseAnimation, createPulseAnimationCircle };
