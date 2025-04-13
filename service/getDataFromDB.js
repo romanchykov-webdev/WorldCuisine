@@ -681,3 +681,23 @@ export const updateRecipeMyDB = async (recipe) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+//
+export const getRecipesByQuerySearchcreenMyDB = async (query) => {
+	console.log("getRecipesByQuerySearchcreenMyDB", query);
+
+	try {
+		const { data, error } = await supabase
+			.from("short_desc")
+			.select("id, created_at, title, tags, image_header, rating, likes, comments")
+			.ilike("tags::text", `%${query}%`); // Приводим JSONB к тексту
+		if (error) {
+			console.error("Error fetching recipes:", error);
+			return;
+		}
+		return { success: true, data };
+	} catch (error) {
+		console.error("Unexpected error:", error);
+		return { success: false, msg: error.message };
+	}
+};

@@ -11,7 +11,7 @@ const TitleScrean = ({ title, styleTitle }) => {
 				shadowText({ color: "rgba(0,0,0,0.4)", offset: { width: 1.5, height: 1.5 }, radius: 1 }),
 				styleTitle,
 			]}
-			className="font-semibold text-neutral-700 mb-2"
+			className="font-semibold text-neutral-700 "
 		>
 			{title}
 		</Text>

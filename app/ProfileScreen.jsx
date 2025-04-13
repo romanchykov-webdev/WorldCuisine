@@ -237,11 +237,7 @@ const ProfileScreen = () => {
 					</View>
 
 					{/*change lang*/}
-					<View
-						className="  flex-1 justify-center
-                            
-                            "
-					>
+					<View className="  flex-1 justify-center">
 						{/*block login and sign up*/}
 						<View
 							className="mb-10 w-full   gap-10 justify-center 

@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { MagnifyingGlassIcon } from "react-native-heroicons/mini";
@@ -7,8 +8,9 @@ import i18n from "../lang/i18n";
 import { createPulseAnimationCircle } from "../utils/animations";
 import ButtonClearInputCustomComponent from "./ButtonClearInputCustomComponent";
 
-const SearchComponent = () => {
-	const [inpurSearch, setInpurSearch] = useState("");
+const SearchComponent = ({ searchDefault, searchScrean = false }) => {
+	const router = useRouter();
+	const [inpurSearch, setInpurSearch] = useState(searchDefault ? searchDefault : "");
 	const pulseScaleAnim = useRef(new Animated.Value(0)).current; // Масштаб начинается с 0
 	const pulseOpacityAnim = useRef(new Animated.Value(0)).current; // Прозрачность начинается с 0
 	const animationLoop = useRef(null); // Храним ссылку на цикл анимации
@@ -56,6 +58,24 @@ const SearchComponent = () => {
 		};
 	}, [inpurSearch]);
 
+	//
+	const goToSceenSearch = () => {
+		const trimeSearch = inpurSearch.trim();
+		if (trimeSearch !== "") {
+			router.push({
+				pathname: "(main)/SearchRecipeScrean",
+				params: { searchQuery: trimeSearch },
+			});
+		}
+		setTimeout(() => {
+			setInpurSearch("");
+		}, 100);
+	};
+
+	//
+	const getQueryRecipe = async () => {
+		console.log("getQueryRecipe");
+	};
 	return (
 		<View style={shadowBoxBlack} className="rounded-full bg-black/5 p-[6] mt-5 mb-5 relative">
 			<View className="flex-row items-center rounded-full bg-transparent">
@@ -67,22 +87,25 @@ const SearchComponent = () => {
 					value={inpurSearch}
 					onChangeText={(val) => setInpurSearch(val)}
 				/>
-				<TouchableOpacity className="bg-white rounded-full p-5 overflow-hidden">
-					<View style={styles.iconContainer}>
-						{/* Анимированная обводка */}
-						<Animated.View
-							style={[
-								styles.borderCircle,
-								{
-									transform: [{ scale: pulseScaleAnim }],
-									opacity: pulseOpacityAnim,
-								},
-							]}
-						/>
-						{/* Иконка лупы */}
-						<MagnifyingGlassIcon size={hp(2.5)} color="gray" />
-					</View>
-				</TouchableOpacity>
+
+				{!searchScrean && (
+					<TouchableOpacity onPress={goToSceenSearch} className="bg-white rounded-full p-5 overflow-hidden">
+						<View style={styles.iconContainer}>
+							{/* Анимированная обводка */}
+							<Animated.View
+								style={[
+									styles.borderCircle,
+									{
+										transform: [{ scale: pulseScaleAnim }],
+										opacity: pulseOpacityAnim,
+									},
+								]}
+							/>
+							{/* Иконка лупы */}
+							<MagnifyingGlassIcon size={hp(2.5)} color="gray" />
+						</View>
+					</TouchableOpacity>
+				)}
 			</View>
 			{inpurSearch.length > 0 && (
 				<ButtonClearInputCustomComponent
