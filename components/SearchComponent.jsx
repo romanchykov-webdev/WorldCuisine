@@ -75,6 +75,8 @@ const SearchComponent = ({ searchDefault, searchScrean = false }) => {
 	//
 	const getQueryRecipe = async () => {
 		console.log("getQueryRecipe");
+		if (searchScrean) {
+		}
 	};
 	return (
 		<View style={shadowBoxBlack} className="rounded-full bg-black/5 p-[6] mt-5 mb-5 relative">

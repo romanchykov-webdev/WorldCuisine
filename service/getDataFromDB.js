@@ -687,15 +687,17 @@ export const getRecipesByQuerySearchcreenMyDB = async (query) => {
 	console.log("getRecipesByQuerySearchcreenMyDB", query);
 
 	try {
-		const { data, error } = await supabase
-			.from("short_desc")
-			.select("id, created_at, title, tags, image_header, rating, likes, comments")
-			.ilike("tags::text", `%${query}%`); // Приводим JSONB к тексту
+		const { data, error } = await supabase.rpc("search_recipes_by_tag", {
+			tag_query: query,
+		});
+
 		if (error) {
 			console.error("Error fetching recipes:", error);
-			return;
+			return { success: false, msg: error.message };
 		}
-		return { success: true, data };
+
+		// console.log("getRecipesByQuerySearchcreenMyDB data", data);
+		return { success: true, data }; // Уберите комментарий, чтобы возвращать данные
 	} catch (error) {
 		console.error("Unexpected error:", error);
 		return { success: false, msg: error.message };
