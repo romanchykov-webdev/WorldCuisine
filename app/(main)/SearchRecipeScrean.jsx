@@ -18,36 +18,98 @@ const SearchRecipeScrean = () => {
 	const [loading, setLoading] = useState(true);
 	const [displayFilters, setDisplayFilters] = useState("list");
 
+	const [filterRatingFavorite, setFilterRatingFavorite] = useState({
+		rating: false,
+		favorite: false,
+	});
+
 	const router = useRouter();
+
 	const { searchQuery } = useLocalSearchParams();
-	console.log(searchQuery);
+
+	useEffect(() => {}, [searchQuery]);
+
+	console.log("SearchRecipeScrean", searchQuery);
+
 	const [recipes, setRecipes] = useState([]);
+
 	const [currentQuery, setCurrentQuery] = useState(searchQuery || "");
 
-	//
+	const [filterQuery, setFilterQuery] = useState([]);
+	//animaten
 	const customFadeIn = (typeAnimation, numDuration, delayMs) => typeAnimation.duration(numDuration).delay(delayMs);
+
+	// // Анимированное прозрачностью
+	// const opacity = useSharedValue(1);
+	// const [isLoadingVisible, setIsLoadingVisible] = useState(true); // Контролируем видимость
 
 	const featchGetAllRecipeQuery = async (query) => {
 		if (!query) return;
+		// if (!query) {
+		// 	setRecipes([]);
+		// 	setLoading(false);
+		// 	return;
+		// }
 
 		try {
+			setLoading(true);
+			// setIsLoadingVisible(true);
+			// opacity.value = withTiming(1, { duration: 300 }); // Плавное появление за 300 мс
+
 			const res = await getRecipesByQuerySearchcreenMyDB(query);
 			// console.log("SearchRecipeScrean featchGetAllRecipeQuery res", res);
 			if (res.success) {
 				setRecipes(res.data);
+				setFilterQuery(res.data);
 			} else {
 				setRecipes([]);
 			}
 		} catch (error) {
 			console.error("Unexpected error:", error);
 		} finally {
-			setLoading(false);
+			setTimeout(() => {
+				setLoading(false);
+			}, 500);
+			// Запускаем анимацию исчезновения
+			// opacity.value = withTiming(0, { duration: 500 }, () => {
+			// 	setIsLoadingVisible(false); // Убираем компонент после завершения анимации
+			// });
 		}
 	};
 
+	// useEffect(() => {
+	// 	setCurrentQuery(searchQuery || "");
+	// }, [searchQuery]);
+
 	useEffect(() => {
 		featchGetAllRecipeQuery(currentQuery);
+		// console.log("research query featchGetAllRecipeQuery currentQuery", currentQuery);
+		// console.log("research query featchGetAllRecipeQuery recipes", recipes);
 	}, [currentQuery]);
+
+	// filter if displayFilters list
+	useEffect(() => {
+		if (displayFilters === "list") {
+			if (filterRatingFavorite.rating === true) {
+				setLoading(true);
+				// setFilterQuery(())
+				console.log("filter if displayFilters list", filterQuery);
+				// Сортировка массива по убыванию rating
+				const sortedRecipes = [...recipes].sort((a, b) => b.rating - a.rating);
+				setFilterQuery(sortedRecipes);
+				setTimeout(() => {
+					setLoading(false);
+				}, 500);
+			}
+		}
+	}, [filterRatingFavorite]);
+
+	// Анимированный стиль для LoadingComponent
+	// const animatedStyle = useAnimatedStyle(() => {
+	// 	return {
+	// 		opacity: opacity.value,
+	// 	};
+	// });
 
 	return (
 		<WrapperComponent>
@@ -68,7 +130,11 @@ const SearchRecipeScrean = () => {
 
 			{/* block search */}
 			<Animated.View entering={customFadeIn(FadeInDown, 500, 400)}>
-				<SearchComponent searchDefault={currentQuery} searchScrean={true} />
+				<SearchComponent
+					searchDefault={currentQuery}
+					searchScrean={true}
+					onSearchChange={(newQuery) => setCurrentQuery(newQuery)} // Передаём коллбэк
+				/>
 			</Animated.View>
 
 			{/* block filtr */}
@@ -105,12 +171,30 @@ const SearchRecipeScrean = () => {
 					/>
 				</TouchableOpacity>
 				{/* get tu mach reting */}
-				<TouchableOpacity style={shadowBoxBlack()}>
+				<TouchableOpacity
+					onPress={() =>
+						setFilterRatingFavorite((prev) => ({ ...prev, rating: !prev.rating, favorite: false }))
+					}
+					style={
+						displayFilters === "list" ? filterRatingFavorite.rating && shadowBoxBlack() : { opacity: 0.3 }
+					}
+				>
 					<ButtonSmallCustom w={60} h={60} size={40} icon={StarIcon} color="gold" bg="white" />
 				</TouchableOpacity>
 
 				{/* get to mach likes */}
-				<TouchableOpacity style={shadowBoxBlack()}>
+				<TouchableOpacity
+					onPress={() =>
+						setFilterRatingFavorite((prev) => ({
+							...prev,
+							favorite: !prev.favorite,
+							rating: false,
+						}))
+					}
+					style={
+						displayFilters === "list" ? filterRatingFavorite.favorite && shadowBoxBlack() : { opacity: 0.3 }
+					}
+				>
 					<ButtonSmallCustom w={60} h={60} size={40} icon={HeartIcon} color="red" bg="white" />
 				</TouchableOpacity>
 			</Animated.View>
@@ -118,16 +202,35 @@ const SearchRecipeScrean = () => {
 			{/* block render query */}
 			<View className=" flex-1">
 				{loading ? (
-					<LoadingComponent />
-				) : recipes ? (
+					<LoadingComponent color="green" />
+				) : filterQuery ? (
 					<AllRecipesPointScreen
 						isScreanAlrecipeBayCreatore={true}
 						titleVisible={false}
-						isScreanAllRecibeData={recipes}
+						isScreanAllRecibeData={filterQuery}
 					/>
 				) : (
 					<Text>no recipe</Text>
 				)}
+				{/* {recipes ? (
+					<View className="flex-1">
+						{isLoadingVisible && (
+							<View
+								style={[animatedStyle, { backgroundColor: "rgba(0,0,0,0.8)" }]}
+								className="absolute w-full h-full z-10 rounded-[45px] justify-center items-center"
+							>
+								<LoadingComponent color="green" />
+							</View>
+						)}
+						<AllRecipesPointScreen
+							isScreanAlrecipeBayCreatore={true}
+							titleVisible={false}
+							isScreanAllRecibeData={recipes}
+						/>
+					</View>
+				) : (
+					<Text>no recipe</Text>
+				)} */}
 			</View>
 		</WrapperComponent>
 	);

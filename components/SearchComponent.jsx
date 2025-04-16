@@ -2,18 +2,21 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { MagnifyingGlassIcon } from "react-native-heroicons/mini";
+import { useDebounce } from "../constants/halperFunctions";
 import { hp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 import i18n from "../lang/i18n";
 import { createPulseAnimationCircle } from "../utils/animations";
 import ButtonClearInputCustomComponent from "./ButtonClearInputCustomComponent";
 
-const SearchComponent = ({ searchDefault, searchScrean = false }) => {
+const SearchComponent = ({ searchDefault, searchScrean = false, onSearchChange }) => {
 	const router = useRouter();
 	const [inpurSearch, setInpurSearch] = useState(searchDefault ? searchDefault : "");
 	const pulseScaleAnim = useRef(new Animated.Value(0)).current; // Масштаб начинается с 0
 	const pulseOpacityAnim = useRef(new Animated.Value(0)).current; // Прозрачность начинается с 0
 	const animationLoop = useRef(null); // Храним ссылку на цикл анимации
+	// debouncedValue
+	const debouncedValue = useDebounce(inpurSearch, 500);
 
 	useEffect(() => {
 		if (inpurSearch !== "") {
@@ -60,24 +63,29 @@ const SearchComponent = ({ searchDefault, searchScrean = false }) => {
 
 	//
 	const goToSceenSearch = () => {
-		const trimeSearch = inpurSearch.trim();
-		if (trimeSearch !== "") {
-			router.push({
-				pathname: "(main)/SearchRecipeScrean",
-				params: { searchQuery: trimeSearch },
-			});
+		if (!searchScrean) {
+			const trimeSearch = inpurSearch.trim();
+			if (trimeSearch !== "") {
+				router.push({
+					pathname: "(main)/SearchRecipeScrean",
+					params: { searchQuery: trimeSearch },
+				});
+			}
+			setTimeout(() => {
+				setInpurSearch("");
+			}, 100);
 		}
-		setTimeout(() => {
-			setInpurSearch("");
-		}, 100);
 	};
 
-	//
-	const getQueryRecipe = async () => {
-		console.log("getQueryRecipe");
-		if (searchScrean) {
+	// Вызываем onSearchChange при изменении debouncedValue, если searchScrean=true
+	useEffect(() => {
+		console.log("SearchComponent: debouncedValue changed", debouncedValue);
+		if (searchScrean && onSearchChange) {
+			console.log("SearchComponent: Calling onSearchChange with", debouncedValue.trim());
+			onSearchChange(debouncedValue.trim());
 		}
-	};
+	}, [debouncedValue, searchScrean, onSearchChange]);
+
 	return (
 		<View style={shadowBoxBlack} className="rounded-full bg-black/5 p-[6] mt-5 mb-5 relative">
 			<View className="flex-row items-center rounded-full bg-transparent">

@@ -58,7 +58,7 @@ const AllRecipesPointScreen = ({
 			setAllRecipes(isScreanAllRecibeData);
 			// console.log("isScreanAlrecipeBayCreatore", allRecipes);
 		}
-	}, [isScreanAlrecipeBayCreatore]);
+	}, [isScreanAlrecipeBayCreatore, isScreanAllRecibeData]);
 
 	useEffect(() => {
 		if (isFavoriteScrean) {

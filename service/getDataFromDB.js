@@ -684,8 +684,8 @@ export const updateRecipeMyDB = async (recipe) => {
 
 //
 export const getRecipesByQuerySearchcreenMyDB = async (query) => {
-	console.log("getRecipesByQuerySearchcreenMyDB", query);
-
+	// console.log("getRecipesByQuerySearchcreenMyDB", query);
+	if (query === "") return;
 	try {
 		const { data, error } = await supabase.rpc("search_recipes_by_tag", {
 			tag_query: query,
