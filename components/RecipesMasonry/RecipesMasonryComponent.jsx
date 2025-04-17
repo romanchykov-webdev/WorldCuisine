@@ -11,8 +11,10 @@ import { shadowBoxBlack } from "../../constants/shadow";
 import AvatarCustom from "../AvatarCustom";
 
 const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBayCreatore = false }) => {
-	// console.log('RecipesMasonryComponent', categoryRecipes);
-	// console.log("RecipesMasonryComponent", langApp);
+	console.log("RecipesMasonryComponent categoryRecipes", categoryRecipes);
+	console.log("RecipesMasonryComponent langApp", langApp);
+	console.log("RecipesMasonryComponent isScreanAlrecipeBayCreatore", isScreanAlrecipeBayCreatore);
+	// console.log("RecipesMasonryComponent isScreanAllRecibeData", isScreanAllRecibeData);
 	useEffect(() => {}, [langApp]);
 
 	const [isSubCategoryView, setIsSubCategoryView] = useState(false);
@@ -111,7 +113,7 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 	const router = useRouter();
 
 	const handleOpenItem = async (item) => {
-		// console.log('SubCategoryView handleOpenItem', item)
+		console.log("SubCategoryView handleOpenItem", item);
 
 		router.push({
 			pathname: "(main)/AllRecipesPointScreen",

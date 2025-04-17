@@ -79,9 +79,9 @@ const SearchComponent = ({ searchDefault, searchScrean = false, onSearchChange }
 
 	// Вызываем onSearchChange при изменении debouncedValue, если searchScrean=true
 	useEffect(() => {
-		console.log("SearchComponent: debouncedValue changed", debouncedValue);
+		// console.log("SearchComponent: debouncedValue changed", debouncedValue);
 		if (searchScrean && onSearchChange) {
-			console.log("SearchComponent: Calling onSearchChange with", debouncedValue.trim());
+			// console.log("SearchComponent: Calling onSearchChange with", debouncedValue.trim());
 			onSearchChange(debouncedValue.trim());
 		}
 	}, [debouncedValue, searchScrean, onSearchChange]);

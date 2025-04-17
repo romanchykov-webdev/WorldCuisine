@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { FolderOpenIcon, HeartIcon, ListBulletIcon, StarIcon } from "react-native-heroicons/mini";
 import ButtonBack from "../../components/ButtonBack";
 import TitleScrean from "../../components/TitleScrean";
@@ -10,9 +10,11 @@ import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import ButtonSmallCustom from "../../components/Buttons/ButtonSmallCustom";
 import LoadingComponent from "../../components/loadingComponent";
 import SearchComponent from "../../components/SearchComponent";
+import RecipeListSearchScreenComponent from "../../components/SearchScreen/RecipeListSearchScreenComponent";
+import RecipesMasonrySearchScreenComponent from "../../components/SearchScreen/RecipesMasonrySearchScreenComponent";
 import { shadowBoxBlack } from "../../constants/shadow";
+import { useAuth } from "../../contexts/AuthContext";
 import { getRecipesByQuerySearchcreenMyDB } from "../../service/getDataFromDB";
-import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 const SearchRecipeScrean = () => {
 	const [loading, setLoading] = useState(true);
@@ -36,6 +38,16 @@ const SearchRecipeScrean = () => {
 	const [currentQuery, setCurrentQuery] = useState(searchQuery || "");
 
 	const [filterQuery, setFilterQuery] = useState([]);
+
+	// lang data
+	const { language: langDev } = useAuth();
+
+	// object for filter categoryes
+	// const [obFilterCategory, setObFilterCategory] = useState({});
+
+	// // for folder
+	// const [categoryRecipes, setCategoryRecipes] = useState([]);
+
 	//animaten
 	const customFadeIn = (typeAnimation, numDuration, delayMs) => typeAnimation.duration(numDuration).delay(delayMs);
 
@@ -61,6 +73,8 @@ const SearchRecipeScrean = () => {
 			if (res.success) {
 				setRecipes(res.data);
 				setFilterQuery(res.data);
+				//
+				// setObFilterCategory(createCategoryPointObject(res.data));
 			} else {
 				setRecipes([]);
 			}
@@ -89,6 +103,7 @@ const SearchRecipeScrean = () => {
 
 	// filter if displayFilters list
 	useEffect(() => {
+		//  if displayFilters list
 		if (displayFilters === "list") {
 			if (filterRatingFavorite.rating === true) {
 				setLoading(true);
@@ -101,8 +116,64 @@ const SearchRecipeScrean = () => {
 					setLoading(false);
 				}, 500);
 			}
+			if (filterRatingFavorite.favorite === true) {
+				setLoading(true);
+				console.log("filter if displayFilters list", filterQuery);
+
+				const sortedRecipes = [...recipes].sort((a, b) => b.likes - a.likes);
+				setFilterQuery(sortedRecipes);
+
+				setTimeout(() => {
+					setLoading(false);
+				}, 500);
+			}
 		}
 	}, [filterRatingFavorite]);
+
+	// if displayFilter folder
+	// get al ceripe bay category
+	// const fetchCategoryRecipeMasonry = async () => {
+	// 	// setLoading(true);
+	// 	console.log("fetchCategoryRecipeMasonry");
+
+	// 	const res = await getCategoryRecipeMasonryMyDB(langDev);
+	// 	console.log("res", res);
+
+	// 	// const res = await getCategoryRecipeMasonryMyDB("ru");
+	// 	// console.log("fetchCategoryRecipeMasonry", JSON.stringify(res.data, null));
+	// 	// setCategoryRecipes(res.data);
+	// 	setCategoryRecipes(filterCategoryRecipesBySubcategories(res.data, obFilterCategory));
+	// 	// timeuot
+	// 	setTimeout(() => {
+	// 		setLoading(false);
+	// 	}, 1000);
+	// };
+
+	// toggle folder
+	const handleFolder = () => {
+		setDisplayFilters("folder");
+		// if (displayFilters === "folder") {
+		// setLoading(true);
+		setFilterRatingFavorite({
+			rating: false,
+			favorite: false,
+		});
+		// fetchCategoryRecipeMasonry();
+		// setTimeout(() => {
+		// 	setLoading(false);
+		// }, 500);
+		// }
+	};
+
+	// toggle list
+	const handleList = () => {
+		setDisplayFilters("list");
+		setLoading(true);
+
+		setTimeout(() => {
+			setLoading(false);
+		}, 500);
+	};
 
 	// Анимированный стиль для LoadingComponent
 	// const animatedStyle = useAnimatedStyle(() => {
@@ -145,7 +216,8 @@ const SearchRecipeScrean = () => {
 				{/* get category */}
 				<TouchableOpacity
 					style={displayFilters === "list" ? null : shadowBoxBlack()}
-					onPress={() => setDisplayFilters("folder")}
+					// onPress={() => setDisplayFilters("folder")}
+					onPress={handleFolder}
 				>
 					<ButtonSmallCustom
 						w={60}
@@ -159,7 +231,8 @@ const SearchRecipeScrean = () => {
 				{/* get list */}
 				<TouchableOpacity
 					style={displayFilters === "list" ? shadowBoxBlack() : null}
-					onPress={() => setDisplayFilters("list")}
+					// onPress={() => setDisplayFilters("list")}
+					onPress={handleList}
 				>
 					<ButtonSmallCustom
 						w={60}
@@ -201,7 +274,7 @@ const SearchRecipeScrean = () => {
 
 			{/* block render query */}
 			<View className=" flex-1">
-				{loading ? (
+				{/* {loading ? (
 					<LoadingComponent color="green" />
 				) : filterQuery ? (
 					<AllRecipesPointScreen
@@ -211,7 +284,19 @@ const SearchRecipeScrean = () => {
 					/>
 				) : (
 					<Text>no recipe</Text>
+				)} */}
+
+				{loading ? (
+					<LoadingComponent color="green" />
+				) : displayFilters === "folder" ? (
+					<RecipesMasonrySearchScreenComponent
+						recipes={filterQuery} // Передаём результаты поиска
+						langApp={langDev}
+					/>
+				) : (
+					<RecipeListSearchScreenComponent recipes={filterQuery} langApp={langDev} />
 				)}
+
 				{/* {recipes ? (
 					<View className="flex-1">
 						{isLoadingVisible && (
