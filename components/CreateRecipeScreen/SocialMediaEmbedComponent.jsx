@@ -67,7 +67,7 @@ const SocialMediaLink = ({ platform, url, onRemove }) => {
 					/>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={handleRemove}>
-					<ButtonSmallCustom bg="red" w={60} h={60} icon={TrashIcon} />
+					<ButtonSmallCustom tupeButton="remove" w={60} h={60} icon={TrashIcon} />
 				</TouchableOpacity>
 			</Animated.View>
 		</Animated.View>

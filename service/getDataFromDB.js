@@ -681,3 +681,25 @@ export const updateRecipeMyDB = async (recipe) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+//
+export const getRecipesByQuerySearchcreenMyDB = async (query) => {
+	// console.log("getRecipesByQuerySearchcreenMyDB", query);
+	if (query === "") return;
+	try {
+		const { data, error } = await supabase.rpc("search_recipes_by_tag", {
+			tag_query: query,
+		});
+
+		if (error) {
+			console.error("Error fetching recipes:", error);
+			return { success: false, msg: error.message };
+		}
+
+		// console.log("getRecipesByQuerySearchcreenMyDB data", data);
+		return { success: true, data }; // Уберите комментарий, чтобы возвращать данные
+	} catch (error) {
+		console.error("Unexpected error:", error);
+		return { success: false, msg: error.message };
+	}
+};

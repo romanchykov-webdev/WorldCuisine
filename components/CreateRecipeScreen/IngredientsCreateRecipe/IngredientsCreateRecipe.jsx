@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { PlusIcon } from "react-native-heroicons/mini";
+import { PlusIcon, ScaleIcon } from "react-native-heroicons/mini";
 import { shadowBoxBlack } from "../../../constants/shadow";
 import ButtonSmallCustom from "../../Buttons/ButtonSmallCustom";
 import ModalCustom from "../../ModalCustom";

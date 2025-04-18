@@ -431,6 +431,8 @@ export const validateRecipeStructure = (recipe) => {
 //
 // ключи будут значениями поля category из массива, а значения — соответствующими полями point
 export const createCategoryPointObject = (recipes) => {
+	console.log("createCategoryPointObject recipes", recipes);
+
 	//
 	const result = {};
 
@@ -452,6 +454,9 @@ export const createCategoryPointObject = (recipes) => {
 // отфильтровать subcategories в categoryRecipes так, чтобы остались только те подкатегории, чьи point точно соответствуют значениям из массивов в obFilterCategory
 export const filterCategoryRecipesBySubcategories = (categoryRecipes, obFilterCategory) => {
 	// Объединяем все значения из obFilterCategory в один массив
+	console.log("filterCategoryRecipesBySubcategories categoryRecipes", categoryRecipes);
+	console.log("filterCategoryRecipesBySubcategories obFilterCategory", obFilterCategory);
+
 	const allowedPoints = Object.values(obFilterCategory).flat();
 
 	return categoryRecipes
