@@ -31,7 +31,7 @@ const SearchRecipeScrean = () => {
 
 	useEffect(() => {}, [searchQuery]);
 
-	console.log("SearchRecipeScrean", searchQuery);
+	// console.log("SearchRecipeScrean", searchQuery);
 
 	const [recipes, setRecipes] = useState([]);
 

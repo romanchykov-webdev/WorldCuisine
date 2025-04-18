@@ -3,7 +3,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon, PlayCircleIcon, StarIcon } from "react-native-heroicons/outline";
+import {
+	ArrowUturnLeftIcon,
+	ChatBubbleOvalLeftEllipsisIcon,
+	HeartIcon,
+	PlayCircleIcon,
+	StarIcon,
+} from "react-native-heroicons/outline";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AvatarCustom from "../../components/AvatarCustom";
 import {
@@ -14,6 +20,7 @@ import {
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack, shadowText } from "../../constants/shadow";
 import { getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
+import LoadingComponent from "../loadingComponent";
 
 // Компонент для отображения категории
 const CategoryView = ({ item, index, onCategorySelect, langApp }) => {
@@ -324,11 +331,15 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 	return (
 		<View className="flex-1">
 			{loading ? (
-				<Text className="text-center mt-5">Loading categories...</Text>
+				<LoadingComponent color="green" />
 			) : selectedSubcategory ? (
 				<Animated.View entering={FadeInDown.duration(300)}>
-					<TouchableOpacity onPress={() => setSelectedSubcategory(null)} className="p-2 mb-2">
-						<Text className="text-blue-500">Back to subcategories</Text>
+					<TouchableOpacity
+						onPress={() => setSelectedSubcategory(null)}
+						style={shadowBoxBlack()}
+						className="w-[50] h-[50] mb-5 justify-center items-center bg-white rounded-full"
+					>
+						<ArrowUturnLeftIcon size={30} color="gray" />
 					</TouchableOpacity>
 					{recipes.filter((recipe) => recipe.point === selectedSubcategory).length > 0 ? (
 						<MasonryList
@@ -345,8 +356,13 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 				</Animated.View>
 			) : selectedCategory ? (
 				<Animated.View entering={FadeInDown.duration(300)}>
-					<TouchableOpacity onPress={() => setSelectedCategory(null)} className="p-2 mb-2">
-						<Text className="text-blue-500">Back to categories</Text>
+					<TouchableOpacity
+						onPress={() => setSelectedCategory(null)}
+						style={shadowBoxBlack()}
+						className="w-[50] h-[50] mb-5 justify-center items-center bg-white rounded-full"
+					>
+						<ArrowUturnLeftIcon size={30} color="gray" />
+						{/* <Text className="text-blue-500">Back to categories</Text> */}
 					</TouchableOpacity>
 					{categoryRecipes.find((cat) => cat.point === selectedCategory)?.subcategories.length > 0 ? (
 						<MasonryList
