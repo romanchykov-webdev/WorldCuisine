@@ -9,8 +9,6 @@ import { getDeviceType } from "../../constants/getWidthDevice";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import AvatarCustom from "../AvatarCustom";
-import CategoryMasonryComponent from "./CategoryMasonryComponent";
-import SubCategoryMasonryComponent from "./SubCategoryMasonryComponent";
 
 const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBayCreatore = false }) => {
 	// console.log("RecipesMasonryComponent categoryRecipes", categoryRecipes);
@@ -50,12 +48,12 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBay
 					keyExtractor={(_, index) => index.toString()}
 					numColumns={2}
 					renderItem={({ item, i }) => (
-						<CategoryMasonryComponent item={item} index={i} onPress={handleSubCategory} langApp={langApp} />
+						<CardItem item={item} index={i} onPress={handleSubCategory} langApp={langApp} />
 					)}
 				/>
 			) : (
 				<Animated.View entering={FadeInDown} exiting={FadeOutDown}>
-					<SubCategoryMasonryComponent
+					<SubCategoryView
 						item={selectedItem}
 						isSubCategoryView={isSubCategoryView}
 						handleBack={handleBack}
@@ -67,55 +65,55 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBay
 	);
 };
 
-// const CardItem = ({ item, index, onPress, langApp }) => {
-// 	// console.log('CardItem',index)
-// 	const isEven = index % 3 === 0;
-// 	const imageHeight = isEven ? hp(25) : hp(35);
+const CardItem = ({ item, index, onPress, langApp }) => {
+	// 	// console.log('CardItem',index)
+	const isEven = index % 3 === 0;
+	const imageHeight = isEven ? hp(25) : hp(35);
 
-// 	return (
-// 		<Animated.View
-// 			entering={FadeInDown.delay(index * 200).springify()} // Задержка анимации
-// 			className="flex mb-[10] gap-y-1 p-[2]"
-// 			style={[
-// 				shadowBoxBlack({
-// 					offset: { width: 1, height: 1 },
-// 					opacity: 1,
-// 					radius: 3,
-// 				}),
-// 			]}
-// 		>
-// 			<TouchableOpacity onPress={() => onPress(item)} className="rounded-full relative items-center">
-// 				<AvatarCustom
-// 					uri={item.image}
-// 					style={{
-// 						borderWidth: 0.2,
-// 						width: "100%",
-// 						height: imageHeight,
-// 					}}
-// 					rounded={35}
-// 				/>
-// 				<LinearGradient
-// 					colors={["transparent", "#18181b"]}
-// 					style={{
-// 						width: "100%",
-// 						height: "100%",
-// 						position: "absolute",
-// 						borderRadius: 35,
-// 					}}
-// 					start={{ x: 0.5, y: 0.2 }}
-// 					end={{ x: 0.5, y: 1 }}
-// 				/>
-// 				<Text className="absolute bottom-[20] text-white font-semibold">{item.name}</Text>
-// 			</TouchableOpacity>
-// 		</Animated.View>
-// 	);
-// };
+	return (
+		<Animated.View
+			entering={FadeInDown.delay(index * 200).springify()} // Задержка анимации
+			className="flex mb-[10] gap-y-1 p-[2]"
+			style={[
+				shadowBoxBlack({
+					offset: { width: 1, height: 1 },
+					opacity: 1,
+					radius: 3,
+				}),
+			]}
+		>
+			<TouchableOpacity onPress={() => onPress(item)} className="rounded-full relative items-center">
+				<AvatarCustom
+					uri={item.image}
+					style={{
+						borderWidth: 0.2,
+						width: "100%",
+						height: imageHeight,
+					}}
+					rounded={35}
+				/>
+				<LinearGradient
+					colors={["transparent", "#18181b"]}
+					style={{
+						width: "100%",
+						height: "100%",
+						position: "absolute",
+						borderRadius: 35,
+					}}
+					start={{ x: 0.5, y: 0.2 }}
+					end={{ x: 0.5, y: 1 }}
+				/>
+				<Text className="absolute bottom-[20] text-white font-semibold">{item.name}</Text>
+			</TouchableOpacity>
+		</Animated.View>
+	);
+};
 
 const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 	const router = useRouter();
 
 	const handleOpenItem = async (item) => {
-		console.log("SubCategoryView handleOpenItem", item);
+		// console.log("SubCategoryView handleOpenItem", item);
 
 		router.push({
 			pathname: "(main)/AllRecipesPointScreen",
@@ -130,6 +128,7 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 					<TouchableOpacity
 						className="absolute left-0 z-10 w-[50] h-[50] justify-center items-center bg-white rounded-full"
 						onPress={handleBack}
+						style={shadowBoxBlack()}
 					>
 						<ArrowUturnLeftIcon size={30} color="gray" />
 					</TouchableOpacity>

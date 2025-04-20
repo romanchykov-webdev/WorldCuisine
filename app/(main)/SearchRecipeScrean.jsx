@@ -108,7 +108,7 @@ const SearchRecipeScrean = () => {
 			if (filterRatingFavorite.rating === true) {
 				setLoading(true);
 				// setFilterQuery(())
-				console.log("filter if displayFilters list", filterQuery);
+				// console.log("filter if displayFilters list", filterQuery);
 				// Сортировка массива по убыванию rating
 				const sortedRecipes = [...recipes].sort((a, b) => b.rating - a.rating);
 				setFilterQuery(sortedRecipes);
@@ -118,7 +118,7 @@ const SearchRecipeScrean = () => {
 			}
 			if (filterRatingFavorite.favorite === true) {
 				setLoading(true);
-				console.log("filter if displayFilters list", filterQuery);
+				// console.log("filter if displayFilters list", filterQuery);
 
 				const sortedRecipes = [...recipes].sort((a, b) => b.likes - a.likes);
 				setFilterQuery(sortedRecipes);

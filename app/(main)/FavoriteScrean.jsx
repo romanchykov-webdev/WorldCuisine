@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import RecipesMasonryComponent from "../../components/RecipesMasonry/RecipesMasonryComponent";
 
 import HeaderScreanComponent from "../../components/HeaderScreanComponent";
 import LoadingComponent from "../../components/loadingComponent";
 import ToggleListCategoryComponent from "../../components/profile/ToggleListCategoryComponent";
+import RecipesMasonrySearchScreenComponent from "../../components/SearchScreen/RecipesMasonrySearchScreenComponent";
 import WrapperComponent from "../../components/WrapperComponent";
 import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from "../../constants/halperFunctions";
 import { useAuth } from "../../contexts/AuthContext";
@@ -153,17 +153,21 @@ const FavoriteScrean = () => {
 						{loading ? (
 							<LoadingComponent color="green" />
 						) : toggleFolderList ? (
-							<RecipesMasonryComponent
-								categoryRecipes={categoryRecipes}
-								langApp={user?.lang || "en"}
-								isScreanFavorite={true}
-								isScreanAllRecibeData={allFavoriteRecipes}
+							// <RecipesMasonryComponent
+							// 	categoryRecipes={categoryRecipes}
+							// 	langApp={user?.lang || "en"}
+							// 	isScreanFavorite={true}
+							// 	isScreanAllRecibeData={allFavoriteRecipes}
+							// />
+							<RecipesMasonrySearchScreenComponent
+								recipes={allFavoriteRecipes} // Передаём результаты поиска
+								langApp={user?.lang}
 							/>
 						) : (
 							<AllRecipesPointScreen
 								allFavoriteRecipes={allFavoriteRecipes}
 								isFavoriteScrean={true}
-								isScreanAlrecipeBayCreatore={true}
+								isScreanAlrecipeBayCreatore={false}
 								titleVisible={false}
 							/>
 						)}

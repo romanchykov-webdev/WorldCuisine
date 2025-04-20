@@ -23,19 +23,21 @@ const AllRecipesPointScreen = ({
 	const { point } = useLocalSearchParams();
 	const { language: langApp } = useAuth();
 
-	// console.log("AllRecipesPointScreen langApp", langApp);
+	// console.log("AllRecipesPointScreen point", point);
 	// console.log("AllRecipesPointScreen isFavoriteScrean", isFavoriteScrean);
 
 	const [loading, setLoading] = useState(true);
 
 	const [column, setColumn] = useState(0);
+
+	const [allRecipes, setAllRecipes] = useState([]);
+
+	// Определяем количество колонок на основе типа устройства
 	useEffect(() => {
 		// Определяем тип устройства и обновляем количество колонок
 		const type = getDeviceType(window.innerWidth);
 		setColumn(type);
 	}, []);
-
-	const [allRecipes, setAllRecipes] = useState([]);
 
 	// console.log('AllRecipesPointScreen',point)
 
@@ -44,6 +46,10 @@ const AllRecipesPointScreen = ({
 		// console.log("AllRecipesPointScreen res point", JSON.stringify(res.data, null, 2));
 		setAllRecipes(res.data);
 	};
+
+	// Стабилизируем ссылки на массивы, чтобы избежать лишних рендеров
+	// const stableAllRecibeData = useMemo(() => isScreanAllRecibeData, [isScreanAllRecibeData]);
+	// const stableFavoriteRecipes = useMemo(() => allFavoriteRecipes, [allFavoriteRecipes]);
 
 	useEffect(() => {
 		if (!isScreanAlrecipeBayCreatore && !isFavoriteScrean) {
@@ -81,6 +87,28 @@ const AllRecipesPointScreen = ({
 			// console.log("FavoriteScrean", allRecipes);
 		}
 	}, [isFavoriteScrean]);
+
+	// Объединяем всю логику загрузки в один useEffect
+	// useEffect(() => {
+	// 	const fetchData = async () => {
+	// 		setLoading(true);
+	// 		let recipes = [];
+
+	// 		if (!isScreanAlrecipeBayCreatore && !isFavoriteScrean) {
+	// 			const res = await getAllRecipesPointMasonryMyDB(point);
+	// 			recipes = res.data || [];
+	// 		} else if (isScreanAlrecipeBayCreatore) {
+	// 			recipes = stableAllRecibeData;
+	// 		} else if (isFavoriteScrean) {
+	// 			recipes = stableFavoriteRecipes;
+	// 		}
+
+	// 		setAllRecipes(recipes);
+	// 		setLoading(false);
+	// 	};
+
+	// 	fetchData();
+	// }, [point, isScreanAlrecipeBayCreatore, isFavoriteScrean, stableAllRecibeData, stableFavoriteRecipes]);
 
 	return (
 		<SafeAreaView>

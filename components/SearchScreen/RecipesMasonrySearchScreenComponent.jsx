@@ -328,19 +328,39 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 		setSelectedSubcategory(null);
 	}, [recipes]);
 
+	// Находим название категории
+	const selectedCategoryName =
+		selectedCategory && categoryRecipes.length > 0
+			? categoryRecipes.find((cat) => cat.point === selectedCategory)?.name || "Unknown Category"
+			: null;
+
+	// Находим название подкатегории
+	const selectedSubcategoryName =
+		selectedSubcategory && categoryRecipes.length > 0
+			? categoryRecipes
+					.flatMap((cat) => cat.subcategories || [])
+					.find((subcat) => subcat.point === selectedSubcategory)?.name || "Unknown Subcategory"
+			: null;
+
 	return (
 		<View className="flex-1">
 			{loading ? (
 				<LoadingComponent color="green" />
 			) : selectedSubcategory ? (
 				<Animated.View entering={FadeInDown.duration(300)}>
-					<TouchableOpacity
-						onPress={() => setSelectedSubcategory(null)}
-						style={shadowBoxBlack()}
-						className="w-[50] h-[50] mb-5 justify-center items-center bg-white rounded-full"
-					>
-						<ArrowUturnLeftIcon size={30} color="gray" />
-					</TouchableOpacity>
+					<View className="flex-row items-center justify-center mb-5 mt-5  h-[50px]">
+						<TouchableOpacity
+							onPress={() => setSelectedSubcategory(null)}
+							style={shadowBoxBlack()}
+							className="w-[50] h-[50] absolute left-0 z-10 justify-center items-center bg-white rounded-full"
+						>
+							<ArrowUturnLeftIcon size={30} color="gray" />
+						</TouchableOpacity>
+
+						<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 ">
+							{selectedSubcategoryName}
+						</Text>
+					</View>
 					{recipes.filter((recipe) => recipe.point === selectedSubcategory).length > 0 ? (
 						<MasonryList
 							data={recipes.filter((recipe) => recipe.point === selectedSubcategory)}
@@ -356,14 +376,20 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 				</Animated.View>
 			) : selectedCategory ? (
 				<Animated.View entering={FadeInDown.duration(300)}>
-					<TouchableOpacity
-						onPress={() => setSelectedCategory(null)}
-						style={shadowBoxBlack()}
-						className="w-[50] h-[50] mb-5 justify-center items-center bg-white rounded-full"
-					>
-						<ArrowUturnLeftIcon size={30} color="gray" />
-						{/* <Text className="text-blue-500">Back to categories</Text> */}
-					</TouchableOpacity>
+					<View className="flex-row items-center justify-center mb-5 mt-5  h-[50px]">
+						<TouchableOpacity
+							onPress={() => setSelectedCategory(null)}
+							style={shadowBoxBlack()}
+							className="w-[50] h-[50] absolute left-0 z-10 justify-center items-center bg-white rounded-full"
+						>
+							<ArrowUturnLeftIcon size={30} color="gray" />
+
+							{/* <Text className="text-blue-500">Back to categories</Text> */}
+						</TouchableOpacity>
+						<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 ">
+							{selectedCategoryName}
+						</Text>
+					</View>
 					{categoryRecipes.find((cat) => cat.point === selectedCategory)?.subcategories.length > 0 ? (
 						<MasonryList
 							data={categoryRecipes.find((cat) => cat.point === selectedCategory).subcategories}
