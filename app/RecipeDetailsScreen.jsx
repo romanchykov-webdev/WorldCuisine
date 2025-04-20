@@ -66,6 +66,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	const params = useLocalSearchParams();
 	const { id, currentLang, totalRecipe: totalRecipeString, preview } = params;
 
+	console.log("RecipeDetailsScreen id", id);
+
 	const isPreview = preview === "true" || preview === true;
 
 	// console.log("RecipeDetailsScreen params", params);
@@ -147,6 +149,8 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 					// }, 1000);
 				} else if (id) {
 					const response = await getRecipesDescriptionMyDB(id);
+					console.log("RecipeDetailsScreen response", response);
+
 					setRecipeDish(response?.data[0] || null);
 					setRating(response?.data[0].rating ?? 0);
 					// setDataSource("Mydb");

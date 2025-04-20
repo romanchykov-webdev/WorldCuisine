@@ -682,7 +682,7 @@ export const updateRecipeMyDB = async (recipe) => {
 	}
 };
 
-//
+//getRecipesByQuerySearchcreenMyDB
 export const getRecipesByQuerySearchcreenMyDB = async (query) => {
 	// console.log("getRecipesByQuerySearchcreenMyDB", query);
 	if (query === "") return;
@@ -697,7 +697,32 @@ export const getRecipesByQuerySearchcreenMyDB = async (query) => {
 		}
 
 		// console.log("getRecipesByQuerySearchcreenMyDB data", data);
-		return { success: true, data }; // Уберите комментарий, чтобы возвращать данные
+		return { success: true, data };
+	} catch (error) {
+		console.error("Unexpected error:", error);
+		return { success: false, msg: error.message };
+	}
+};
+
+//getTopRecipeHomeScreenMyDB
+export const getTopRecipeHomeScreenMyDB = async () => {
+	// console.log("getTopRecipeHomeScreenMyDB");
+
+	try {
+		const { data, error } = await supabase
+			.from("short_desc")
+			.select("*")
+			.gt("likes", 0)
+			.order("likes", { ascending: false })
+			.limit(50);
+
+		if (error) {
+			console.error("Error fetching recipes:", error);
+			return { success: false, msg: error.message };
+		}
+
+		// console.log("getTopRecipeHomeScreenMyDB data", data);
+		return { success: true, data };
 	} catch (error) {
 		console.error("Unexpected error:", error);
 		return { success: false, msg: error.message };

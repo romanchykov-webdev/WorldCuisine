@@ -218,5 +218,11 @@
 
 	"Your recipes were liked by users": "Le tue ricette sono piaciute agli utenti",
 
-	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--"
+	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--",
+
+	"---SearchScreen---": "---SearchScreen---",
+
+	"Search": "Cerca",
+
+	"--END-SearchScreen-END--": "--END-SearchScreen-END--"
 }
