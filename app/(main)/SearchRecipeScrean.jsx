@@ -14,6 +14,7 @@ import RecipeListSearchScreenComponent from "../../components/SearchScreen/Recip
 import RecipesMasonrySearchScreenComponent from "../../components/SearchScreen/RecipesMasonrySearchScreenComponent";
 import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
+import i18n from "../../lang/i18n";
 import { getRecipesByQuerySearchcreenMyDB } from "../../service/getDataFromDB";
 
 const SearchRecipeScrean = () => {
@@ -195,7 +196,7 @@ const SearchRecipeScrean = () => {
 
 				{/* title screen */}
 				<Animated.View entering={customFadeIn(FadeInUp, 500, 200)} className="flex-1 j items-center">
-					<TitleScrean title="Search" />
+					<TitleScrean title={i18n.t("Search")} />
 				</Animated.View>
 			</View>
 

@@ -220,5 +220,11 @@
 
 	"Your recipes were liked by users": "Your recipes were liked by users",
 
-	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--"
+	"--END-NewLikessScrean-END--": "--END-NewLikessScrean-END--",
+
+	"---SearchScreen---": "---SearchScreen---",
+
+	"Search": "Search",
+
+	"--END-SearchScreen-END--": "--END-SearchScreen-END--"
 }

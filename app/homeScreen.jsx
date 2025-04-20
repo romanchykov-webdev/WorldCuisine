@@ -10,6 +10,7 @@ import { useAuth } from "../contexts/AuthContext";
 // translate
 import LoadingComponent from "../components/loadingComponent";
 import RecipesMasonryComponent from "../components/RecipesMasonry/RecipesMasonryComponent";
+import TopRecipeComponent from "../components/topRecipe/TopRecipeComponent";
 import i18n from "../lang/i18n";
 import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
 
@@ -91,15 +92,12 @@ const HomeScreen = () => {
 	}, []);
 
 	// const handleChangeCategory = (category) => {
-	// const handleChangeCategory = (category) => {
-	//
-	//
-	//     setActiveCategory(category);
-	//     setRecipes([]);  // Очищаем рецепты при смене категории
-	//
-	//     fetchRecipes(activeCategory);
-	//
-	// }
+	const handleChangeCategory = (category) => {
+		setActiveCategory(category);
+		setRecipes([]); // Очищаем рецепты при смене категории
+
+		fetchRecipes(activeCategory);
+	};
 	// Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
 	useEffect(() => {
 		// fetchRecipes(activeCategory)
@@ -178,22 +176,18 @@ const HomeScreen = () => {
 						<SearchComponent />
 
 						{/*    categories*/}
-						<Text className="bg-red-500 p-5">добавлю топ рецептов</Text>
-						{/*{*/}
-						{/*    categories*/}
-						{/*        ? (*/}
-						{/*            <Categories*/}
-						{/*                categories={categories}*/}
-						{/*                activeCategory={activeCategory}*/}
-						{/*                setActiveCategory={setActiveCategory}*/}
-						{/*                handleChangeCategory={handleChangeCategory}*/}
-						{/*                langApp={user?.lang ?? langDev}*/}
-						{/*            />*/}
-						{/*        )*/}
-						{/*        : (*/}
-						{/*            <LoadingComponent size={'small'} color='grey'/>*/}
-						{/*        )*/}
-						{/*}*/}
+						<TopRecipeComponent />
+						{/* {categories ? (
+							<Categories
+								categories={categories}
+								activeCategory={activeCategory}
+								setActiveCategory={setActiveCategory}
+								handleChangeCategory={handleChangeCategory}
+								langApp={user?.lang ?? langDev}
+							/>
+						) : (
+							<LoadingComponent size={"small"} color="grey" />
+						)} */}
 
 						{/*    recipes*/}
 						{/*{*/}
