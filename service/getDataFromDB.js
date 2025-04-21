@@ -83,26 +83,73 @@ export const getCategoryRecipeMasonryMyDB = async (langDew) => {
  * Получает все рецепты из таблицы "short_desc" по указанной точке (point).
  * @param {string} point - Идентификатор подкатегории или фильтра.
  */
-export const getAllRecipesPointMasonryMyDB = async (point) => {
+// export const getAllRecipesPointMasonryMyDB = async (point) => {
+// 	try {
+// 		// let { data, error } = await supabase.from("shortDesc").select("*").eq("point", point);
+// 		let { data, error } = await supabase.from("short_desc").select("*").eq("point", point);
+
+// 		if (error) {
+// 			return {
+// 				success: false,
+// 				msg: "getAllSubCategoriesMasonryMyDB try error" + error?.message,
+// 			};
+// 		}
+// 		// console.log('getAllSubCategoriesMasonryMyDB', data)
+// 		// console.log('getAllSubCategoriesMasonryMyDB', JSON.stringify(data[0].title, null, 2))
+
+// 		return { success: true, data: data };
+// 	} catch (error) {
+// 		console.log("error", error);
+// 		return {
+// 			success: false,
+// 			msg: "getAllSubCategoriesMasonryMyDB catch error" + error.message,
+// 		};
+// 	}
+// };
+/**
+ * Получает рецепты из таблицы "short_desc" по указанной точке (point) с пагинацией и сортировкой.
+ * @param {string} point - Идентификатор подкатегории или фильтра.
+ * @param {number} page - Номер страницы (начинается с 1).
+ * @param {number} limit - Количество рецептов на страницу (по умолчанию 6).
+ * @param {Object} sortOptions - Объект с параметрами сортировки.
+ * @param {string} sortOptions.sortBy - Название поля для сортировки (по умолчанию, "created_at").
+ * @param {boolean} sortOptions.ascending - Направление сортировки: true — по возрастанию, false — по убыванию.
+ */
+// export const getAllRecipesPointMasonryMyDB = async (point, page = 1, limit = 2, filter = "created_at") => {
+export const getAllRecipesPointMasonryMyDB = async (
+	point,
+	page = 1,
+	limit = 2,
+	sortOptions = { sortBy: "created_at", ascending: false }
+) => {
 	try {
-		// let { data, error } = await supabase.from("shortDesc").select("*").eq("point", point);
-		let { data, error } = await supabase.from("short_desc").select("*").eq("point", point);
+		// Вычисляем диапазон для пагинации
+		const from = (page - 1) * limit;
+		const to = from + limit - 1;
+
+		// Запрос к Supabase: выбираем рецепты по point, сортируем по created_at (от новых к старым),
+		// применяем пагинацию с помощью range
+		let { data, error } = await supabase
+			.from("short_desc")
+			.select("*")
+			.eq("point", point)
+			// .order(filter, { ascending: false }) // Сортировка от новых к старым по умолчанию created_at
+			.order(sortOptions.sortBy, { ascending: sortOptions.ascending })
+			.range(from, to); // Ограничение выборки для пагинации
 
 		if (error) {
 			return {
 				success: false,
-				msg: "getAllSubCategoriesMasonryMyDB try error" + error?.message,
+				msg: "getAllRecipesPointMasonryMyDB error: " + error?.message,
 			};
 		}
-		// console.log('getAllSubCategoriesMasonryMyDB', data)
-		// console.log('getAllSubCategoriesMasonryMyDB', JSON.stringify(data[0].title, null, 2))
 
-		return { success: true, data: data };
+		return { success: true, data };
 	} catch (error) {
 		console.log("error", error);
 		return {
 			success: false,
-			msg: "getAllSubCategoriesMasonryMyDB catch error" + error.message,
+			msg: "getAllRecipesPointMasonryMyDB catch error: " + error.message,
 		};
 	}
 };

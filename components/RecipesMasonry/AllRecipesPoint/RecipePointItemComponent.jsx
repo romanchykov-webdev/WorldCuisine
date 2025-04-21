@@ -26,7 +26,8 @@ const RecipePointItemComponent = ({ item, index, langApp }) => {
 
 	return (
 		<Animated.View
-			entering={FadeInDown.delay((index + 4) * 200)
+			// entering={FadeInDown.delay((index + 4) * 200)
+			entering={FadeInDown.delay((index % 10) * 100)
 				.springify()
 				.damping(30)}
 			// key={index}

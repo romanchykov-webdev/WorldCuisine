@@ -226,5 +226,14 @@
 
 	"Search": "Buscar",
 
-	"--END-SearchScreen-END--": "--END-SearchScreen-END--"
+	"--END-SearchScreen-END--": "--END-SearchScreen-END--",
+
+	"---AllRecipesPointScreen---": "---AllRecipesPointScreen---",
+
+	"From newest to oldest": "De lo más nuevo a lo más antiguo",
+	"From old to new": "De lo viejo a lo nuevo",
+	"Popular": "Populares",
+	"High rating": "Alta calificación",
+
+	"--END-AllRecipesPointScreen-END--": "--END-AllRecipesPointScreen-END--"
 }
