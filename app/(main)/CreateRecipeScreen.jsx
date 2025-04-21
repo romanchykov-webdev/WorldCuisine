@@ -178,7 +178,7 @@ const CreateRecipeScreen = () => {
 						>
 							{/*title*/}
 							<View className="pt-5">
-								<View className=" flex-1">
+								<View className=" flex-1" style={shadowBoxBlack()}>
 									<ButtonBack />
 								</View>
 								{/* <Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text> */}

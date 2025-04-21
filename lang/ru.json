@@ -220,5 +220,14 @@
 
 	"Search": "Поиск",
 
-	"--END-SearchScreen-END--": "--END-SearchScreen-END--"
+	"--END-SearchScreen-END--": "--END-SearchScreen-END--",
+
+	"---AllRecipesPointScreen---": "---AllRecipesPointScreen---",
+
+	"From newest to oldest": "От нового к старому",
+	"From old to new": "От старого к новому",
+	"Popular": "Популярные",
+	"High rating": "Высокий рейтинг",
+
+	"--END-AllRecipesPointScreen-END--": "--END-AllRecipesPointScreen-END--"
 }
