@@ -1,10 +1,12 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import {StyleSheet, TouchableOpacity, View} from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { hp } from "../constants/responsiveScreen";
 import { shadowBoxBlack } from "../constants/shadow";
 import ButtonBack from "./ButtonBack";
 import TitleScrean from "./TitleScrean";
+import ButtonSmallCustom from "./Buttons/ButtonSmallCustom";
+import {EllipsisVerticalIcon, TrashIcon} from "react-native-heroicons/mini";
 
 const HeaderScreanComponent = ({
 	headerAllCeripe = false,
@@ -38,6 +40,9 @@ const HeaderScreanComponent = ({
 					/>
 				</Animated.View>
 			)}
+
+
+
 		</View>
 	);
 };

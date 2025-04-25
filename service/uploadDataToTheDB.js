@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import { uploadFile } from "../service/imageServices";
+import {deleteFile, uploadFile} from "../service/imageServices";
 
 export const uploadRecipeToTheServer = async (totalRecipe) => {
 	try {
@@ -39,6 +39,8 @@ export const uploadRecipeToTheServer = async (totalRecipe) => {
 		}
 
 		const baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${folderName}`;
+		// const baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${recipeId}`;
+
 
 		// 1. Загружаем image_header, если он есть и это локальный файл
 		if (
@@ -202,7 +204,7 @@ export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 		// 2. Глубокая копия объекта updatedData
 		let recipeToUpdate = JSON.parse(JSON.stringify(updatedData));
 
-		// 3. Формируем subCategory
+		// 3. Формируем subCategory (для запасного пути, если image_header отсутствует)
 		const category = recipeToUpdate.category || existingRecipe.category;
 		const point = recipeToUpdate.point || existingRecipe.point;
 		const subCategory = point.startsWith(category)
@@ -215,22 +217,20 @@ export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 			.replaceAll(" ", "_");
 		const cleanSubCategory = subCategory.replace(/[^a-zA-Z0-9а-яА-ЯёЁ _-]/g, "");
 
-		// 4. Формируем путь для новых изображений
-		const date = new Date();
-		const year = date.getUTCFullYear();
-		const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-		const day = String(date.getUTCDate()).padStart(2, "0");
-		const hours = String(date.getUTCHours()).padStart(2, "0");
-		const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-		const seconds = String(date.getUTCSeconds()).padStart(2, "0");
-
-		let folderName = `${year}${month}${day}${hours}${minutes}${seconds}`;
-		const userId = recipeToUpdate.published_id || existingRecipe.published_id || "";
-		if (userId) {
-			folderName += `_${userId}`;
+		// 4. Извлекаем путь к существующей папке из image_header
+		let baseImagePath;
+		if (existingRecipe.image_header) {
+			// Пример: https://res.cloudinary.com/dq0ymjvhx/image/upload/v1745587283/ratatouille_images/recipes_images/Dessert/Cakes/15c5d29d-e68c-44b0-b876-6914f1f9a3ba/header.jpg
+			const pathParts = existingRecipe.image_header.split("/image/upload/")[1].split("/");
+			pathParts.shift(); // Удаляем ratatouille_images
+			pathParts.pop(); // Удаляем имя файла (например, header.jpg)
+			baseImagePath = pathParts.join("/"); // Собираем путь: recipes_images/Dessert/Cakes/15c5d29d-e68c-44b0-b876-6914f1f9a3ba
+		} else {
+			// Если image_header отсутствует, формируем путь на основе recipeId
+			baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${recipeId}`;
 		}
 
-		const baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${folderName}`;
+		console.log("updateRecipeToTheServer: Using baseImagePath:", baseImagePath);
 
 		// 5. Обрабатываем image_header
 		if ("image_header" in recipeToUpdate) {
@@ -240,53 +240,53 @@ export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 				recipeToUpdate.image_header.startsWith("file://")
 			) {
 				const headerExtension = recipeToUpdate.image_header.split(".").pop() || "jpg";
-				// Создаём новый уникальный путь для нового изображения
-				const newHeaderPath = `${baseImagePath}/header_${Date.now()}.${headerExtension}`;
+				const newHeaderPath = `${baseImagePath}/header.${headerExtension}`; // Перезаписываем header
 
 				// Загружаем новое изображение
-				const imageRes = await uploadFile(newHeaderPath, recipeToUpdate.image_header, true);
+				const imageRes = await uploadFile(newHeaderPath, recipeToUpdate.image_header, true, existingRecipe.image_header);
 				if (imageRes.success) {
 					console.log("updateRecipeToTheServer: New image uploaded to:", imageRes.data);
-
-					// Удаляем старое изображение, если оно существует
-					if (existingRecipe.image_header) {
-						const { error: deleteError } = await supabase.storage
-							.from("uploads_image")
-							.remove([existingRecipe.image_header]);
-						if (deleteError) {
-							console.error("updateRecipeToTheServer: Error deleting old image_header:", deleteError);
-						} else {
-							console.log(
-								"updateRecipeToTheServer: Old image_header deleted:",
-								existingRecipe.image_header
-							);
-						}
-					}
-
-					// Обновляем image_header на новый путь
 					recipeToUpdate.image_header = imageRes.data;
-					console.log("updateRecipeToTheServer: Updated image_header:", recipeToUpdate.image_header);
 				} else {
 					console.error("updateRecipeToTheServer: Failed to upload image_header:", imageRes.msg);
 					return { success: false, msg: "Failed to upload image_header" };
 				}
 			} else if (recipeToUpdate.image_header === null) {
-				// Если image_header установлен в null, удаляем старое изображение
 				if (existingRecipe.image_header) {
-					const { error: deleteError } = await supabase.storage
-						.from("uploads_image")
-						.remove([existingRecipe.image_header]);
-					if (deleteError) {
-						console.error("updateRecipeToTheServer: Error deleting old image_header:", deleteError);
+					const deleteResult = await deleteFile(existingRecipe.image_header);
+					if (!deleteResult.success) {
+						console.error("updateRecipeToTheServer: Error deleting old image_header:", deleteResult.msg);
+					} else {
+						console.log("updateRecipeToTheServer: Old image_header deleted:", existingRecipe.image_header);
 					}
 				}
 				recipeToUpdate.image_header = null;
 			}
 		}
 
-		// 6. Обрабатываем instructions (оставляем без изменений)
+		// 6. Обрабатываем instructions
 		if ("instructions" in recipeToUpdate && recipeToUpdate.instructions && recipeToUpdate.instructions.lang) {
 			const imageMap = new Map();
+			const oldImages = new Set();
+
+			// Собираем старые изображения
+			if (existingRecipe.instructions && existingRecipe.instructions.lang) {
+				for (const lang in existingRecipe.instructions.lang) {
+					const langInstructions = existingRecipe.instructions.lang[lang];
+					for (const step in langInstructions) {
+						const stepData = langInstructions[step];
+						if (stepData.images && Array.isArray(stepData.images)) {
+							stepData.images.forEach((image) => {
+								if (typeof image === "string" && !image.startsWith("file://")) {
+									oldImages.add(image);
+								}
+							});
+						}
+					}
+				}
+			}
+
+			// Собираем новые изображения
 			for (const lang in recipeToUpdate.instructions.lang) {
 				const langInstructions = recipeToUpdate.instructions.lang[lang];
 				for (const step in langInstructions) {
@@ -309,8 +309,30 @@ export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 				}
 			}
 
+			// Удаляем старые изображения
+			const newImagePaths = new Set(imageMap.values());
+			const imagesToDelete = Array.from(oldImages).filter((image) => !newImagePaths.has(image));
+			for (const image of imagesToDelete) {
+				const deleteResult = await deleteFile(image);
+				if (!deleteResult.success) {
+					console.error("updateRecipeToTheServer: Error deleting old instruction image:", deleteResult.msg);
+				} else {
+					console.log("updateRecipeToTheServer: Old instruction image deleted:", image);
+				}
+			}
+
+			// Загружаем новые изображения в ту же папку
 			const uploadPromises = [];
 			let imageIndex = 1;
+			const existingImages = Array.from(oldImages).map((image) => {
+				const fileName = image.split("/").pop().split(".")[0];
+				if (fileName.match(/^\d+$/)) {
+					return parseInt(fileName, 10);
+				}
+				return 0;
+			});
+			imageIndex = existingImages.length > 0 ? Math.max(...existingImages) + 1 : 1;
+
 			for (const [localUri] of imageMap) {
 				if (localUri.startsWith("file://")) {
 					const extension = localUri.split(".").pop() || "jpg";
@@ -335,6 +357,7 @@ export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 				}
 			});
 
+			// Обновляем instructions
 			for (const lang in recipeToUpdate.instructions.lang) {
 				const langInstructions = recipeToUpdate.instructions.lang[lang];
 				for (const step in langInstructions) {
