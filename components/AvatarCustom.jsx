@@ -16,14 +16,21 @@ const AvatarCustom = ({
 }) => {
 	// console.log("AvatarCustom uri", uri);
 
+	const imageUri = typeof uri === "string" ? uri : uri?.uri;
+
+	const isLocalFile = imageUri?.startsWith("file://");
+	const isFullUrl = imageUri?.startsWith("http://") || imageUri?.startsWith("https://");
 	// Проверяем, является ли uri локальным файлом, полным URL или серверным путём
-	const isLocalFile = uri?.startsWith("file://");
-	const isFullUrl = uri?.startsWith("http://") || uri?.startsWith("https://");
+	// const isLocalFile = uri?.startsWith("file://");
+	// const isLocalFile = uri?.uri.startsWith("file://");
+	// const isFullUrl = uri?.startsWith("http://") || uri?.startsWith("https://");
 
 	// Если это локальный файл, полный URL, isPreview или RefactorImageHeader, используем uri напрямую
 	// Иначе предполагаем, что это серверный путь, и используем getUserImageSrc
-	const source = isLocalFile || isFullUrl || isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri);
+	// const source = isLocalFile || isFullUrl || isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri);
 	// console.log("AvatarCustom source", source);
+
+	const source = isLocalFile || isFullUrl || isPreview || RefactorImageHeader ? imageUri : getUserImageSrc(imageUri);
 
 	return (
 		<Image

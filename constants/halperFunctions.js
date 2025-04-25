@@ -431,7 +431,7 @@ export const validateRecipeStructure = (recipe) => {
 //
 // ключи будут значениями поля category из массива, а значения — соответствующими полями point
 export const createCategoryPointObject = (recipes) => {
-	console.log("createCategoryPointObject recipes", recipes);
+	// console.log("createCategoryPointObject recipes", recipes);
 
 	//
 	const result = {};

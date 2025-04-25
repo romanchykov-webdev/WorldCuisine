@@ -125,14 +125,10 @@ const RefactorRecipeScrean = () => {
 		}
 	}, [recipe_id, isRefactorRecipe]);
 
-	/*
-    *  надо создать микс createRecipe Screan c recipedetailsscrean
-     чтобы нидит как деталь рецепта но свозможностью редактировать тоесть стиреть или изменить
-    
-    */
+
 
 	const handleLangChange = (lang) => {
-		console.log("RefactorRecipeScrean handleLangChange lang", lang);
+		// console.log("RefactorRecipeScrean handleLangChange lang", lang);
 
 		setLangApp(lang);
 	};
@@ -245,7 +241,7 @@ const RefactorRecipeScrean = () => {
 
 	// updateCopyring
 	const updateCopyring = (updateOldCopering) => {
-		console.log("RefactorRecipeScrean updateSocialLinks", updateOldCopering);
+		// console.log("RefactorRecipeScrean updateSocialLinks", updateOldCopering);
 		setRecipeDish((prev) => {
 			if (areEqual(prev.link_copyright, updateOldCopering)) {
 				return prev;
@@ -259,6 +255,15 @@ const RefactorRecipeScrean = () => {
 
 	const updateCoordinates = (updatePoint) => {
 		console.log("RefactorRecipeScrean updatePointMap", updatePoint);
+		setRecipeDish((prev) => {
+			if (areEqual(prev.map_coordinates, updatePoint)) {
+				return prev;
+			}
+			return {
+				...prev,
+				map_coordinates: updatePoint,
+			};
+		});
 	};
 
 	// Функция для получения измененных полей
@@ -365,7 +370,7 @@ const RefactorRecipeScrean = () => {
 
 			// Получаем изменённые поля
 			const changedFields = getChangedFields();
-			console.log("saveRefactor: Changed fields:", JSON.stringify(changedFields, null, 2));
+			// console.log("saveRefactor: Changed fields:", JSON.stringify(changedFields, null, 2));
 
 			// if (Object.keys(changedFields).length === 0) {
 			// 	Alert.alert("Информация", "Ничего не изменено");
@@ -394,6 +399,10 @@ const RefactorRecipeScrean = () => {
 		}
 	};
 
+	const removeRecipe = () => {
+		console.log("RefactorRecipeScrean removeRecipe");
+	};
+
 	// Пока данные загружаются, показываем только индикатор загрузки
 	if (loading) {
 		return (
@@ -415,6 +424,7 @@ const RefactorRecipeScrean = () => {
 		);
 	}
 	// console.log("recipeDish?.ingredients", recipeDish);
+
 
 	return (
 		<WrapperComponent>
@@ -524,16 +534,24 @@ const RefactorRecipeScrean = () => {
 					/>
 				</View>
 
-				{/* verif reafactor and save */}
+				{/* refactor and save and remove recipe*/}
 				<View className="flex-1 flex-row justify-center mt-5  mb-10 gap-x-2">
 					{/* cancel */}
 					<TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={() => router.back()}>
-						<ButtonSmallCustom buttonText={true} title={i18n.t("Cancel")} w={"100%"} h={60} bg="red" />
+						<ButtonSmallCustom buttonText={true} title={i18n.t("Cancel")} w={"100%"} h={60} tupeButton="add" />
 					</TouchableOpacity>
 
 					{/* Save */}
 					<TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={saveRefactor}>
-						<ButtonSmallCustom buttonText={true} title={i18n.t("Save")} w={"100%"} h={60} bg="green" />
+						<ButtonSmallCustom buttonText={true} title={i18n.t("Save")} w={"100%"} h={60} tupeButton="refactor" />
+					</TouchableOpacity>
+
+
+				</View>
+				<View>
+					{/* delete recipe */}
+					<TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={removeRecipe}>
+						<ButtonSmallCustom buttonText={true} title={i18n.t("Delete recipe")} w={"100%"} h={60} tupeButton="remove" />
 					</TouchableOpacity>
 				</View>
 			</View>

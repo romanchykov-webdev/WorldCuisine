@@ -63,7 +63,7 @@ const EditProfile = () => {
 	let imageSource = user?.avatar && typeof user.avatar == "object" ? user.avatar.uri : getUserImageSrc(user?.avatar);
 
 	const updateAvatar = async () => {
-		// console.log('updateAvatar')
+		console.log('updateAvatar')
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ["images"],
 			// mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -137,9 +137,10 @@ const EditProfile = () => {
 
 		// Загрузка аватара, если он был изменен
 		if (typeof avatar === "object" && avatar?.uri) {
+			console.log("avatar", avatar);
 			const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.png`;
-			// let imageRes = await uploadFile(uniqueFilePath, avatar.uri, true, currentUser?.avatar);
-			let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
+			let imageRes = await uploadFile(uniqueFilePath, avatar.uri, true, currentUser?.avatar);
+			// let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
 			if (imageRes.success) {
 				userData.avatar = imageRes.data;
 			} else {
@@ -208,7 +209,7 @@ const EditProfile = () => {
 			<SafeAreaView>
 				{/*header*/}
 				<View className="flex-row items-center justify-center pt-5 pb-5 ">
-					<View className="absolute left-0">
+					<View className="absolute left-0" style={shadowBoxBlack()}>
 						<ButtonBack />
 					</View>
 					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={{ fontSize: 20 }} />
@@ -225,7 +226,8 @@ const EditProfile = () => {
 						{/*    rounded={150}*/}
 						{/*/>*/}
 						<Image
-							source={imageSource}
+							// source={imageSource}
+							source={user?.avatar}
 							style={{
 								width: wp(50),
 								height: wp(50),

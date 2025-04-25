@@ -47,6 +47,7 @@ const AddPointGoogleMaps = ({ setTotalRecipe, refactorRecipescrean = false, oldC
 
 	useEffect(() => {
 		if (refactorRecipescrean && updateCoordinates) {
+			updateCoordinates(marker)
 		} else {
 			setTotalRecipe((prevRecipe) => ({
 				...prevRecipe,

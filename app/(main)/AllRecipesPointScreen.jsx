@@ -167,7 +167,7 @@ const AllRecipesPointScreen = ({
 		const res = await getAllRecipesPointMasonryMyDB(point, pageNum, 10, sortOptions);
 		if (res.success) {
 			// Если это подгрузка, добавляем новые рецепты к существующим
-			console.log("fetchRecipes res", res);
+			// console.log("fetchRecipes res", res);
 
 			setAllRecipes((prev) => (isLoadMore ? [...prev, ...res.data] : res.data));
 		}
