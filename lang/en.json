@@ -1,5 +1,11 @@
 {
 	"Delete recipe": "Delete recipe",
+
+	"Delete": "Delete",
+	"Confirm": "Confirm",
+	"Success": "Success",
+	"Recipe deleted successfully": "Recipe deleted successfully",
+	"Are you sure you want to DELETE this recipe?": "Are you sure you want to DELETE this recipe?",
 	"---Alert---": "---Alert---",
 
 	"Cancel": "Cancel",

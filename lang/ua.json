@@ -1,5 +1,11 @@
 {
 	"Delete recipe": "Видалити рецепт",
+
+	"Delete": "Видалити",
+	"Confirm": "Підтвердити",
+	"Success": "Успіх",
+	"Recipe deleted successfully": "Рецепт успішно видалено",
+	"Are you sure you want to DELETE this recipe?": "Ви впевнені, що хочете ВИДАЛИТИ цей рецепт?",
 	"---Alert---": "---Alert---",
 
 	"Cancel": "Скасувати",
