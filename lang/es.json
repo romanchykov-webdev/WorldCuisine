@@ -1,5 +1,11 @@
 {
 	"Delete recipe": "Eliminar receta",
+	"Delete": "Eliminar",
+	"Confirm": "Confirmar",
+	"Success": "Éxito",
+	"Recipe deleted successfully": "Receta eliminada con éxito",
+	"Are you sure you want to DELETE this recipe?": "¿Estás seguro de que quieres ELIMINAR esta receta?",
+
 	"---Alert---": "---Alert---",
 
 	"Cancel": "Cancelar",

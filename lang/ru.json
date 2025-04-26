@@ -1,5 +1,11 @@
 {
 	"Delete recipe": "Удалить рецепт",
+
+	"Delete": "Удалить",
+	"Confirm": "Подтвердить",
+	"Success": "Успех",
+	"Recipe deleted successfully": "Рецепт успешно удалён",
+	"Are you sure you want to DELETE this recipe?": "Вы уверены, что хотите УДАЛИТЬ этот рецепт?",
 	"---Alert---": "---Alert---",
 
 	"Cancel": "Отмена",

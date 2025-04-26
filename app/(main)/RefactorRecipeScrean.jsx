@@ -25,6 +25,7 @@ import { shadowBoxBlack } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 import { updateRecipeToTheServer } from "../../service/uploadDataToTheDB";
+import { deleteRecipeFromMyDB} from "../../service/removeRecipe";
 
 // Функция для глубокого сравнения двух значений
 const areEqual = (a, b) => {
@@ -254,7 +255,7 @@ const RefactorRecipeScrean = () => {
 	};
 
 	const updateCoordinates = (updatePoint) => {
-		console.log("RefactorRecipeScrean updatePointMap", updatePoint);
+		// console.log("RefactorRecipeScrean updatePointMap", updatePoint);
 		setRecipeDish((prev) => {
 			if (areEqual(prev.map_coordinates, updatePoint)) {
 				return prev;
@@ -400,7 +401,35 @@ const RefactorRecipeScrean = () => {
 	};
 
 	const removeRecipe = () => {
-		console.log("RefactorRecipeScrean removeRecipe");
+		// console.log("RefactorRecipeScreen removeRecipe");
+		Alert.alert(
+			i18n.t("Confirm"),
+			i18n.t("Are you sure you want to DELETE this recipe?"),
+			[
+				{
+					text: i18n.t("Cancel"),
+					onPress: () => console.log("Delete cancelled"),
+					style: "cancel",
+				},
+				{
+					text:i18n.t("Delete"),
+					onPress: async () => {
+						// console.log("RefactorRecipeScreen removeRecipe");
+						setLoading(true);
+						const res = await deleteRecipeFromMyDB(recipeDish.id);
+						if (res.success) {
+							setLoading(false);
+							Alert.alert(i18n.t("Success"),i18n.t("Recipe deleted successfully"));
+							router.replace("/homeScreen"); // Перенаправляем на список рецептов
+						} else {
+							setLoading(false);
+							Alert.alert("Error", res.msg || "Failed to delete recipe");
+						}
+					},
+					style: "destructive",
+				},
+			]
+		);
 	};
 
 	// Пока данные загружаются, показываем только индикатор загрузки
