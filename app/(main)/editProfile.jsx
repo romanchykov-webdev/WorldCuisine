@@ -17,7 +17,7 @@ import ButtonBack from "../../components/ButtonBack";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
 import ThemeWrapper from "../../components/ThemeWrapper";
 import { wp } from "../../constants/responsiveScreen";
-import { shadowBoxBlack } from "../../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite, shadowText} from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImageSrc, uploadFile } from "../../service/imageServices";
 import { deleteUser, logOut, updateUser } from "../../service/userService";
@@ -30,9 +30,10 @@ import { Image } from "expo-image";
 // translate
 import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
+import {themes} from "../../constants/themes";
 
 const EditProfile = () => {
-	const { user: currentUser, setAuth, setUserData } = useAuth();
+	const { user: currentUser, setAuth, setUserData,currentTheme } = useAuth();
 	const router = useRouter();
 
 	// console.log("EditProfile currentUser", currentUser);
@@ -205,6 +206,7 @@ const EditProfile = () => {
 			keyboardDismissMode={"on-drag"}
 			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: Platform.OS === "ios" ? null : 60 }}
 			showsVerticalScrollIndicator={false}
+			style={{backgroundColor:themes[currentTheme].backgroundColor}}
 		>
 			<SafeAreaView>
 				{/*header*/}
@@ -212,12 +214,12 @@ const EditProfile = () => {
 					<View className="absolute left-0" style={shadowBoxBlack()}>
 						<ButtonBack />
 					</View>
-					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={{ fontSize: 20 }} />
+					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={[{ fontSize: 20 }]} />
 				</View>
 
 				{/*avatar*/}
 				<View className="gap-y-5 items-center mb-5 ">
-					<View style={shadowBoxBlack()}>
+					<View style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}>
 						{/*<AvatarCustom*/}
 						{/*    // uri={userData?.avatar}*/}
 						{/*    uri={imageSource}*/}
@@ -234,7 +236,7 @@ const EditProfile = () => {
 								borderRadius: 100,
 							}}
 						/>
-						<View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
+						<View className="absolute bottom-5 right-5" style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}>
 							<TouchableOpacity
 								onPress={updateAvatar}
 								className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
@@ -247,12 +249,13 @@ const EditProfile = () => {
 
 				<View
 					className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
-					// style={shadowBoxBlack()}
+					style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 				>
 					<TextInput
+						style={{color:themes[currentTheme].textColor}}
 						value={user.user_name}
 						onChangeText={(value) => setUser({ ...user, user_name: value })}
-						className="text-neutral-500 text-xl p-3"
+						className=" text-xl p-3"
 					/>
 				</View>
 
@@ -274,7 +277,7 @@ const EditProfile = () => {
 				{/*    buttonUpdate &&(*/}
 				<TouchableOpacity
 					onPress={handleSubmit}
-					style={shadowBoxBlack()}
+					style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 					className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center"
 				>
 					{loading ? (

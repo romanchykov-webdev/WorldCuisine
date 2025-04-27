@@ -4,7 +4,7 @@ import { Alert, Text, TouchableOpacity, View } from "react-native";
 import ButtonBack from "../components/ButtonBack";
 
 import { wp } from "../constants/responsiveScreen";
-import { shadowBoxBlack } from "../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite} from "../constants/shadow";
 
 import { ArrowLeftEndOnRectangleIcon, CreditCardIcon, HeartIcon, PencilSquareIcon } from "react-native-heroicons/mini";
 import { useAuth } from "../contexts/AuthContext";
@@ -18,9 +18,10 @@ import i18n from "../lang/i18n";
 
 import { default as Icon, default as IconComent } from "react-native-vector-icons/EvilIcons";
 import WrapperComponent from "../components/WrapperComponent";
+import {themes} from "../constants/themes";
 
 const ProfileScreen = () => {
-	const { setAuth, user, unreadCommentsCount, unreadLikesCount } = useAuth();
+	const { setAuth, user, unreadCommentsCount, unreadLikesCount,currentTheme } = useAuth();
 
 	// change lang
 	// const [lang, setLang] = useState('en'); // Устанавливаем язык
@@ -118,7 +119,9 @@ const ProfileScreen = () => {
 						> */}
 					<WrapperComponent>
 						<View className="flex-row justify-between items-center">
-							<View style={shadowBoxBlack()}>
+							<View
+								// style={shadowBoxBlack()}
+							>
 								<ButtonBack />
 							</View>
 
@@ -126,9 +129,10 @@ const ProfileScreen = () => {
 
 							<TouchableOpacity
 								onPress={handleLogUot}
-								style={shadowBoxBlack()}
-								className="bg-white p-3 border-[1px] border-neutral-300 rounded-full"
+								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								className="bg-white p-3 border-[1px] border-neutral-300 rounded-full "
 							>
+
 								<ArrowLeftEndOnRectangleIcon size={30} color="red" />
 							</TouchableOpacity>
 						</View>
@@ -137,7 +141,9 @@ const ProfileScreen = () => {
 						<View className=" gap-y-5 items-center mb-5 ">
 							{/*avatar*/}
 							<View className="relative ">
-								<View style={shadowBoxBlack()}>
+								<View
+									style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								>
 									<AvatarCustom
 										uri={user?.avatar}
 										size={wp(50)}
@@ -145,7 +151,7 @@ const ProfileScreen = () => {
 										rounded={150}
 									/>
 								</View>
-								<View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
+								<View className="absolute bottom-5 right-5" style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}>
 									<TouchableOpacity
 										onPress={updateProfile}
 										className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
@@ -156,7 +162,7 @@ const ProfileScreen = () => {
 							</View>
 
 							{/*userName*/}
-							<Text>{user?.user_name}</Text>
+							<Text style={{color:themes[currentTheme].textColor}}>{user?.user_name}</Text>
 						</View>
 
 						{/*change lang app*/}
@@ -165,7 +171,7 @@ const ProfileScreen = () => {
 							{/*may recipe*/}
 							<TouchableOpacity
 								onPress={handleMyRecipes}
-								style={shadowBoxBlack()}
+								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
 							>
 								<CreditCardIcon size={45} color="green" />
@@ -185,7 +191,7 @@ const ProfileScreen = () => {
 							{/*may favorite*/}
 							<TouchableOpacity
 								onPress={() => router.push("(main)/CreateRecipeScreen")}
-								style={shadowBoxBlack()}
+								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 							>
 								{/*<BellIcon size={45} color='gold'/>*/}
@@ -198,7 +204,7 @@ const ProfileScreen = () => {
 							{/*may Favorite*/}
 							<TouchableOpacity
 								onPress={handleMyLiked}
-								style={shadowBoxBlack()}
+								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 							>
 								<HeartIcon size={45} color="red" />

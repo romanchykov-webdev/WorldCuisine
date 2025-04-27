@@ -13,9 +13,10 @@ import RecipesMasonryComponent from "../components/RecipesMasonry/RecipesMasonry
 import TopRecipeComponent from "../components/topRecipe/TopRecipeComponent";
 import i18n from "../lang/i18n";
 import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
+import {themes} from "../constants/themes";
 
 const HomeScreen = () => {
-	const { user, unreadCommentsCount, unreadLikesCount } = useAuth();
+	const { user, unreadCommentsCount, unreadLikesCount,currentTheme } = useAuth();
 	// const router = useRouter();
 
 	const { language: langDev } = useAuth();
@@ -119,7 +120,7 @@ const HomeScreen = () => {
 	// console.log('homescreen categories',categories)
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={{backgroundColor:themes[currentTheme].backgroundColor}}>
 			<StatusBar style="dark" />
 			<ScrollView
 				showsVerticalScrollIndicator={false}

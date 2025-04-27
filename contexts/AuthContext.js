@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import i18n from "../lang/i18n";
 import { supabase } from "../lib/supabase";
+import {Appearance} from "react-native";
 
 const AuthContext = createContext();
 
@@ -18,13 +19,26 @@ export const AuthProvider = ({ children }) => {
 	const [unreadCommentsCount, setUnreadCommentsCount] = useState(0);
 	const [unreadLikesCount, setUnreadLikesCount] = useState(0);
 
+	// Состояние для текущей темы (light, dark)
+	const [currentTheme, setCurrentTheme] = useState("light");
+
 	// const setAuth = (authUser) => {
 	// 	setUser(authUser);
 	// };
+
 	// Мемоизация функций для предотвращения лишних ререндеров
-	const setAuth = useCallback((authUser) => {
+	// const setAuth = useCallback((authUser) => {
+	// 	setUser(authUser);
+	// }, []);
+
+	// Мемоизация функций
+	const setAuth=useCallback((authUser) => {
 		setUser(authUser);
-	}, []);
+		// Устанавливаем тему из данных пользователя или по умолчанию
+		const userTheme=authUser?.theme ||"auto"
+		updateTheme(userTheme);
+	},[])
+
 
 	// const setUserData = (userData) => {
 	// 	setUser((prev) => ({ ...prev, ...userData }));
@@ -38,8 +52,56 @@ export const AuthProvider = ({ children }) => {
 		i18n.locale = newLanguage;
 	};
 
-	// Функция для подсчёта непрочитанных уведомлений
+	// Функция для определения темы на основе настроек пользователя и устройства
+	const updateTheme=useCallback((userTheme) => {
+		if(userTheme === "auto"){
+			// Если авто, используем тему устройства
+			const deviceTheme=Appearance.getColorScheme(); // light, dark или null
+			setCurrentTheme(userTheme);
+		}else{
+			// Устанавливаем тему, указанную пользователем
+			setCurrentTheme(userTheme);
+		}
+	},[])
 
+	// Функция для изменения темы и сохранения в Supabase
+	const changeTheme = useCallback(
+		async (newTheme) => {
+			if (!user?.id) return;
+
+			try {
+				// Обновляем тему в Supabase
+				const { error } = await supabase
+					.from("users")
+					.update({ theme: newTheme })
+					.eq("id", user.id);
+
+				if (error) {
+					console.error("Error updating theme:", error.message);
+					return;
+				}
+
+				// Обновляем локальные данные пользователя
+				setUser((prev) => ({ ...prev, theme: newTheme }));
+				// Применяем новую тему
+				updateTheme(newTheme);
+			} catch (error) {
+				console.error("Unexpected error updating theme:", error);
+			}
+		},
+		[user, updateTheme]
+	);
+	// Отслеживаем изменения темы устройства, если выбрана авто
+	useEffect(() => {
+		if (user?.theme === "auto") {
+			const listener = Appearance.addChangeListener(({ colorScheme }) => {
+				setCurrentTheme(colorScheme || "light");
+			});
+			return () => listener.remove();
+		}
+	}, [user?.theme]);
+
+	// Функция для подсчёта непрочитанных уведомлений
 	const fetchUnreadCount = async (type) => {
 		if (!user?.id) return;
 
@@ -214,6 +276,8 @@ export const AuthProvider = ({ children }) => {
 				markAsRead,
 				unreadCommentsCount,
 				unreadLikesCount,
+				currentTheme,
+				changeTheme,
 			}}
 		>
 			{children}
