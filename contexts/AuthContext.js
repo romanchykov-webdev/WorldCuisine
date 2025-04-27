@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
 	const updateTheme=useCallback((userTheme) => {
 		if(userTheme === "auto"){
 			// Если авто, используем тему устройства
-			const deviceTheme=Appearance.getColorScheme(); // light, dark или null
-			setCurrentTheme(userTheme);
+			const deviceTheme = Appearance.getColorScheme() || "light"; // light, dark или light по умолчанию
+			setCurrentTheme(deviceTheme);
 		}else{
 			// Устанавливаем тему, указанную пользователем
 			setCurrentTheme(userTheme);

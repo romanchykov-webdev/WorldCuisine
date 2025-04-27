@@ -102,7 +102,7 @@ const ProfileScreen = () => {
 		// console.log('ProfileScreen handleMyLiked',res.data)
 		router.push("(main)/FavoriteScrean");
 	};
-
+	console.log("currentTheme",currentTheme)
 	return (
 		<>
 			{isAuth ? (
@@ -129,7 +129,7 @@ const ProfileScreen = () => {
 
 							<TouchableOpacity
 								onPress={handleLogUot}
-								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 								className="bg-white p-3 border-[1px] border-neutral-300 rounded-full "
 							>
 
@@ -142,7 +142,7 @@ const ProfileScreen = () => {
 							{/*avatar*/}
 							<View className="relative ">
 								<View
-									style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+									style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 								>
 									<AvatarCustom
 										uri={user?.avatar}
@@ -151,7 +151,7 @@ const ProfileScreen = () => {
 										rounded={150}
 									/>
 								</View>
-								<View className="absolute bottom-5 right-5" style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}>
+								<View className="absolute bottom-5 right-5" style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}>
 									<TouchableOpacity
 										onPress={updateProfile}
 										className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
@@ -171,7 +171,7 @@ const ProfileScreen = () => {
 							{/*may recipe*/}
 							<TouchableOpacity
 								onPress={handleMyRecipes}
-								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
 							>
 								<CreditCardIcon size={45} color="green" />
@@ -191,7 +191,7 @@ const ProfileScreen = () => {
 							{/*may favorite*/}
 							<TouchableOpacity
 								onPress={() => router.push("(main)/CreateRecipeScreen")}
-								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 							>
 								{/*<BellIcon size={45} color='gold'/>*/}
@@ -204,7 +204,7 @@ const ProfileScreen = () => {
 							{/*may Favorite*/}
 							<TouchableOpacity
 								onPress={handleMyLiked}
-								style={currentTheme==='light' ? shadowBoxWhite() :shadowBoxWhite()}
+								style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 								className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
 							>
 								<HeartIcon size={45} color="red" />
