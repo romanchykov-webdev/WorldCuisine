@@ -22,10 +22,17 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 	const [tempImages, setTempImages] = useState([]); // Временные изображения
 
 	// Преобразуем объект в массив шагов для рендеринга
-	const steps = Object.entries(descriptionsRecipe.lang[langApp]).map(([key, value]) => ({
-		step: key,
-		...value,
-	}));
+	// const steps = Object.entries(descriptionsRecipe.lang[langApp]).map(([key, value]) => ({
+	// 	step: key,
+	// 	...value,
+	// }));
+	const steps = descriptionsRecipe.lang[langApp]
+		? Object.entries(descriptionsRecipe.lang[langApp]).map(([key, value]) => ({
+			step: key,
+			...value,
+		}))
+		: [];
+
 
 	// Хук для выбора изображений, передаём объект recipe
 	const currentImages = selectedStep ? descriptionsRecipe.lang[langApp][selectedStep]?.images || [] : [];
@@ -206,7 +213,7 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 			});
 		} else {
 			// Добавление нового шага
-			const newStepNumber = steps.length + 1; // Определяем номер нового шага
+			const newStepNumber = steps?.length + 1; // Определяем номер нового шага
 			const newStepKey = `${newStepNumber}`; // Например, "Step 1", "Step 2" и т.д.
 
 			Object.keys(descriptionsRecipe.lang).forEach((lang) => {
@@ -241,8 +248,8 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 	return (
 		<View>
 			<TitleDescriptionComponent titleText={i18n.t("Recipe Description")} titleVisual={true} />
-			{steps.length > 0 &&
-				steps.map((item, index) => (
+			{steps?.length > 0 &&
+				steps?.map((item, index) => (
 					<View key={index} className="w-full mb-5">
 						{/* text */}
 						<View className="flex-row flex-1 ">

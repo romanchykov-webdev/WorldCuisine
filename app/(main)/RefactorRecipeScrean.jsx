@@ -417,6 +417,7 @@ const RefactorRecipeScrean = () => {
 						// console.log("RefactorRecipeScreen removeRecipe");
 						setLoading(true);
 						const res = await deleteRecipeFromMyDB(recipeDish.id);
+						// console.log("Delete result:", res);
 						if (res.success) {
 							setLoading(false);
 							Alert.alert(i18n.t("Success"),i18n.t("Recipe deleted successfully"));

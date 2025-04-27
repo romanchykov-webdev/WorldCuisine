@@ -232,7 +232,7 @@ const IngredientsCreateRecipe = ({
 
 				<View className="flex-row gap-x-2">
 					<TouchableOpacity onPress={() => setIsModalVisible(true)} style={shadowBoxBlack()}>
-						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} tupeButton="remove" />
+						<ButtonSmallCustom w={60} h={60} icon={ScaleIcon} size={20} tupeButton="refactor" />
 					</TouchableOpacity>
 
 					<TouchableOpacity style={shadowBoxBlack()} onPress={addIngredient}>

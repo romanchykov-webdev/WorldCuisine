@@ -1,6 +1,7 @@
 import base64 from "base-64";
 import * as FileSystem from "expo-file-system";
 import { supabaseUrl } from "../constants/supabaseIndex";
+import {supabase} from "../lib/supabase";
 
 /**
  * Получает ссылку на изображение пользователя или возвращает иконку по умолчанию
@@ -230,13 +231,67 @@ export const getRecipeImageUrl = (imagePath) => {
  * Удаляет файл из Cloudinary
  * @param {string} filePath - Путь к файлу в Cloudinary (например, полный URL или путь вроде 'recipes_images/Snacks/Sandwiches/2025_04_25_12_27_24_1b17d89f-441f-490e-bde8-d05453cc7493/header.jpg')
  * @returns {Promise<{success: boolean, msg?: string}>} - Результат удаления
+ *  рабочая но ключи надо вынести
+ */
+// export const deleteFile = async (filePath) => {
+// 	try {
+// 		const apiKey = "249794684119177";
+// 		const apiSecret = "HDW7kW7XY7WD1RvHG75Hm4B6_Ck";
+// 		const authString = base64.encode(`${apiKey}:${apiSecret}`);
+//
+// 		// Извлекаем public_id из filePath
+// 		let publicId = filePath;
+//
+// 		if (filePath.startsWith("https://res.cloudinary.com")) {
+// 			const urlParts = filePath.split("/image/upload/")[1];
+// 			const pathWithoutVersion = urlParts.split("/").slice(1).join("/"); // Убираем версию (v1745587070) и ratatouille_images
+// 			publicId = pathWithoutVersion.split(".").slice(0, -1).join("."); // Убираем расширение файла
+// 		} else {
+// 			publicId = filePath
+// 				.replace(/^ratatouille_images\//, '') // Удаляем префикс, если он есть
+// 				.split('.')
+// 				.slice(0, -1)
+// 				.join('.');
+// 		}
+//
+// 		console.log("deleteFile: Deleting file with public_id:", publicId);
+//
+// 		const response = await fetch(`https://api.cloudinary.com/v1_1/dq0ymjvhx/resources/image/upload`, {
+// 			method: "DELETE",
+// 			headers: {
+// 				Authorization: `Basic ${authString}`,
+// 				"Content-Type": "application/json",
+// 			},
+// 			body: JSON.stringify({
+// 				public_ids: [publicId],
+// 			}),
+// 		});
+//
+// 		const result = await response.json();
+//
+// 		if (result.error) {
+// 			console.error("deleteFile: Error deleting file:", result.error.message);
+// 			return { success: false, msg: result.error.message };
+// 		}
+//
+// 		console.log("deleteFile: File deleted successfully:", result);
+// 		return { success: true };
+// 	} catch (error) {
+// 		console.error("deleteFile: Error:", error);
+// 		return { success: false, msg: error.message };
+// 	}
+// };
+
+//----------------------------  Удаляет файл из Cloudinary через серверную функцию Supabase
+
+
+/**
+ * Удаляет файл из Cloudinary через серверную функцию Supabase
+ * @param {string} filePath - Путь к файлу в Cloudinary (например, полный URL или путь вроде 'recipes_images/Snacks/Sandwiches/2025_04_25_12_27_24_1b17d89f-441f-490e-bde8-d05453cc7493/header.jpg')
+ * @returns {Promise<{success: boolean, msg?: string}>} - Результат удаления
  */
 export const deleteFile = async (filePath) => {
 	try {
-		const apiKey = "249794684119177";
-		const apiSecret = "HDW7kW7XY7WD1RvHG75Hm4B6_Ck";
-		const authString = base64.encode(`${apiKey}:${apiSecret}`);
-
 		// Извлекаем public_id из filePath
 		let publicId = filePath;
 
@@ -254,31 +309,34 @@ export const deleteFile = async (filePath) => {
 
 		console.log("deleteFile: Deleting file with public_id:", publicId);
 
-		const response = await fetch(`https://api.cloudinary.com/v1_1/dq0ymjvhx/resources/image/upload`, {
-			method: "DELETE",
-			headers: {
-				Authorization: `Basic ${authString}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				public_ids: [publicId],
-			}),
+		// Вызываем серверную функцию Supabase
+		const { data, error } = await supabase.rpc("delete_cloudinary_images", {
+			public_ids: [publicId],
 		});
 
-		const result = await response.json();
-
-		if (result.error) {
-			console.error("deleteFile: Error deleting file:", result.error.message);
-			return { success: false, msg: result.error.message };
+		if (error) {
+			console.error("deleteFile: Error deleting file:", error.message);
+			return { success: false, msg: error.message };
 		}
 
-		console.log("deleteFile: File deleted successfully:", result);
+		if (!data.success) {
+			console.error("deleteFile: Error deleting file:", data.error);
+			return { success: false, msg: data.error || "Failed to delete file" };
+		}
+
+		console.log("deleteFile: File deleted successfully:", data);
 		return { success: true };
 	} catch (error) {
 		console.error("deleteFile: Error:", error);
 		return { success: false, msg: error.message };
 	}
 };
+
+
+
+
+// ---------------------------
+
 /**
  * Создает папку в Cloudinary внутри директории 'ratatouille_images'
  * @param {string} folderPath - Имя папки, которую необходимо создать (например, 'users' или 'recipes')

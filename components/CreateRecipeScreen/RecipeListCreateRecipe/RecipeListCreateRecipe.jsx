@@ -292,11 +292,17 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 
 			<View className="flex-row gap-x-2 ">
 				<TouchableOpacity
-					onPress={addImageRecipeList}
-					style={shadowBoxBlack()}
-					className="flex-1 h-[50px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
+					onPress={loadingCompresImg ? null : addImageRecipeList}
+					style={[{flex:1},shadowBoxBlack()]}
+					className="flex-1 h-[60px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
 				>
-					<PhotoIcon color="white" size={20} />
+					{loadingCompresImg ? <LoadingComponent color="green" size="small"/> : <PhotoIcon color="white" size={20} />}
+					{/*{loadingCompresImg ? <LoadingComponent/> : <ButtonSmallCustom*/}
+					{/*icon={PhotoIcon}*/}
+					{/*tupeButton="refactor"*/}
+					{/*h={60}*/}
+					{/*w="100%"*/}
+					{/*/>}*/}
 					{addImages?.length > 0 && (
 						<Animated.View
 							entering={FadeInDown.duration(200).springify()} // Добавим нужную анимацию с параметрами
@@ -322,11 +328,17 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 				</TouchableOpacity>
 
 				<TouchableOpacity
-					style={shadowBoxBlack()}
+					style={[{flex:1},shadowBoxBlack()]}
 					onPress={loadingCompresImg ? null : addStepRecipe}
-					className="flex-1 h-[50px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
+					className="flex-1 h-[60px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
 				>
-					{loadingCompresImg ? <LoadingComponent /> : <PlusIcon color="white" size={20} />}
+					{loadingCompresImg ? <LoadingComponent size="small" color="grey"/> : <PlusIcon color="white" size={20} />}
+					{/*{loadingCompresImg ? <LoadingComponent /> : <ButtonSmallCustom*/}
+					{/*icon={PlusIcon}*/}
+					{/*h={60}*/}
+					{/*w="100%"*/}
+					{/*tupeButton="add"*/}
+					{/*/>}*/}
 				</TouchableOpacity>
 
 				{/*<TouchableOpacity*/}
