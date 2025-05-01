@@ -10,7 +10,7 @@ const TitleScrean = ({ title, styleTitle }) => {
 	return (
 		<Text
 			style={[
-				{ fontSize: hp(4) ,color:themes[currentTheme].textColor},
+				{ fontSize: hp(4) ,color:themes[currentTheme]?.textColor},
 				shadowText({ color: "rgba(0,0,0,0.4)", offset: { width: 1.5, height: 1.5 }, radius: 1 }),
 				styleTitle,
 			]}

@@ -32,6 +32,17 @@ const LanguagesWrapper = ({ setLang, lang }) => {
 				setLang(selectedLang);
 				i18n.locale = selectedLang; // Обновляем i18n.locale
 			}}
+			// setItems={(selectedLang) => {
+			// 	if (selectedLang && typeof selectedLang === "string") {
+			// 		setLang(selectedLang);
+			// 		i18n.locale = selectedLang;
+			// 	} else {
+			// 		console.warn("Invalid language selected:", selectedLang);
+			// 		// Optionally set a fallback language
+			// 		setLang("en");
+			// 		i18n.locale = "en";
+			// 	}
+			// }}
 		/>
 	);
 };

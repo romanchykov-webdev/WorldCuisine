@@ -8,8 +8,12 @@ import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import LoadingComponent from "../loadingComponent";
 import ModalClearCustom from "../ModalClearCustom";
 import StərɪskCustomComponent from "../StərɪskCustomComponent";
+import {themes} from "../../constants/themes";
+import {useAuth} from "../../contexts/AuthContext";
 
 const AddCategory = ({ langApp, setTotalRecipe }) => {
+
+	const {currentTheme}=useAuth()
 	const [allCategories, setAllCategories] = useState([]);
 	const [cat, setCat] = useState(null);
 	const [subCategory, setSubCategory] = useState({
@@ -110,18 +114,18 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 	return (
 		<View className="mb-5">
 			{subCategory.name !== "" && cat !== null && (
-				<View className="flex-row gap-x-2 items-center justify-between mb-3 ">
+				<View className="flex-row gap-x-2 items-center justify-between mb-5 ">
 					<View className="flex-row items-center flex-wrap " style={{ maxWidth: wp(80) }}>
-						<Text className="text-xl text-neutral-700 font-bold">Category: </Text>
-						<Text className="text-xl text-neutral-700 font-black">
+						<Text className="text-xl font-bold" style={{color:themes[currentTheme]?.textColor}}>{i18n.t("Category")} : </Text>
+						<Text className="text-xl  font-black" style={{color:themes[currentTheme]?.textColor}}>
 							{cat.name} {" ->"}
 						</Text>
-						<Text className="text-xl text-neutral-700 font-medium">{subCategory.name}</Text>
+						<Text className="text-xl  font-medium" style={{color:themes[currentTheme]?.textColor}}>{subCategory.name}</Text>
 					</View>
 
 					<View>
 						<TouchableOpacity onPress={handlerRemoveCategory}>
-							<ButtonSmallCustom icon={TrashIcon} bg={"red"} />
+							<ButtonSmallCustom icon={TrashIcon} tupeButton="remove"/>
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -134,7 +138,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 				<ButtonSmallCustom
 					buttonText={true}
 					// styleWrapperButton={}
-					bg="green"
+					tupeButton="add"
 					w="100%"
 					h={60}
 					title={i18n.t("Add category")}
@@ -153,7 +157,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 
 			<ModalClearCustom
 				titleHeader={i18n.t("To add a recipe to your favorites you must log in or create an account")}
-				textButton={"Save"}
+				textButton={i18n.t("Save")}
 				isModalVisible={isModalVisible}
 				// closeModal={closeModal}
 				handleSave={handleSave}
@@ -171,7 +175,7 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 								styleWrapperButton={{ borderRadius: "100%" }}
 							/>
 						</TouchableOpacity>
-						<Text className="flex-1 text-center ml-[-40]">{cat?.name}</Text>
+						<Text className="flex-1 text-center ml-[-40]" style={{color:themes[currentTheme]?.textColor}}>{cat?.name}</Text>
 					</View>
 				}
 			>
@@ -187,9 +191,10 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 										<TouchableOpacity
 											onPress={() => handleCategory(category)}
 											key={index}
-											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
+											className="border-2  rounded-[15] mb-3 p-2"
+
 										>
-											<Text className="text-2xl">{category.name}</Text>
+											<Text className="text-2xl text-center" style={{color:themes[currentTheme]?.textColor}}>{category.name}</Text>
 										</TouchableOpacity>
 									);
 							  })
@@ -198,9 +203,10 @@ const AddCategory = ({ langApp, setTotalRecipe }) => {
 										<TouchableOpacity
 											onPress={() => handleSubCategory(subCategory)}
 											key={index}
-											className="border-2 border-neutral-700 rounded-[15] mb-3 p-2"
+											className="border-2  rounded-[15] mb-3 p-2"
+
 										>
-											<Text className="text-2xl">{subCategory.name}</Text>
+											<Text className="text-2xl text-center" style={{color:themes[currentTheme]?.textColor}}>{subCategory.name}</Text>
 										</TouchableOpacity>
 									);
 							  })}

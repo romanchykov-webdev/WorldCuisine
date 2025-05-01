@@ -17,6 +17,8 @@ const UploadHeaderImage = ({
 	totalLangRecipe,
 	setTotalRecipe,
 	totalRecipe,
+	currentTheme,
+	themes
 }) => {
 	const [addImage, setAddImage] = useState([]);
 
@@ -67,7 +69,7 @@ const UploadHeaderImage = ({
 			{addImage[0]?.uri ? (
 				<View className="relative">
 					<TouchableOpacity onPress={handlerRemoveHeaderImage} className="absolute top-[-5] right-0 z-10">
-						<ButtonSmallCustom icon={TrashIcon} bg={"red"} />
+						<ButtonSmallCustom icon={TrashIcon} tupeButton="remove" />
 					</TouchableOpacity>
 
 					<ViewImageListCreateRecipe image={addImage} />
@@ -82,7 +84,7 @@ const UploadHeaderImage = ({
 							<LoadingComponent />
 						) : (
 							<>
-								<Text className="mb-2">{i18n.t("Upload your image")}</Text>
+								<Text className="mb-2" style={{color:themes[currentTheme].textColor}}>{i18n.t("Upload your image")}</Text>
 								<ArrowUpOnSquareStackIcon size={50} color="green" />
 							</>
 						)}
@@ -100,6 +102,8 @@ const UploadHeaderImage = ({
 					totalLangRecipe={totalLangRecipe}
 					setTotalRecipe={setTotalRecipe}
 					totalRecipe={totalRecipe}
+					currentTheme={currentTheme}
+				themes={themes}
 				/>
 			</View>
 		</View>

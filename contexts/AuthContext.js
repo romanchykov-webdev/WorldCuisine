@@ -65,32 +65,33 @@ export const AuthProvider = ({ children }) => {
 	},[])
 
 	// Функция для изменения темы и сохранения в Supabase
-	const changeTheme = useCallback(
-		async (newTheme) => {
-			if (!user?.id) return;
-
-			try {
-				// Обновляем тему в Supabase
-				const { error } = await supabase
-					.from("users")
-					.update({ theme: newTheme })
-					.eq("id", user.id);
-
-				if (error) {
-					console.error("Error updating theme:", error.message);
-					return;
-				}
-
-				// Обновляем локальные данные пользователя
-				setUser((prev) => ({ ...prev, theme: newTheme }));
-				// Применяем новую тему
-				updateTheme(newTheme);
-			} catch (error) {
-				console.error("Unexpected error updating theme:", error);
-			}
-		},
-		[user, updateTheme]
-	);
+	// console.log("changeTheme currentTheme",currentTheme)
+	// const changeTheme = useCallback(
+	// 	async (newTheme) => {
+	// 		if (!user?.id) return;
+	//
+	// 		try {
+	// 			// Обновляем тему в Supabase
+	// 			const { error } = await supabase
+	// 				.from("users")
+	// 				.update({ theme: newTheme })
+	// 				.eq("id", user.id);
+	//
+	// 			if (error) {
+	// 				console.error("Error updating theme:", error.message);
+	// 				return;
+	// 			}
+	//
+	// 			// Обновляем локальные данные пользователя
+	// 			setUser((prev) => ({ ...prev, theme: newTheme }));
+	// 			// Применяем новую тему
+	// 			updateTheme(newTheme);
+	// 		} catch (error) {
+	// 			console.error("Unexpected error updating theme:", error);
+	// 		}
+	// 	},
+	// 	[user, updateTheme]
+	// );
 	// Отслеживаем изменения темы устройства, если выбрана авто
 	useEffect(() => {
 		if (user?.theme === "auto") {
@@ -258,7 +259,7 @@ export const AuthProvider = ({ children }) => {
 			console.error("Error in markAsRead:", error.message);
 		}
 	};
-
+	// console.log("currentTheme",currentTheme)
 	return (
 		<AuthContext.Provider
 			value={{
@@ -277,7 +278,8 @@ export const AuthProvider = ({ children }) => {
 				unreadCommentsCount,
 				unreadLikesCount,
 				currentTheme,
-				changeTheme,
+				setCurrentTheme
+				// changeTheme,
 			}}
 		>
 			{children}

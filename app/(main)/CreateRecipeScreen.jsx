@@ -37,9 +37,10 @@ import LoadingComponent from "../../components/loadingComponent";
 import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
 import { uploadRecipeToTheServer } from "../../service/uploadDataToTheDB";
+import {themes} from "../../constants/themes";
 
 const CreateRecipeScreen = () => {
-	const { user: userData, language, setRequiredFields, previewRecipeReady, setPreviewRecipeReady } = useAuth();
+	const { user: userData, language, setRequiredFields, previewRecipeReady, setPreviewRecipeReady,currentTheme } = useAuth();
 
 	const [totalRecipe, setTotalRecipe] = useState({
 		category: null,
@@ -162,6 +163,7 @@ const CreateRecipeScreen = () => {
 			) : (
 				<SafeAreaView
 				// contentContainerStyle={{flex: 1}}
+					style={{backgroundColor:themes[currentTheme]?.backgroundColor}}
 				>
 					<KeyboardAvoidingView
 						// style={{flex: 1}}
@@ -178,7 +180,7 @@ const CreateRecipeScreen = () => {
 						>
 							{/*title*/}
 							<View className="pt-5">
-								<View className=" flex-1" style={shadowBoxBlack()}>
+								<View className=" flex-1" >
 									<ButtonBack />
 								</View>
 								{/* <Text className="text-center mb-5 text-xl font-bold">Create Recipe</Text> */}
@@ -199,6 +201,8 @@ const CreateRecipeScreen = () => {
 								totalLangRecipe={totalLangRecipe}
 								setTotalRecipe={setTotalRecipe}
 								totalRecipe={totalRecipe}
+								currentTheme={currentTheme}
+								themes={themes}
 							/>
 
 							{/*   aria di recipe*/}
@@ -207,6 +211,7 @@ const CreateRecipeScreen = () => {
 								<TitleDescriptionComponent
 									titleText={i18n.t("Country of origin of the recipe")}
 									titleVisual={true}
+
 								/>
 
 								<InputCreateRecipeScreenCustom

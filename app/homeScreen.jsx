@@ -117,10 +117,12 @@ const HomeScreen = () => {
 			setIsLoading(false); // Завершаем процесс загрузки
 		}, 1000);
 	};
-	// console.log('homescreen categories',categories)
+	// console.log('currentTheme.backgroundColor',themes[currentTheme]?.backgroundColor)
 
 	return (
-		<SafeAreaView style={{backgroundColor:themes[currentTheme].backgroundColor}}>
+		<SafeAreaView
+			style={{backgroundColor:themes[currentTheme]?.backgroundColor}}
+		>
 			<StatusBar style="dark" />
 			<ScrollView
 				showsVerticalScrollIndicator={false}

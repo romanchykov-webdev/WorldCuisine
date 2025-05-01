@@ -1,5 +1,12 @@
 import {supabase} from "../lib/supabase";
 import {deleteFile} from "./imageServices";
+
+
+/**
+ * Удаляет рецепт из базы данных и связанные с ним изображения из хранилища
+ * @param {string} recipeId - Идентификатор рецепта
+ * @returns {Promise<{success: boolean, msg?: string}>} - Результат удаления или сообщение об ошибке
+ */
 export const deleteRecipeFromMyDB = async (recipeId) => {
     console.log("deleteRecipe", recipeId);
     try {

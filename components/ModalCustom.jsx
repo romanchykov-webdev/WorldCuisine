@@ -3,6 +3,8 @@ import React from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import i18n from "../lang/i18n";
 import TitleDescriptionComponent from "./CreateRecipeScreen/TitleDescriptionComponent";
+import {themes} from "../constants/themes";
+import {useAuth} from "../contexts/AuthContext";
 
 const ModalCustom = ({
 	isModalVisible,
@@ -13,6 +15,8 @@ const ModalCustom = ({
 	array,
 	onPressHandler,
 }) => {
+
+	const {currentTheme}=useAuth()
 	return (
 		<Modal
 			animationType={animationType}
@@ -23,7 +27,7 @@ const ModalCustom = ({
 		>
 			<TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
 				<View style={styles.modalOverlay}>
-					<View style={styles.modalContent}>
+					<View style={[styles.modalContent,{backgroundColor: themes[currentTheme]?.backgroundColor}]}>
 						<View>
 							<TitleDescriptionComponent
 								titleVisual={true}
@@ -34,7 +38,7 @@ const ModalCustom = ({
 								descriptionText={i18n.t("Select the unit of measurement")}
 							/>
 
-							<Text className="text-xl text-center mb-2">{ingredient.quantity}</Text>
+							<Text className="text-xl text-center mb-2" style={{color:themes[currentTheme]?.textColor}}>{ingredient.quantity}</Text>
 							<Slider
 								style={{ width: "100%", height: 40 }}
 								minimumValue={1}
@@ -56,14 +60,14 @@ const ModalCustom = ({
 							data={array}
 							// keyExtractor={(item, index) => index.toString()}
 							keyExtractor={(item) => item.key}
-							renderItem={({ item }) => {
+							renderItem={({ item,index }) => {
 								return (
 									<TouchableOpacity
-										style={styles.langOption}
+										style={[styles.langOption,index===array.length-1 &&{borderBottomColor:"transparent"}]}
 										// onPress={() => handleSelect(item.key)}
 										onPress={() => onPressHandler(item.key)} // обновленный обработчик
 									>
-										<Text style={styles.langText}>{item.val}</Text>
+										<Text style={[styles.langText,{color:themes[currentTheme]?.textColor}]}>{item.val}</Text>
 									</TouchableOpacity>
 								);
 							}}

@@ -1,6 +1,12 @@
 import { supabase } from "../lib/supabase";
-import {deleteFile, uploadFile} from "../service/imageServices";
+import {deleteFile, uploadFile} from "./imageServices";
 
+
+/**
+ * Загружает рецепт на сервер, включая изображения и данные
+ * @param {Object} totalRecipe - Объект с данными рецепта, включая категории, изображения, инструкции и т.д.
+ * @returns {Promise<{success: boolean, data?: Object, msg?: string}>} - Результат загрузки рецепта
+ */
 export const uploadRecipeToTheServer = async (totalRecipe) => {
 	try {
 		// console.log("uploadRecipeToTheServer", totalRecipe);
@@ -180,6 +186,13 @@ export const uploadRecipeToTheServer = async (totalRecipe) => {
 	}
 };
 
+
+/**
+ * Обновляет данные рецепта на сервере, включая изображения и инструкции
+ * @param {string} recipeId - Идентификатор рецепта в базе данных
+ * @param {Object} updatedData - Объект с обновленными данными рецепта
+ * @returns {Promise<{success: boolean, data?: Object, msg?: string}>} - Результат обновления рецепта
+ */
 export const updateRecipeToTheServer = async (recipeId, updatedData) => {
 	try {
 		console.log("updateRecipeToTheServer: Received recipeId:", recipeId);

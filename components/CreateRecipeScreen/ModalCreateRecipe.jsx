@@ -1,6 +1,8 @@
 import React from 'react';
 import {FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View} from 'react-native';
 import Slider from '@react-native-community/slider';
+import {themes} from "../../constants/themes";
+import {useAuth} from "../../contexts/AuthContext";
 
 const ModalCreateRecipe = ({
                                isModalVisible,
@@ -13,7 +15,11 @@ const ModalCreateRecipe = ({
                                modalType
                            }) => {
 
+    const {currentTheme} =useAuth()
+
     const changeTime = (time) => {
+
+
         if (time < 60) {
             return `${time} минут`;
         } else {
@@ -52,10 +58,10 @@ const ModalCreateRecipe = ({
 
             <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
+                    <View style={[styles.modalContent,{backgroundColor:themes[currentTheme]?.backgroundColor}]}>
                         <View>
-                            <Text style={styles.modalTitle}>{title}</Text>
-                            <Text className="text-neutral-700 text-xs text-center mb-2">
+                            <Text style={[styles.modalTitle,{color:themes[currentTheme]?.textColor}]}>{title}</Text>
+                            <Text className=" text-xs text-center mb-2" style={{color:themes[currentTheme]?.secondaryTextColor}} >
                                 {description}
                             </Text>
                         </View>
@@ -69,7 +75,7 @@ const ModalCreateRecipe = ({
                                                 ? (
                                                     <View>
                                                         <Text
-                                                            className="text-xl text-center mb-2">{changeTime(modalSelectItem.time)}</Text>
+                                                            className="text-xl text-center mb-2" style={{color:themes[currentTheme]?.textColor}}>{changeTime(modalSelectItem.time)}</Text>
                                                         <Slider
                                                             style={{width: '100%', height: 40}}
                                                             minimumValue={array[0]}
@@ -88,7 +94,7 @@ const ModalCreateRecipe = ({
                                                 : (
                                                     <View>
                                                         <Text
-                                                            className="text-xl text-center mb-2">{modalSelectItem.calorie} calories
+                                                            className="text-xl text-center mb-2" style={{color:themes[currentTheme]?.textColor}}>{modalSelectItem.calorie} calories
                                                         </Text>
                                                         <Slider
                                                             style={{width: '100%', height: 40}}
@@ -117,7 +123,7 @@ const ModalCreateRecipe = ({
                                                 style={styles.langOption}
                                                 onPress={() => handleSelect(item)}
                                             >
-                                                <Text style={styles.langText}>{item}</Text>
+                                                <Text style={[styles.langText,{color:themes[currentTheme]?.textColor}]}>{item}</Text>
                                             </TouchableOpacity>
                                         )}
                                     />
@@ -152,7 +158,7 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         width: '80%',
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
         shadowColor: '#000',
@@ -172,7 +178,7 @@ const styles = StyleSheet.create({
     },
     modalDescription: {
         fontSize: 12,
-        color: 'gray',
+        // color: 'gray',
     },
     langOption: {
         padding: 15,

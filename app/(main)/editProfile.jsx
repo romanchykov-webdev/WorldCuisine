@@ -32,6 +32,7 @@ import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
 import {themes} from "../../constants/themes";
 
+
 const EditProfile = () => {
 	const { user: currentUser, setAuth, setUserData,currentTheme } = useAuth();
 	const router = useRouter();
@@ -40,7 +41,6 @@ const EditProfile = () => {
 
 	const [loading, setLoading] = useState(false);
 
-	// const userData = currentUser
 
 	const [user, setUser] = useState({
 		user_name: "",
@@ -48,6 +48,7 @@ const EditProfile = () => {
 		avatar: "",
 		theme: "",
 	});
+	// const [user, setUser] = useState({})
 	// console.log('currentUser', user.avatar)
 	useEffect(() => {
 		if (currentUser) {
@@ -90,44 +91,7 @@ const EditProfile = () => {
 		}
 	};
 
-	// console.log('avatar', user.avatar);
 
-	// const handleSubmit = async () => {
-	// 	setLoading(true);
-
-	// 	let userData = { ...user };
-
-	// 	let { user_name, lang, theme, avatar } = userData;
-	// 	// console.log('user avatar',currentUser?.avatar)
-
-	// 	//upload user avatar
-	// 	if (typeof avatar == "object") {
-	// 		//     upload image
-	// 		// console.log('upload avatar handleSubmit', avatar)
-	// 		// let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
-	// 		let imageRes = await uploadFile(`profiles/${currentUser.id}`, avatar?.uri, true, currentUser?.avatar);
-	// 		if (imageRes.success) {
-	// 			userData.avatar = imageRes.data;
-	// 		} else {
-	// 			userData.avatar = null;
-	// 		}
-	// 	}
-
-	// 	console.log("before submit", userData);
-
-	// 	const res = await updateUser(currentUser?.id, userData);
-
-	// 	// // update user data
-	// 	// // console.log('EditProfile res',res)
-
-	// 	if (res.success) {
-	// 		setUserData({ ...currentUser, ...userData });
-	// 	}
-
-	// 	setLoading(false);
-
-	// 	// console.log('submit userData avatar',userData?.avatar)
-	// };
 
 	const handleSubmit = async () => {
 		setLoading(true);
@@ -206,7 +170,7 @@ const EditProfile = () => {
 			keyboardDismissMode={"on-drag"}
 			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: Platform.OS === "ios" ? null : 60 }}
 			showsVerticalScrollIndicator={false}
-			style={{backgroundColor:themes[currentTheme].backgroundColor}}
+			style={{backgroundColor:themes[currentTheme]?.backgroundColor}}
 		>
 			<SafeAreaView>
 				{/*header*/}
@@ -252,7 +216,7 @@ const EditProfile = () => {
 					style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 				>
 					<TextInput
-						style={{color:themes[currentTheme].textColor}}
+						style={{color:themes[currentTheme]?.textColor}}
 						value={user.user_name}
 						onChangeText={(value) => setUser({ ...user, user_name: value })}
 						className=" text-xl p-3"
@@ -260,14 +224,17 @@ const EditProfile = () => {
 				</View>
 
 				<View className="mb-5">
-					<LanguagesWrapper lang={user.lang} setLang={(newLang) => setUser({ ...user, lang: newLang })} />
+					<LanguagesWrapper lang={user?.lang} setLang={(newLang) => setUser({ ...user, lang: newLang })} />
 					{/*<LanguagesWrapper lang={currentUser.lang}*/}
 					{/*                  setLang={(newLang) => setUser({...currentUser, lang: newLang})}/>*/}
 				</View>
 
 				{/*theme*/}
 				<View className="mb-5">
-					<ThemeWrapper setTheme={(newTheme) => setUser({ ...user, theme: newTheme })} theme={user.theme} />
+					<ThemeWrapper setTheme={(newTheme) => setUser({ ...user, theme: newTheme })} theme={user?.theme} />
+					{/*<ThemeWrapper*/}
+					{/*	// setTheme={(newTheme) => setUser({ ...user, theme: newTheme })}*/}
+					{/*	theme={user?.theme} />*/}
 					{/*<ThemeWrapper setTheme={(newTheme) => setUser({...currentUser, theme: newTheme})}*/}
 					{/*              theme={currentUser.theme}/>*/}
 				</View>

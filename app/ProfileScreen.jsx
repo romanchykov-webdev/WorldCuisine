@@ -102,7 +102,7 @@ const ProfileScreen = () => {
 		// console.log('ProfileScreen handleMyLiked',res.data)
 		router.push("(main)/FavoriteScrean");
 	};
-	console.log("currentTheme",currentTheme)
+
 	return (
 		<>
 			{isAuth ? (
@@ -162,7 +162,7 @@ const ProfileScreen = () => {
 							</View>
 
 							{/*userName*/}
-							<Text style={{color:themes[currentTheme].textColor}}>{user?.user_name}</Text>
+							<Text style={{color:themes[currentTheme]?.textColor}}>{user?.user_name}</Text>
 						</View>
 
 						{/*change lang app*/}

@@ -5,6 +5,10 @@ import { supabase } from "../lib/supabase";
 /**
  * Получает все категории из таблицы "categories".
  */
+/**
+ * Получает список всех категорий из базы данных
+ * @returns {Promise<{success: boolean, data?: Array, msg?: string}>} - Результат запроса с категориями или сообщением об ошибке
+ */
 export const getCategoriesMyDB = async () => {
 	try {
 		const { data, error } = await supabase.from("categories").select("*");
@@ -156,19 +160,12 @@ export const getAllRecipesPointMasonryMyDB = async (
 
 //получение description рецепта
 /**
- * Получает рейтинг и/или количество комментариев рецепта по ID.
- * @param {object} param
- * @param {number} param.id - ID рецепта.
- * @param {string} param.payload - Какой параметр получить (например, "updateCommentsCount").
+ * Получает описание рецепта из базы данных по его идентификатору
+ * @param {string} id - Идентификатор рецепта
+ * @returns {Promise<{success: boolean, data?: Array, msg?: string}>} - Результат запроса с данными рецепта или сообщением об ошибке
  */
 export const getRecipesDescriptionMyDB = async (id) => {
-	// console.log("getRecipesDescriptionMyDB receps id", id);
-	// console.log('ok:',tableCategory)
-	// if (tableCategory.includes(' ')) {
-	//     console.log('Строка содержит пробелы');
-	// } else {
-	//     console.log('Строка не содержит пробелы');
-	// }
+
 	try {
 		let { data, error } = await supabase.from("all_recipes_description").select("*").eq("id", id); // Фильтр по id
 
@@ -191,8 +188,11 @@ export const getRecipesDescriptionMyDB = async (id) => {
 
 //получение description рецепта его количества комментариев и рейтинга
 /**
- * Получает все комментарии к рецепту, отсортированные от новых к старым.
- * @param {number} id - ID рецепта.
+ * Получает данные о лайках, рейтинге или комментариях рецепта из базы данных
+ * @param {Object} options - Параметры запроса
+ * @param {string} options.id - Идентификатор рецепта
+ * @param {string} options.payload - Тип данных для получения (например, 'updateCommentsCount')
+ * @returns {Promise<{success: boolean, data?: Array, msg?: string}>} - Результат запроса с данными или сообщением об ошибке
  */
 export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 	// console.log("getRecipesDescriptionLikeRatingMyDB recipe id",id)
@@ -229,8 +229,9 @@ export const getRecipesDescriptionLikeRatingMyDB = async ({ id, payload }) => {
 
 //получение all comments рецепта
 /**
- * Получает данные пользователей (аватар и имя), оставивших комментарии.
- * @param {number[]} ids - Массив ID пользователей.
+ * Получает все комментарии к рецепту из базы данных по его идентификатору
+ * @param {string} id - Идентификатор рецепта
+ * @returns {Promise<{success: boolean, data?: Array, msg?: string}>} - Результат запроса с комментариями или сообщением об ошибке
  */
 export const getAllCommentsMyDB = async (id) => {
 	// console.log('getAllCommentsMyDB id',id)
@@ -259,6 +260,11 @@ export const getAllCommentsMyDB = async (id) => {
 };
 
 //получение all users avatar name
+/**
+ * Получает данные пользователей, оставивших комментарии, по их идентификаторам
+ * @param {string[]} ids - Массив идентификаторов пользователей
+ * @returns {Promise<{success: boolean, data?: Array, msg?: string}>} - Результат запроса с данными пользователей или сообщением об ошибке
+ */
 export const getAllUserIdCommentedMyDB = async (ids) => {
 	// console.log('getAllCommentsMyDB id', ids)
 	try {
@@ -331,8 +337,9 @@ export const addNewCommentToRecipeMyDB = async ({ postId, userIdCommented, comme
 
 //удаление комментария
 /**
- * Удаляет комментарий по его ID.
- * @param {number} commentId - ID комментария.
+ * Удаляет комментарий к рецепту из базы данных по его идентификатору
+ * @param {string} commentId - Идентификатор комментария
+ * @returns {Promise<{success: boolean, msg?: string} | undefined>} - Результат удаления или сообщение об ошибке
  */
 export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 	try {
@@ -354,11 +361,11 @@ export const deleteCommentByIdToRecipeMyDB = async (commentId) => {
 
 // добавление лайка рецепту
 /**
- * Добавляет или удаляет лайк к рецепту с использованием RPC-функции Supabase `toggle_recipe_like`.
- * Если пользователь уже поставил лайк — он будет убран, иначе лайк добавится.
- * @param {object} param
- * @param {number} param.recipeId - ID рецепта.
- * @param {number} param.userIdLike - ID пользователя.
+ * Добавляет или убирает лайк для рецепта в базе данных
+ * @param {Object} params - Параметры запроса
+ * @param {string} params.recipeId - Идентификатор рецепта
+ * @param {string} params.userIdLike - Идентификатор пользователя, ставящего лайк
+ * @returns {Promise<{success: boolean, data?: Object, msg?: string}>} - Результат выполнения или сообщение об ошибке
  */
 export const addLikeRecipeMyDB = async ({ recipeId, userIdLike }) => {
 	try {
@@ -385,9 +392,16 @@ export const addLikeRecipeMyDB = async ({ recipeId, userIdLike }) => {
 // проверка ставил ли пользователь лайк этому рецепту
 /**
  * Проверяет, поставил ли пользователь лайк конкретному рецепту.
- * @param {object} param
- * @param {number} param.recipeId - ID рецепта.
- * @param {number} param.userId - ID пользователя.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Параметры запроса.
+ * @param {string} params.recipeId - ID рецепта, который проверяется.
+ * @param {string} params.userId - ID пользователя, который мог поставить лайк.
+ * @returns {Promise<Object>} Результат проверки.
+ * @returns {boolean} return.success - Флаг успешности запроса.
+ * @returns {boolean} return.liked - Флаг, указывающий, поставил ли пользователь лайк.
+ * @returns {string} [return.msg] - Сообщение об ошибке (если есть).
  */
 export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 	// console.log('checkIfUserLikedRecipe recipeId', recipeId);
@@ -419,7 +433,20 @@ export const checkIfUserLikedRecipe = async ({ recipeId, userId }) => {
 
 //Добавление рейтинга в таблицу recipe_ratings
 /**
- * Добавляет рейтинг рецепту (в твоем коде начало этой функции, но тело не показано).
+ * Добавляет или обновляет рейтинг рецепта от пользователя в базе данных.
+ *
+ * Если рейтинг от данного пользователя для указанного рецепта уже существует,
+ * он будет обновлён. Иначе будет добавлена новая запись.
+ *
+ * @async
+ * @function
+ * @param {Object} params - Параметры функции.
+ * @param {string} params.recipeId - ID рецепта, которому ставится рейтинг.
+ * @param {string} params.userId - ID пользователя, ставящего рейтинг.
+ * @param {number} params.rating - Числовое значение рейтинга.
+ * @returns {Promise<Object>} Результат операции.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
  */
 export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
 	// console.log("addRecipeRatingMyDB", rating);
@@ -448,6 +475,22 @@ export const addRecipeRatingMyDB = async ({ recipeId, userId, rating }) => {
 	}
 };
 
+
+
+/**
+ * Получает все рецепты, лайкнутые пользователем, включая их подробности.
+ *
+ * Сначала выполняется запрос к таблице `recipesLikes`, чтобы получить все ID рецептов,
+ * лайкнутых пользователем. Затем по этим ID извлекаются подробности из таблицы `short_desc`.
+ *
+ * @async
+ * @function
+ * @param {string} userId - ID пользователя, чьи лайкнутые рецепты нужно получить.
+ * @returns {Promise<Object>} Результат выполнения функции.
+ * @returns {boolean} return.success - Флаг успешности запроса.
+ * @returns {Array<Object>} [return.data] - Массив объектов с данными рецептов (если найдено).
+ * @returns {string} [return.msg] - Сообщение об ошибке (если есть).
+ */
 export const getAllMyLikedRecipes = async (userId) => {
 	// console.log('getAllMyLikedRecipes id',id);
 	try {
@@ -487,6 +530,18 @@ export const getAllMyLikedRecipes = async (userId) => {
 };
 
 // get all measurement
+/**
+ * Получает список единиц измерения (на языках), используемых при создании рецепта.
+ *
+ * Выполняется запрос к таблице `measurement` для извлечения значений поля `lang`.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object>} Результат выполнения функции.
+ * @returns {boolean} return.success - Флаг успешности запроса.
+ * @returns {Array<string>} [return.data] - Массив строк с названиями единиц измерения.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
+ */
 export const getMeasurementCreateRecipeMyDB = async () => {
 	try {
 		let { data, error } = await supabase.from("measurement").select("lang");
@@ -508,6 +563,19 @@ export const getMeasurementCreateRecipeMyDB = async () => {
 };
 
 // get creatore recipe data for section subscribe
+/**
+ * Получает данные о создателе рецепта по его ID.
+ *
+ * Выполняется запрос к таблице `users`, чтобы получить имя пользователя, аватар и количество подписчиков.
+ *
+ * @async
+ * @function
+ * @param {string} publishedId - ID пользователя (создателя рецепта).
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности запроса.
+ * @returns {Object} [return.data] - Объект с данными пользователя: `user_name`, `avatar`, `subscribers`.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
+ */
 export const getCreatoreRecipeDateMyDB = async (publishedId) => {
 	try {
 		// console.log("getCreatoreRecipeDateMyDB", publishedId);
@@ -532,6 +600,20 @@ export const getCreatoreRecipeDateMyDB = async (publishedId) => {
 };
 
 // Проверка статуса подписки
+/**
+ * Проверяет, подписан ли пользователь на автора рецепта.
+ *
+ * Выполняет запрос к таблице `subscriptions`, чтобы определить наличие подписки между подписчиком и создателем.
+ *
+ * @async
+ * @function
+ * @param {string} subscriber_id - ID пользователя, который, возможно, подписан.
+ * @param {string} creator_id - ID пользователя, на которого проверяется подписка.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности запроса.
+ * @returns {Object|null} [return.data] - Объект с данными подписки, если она есть, или `null`, если нет.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
+ */
 export const getSubscriptionCheckDateMyDB = async (subscriber_id, creator_id) => {
 	try {
 		// console.log("getSubscriptionCheckDateMyDB subscriber_id", subscriber_id);
@@ -556,6 +638,20 @@ export const getSubscriptionCheckDateMyDB = async (subscriber_id, creator_id) =>
 };
 
 // Подписка на создателя
+/**
+ * Подписывает пользователя на создателя рецепта.
+ *
+ * Выполняет вставку новой записи в таблицу `subscriptions` с указанием ID подписчика и создателя.
+ *
+ * @async
+ * @function
+ * @param {string} subscriber_id - ID пользователя, который подписывается.
+ * @param {string} creator_id - ID пользователя, на которого происходит подписка.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Object[]} [return.data] - Массив с данными созданной записи подписки.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
+ */
 export const subscribeToCreatorMyDB = async (subscriber_id, creator_id) => {
 	try {
 		const { data, error } = await supabase.from("subscriptions").insert([{ subscriber_id, creator_id }]).select();
@@ -573,6 +669,19 @@ export const subscribeToCreatorMyDB = async (subscriber_id, creator_id) => {
 };
 
 // Отписка от создателя
+/**
+ * Отписывает пользователя от создателя рецепта.
+ *
+ * Удаляет запись из таблицы `subscriptions` по совпадению `subscriber_id` и `creator_id`.
+ *
+ * @async
+ * @function
+ * @param {string} subscriber_id - ID пользователя, который отписывается.
+ * @param {string} creator_id - ID пользователя, от которого происходит отписка.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если она произошла.
+ */
 export const unsubscribeFromCreatorMyDB = async (subscriber_id, creator_id) => {
 	try {
 		const { error } = await supabase
@@ -594,6 +703,20 @@ export const unsubscribeFromCreatorMyDB = async (subscriber_id, creator_id) => {
 };
 
 // get all my recipes
+/**
+ * Получает список всех рецептов, опубликованных конкретным пользователем (создателем).
+ *
+ * Выполняет запрос к таблице `short_desc`, фильтруя по `published_id`,
+ * и сортирует результаты по дате создания (от новых к старым).
+ *
+ * @async
+ * @function
+ * @param {string} creatore_id - ID пользователя, опубликовавшего рецепты.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Array<Object>} [return.data] - Массив рецептов при успешном выполнении.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если операция завершилась с ошибкой.
+ */
 export const getAllRecipesBayCreatoreListMyDB = async (creatore_id) => {
 	try {
 		let { data, error } = await supabase
@@ -620,6 +743,20 @@ export const getAllRecipesBayCreatoreListMyDB = async (creatore_id) => {
 };
 
 // get all favorite recipe
+/**
+ * Получает список ID всех рецептов, добавленных в избранное пользователем.
+ *
+ * Выполняет запрос к таблице `recipes_likes`, фильтруя по `user_id_like`,
+ * и извлекает массив значений `recipe_id_like`.
+ *
+ * @async
+ * @function
+ * @param {string} user_id - ID пользователя, чьи избранные рецепты нужно получить.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Array<string>} [return.data] - Массив ID избранных рецептов.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если операция завершилась с ошибкой.
+ */
 export const getAllFavoriteIdisMyDB = async (user_id) => {
 	try {
 		let { data, error } = await supabase.from("recipes_likes").select("recipe_id_like").eq("user_id_like", user_id);
@@ -646,6 +783,20 @@ export const getAllFavoriteIdisMyDB = async (user_id) => {
 };
 
 // Функция для получения рецептов по ID
+/**
+ * Получает список рецептов по массиву ID рецептов.
+ *
+ * Выполняет запрос к таблице `short_desc`, фильтруя по массиву `recipeIds`,
+ * и извлекает все данные рецептов, соответствующие этим ID.
+ *
+ * @async
+ * @function
+ * @param {Array<string>} recipeIds - Массив ID рецептов, которые необходимо получить.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Array<Object>} [return.data] - Массив рецептов при успешном выполнении.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если операция завершилась с ошибкой.
+ */
 export const getAllFavoriteListMyDB = async (recipeIds) => {
 	try {
 		const { data, error } = await supabase.from("short_desc").select("*").in("full_recipe_id", recipeIds); // Фильтр по массиву ID
@@ -730,6 +881,21 @@ export const updateRecipeMyDB = async (recipe) => {
 };
 
 //getRecipesByQuerySearchcreenMyDB
+/**
+ * Выполняет поиск рецептов по запросу на основе тега.
+ *
+ * Выполняет вызов функции `search_recipes_by_tag` через `rpc` на Supabase,
+ * передавая запрос с тегом для поиска соответствующих рецептов.
+ * Возвращает рецепты, соответствующие запросу.
+ *
+ * @async
+ * @function
+ * @param {string} query - Тег или ключевое слово для поиска рецептов.
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Array<Object>} [return.data] - Массив рецептов при успешном выполнении.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если операция завершилась с ошибкой.
+ */
 export const getRecipesByQuerySearchcreenMyDB = async (query) => {
 	// console.log("getRecipesByQuerySearchcreenMyDB", query);
 	if (query === "") return;
@@ -752,6 +918,19 @@ export const getRecipesByQuerySearchcreenMyDB = async (query) => {
 };
 
 //getTopRecipeHomeScreenMyDB
+/**
+ * Получает топ рецептов для главного экрана на основе количества лайков.
+ *
+ * Выполняет запрос к базе данных Supabase, выбирая рецепты с количеством лайков больше нуля,
+ * сортирует их по количеству лайков в убывающем порядке и ограничивает результат до 50 записей.
+ *
+ * @async
+ * @function
+ * @returns {Promise<Object>} Результат выполнения запроса.
+ * @returns {boolean} return.success - Флаг успешности операции.
+ * @returns {Array<Object>} [return.data] - Массив рецептов с топовыми лайками.
+ * @returns {string} [return.msg] - Сообщение об ошибке, если операция завершилась с ошибкой.
+ */
 export const getTopRecipeHomeScreenMyDB = async () => {
 	// console.log("getTopRecipeHomeScreenMyDB");
 

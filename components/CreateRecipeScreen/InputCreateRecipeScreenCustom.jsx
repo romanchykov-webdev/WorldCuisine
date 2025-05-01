@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { TextInput, View } from "react-native";
 import { useDebounce } from "../../constants/halperFunctions";
 import StərɪskCustomComponent from "../StərɪskCustomComponent";
+import {themes} from "../../constants/themes";
+import {useAuth} from "../../contexts/AuthContext";
 const InputCreateRecipeScreenCustom = ({
 	styleInput,
 	placeholderText,
@@ -10,7 +12,7 @@ const InputCreateRecipeScreenCustom = ({
 	setTotalRecipe,
 }) => {
 	// console.log("totalLangRecipe", totalLangRecipe);
-
+const{currentTheme}=useAuth()
 	// Инициализируем состояние как объект
 	const [inputValues, setInputValues] = useState({});
 
@@ -53,7 +55,7 @@ const InputCreateRecipeScreenCustom = ({
 					<TextInput
 						// className="bg-red-500"
 						value={inputValues[lang]}
-						style={styleInput}
+						style={[styleInput,{color:themes[currentTheme]?.textColor}]}
 						onChangeText={(value) => handleInputChange(value, lang)}
 						placeholder={`${placeholderText} ${lang}`}
 						placeholderTextColor={placeholderColor}

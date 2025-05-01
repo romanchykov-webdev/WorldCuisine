@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { PlusIcon, TrashIcon } from "react-native-heroicons/mini";
-import { shadowBoxBlack } from "../../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite} from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import StərɪskCustomComponent from "../StərɪskCustomComponent";
 
@@ -9,8 +9,12 @@ import StərɪskCustomComponent from "../StərɪskCustomComponent";
 import { useDebounce } from "../../constants/halperFunctions";
 import i18n from "../../lang/i18n";
 import TitleDescriptionComponent from "./TitleDescriptionComponent";
+import {useAuth} from "../../contexts/AuthContext";
+import {themes} from "../../constants/themes";
 
 const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
+	const {currentTheme}=useAuth()
+
 	const [inputTags, setInputTags] = useState("");
 
 	const [arrayTags, setArrayTags] = useState([]);
@@ -61,7 +65,7 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 					{arrayTags.map((tag, index) => {
 						return (
 							<View
-								style={shadowBoxBlack()}
+								style={currentTheme==="light" ? shadowBoxBlack() : shadowBoxWhite()}
 								className="px-3  border-[1px] border-neutral-700
                                         rounded-2xl flex-row gap-x-2 items-center bg-white
                                         "
@@ -76,7 +80,7 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 									}}
 									className="transform translate-x-[8]"
 								>
-									<ButtonSmallCustom icon={TrashIcon} size={20} w={30} h={30} bg="red" />
+									<ButtonSmallCustom icon={TrashIcon} size={20} w={30} h={30}  tupeButton="remove"/>
 								</TouchableOpacity>
 							</View>
 						);
@@ -97,7 +101,7 @@ const TagsCustom = ({ styleInput, styleTextDesc, setTotalRecipe }) => {
 				<View className="relative flex-1">
 					<StərɪskCustomComponent />
 					<TextInput
-						style={styleInput}
+						style={[styleInput,{color:themes[currentTheme]?.textColor}]}
 						onChangeText={(value) => handleChange(value)}
 						value={inputTags}
 						placeholder={i18n.t("Enter tag")}
