@@ -14,11 +14,13 @@ import { useDebounce } from "../../../constants/halperFunctions";
 import i18n from "../../../lang/i18n";
 import LoadingComponent from "../../loadingComponent";
 import TitleDescriptionComponent from "../TitleDescriptionComponent";
+import {themes} from "../../../constants/themes";
+import {useAuth} from "../../../contexts/AuthContext";
 
 const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRecipe, setTotalRecipe }) => {
 	const [addImages, setAddImages] = useState([]);
 	useEffect(() => {}, [addImages]);
-
+const {currentTheme}=useAuth()
 	const [changeLang, setChangeLang] = useState(totalLangRecipe[0]);
 	const handleChangeLang = (item) => {
 		setChangeLang(item);
@@ -185,8 +187,8 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 				{/*block lang*/}
 				{totalLangRecipe?.length > 1 && (
 					<View className="mb-2">
-						<Text className="mb-2 text-xl text-neutral-700 font-bold">
-							{i18n.t("View in language")}
+						<Text className="mb-3 text-xl  font-bold" style={{color:themes[currentTheme]?.textColor}}>
+							{i18n.t("View in language")} {" "}
 							<Text className="capitalize text-amber-500"> {changeLang}</Text>
 						</Text>
 
@@ -203,7 +205,7 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 											handleChangeLang(item);
 										}}
 									>
-										<Text>{item}</Text>
+										<Text style={{color:themes[currentTheme]?.textColor}}>{item.toUpperCase()}</Text>
 									</TouchableOpacity>
 								);
 							})}
@@ -221,15 +223,17 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 										<Animated.View
 											entering={FadeInDown.duration(300).springify()}
 											key={stepIndex}
-											className="mb-5 "
+											className="mb-5 mt-5 "
 										>
 											<View className="flex-1 flex-row">
 												<Text className="mb-2 flex-1">
 													<Text className="text-amber-500">
 														{/*{stepIndex}) {" "}*/}
-														{index + 1}){" "}
+														{index + 1}){"  "}
 													</Text>
-													{recipeArray[changeLang][stepIndex]?.text}
+													<Text style={{color:themes[currentTheme]?.textColor}}>
+														{recipeArray[changeLang][stepIndex]?.text}
+													</Text>
 												</Text>
 
 												{/*    button remove */}
@@ -285,7 +289,7 @@ const RecipeListCreateRecipe = ({ placeholderText, placeholderColor, totalLangRe
 						placeholder={`${placeholderText} ${item}`}
 						placeholderTextColor={placeholderColor}
 						multiline={true}
-						style={{ minHeight: 100 }}
+						style={{ minHeight: 100 ,color:themes[currentTheme]?.textColor}}
 					/>
 				);
 			})}

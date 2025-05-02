@@ -14,10 +14,14 @@ import LoadingComponent from "../loadingComponent";
 
 // translate
 import i18n from "../../lang/i18n";
+import { themes } from "../../constants/themes";
+import { useAuth } from "../../contexts/AuthContext";
 
 const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId }) => {
 	// console.log('CommentsComponent recepId',recepId)
 	// console.log('CommentsComponent user',user)
+
+	const { currentTheme } = useAuth();
 
 	// user?.id===comment?.userIdCommented || user?.id===publishedId
 
@@ -179,7 +183,7 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 						style: "destructive",
 					},
 				],
-				{ cancelable: true }
+				{ cancelable: true },
 			);
 		} catch (error) {
 			console.error("Unexpected error in deleteComment:", error);
@@ -210,7 +214,12 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 						multiline={true}
 						value={inputText}
 						onChangeText={(value) => changeText(value)}
-						style={[{ fontSize: hp(1.7) }]}
+						style={[
+							{
+								fontSize: hp(1.7),
+								// backgroundColor: `rgba(${themes[currentTheme].secondaryTextColor}, 1)`,
+							},
+						]}
 						className="flex-1 text-base tracking-wider p-5 mb-1 bg-white rounded-[10]"
 					/>
 					<TouchableOpacity
@@ -234,7 +243,13 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 									className="border-[1px] border-neutral-300 rounded-[20] p-3 bg-black/5 "
 								>
 									{/*data of comment*/}
-									<Text style={{ fontSize: 8, marginBottom: 5 }}>
+									<Text
+										style={{
+											fontSize: 8,
+											marginBottom: 5,
+											color: themes[currentTheme]?.secondaryTextColor,
+										}}
+									>
 										{formatDateTime(comment?.created_at)}
 									</Text>
 
@@ -253,7 +268,12 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 												}}
 											/>
 											<Text
-												style={{ fontSize: 8, maxWidth: 50, textAlign: "center" }}
+												style={{
+													fontSize: 8,
+													maxWidth: 50,
+													textAlign: "center",
+													color: themes[currentTheme]?.secondaryTextColor,
+												}}
 												numberOfLines={1}
 												ellipsizeMode="tail"
 											>
@@ -263,7 +283,10 @@ const CommentsComponent = ({ recepId, user, updateLikeCommentCount, publishedId 
 
 										{/*comment*/}
 										<Text
-											style={{ fontSize: hp(1.7) }}
+											style={{
+												fontSize: hp(1.7),
+												color: themes[currentTheme]?.secondaryTextColor,
+											}}
 											className="border-[1px] border-neutral-300 flex-1 p-2 rounded-[10]"
 										>
 											{comment?.comment}

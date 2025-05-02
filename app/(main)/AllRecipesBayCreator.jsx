@@ -25,12 +25,13 @@ import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from "
 import AllRecipesPointScreen from "./AllRecipesPointScreen";
 
 import HeaderScreanComponent from "../../components/HeaderScreanComponent";
+import { themes } from "../../constants/themes";
 
 const AllRecipesBayCreator = () => {
 	const router = useRouter();
 	const params = useLocalSearchParams();
 
-	const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev } = useAuth();
+	const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev, currentTheme } = useAuth();
 	// console.log("AllRecipesBayCreator unreadCommentsCount", unreadCommentsCount);
 	// console.log("AllRecipesBayCreator langDev", langDev);
 	// console.log("AllRecipesBayCreator userData?.lang", userData?.lang);
@@ -128,7 +129,7 @@ const AllRecipesBayCreator = () => {
 	// console.log("AllRecipesBayCreator userData", userData);
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={{ backgroundColor: themes[currentTheme]?.backgroundColor }}>
 			<ScrollView
 				contentContainerStyle={{
 					paddingHorizontal: 20,
@@ -236,7 +237,10 @@ const AllRecipesBayCreator = () => {
 
 					{/* section data */}
 				</View>
-				<View className=" flex-1">
+				<View
+					className=" flex-1"
+					// style={{ borderWidth: 1, borderColor: "red" }}
+				>
 					{loading ? (
 						<LoadingComponent color="green" />
 					) : (

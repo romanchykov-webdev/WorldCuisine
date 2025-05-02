@@ -11,6 +11,8 @@ import ListIngredientsCreateRecipe from "./ListIngredientsCreateRecipe";
 import { useDebounce } from "../../../constants/halperFunctions";
 import i18n from "../../../lang/i18n";
 import TitleDescriptionComponent from "../TitleDescriptionComponent";
+import {themes} from "../../../constants/themes";
+import {useAuth} from "../../../contexts/AuthContext";
 
 const IngredientsCreateRecipe = ({
 	styleInput,
@@ -22,6 +24,8 @@ const IngredientsCreateRecipe = ({
 	setTotalRecipe,
 	// refactorRecipe = null, // По умолчанию пустой объект если это создание нового рецепта
 }) => {
+
+	const{currentTheme}=useAuth()
 	// console.log("measurement",measurement)
 	// console.log(totalLangRecipe)
 	// console.log(refactorRecipe);
@@ -224,6 +228,7 @@ const IngredientsCreateRecipe = ({
 									placeholderColor={placeholderColor}
 									value={ingredient.ingredient[lang] || ""}
 									handleChange={(value) => handleInputChange(lang, value)}
+									currentTheme={currentTheme}
 								/>
 							</View>
 						);
@@ -255,10 +260,10 @@ const IngredientsCreateRecipe = ({
 	);
 };
 
-export const InputCustom = ({ styleInput, placeholderText, placeholderColor, handleChange, value }) => {
+export const InputCustom = ({ styleInput, placeholderText, placeholderColor, handleChange, value,currentTheme }) => {
 	return (
 		<TextInput
-			style={styleInput}
+			style={[styleInput,{color:themes[currentTheme]?.textColor}]}
 			onChangeText={handleChange}
 			value={value}
 			placeholder={placeholderText}

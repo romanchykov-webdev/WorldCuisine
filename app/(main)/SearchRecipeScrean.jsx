@@ -12,7 +12,7 @@ import LoadingComponent from "../../components/loadingComponent";
 import SearchComponent from "../../components/SearchComponent";
 import RecipeListSearchScreenComponent from "../../components/SearchScreen/RecipeListSearchScreenComponent";
 import RecipesMasonrySearchScreenComponent from "../../components/SearchScreen/RecipesMasonrySearchScreenComponent";
-import { shadowBoxBlack } from "../../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite} from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 import { getRecipesByQuerySearchcreenMyDB } from "../../service/getDataFromDB";
@@ -41,7 +41,7 @@ const SearchRecipeScrean = () => {
 	const [filterQuery, setFilterQuery] = useState([]);
 
 	// lang data
-	const { language: langDev } = useAuth();
+	const { language: langDev,currentTheme } = useAuth();
 
 	// object for filter categoryes
 	// const [obFilterCategory, setObFilterCategory] = useState({});
@@ -189,7 +189,7 @@ const SearchRecipeScrean = () => {
 			<View className="mb-5 justify-center  p-2">
 				{/* back to home screen */}
 				<Animated.View entering={customFadeIn(FadeInUp, 500, 100)} className="absolute z-10">
-					<TouchableOpacity style={shadowBoxBlack()} onPress={() => router.replace("homeScreen")}>
+					<TouchableOpacity  onPress={() => router.replace("homeScreen")}>
 						<ButtonBack />
 					</TouchableOpacity>
 				</Animated.View>
@@ -216,7 +216,7 @@ const SearchRecipeScrean = () => {
 			>
 				{/* get category */}
 				<TouchableOpacity
-					style={displayFilters === "list" ? null : shadowBoxBlack()}
+					style={displayFilters === "list" ? null : currentTheme==="light" ? shadowBoxBlack() : shadowBoxWhite()}
 					// onPress={() => setDisplayFilters("folder")}
 					onPress={handleFolder}
 				>
@@ -231,7 +231,7 @@ const SearchRecipeScrean = () => {
 				</TouchableOpacity>
 				{/* get list */}
 				<TouchableOpacity
-					style={displayFilters === "list" ? shadowBoxBlack() : null}
+					style={displayFilters === "list" ? currentTheme==="light" ? shadowBoxBlack() :shadowBoxWhite() : null}
 					// onPress={() => setDisplayFilters("list")}
 					onPress={handleList}
 				>
@@ -250,7 +250,7 @@ const SearchRecipeScrean = () => {
 						setFilterRatingFavorite((prev) => ({ ...prev, rating: !prev.rating, favorite: false }))
 					}
 					style={
-						displayFilters === "list" ? filterRatingFavorite.rating && shadowBoxBlack() : { opacity: 0.3 }
+						displayFilters === "list" ? filterRatingFavorite.rating && (currentTheme==="light" ? shadowBoxBlack() : shadowBoxWhite()) : { opacity: 0.3 }
 					}
 				>
 					<ButtonSmallCustom w={60} h={60} size={40} icon={StarIcon} color="gold" bg="white" />
@@ -266,7 +266,7 @@ const SearchRecipeScrean = () => {
 						}))
 					}
 					style={
-						displayFilters === "list" ? filterRatingFavorite.favorite && shadowBoxBlack() : { opacity: 0.3 }
+						displayFilters === "list" ? filterRatingFavorite.favorite && (currentTheme==="light" ? shadowBoxBlack() : shadowBoxWhite()) : { opacity: 0.3 }
 					}
 				>
 					<ButtonSmallCustom w={60} h={60} size={40} icon={HeartIcon} color="red" bg="white" />

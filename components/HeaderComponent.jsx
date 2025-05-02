@@ -9,8 +9,12 @@ import AvatarCustom from "./AvatarCustom";
 
 // for translate
 import i18n from "../lang/i18n";
+import {themes} from "../constants/themes";
+import {useAuth} from "../contexts/AuthContext";
 
 const HeaderComponent = ({ isAuth, user, unreadCommentsCount, unreadLikesCount }) => {
+
+	const{currentTheme}=useAuth()
 	const router = useRouter();
 
 	// console.log('HeaderComponent user',user)
@@ -27,7 +31,7 @@ const HeaderComponent = ({ isAuth, user, unreadCommentsCount, unreadLikesCount }
 						className="w-[25] h-[25] rounded-full mr-1"
 						resizeMode="cover"
 					/>
-					<Text className="text-neutral-700" style={{ fontSize: 24 }}>
+					<Text  style={{ fontSize: 24,color:themes[currentTheme]?.textColor }}>
 						Ratatouille
 					</Text>
 				</View>
@@ -71,10 +75,10 @@ const HeaderComponent = ({ isAuth, user, unreadCommentsCount, unreadLikesCount }
 			</View>
 			{isAuth && (
 				<View className="flex-row">
-					<Text style={{ fontSize: hp(1.7) }} className="text-neutral-700">
+					<Text style={{ fontSize: hp(1.7),color:themes[currentTheme]?.textColor }}>
 						{i18n.t("Hello")},{" "}
 					</Text>
-					<Text style={{ fontSize: hp(1.7) }} className="text-neutral-700 capitalize">
+					<Text style={{ fontSize: hp(1.7),color:themes[currentTheme]?.textColor }} className=" capitalize">
 						{user?.user_name} !
 					</Text>
 				</View>

@@ -21,6 +21,8 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack, shadowText } from "../../constants/shadow";
 import { getCategoryRecipeMasonryMyDB } from "../../service/getDataFromDB";
 import LoadingComponent from "../loadingComponent";
+import {useAuth} from "../../contexts/AuthContext";
+import {themes} from "../../constants/themes";
 
 // Компонент для отображения категории
 const CategoryView = ({ item, index, onCategorySelect, langApp }) => {
@@ -281,6 +283,8 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 	const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 	const [numColumns] = useState(2); // Колонки для категорий, подкатегорий и рецептов
 
+	const{currentTheme}=useAuth()
+
 	// Создаём obFilterCategory на основе recipes
 	useEffect(() => {
 		if (recipes && recipes.length > 0) {
@@ -357,7 +361,7 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 							<ArrowUturnLeftIcon size={30} color="gray" />
 						</TouchableOpacity>
 
-						<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 ">
+						<Text className=" flex-1 text-center  font-semibold text-xl  " style={{color:themes[currentTheme]?.textColor}}>
 							{selectedSubcategoryName}
 						</Text>
 					</View>
@@ -386,7 +390,7 @@ const RecipesMasonrySearchScreenComponent = ({ recipes, langApp }) => {
 
 							{/* <Text className="text-blue-500">Back to categories</Text> */}
 						</TouchableOpacity>
-						<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 ">
+						<Text className=" flex-1 text-center  font-semibold text-xl  " style={{color:themes[currentTheme]?.textColor}}>
 							{selectedCategoryName}
 						</Text>
 					</View>

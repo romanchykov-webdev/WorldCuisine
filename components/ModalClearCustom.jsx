@@ -1,6 +1,8 @@
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { shadowBoxBlack } from "../constants/shadow";
+import {themes} from "../constants/themes";
+import {useAuth} from "../contexts/AuthContext";
 
 const ModalClearCustom = ({
 	isModalVisible,
@@ -16,7 +18,7 @@ const ModalClearCustom = ({
 	fullWidth = false, // Новый пропс: если true – модальное окно занимает 98% ширины экрана
 }) => {
 	// console.log(inputLink);
-
+const {currentTheme}=useAuth()
 	return (
 		<Modal
 			animationType={animationType}
@@ -27,10 +29,10 @@ const ModalClearCustom = ({
 		>
 			<TouchableWithoutFeedback onPress={closeModal}>
 				<View style={styles.modalOverlay}>
-					<View style={[styles.modalContent, fullWidth && { width: "98%" }]}>
+					<View style={[styles.modalContent, fullWidth && { width: "98%" },{backgroundColor: themes[currentTheme]?.backgroundColor}]}>
 						{/* block titleHeader and  childrenSubheader*/}
 						<View>
-							{titleHeaderVisible && <Text style={styles.modalTitle}>{titleHeader}</Text>}
+							{titleHeaderVisible && <Text style={[styles.modalTitle,{color:themes[currentTheme]?.textColor}]}>{titleHeader}</Text>}
 
 							{childrenSubheader}
 						</View>

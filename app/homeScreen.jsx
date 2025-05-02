@@ -13,9 +13,10 @@ import RecipesMasonryComponent from "../components/RecipesMasonry/RecipesMasonry
 import TopRecipeComponent from "../components/topRecipe/TopRecipeComponent";
 import i18n from "../lang/i18n";
 import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from "../service/getDataFromDB";
+import {themes} from "../constants/themes";
 
 const HomeScreen = () => {
-	const { user, unreadCommentsCount, unreadLikesCount } = useAuth();
+	const { user, unreadCommentsCount, unreadLikesCount,currentTheme } = useAuth();
 	// const router = useRouter();
 
 	const { language: langDev } = useAuth();
@@ -116,10 +117,12 @@ const HomeScreen = () => {
 			setIsLoading(false); // Завершаем процесс загрузки
 		}, 1000);
 	};
-	// console.log('homescreen categories',categories)
+	// console.log('currentTheme.backgroundColor',themes[currentTheme]?.backgroundColor)
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView
+			style={{backgroundColor:themes[currentTheme]?.backgroundColor}}
+		>
 			<StatusBar style="dark" />
 			<ScrollView
 				showsVerticalScrollIndicator={false}
@@ -163,10 +166,10 @@ const HomeScreen = () => {
 						{/*    greetings and punchline*/}
 						<View gap-y-2>
 							<View>
-								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
+								<Text style={{ fontSize: hp(3) ,color:themes[currentTheme]?.textColor }} className="font-semibold ">
 									{i18n.t("Make your own food")},
 								</Text>
-								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
+								<Text style={{ fontSize: hp(3),color:themes[currentTheme]?.textColor }} className="font-semibold">
 									{i18n.t("stay at")} <Text className="text-amber-500">{i18n.t("home")}</Text>
 								</Text>
 							</View>

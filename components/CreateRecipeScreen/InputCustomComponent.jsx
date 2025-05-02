@@ -10,7 +10,7 @@ import { TrashIcon } from "react-native-heroicons/mini";
 import { useDebounce } from "../../constants/halperFunctions";
 import i18n from "../../lang/i18n";
 
-const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe, setTotalRecipe, totalRecipe }) => {
+const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLangRecipe, totalLangRecipe, setTotalRecipe, totalRecipe,themes,currentTheme }) => {
 	const [choiceLang, setChoiceLang] = useState(null);
 	const [selectedLang, setSelectedLang] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
@@ -100,7 +100,7 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 
 	return (
 		<View>
-			<Text style={styleTextDesc}>{i18n.t("Dish Name")}</Text>
+			<Text style={[styleTextDesc,{color:themes[currentTheme]?.textColor}]}>{i18n.t("Dish Name")}</Text>
 			{totLang &&
 				totLang?.map((lang, index) => {
 					// console.log("totLang", lang);
@@ -108,7 +108,7 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 					return (
 						<View key={index} className="mb-5">
 							<Text
-								style={[styleTextDesc, { fontSize: 12 }]}
+								style={[styleTextDesc, { fontSize: 12 ,color:themes[currentTheme]?.textColor}]}
 								// className="pl-2 mb-2"
 								className="mt-2"
 							>
@@ -117,7 +117,9 @@ const InputCustomComponent = ({ styleTextDesc, styleInput, langDev, setTotalLang
 							<View className="flex-row items-center">
 								<View className="relative flex-1">
 									<StərɪskCustomComponent />
-									<TextInput value={translations[langCode] || ""} onChangeText={(value) => handleTextChange(langCode, value)} style={styleInput} placeholder={i18n.t("Enter recipe name")} placeholderTextColor="grey" />
+									<TextInput
+
+										value={translations[langCode] || ""} onChangeText={(value) => handleTextChange(langCode, value)} style={[styleInput, {color: themes[currentTheme]?.textColor}]} placeholder={i18n.t("Enter recipe name")} placeholderTextColor="grey" />
 								</View>
 
 								{/*<CustomTextInputTitle styleInput={styleInput} languages={languages} lang={lang}*/}

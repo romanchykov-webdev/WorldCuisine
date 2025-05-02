@@ -6,19 +6,20 @@ import i18n from "../../lang/i18n";
 import LoadingComponent from "../loadingComponent";
 import ImageCustom from "./ImageCustom";
 import ImageSliderCustom from "./ImageSliderCustom";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 	// console.log("RecipeInstructions instructions ",JSON.stringify(instructions,null,2));
 	// console.log("RecipeInstructions langDev ",langDev)
-
+	const { currentTheme } = useAuth();
 	// Проверяем, есть ли язык, соответствующий langDev
 	// const selectedLang = instructions.lang[langDev]
 	// 	? instructions.lang[langDev]
 	// 	: Object.values(instructions.lang)[0]; // Если языка нет, берем первый доступный
 
 	// Проверяем, есть ли язык, соответствующий langDev
-	const selectedLang =
-		instructions.lang[langDev] || Object.values(instructions.lang)[0];
+	const selectedLang = instructions.lang[langDev] || Object.values(instructions.lang)[0];
 	// console.log('selectedLang',selectedLang)
 
 	// Если instructions.lang пустой объект, ничего не рендерим
@@ -37,8 +38,8 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 	return (
 		<View>
 			<Text
-				style={[{ fontSize: hp(2.5) }, shadowTextSmall()]}
-				className="font-bold px-4 text-neutral-700 mb-3"
+				style={[{ fontSize: hp(2.5), color: themes[currentTheme]?.secondaryTextColor }, shadowTextSmall()]}
+				className="font-bold px-4  mb-3"
 			>
 				{i18n.t("Recipe Description")}
 			</Text>
@@ -55,7 +56,7 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 								<View className="mb-5">
 									<Text
 										className="flex-wrap mb-3"
-										style={{ fontSize: hp(2.5) }}
+										style={{ fontSize: hp(2.5), color: themes[currentTheme]?.secondaryTextColor }}
 									>
 										<Text className="text-amber-500">
 											{item.step}
@@ -67,15 +68,9 @@ const RecipeInstructions = ({ instructions, langDev, isPreview }) => {
 									{Array.isArray(item?.images) &&
 										item?.images.length > 0 &&
 										(item?.images.length === 1 ? (
-											<ImageCustom
-												image={item?.images}
-												isPreview={isPreview}
-											/>
+											<ImageCustom image={item?.images} isPreview={isPreview} />
 										) : (
-											<ImageSliderCustom
-												images={item?.images}
-												isPreview={isPreview}
-											/>
+											<ImageSliderCustom images={item?.images} isPreview={isPreview} />
 										))}
 								</View>
 							</View>

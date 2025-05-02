@@ -2,6 +2,11 @@ import { Alert } from "react-native";
 import { supabase } from "../lib/supabase";
 
 // get userData
+/**
+ * Получает данные пользователя из базы данных по его идентификатору
+ * @param {string} userId - Идентификатор пользователя
+ * @returns {Promise<{success: boolean, data?: Object, msg?: string}>} - Результат запроса с данными пользователя или сообщением об ошибке
+ */
 export const getUserData = async (userId) => {
 	try {
 		const { data, error } = await supabase.from("users").select().eq("id", userId).single();
@@ -18,6 +23,13 @@ export const getUserData = async (userId) => {
 };
 
 // log out
+/**
+ * Выполняет выход пользователя из системы
+ * @param {Object} options - Объект с параметрами
+ * @param {Function} options.setAuth - Функция для установки состояния аутентификации
+ * @param {Object} options.router - Объект маршрутизатора для навигации
+ * @returns {Promise<void>} - Промис, завершающийся после выполнения выхода
+ */
 export const logOut = async ({ setAuth, router }) => {
 	setAuth(null);
 
@@ -29,6 +41,12 @@ export const logOut = async ({ setAuth, router }) => {
 };
 
 //update user data
+/**
+ * Обновляет данные пользователя в базе данных
+ * @param {string} userId - Идентификатор пользователя
+ * @param {Object} data - Объект с обновленными данными пользователя
+ * @returns {Promise<{success: boolean, data?: Object, msg?: string}>} - Результат обновления с данными или сообщением об ошибке
+ */
 export const updateUser = async (userId, data) => {
 	// console.log("userService updateUser", userId, data);
 	try {
@@ -65,6 +83,11 @@ export const updateUser = async (userId, data) => {
 // }
 
 // Удаление пользователя
+/**
+ * Удаляет пользователя из базы данных по его идентификатору
+ * @param {string} userId - Идентификатор пользователя
+ * @returns {Promise<{success: boolean, msg?: string}>} - Результат удаления или сообщение об ошибке
+ */
 export const deleteUser = async (userId) => {
 	try {
 		// Удаляем пользователя из таблицы auth.users

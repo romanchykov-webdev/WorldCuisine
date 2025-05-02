@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { hp } from "../../constants/responsiveScreen";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
+import { themes } from "../../constants/themes";
+import { shadowBoxBlack } from "../../constants/shadow";
 
 const RefactorAddIngredientModal = ({
 	visible,
@@ -16,7 +18,7 @@ const RefactorAddIngredientModal = ({
 	const [quantity, setQuantity] = useState("1");
 	const [unit, setUnit] = useState("");
 	const [measurementLangApp, setMeasurementLangApp] = useState([]);
-	const { language: appLang } = useAuth();
+	const { language: appLang, currentTheme } = useAuth();
 
 	useEffect(() => {
 		if (!visible) return;
@@ -37,7 +39,7 @@ const RefactorAddIngredientModal = ({
 				Object.entries(measurement[appLang]).map(([key, val]) => ({
 					key,
 					val,
-				}))
+				})),
 			);
 		} else {
 			setMeasurementLangApp([]);
@@ -105,55 +107,91 @@ const RefactorAddIngredientModal = ({
 	return (
 		<Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
 			<View style={styles.modalOverlay}>
-				<View style={styles.modalContent}>
-					<Text style={styles.modalTitle}>{i18n.t("Add new ingredient")}</Text>
-					<View className="w-full">
-						{quontityLang.map((langItem) => (
-							<View key={langItem} className="mb-1">
-								<TextInput
-									style={styles.input}
-									value={ingredientsByLang[langItem]?.ingredient || ""}
-									onChangeText={(value) => handleIngredientChange(langItem, value)}
-									autoFocus={langItem === quontityLang[0]}
-									placeholder={`${langItem.toUpperCase()}`}
-								/>
-							</View>
-						))}
+				<View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
+					<Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>
+						{i18n.t("Add new ingredient")}
+					</Text>
+					<View style={{ maxHeight: hp(85), width: "100%" }}>
+						{/*<ScrollView style={{ width: "100%" }} contentContainerStyle={{ alignItems: "center" }}>*/}
+						{/*{quontityLang.map((langItem) => (*/}
+						{/*	<View key={langItem} className="mb-1">*/}
+						{/*		<TextInput*/}
+						{/*			style={styles.input}*/}
+						{/*			value={ingredientsByLang[langItem]?.ingredient || ""}*/}
+						{/*			onChangeText={(value) => handleIngredientChange(langItem, value)}*/}
+						{/*			autoFocus={langItem === quontityLang[0]}*/}
+						{/*			placeholder={`${langItem.toUpperCase()}`}*/}
+						{/*		/>*/}
+						{/*	</View>*/}
+						{/*))}*/}
+						<FlatList
+							data={quontityLang}
+							keyExtractor={(item) => item}
+							style={[
+								// shadowBoxBlack(),
+								{
+									maxHeight: hp(25),
+									width: "100%",
+									marginBottom: 5,
+								},
+							]}
+							renderItem={({ item }) => (
+								<View className="mb-1 ">
+									<TextInput
+										style={[styles.input, { color: themes[currentTheme]?.textColor }]}
+										value={ingredientsByLang[item]?.ingredient || ""}
+										onChangeText={(value) => handleIngredientChange(item, value)}
+										autoFocus={item === quontityLang[0]}
+										placeholder={`${item.toUpperCase()}`}
+									/>
+								</View>
+							)}
+						/>
 						<TextInput
 							value={quantity}
 							onChangeText={(value) => {
 								if (/^\d*$/.test(value)) setQuantity(value);
 							}}
 							keyboardType="numeric"
-							style={styles.input}
+							style={[styles.input, { color: themes[currentTheme]?.textColor }]}
 							className="text-center"
 						/>
 						<FlatList
 							data={measurementLangApp}
 							keyExtractor={(item) => item.key}
-							renderItem={({ item }) => (
+							style={{ maxHeight: hp(25), width: "100%", marginBottom: 5 }}
+							renderItem={({ item, index }) => (
 								<TouchableOpacity
-									style={styles.langOption}
+									style={[
+										styles.langOption,
+										index === measurementLangApp.length - 1 && { borderBottomColor: "transparent" },
+									]}
 									onPress={() => handleSelectUnit(item.key, item.val)}
 								>
 									<Text
-										style={styles.langText}
-										className={`${
-											unit === item.val ? "text-amber-500 font-bold" : "text-neutral-900"
-										}`}
+										style={[
+											styles.langText,
+											unit === item.val
+												? { color: themes[currentTheme]?.isActiveColorText }
+												: { color: themes[currentTheme]?.textColor },
+										]}
+										// className={`${
+										// 	unit === item.val ? "text-amber-500 font-bold" : "text-neutral-900"
+										// }`}
 									>
 										{item.val}
 									</Text>
 								</TouchableOpacity>
 							)}
-							style={styles.flatList}
+							// style={styles.flatList}
 						/>
 					</View>
+					{/*</ScrollView>*/}
 					<View style={styles.buttonContainer}>
-						<TouchableOpacity style={styles.button} onPress={handleSave}>
-							<Text style={styles.buttonText}>{i18n.t("Save")}</Text>
+						<TouchableOpacity style={[styles.button, { backgroundColor: "green" }]} onPress={handleSave}>
+							<Text style={[styles.buttonText]}>{i18n.t("Save")}</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.button} onPress={onClose}>
+						<TouchableOpacity style={[styles.button, { backgroundColor: "violet" }]} onPress={onClose}>
 							<Text style={styles.buttonText}>{i18n.t("Cancel")}</Text>
 						</TouchableOpacity>
 					</View>
@@ -172,7 +210,8 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: "80%",
-		backgroundColor: "white",
+		maxHeight: "85%",
+		// backgroundColor: "white",
 		padding: 20,
 		borderRadius: 10,
 		alignItems: "center",
@@ -181,6 +220,7 @@ const styles = StyleSheet.create({
 		fontSize: hp(2.5),
 		fontWeight: "bold",
 		marginBottom: 15,
+		textAlign: "center",
 	},
 	input: {
 		width: "100%",
@@ -202,7 +242,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	button: {
-		backgroundColor: "#ff4444",
+		// backgroundColor: "#ff4444",
 		padding: 10,
 		borderRadius: 5,
 		width: "45%",

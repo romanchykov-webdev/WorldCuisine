@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import { PlusIcon } from "react-native-heroicons/mini";
-import { shadowBoxBlack } from "../../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite} from "../../constants/shadow";
 import i18n from "../../lang/i18n";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import {themes} from "../../constants/themes";
+import {useAuth} from "../../contexts/AuthContext";
 
 const AddLangComponent = ({ languages, totLang, langDev, selectLanguage, modalVisible, setModalVisible }) => {
 	// для выбора языка
 	// const [modalVisible, setModalVisible] = useState(false);
+	const {currentTheme}=useAuth()
 
 	useEffect(() => {
 		// console.log("languages:", languages);
@@ -43,7 +46,7 @@ const AddLangComponent = ({ languages, totLang, langDev, selectLanguage, modalVi
 			<TouchableOpacity
 				className="w-[100%]"
 				// className="p-5 w-full items-center justify-center bg-amber-500 rounded-[15]"
-				style={shadowBoxBlack()}
+				style={currentTheme==="light"?shadowBoxBlack():shadowBoxWhite()}
 				onPress={handleAddLang}
 			>
 				{/*<Text*/}
@@ -65,15 +68,15 @@ const AddLangComponent = ({ languages, totLang, langDev, selectLanguage, modalVi
 			>
 				<TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
 					<View style={styles.modalOverlay}>
-						<View style={styles.modalContent}>
-							<Text style={styles.modalTitle}>Select Language</Text>
+						<View style={[styles.modalContent,{backgroundColor:themes[currentTheme]?.backgroundColor}]} >
+							<Text style={[styles.modalTitle,{color:themes[currentTheme]?.textColor}]}>{i18n.t("Select Language")}</Text>
 
 							<FlatList
 								data={filterLang}
 								keyExtractor={(item) => item.code}
-								renderItem={({ item }) => (
-									<TouchableOpacity style={styles.langOption} onPress={() => selectLanguage(item)}>
-										<Text style={styles.langText}>{item.name}</Text>
+								renderItem={({ item,index }) => (
+									<TouchableOpacity style={[styles.langOption,index===filterLang.length-1 && {borderBottomColor:"transparent"}]} onPress={() => selectLanguage(item)}>
+										<Text style={[styles.langText,{color:themes[currentTheme]?.textColor}]}>{item.name}</Text>
 									</TouchableOpacity>
 								)}
 							/>
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: "80%",
-		backgroundColor: "#fff",
+		// backgroundColor: "#fff",
 		borderRadius: 10,
 		padding: 20,
 		shadowColor: "#000",

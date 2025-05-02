@@ -1,6 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { hp } from "../../constants/responsiveScreen";
+import {useAuth} from "../../contexts/AuthContext";
+import {themes} from "../../constants/themes";
 
 const TitleDescriptionComponent = ({
 	slyleWrapper,
@@ -11,11 +13,12 @@ const TitleDescriptionComponent = ({
 	stileDescripton,
 	descriptionText,
 }) => {
+	const {currentTheme}=useAuth()
 	return (
 		<View style={[styles.wrapper, slyleWrapper]}>
-			{titleVisual && <Text style={[styles.title, styleTitle]}>{titleText}</Text>}
+			{titleVisual && <Text style={[styles.title, styleTitle, { color:themes[currentTheme]?.textColor}]}>{titleText}</Text>}
 
-			{descriptionVisual && <Text style={[styles.description, stileDescripton]}>{descriptionText}</Text>}
+			{descriptionVisual && <Text style={[styles.description, stileDescripton,{color:themes[currentTheme]?.secondaryTextColor}]}>{descriptionText}</Text>}
 		</View>
 	);
 };

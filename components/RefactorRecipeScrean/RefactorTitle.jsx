@@ -4,11 +4,13 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import ModalEditComponent from "./ModalEditComponent";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const RefactorTitle = ({ title, langApp, updateHeaderTitle, Icon }) => {
 	// console.log("RefactorTitleAria title", title);
 	// console.log("RefactorTitleAria area", area);
-
+	const { currentTheme } = useAuth();
 	const [modalVisible, setModalVisible] = useState(false);
 
 	// Извлекаем название на основе текущего языка
@@ -28,7 +30,10 @@ const RefactorTitle = ({ title, langApp, updateHeaderTitle, Icon }) => {
 			{/*    name and area*/}
 
 			<View className="flex-1 flex-row justify-between ">
-				<Text style={[{ fontSize: hp(2.7) }]} className="font-bold flex-1 text-neutral-700">
+				<Text
+					style={[{ fontSize: hp(2.7), color: themes[currentTheme]?.textColor }]}
+					className="font-bold flex-1 "
+				>
 					{displayTitle}
 				</Text>
 

@@ -370,6 +370,8 @@ const createFolderInCloudinary = async (folderPath) => {
 		return { success: false, msg: error.message };
 	}
 };
+
+
 /**
  * Загружает файл (изображение или видео) в хранилище Supabase
  * @param {string} filePath - Путь директории внутри cloudinary (например, 'users' или 'recipes')

@@ -1,6 +1,8 @@
 import React from "react";
 import { TextInput, View } from "react-native";
 import { hp } from "../constants/responsiveScreen";
+import {themes} from "../constants/themes";
+import {useAuth} from "../contexts/AuthContext";
 // envelope-open
 
 const InputComponent = ({
@@ -14,7 +16,7 @@ const InputComponent = ({
 	...props
 }) => {
 	// console.log('props', props);
-
+const{currentTheme} =useAuth()
 	// const { icon, placeholder, value, onChangeText,containerStyle, secureTextEntry = false, email=false}=props
 
 	return (
@@ -28,7 +30,7 @@ const InputComponent = ({
 			{icon && icon}
 
 			<TextInput
-				style={{ fontSize: hp(2) }}
+				style={{ fontSize: hp(2) ,color:themes[currentTheme]?.textColor}}
 				className="flex-1 p-5"
 				placeholder={placeholder}
 				placeholderTextColor={"grey"}

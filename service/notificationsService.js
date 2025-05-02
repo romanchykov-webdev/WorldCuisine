@@ -52,6 +52,13 @@ const PAGE_SIZE = 10;
 // 	}
 // };
 
+
+/**
+ * Подписывает пользователя на уведомления через Supabase Realtime
+ * @param {string} userId - Идентификатор пользователя
+ * @param {Function} onInsert - Callback-функция, вызываемая при добавлении нового уведомления
+ * @returns {Function} - Функция для отписки от уведомлений
+ */
 export const subscribeToNotifications = (userId, onInsert) => {
 	const subscription = supabase
 		.channel(`notifications-${userId}`)
@@ -70,6 +77,12 @@ export const subscribeToNotifications = (userId, onInsert) => {
 	return () => supabase.removeChannel(subscription);
 };
 
+
+/**
+ * Отмечает уведомление как прочитанное в базе данных
+ * @param {string} notificationId - Идентификатор уведомления
+ * @returns {Promise<{error?: Object}>} - Результат выполнения или объект ошибки
+ */
 export const markNotificationAsRead = async (notificationId) => {
 	try {
 		const { error } = await supabase.from(NOTIFICATIONS_TABLE).update({ is_read: true }).eq("id", notificationId);
@@ -105,6 +118,17 @@ export const markNotificationAsRead = async (notificationId) => {
 // 	}
 // };
 
+
+/**
+ * Получает уведомления пользователя из базы данных
+ * @param {Object} options - Параметры запроса
+ * @param {string} options.userId - Идентификатор пользователя
+ * @param {boolean} [options.isLoadMore=false] - Флаг для загрузки дополнительных уведомлений
+ * @param {string} [options.oldestLoadedDate] - Дата самого старого загруженного уведомления для пагинации
+ * @param {Array} [options.notifications=[]] - Текущий список уведомлений
+ * @param {string} [options.type] - Тип уведомления для фильтрации
+ * @returns {Promise<{data: Array, error?: Object}>} - Список уведомлений или объект ошибки
+ */
 export const fetchNotifications = async ({
 	userId,
 	isLoadMore = false,
@@ -153,6 +177,12 @@ export const fetchNotifications = async ({
 	}
 };
 
+
+/**
+ * Получает детали конкретного уведомления из базы данных
+ * @param {string} notificationId - Идентификатор уведомления
+ * @returns {Promise<{data: Object | null, error?: Object}>} - Данные уведомления или объект ошибки
+ */
 export const fetchNotificationDetails = async (notificationId) => {
 	try {
 		const { data, error } = await supabase

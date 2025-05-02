@@ -8,9 +8,12 @@ import { shadowBoxBlack } from "../constants/shadow";
 import i18n from "../lang/i18n";
 import { createPulseAnimationCircle } from "../utils/animations";
 import ButtonClearInputCustomComponent from "./ButtonClearInputCustomComponent";
+import {useAuth} from "../contexts/AuthContext";
+import {themes} from "../constants/themes";
 
 const SearchComponent = ({ searchDefault, searchScrean = false, onSearchChange }) => {
 	const router = useRouter();
+	const{currentTheme}=useAuth()
 	const [inpurSearch, setInpurSearch] = useState(searchDefault ? searchDefault : "");
 	const pulseScaleAnim = useRef(new Animated.Value(0)).current; // Масштаб начинается с 0
 	const pulseOpacityAnim = useRef(new Animated.Value(0)).current; // Прозрачность начинается с 0
@@ -92,7 +95,7 @@ const SearchComponent = ({ searchDefault, searchScrean = false, onSearchChange }
 				<TextInput
 					placeholder={i18n.t("Search any food")}
 					placeholderTextColor="gray"
-					style={[{ fontSize: hp(1.7) }]}
+					style={[{ fontSize: hp(1.7),color:themes[currentTheme]?.textColor }]}
 					className="flex-1 text-base tracking-wider p-3 mb-1"
 					value={inpurSearch}
 					onChangeText={(val) => setInpurSearch(val)}

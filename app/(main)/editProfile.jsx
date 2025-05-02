@@ -17,7 +17,7 @@ import ButtonBack from "../../components/ButtonBack";
 import LanguagesWrapper from "../../components/LanguagesWrapper";
 import ThemeWrapper from "../../components/ThemeWrapper";
 import { wp } from "../../constants/responsiveScreen";
-import { shadowBoxBlack } from "../../constants/shadow";
+import {shadowBoxBlack, shadowBoxWhite, shadowText} from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserImageSrc, uploadFile } from "../../service/imageServices";
 import { deleteUser, logOut, updateUser } from "../../service/userService";
@@ -30,16 +30,17 @@ import { Image } from "expo-image";
 // translate
 import TitleScrean from "../../components/TitleScrean";
 import i18n from "../../lang/i18n";
+import {themes} from "../../constants/themes";
+
 
 const EditProfile = () => {
-	const { user: currentUser, setAuth, setUserData } = useAuth();
+	const { user: currentUser, setAuth, setUserData,currentTheme } = useAuth();
 	const router = useRouter();
 
 	// console.log("EditProfile currentUser", currentUser);
 
 	const [loading, setLoading] = useState(false);
 
-	// const userData = currentUser
 
 	const [user, setUser] = useState({
 		user_name: "",
@@ -47,6 +48,7 @@ const EditProfile = () => {
 		avatar: "",
 		theme: "",
 	});
+	// const [user, setUser] = useState({})
 	// console.log('currentUser', user.avatar)
 	useEffect(() => {
 		if (currentUser) {
@@ -89,44 +91,7 @@ const EditProfile = () => {
 		}
 	};
 
-	// console.log('avatar', user.avatar);
 
-	// const handleSubmit = async () => {
-	// 	setLoading(true);
-
-	// 	let userData = { ...user };
-
-	// 	let { user_name, lang, theme, avatar } = userData;
-	// 	// console.log('user avatar',currentUser?.avatar)
-
-	// 	//upload user avatar
-	// 	if (typeof avatar == "object") {
-	// 		//     upload image
-	// 		// console.log('upload avatar handleSubmit', avatar)
-	// 		// let imageRes = await uploadFile("profiles", avatar?.uri, true, currentUser?.avatar);
-	// 		let imageRes = await uploadFile(`profiles/${currentUser.id}`, avatar?.uri, true, currentUser?.avatar);
-	// 		if (imageRes.success) {
-	// 			userData.avatar = imageRes.data;
-	// 		} else {
-	// 			userData.avatar = null;
-	// 		}
-	// 	}
-
-	// 	console.log("before submit", userData);
-
-	// 	const res = await updateUser(currentUser?.id, userData);
-
-	// 	// // update user data
-	// 	// // console.log('EditProfile res',res)
-
-	// 	if (res.success) {
-	// 		setUserData({ ...currentUser, ...userData });
-	// 	}
-
-	// 	setLoading(false);
-
-	// 	// console.log('submit userData avatar',userData?.avatar)
-	// };
 
 	const handleSubmit = async () => {
 		setLoading(true);
@@ -205,6 +170,7 @@ const EditProfile = () => {
 			keyboardDismissMode={"on-drag"}
 			contentContainerStyle={{ paddingHorizontal: wp(4), marginTop: Platform.OS === "ios" ? null : 60 }}
 			showsVerticalScrollIndicator={false}
+			style={{backgroundColor:themes[currentTheme]?.backgroundColor}}
 		>
 			<SafeAreaView>
 				{/*header*/}
@@ -212,12 +178,12 @@ const EditProfile = () => {
 					<View className="absolute left-0" style={shadowBoxBlack()}>
 						<ButtonBack />
 					</View>
-					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={{ fontSize: 20 }} />
+					<TitleScrean title={`${i18n.t("Edit Profile")} !`} styleTitle={[{ fontSize: 20 }]} />
 				</View>
 
 				{/*avatar*/}
 				<View className="gap-y-5 items-center mb-5 ">
-					<View style={shadowBoxBlack()}>
+					<View style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}>
 						{/*<AvatarCustom*/}
 						{/*    // uri={userData?.avatar}*/}
 						{/*    uri={imageSource}*/}
@@ -234,7 +200,7 @@ const EditProfile = () => {
 								borderRadius: 100,
 							}}
 						/>
-						<View className="absolute bottom-5 right-5" style={shadowBoxBlack()}>
+						<View className="absolute bottom-5 right-5" style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}>
 							<TouchableOpacity
 								onPress={updateAvatar}
 								className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
@@ -247,24 +213,28 @@ const EditProfile = () => {
 
 				<View
 					className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
-					// style={shadowBoxBlack()}
+					style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 				>
 					<TextInput
+						style={{color:themes[currentTheme]?.textColor}}
 						value={user.user_name}
 						onChangeText={(value) => setUser({ ...user, user_name: value })}
-						className="text-neutral-500 text-xl p-3"
+						className=" text-xl p-3"
 					/>
 				</View>
 
 				<View className="mb-5">
-					<LanguagesWrapper lang={user.lang} setLang={(newLang) => setUser({ ...user, lang: newLang })} />
+					<LanguagesWrapper lang={user?.lang} setLang={(newLang) => setUser({ ...user, lang: newLang })} />
 					{/*<LanguagesWrapper lang={currentUser.lang}*/}
 					{/*                  setLang={(newLang) => setUser({...currentUser, lang: newLang})}/>*/}
 				</View>
 
 				{/*theme*/}
 				<View className="mb-5">
-					<ThemeWrapper setTheme={(newTheme) => setUser({ ...user, theme: newTheme })} theme={user.theme} />
+					<ThemeWrapper setTheme={(newTheme) => setUser({ ...user, theme: newTheme })} theme={user?.theme} />
+					{/*<ThemeWrapper*/}
+					{/*	// setTheme={(newTheme) => setUser({ ...user, theme: newTheme })}*/}
+					{/*	theme={user?.theme} />*/}
 					{/*<ThemeWrapper setTheme={(newTheme) => setUser({...currentUser, theme: newTheme})}*/}
 					{/*              theme={currentUser.theme}/>*/}
 				</View>
@@ -274,7 +244,7 @@ const EditProfile = () => {
 				{/*    buttonUpdate &&(*/}
 				<TouchableOpacity
 					onPress={handleSubmit}
-					style={shadowBoxBlack()}
+					style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
 					className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center"
 				>
 					{loading ? (

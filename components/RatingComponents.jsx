@@ -11,6 +11,8 @@ import { addRecipeRatingMyDB } from "../service/getDataFromDB";
 //rating
 import { Rating } from "react-native-ratings";
 import { showCustomAlert } from "../constants/halperFunctions";
+import {themes} from "../constants/themes";
+import {useAuth} from "../contexts/AuthContext";
 
 const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	// console.log("RatingComponents user", user);
@@ -20,6 +22,8 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	// console.log("RatingComponents recipeId", recipeId);
 
 	const router = useRouter();
+
+	const {currentTheme}=useAuth()
 
 	const [addStar, setAddStar] = useState(true);
 	// const [selectedRating, setSelectedRating] = useState(0); // Сохранение выбранного рейтинга
@@ -55,7 +59,7 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 		// } else {
 		try {
 			setSelectedRating(newRating); // Обновляем состояние только для авторизованного пользователя
-			await addRecipeRatingMyDB({
+			 addRecipeRatingMyDB({
 				recipeId: recipeId,
 				userId: user.id,
 				rating: newRating,
@@ -74,25 +78,26 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 	};
 
 	return (
-		<Animated.View entering={FadeInDown.duration(400).delay(550)} className="px-4  items-center justify-around relative">
-			<Text className="text-neutral-700 mb-2">{i18n.t("Rate the recipe")}</Text>
+		<Animated.View entering={FadeInDown.duration(400).delay(550)} className="px-4  items-center justify-around relative" style={{ backgroundColor: "transparent" }}>
+			<Text className=" mb-2" style={{color:themes[currentTheme]?.textColor}}>{i18n.t("Rate the recipe")}</Text>
 
 			{/* Star Rating component */}
 
-			<TouchableOpacity onPress={IfUserNull}>
+			<TouchableOpacity onPress={IfUserNull} style={{ backgroundColor: "transparent" }}>
 				<Rating
 					type="star"
 					ratingCount={5}
 					imageSize={40}
 					ratingColor="gold"
-					ratingBackgroundColor="gray"
+					// ratingBackgroundColor="red"
+					tintColor={themes[currentTheme]?.backgroundColor}
 					// startingValue={isPreview ? 0 : rating}
 					startingValue={isPreview ? 0 : selectedRating}
 					// onFinishRating={isPreview ? null : addRating}
 					// onFinishRating={addRating} // Вызываем addRating для обработки рейтинга
 					onFinishRating={addRating} // Вызываем addRating для обработки рейтинга
 					readonly={isPreview || user === null} // Делаем неактивным для предпросмотра или неавторизованных пользователей
-					style={styles.rating}
+					style={{ backgroundColor: "transparent" }}
 				/>
 			</TouchableOpacity>
 		</Animated.View>
@@ -100,25 +105,23 @@ const RatingComponents = ({ rating, user, recipeId, isPreview }) => {
 };
 
 const styles = StyleSheet.create({
-	starContainer: {
-		position: "absolute",
-		zIndex: 10,
-		left: "50%",
-		top: "50%",
-		transform: [{ translateX: -22.5 }, { translateY: -22.5 }], // Центровка звезды
-		alignItems: "center", // Центровка текста внутри звезды
-		justifyContent: "center",
-	},
-	ratingText: {
-		position: "absolute",
-		color: "Black",
-		fontSize: 10,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-	rating: {
-		// marginBottom: 20,
-	},
+	// starContainer: {
+	// 	position: "absolute",
+	// 	zIndex: 10,
+	// 	left: "50%",
+	// 	top: "50%",
+	// 	transform: [{ translateX: -22.5 }, { translateY: -22.5 }], // Центровка звезды
+	// 	alignItems: "center", // Центровка текста внутри звезды
+	// 	justifyContent: "center",
+	// },
+	// ratingText: {
+	// 	position: "absolute",
+	// 	color: "Black",
+	// 	fontSize: 10,
+	// 	fontWeight: "bold",
+	// 	textAlign: "center",
+	// },
+
 });
 
 export default RatingComponents;
