@@ -14,6 +14,8 @@ import {
 } from "../../service/getDataFromDB";
 import AvatarCustom from "../AvatarCustom";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const SubscriptionsComponent = ({
 	subscriber,
@@ -23,7 +25,7 @@ const SubscriptionsComponent = ({
 	recipe_id,
 }) => {
 	const subscriberId = subscriber?.id;
-
+	const { currentTheme } = useAuth();
 	// console.log("SubscriptionsComponent subscriber ", subscriber);
 	// console.log("SubscriptionsComponent subscriber id", subscriber?.id);
 	// console.log("SubscriptionsComponent creatorId id", creatorId);
@@ -217,7 +219,11 @@ const SubscriptionsComponent = ({
 
 				<View className={`${allRecipeBayCreatore ? "items-center" : "overflow-hidden w-full   flex-1"}`}>
 					<View className="flex-row items-center">
-						<Text numberOfLines={1} style={{ fontSize: 14 }} className="font-bold">
+						<Text
+							numberOfLines={1}
+							style={{ fontSize: 14, color: themes[currentTheme]?.textColor }}
+							className="font-bold"
+						>
 							{creatorData.creatorName}
 						</Text>
 					</View>

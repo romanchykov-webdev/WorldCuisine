@@ -16,9 +16,10 @@ import {
 	subscribeToNotifications,
 } from "../../service/notificationsService";
 import { createFadeAnimation, createHeightCollapseAnimation } from "../../utils/animations";
+import { themes } from "../../constants/themes";
 
 const NewLikesScrean = () => {
-	const { user, markAsRead, unreadCount, unreadLikesCount, language } = useAuth();
+	const { user, markAsRead, unreadCount, unreadLikesCount, language, currentTheme } = useAuth();
 	const [notifications, setNotifications] = useState([]);
 	const [switchStates, setSwitchStates] = useState({});
 	const [loading, setLoading] = useState(false);
@@ -159,8 +160,8 @@ const NewLikesScrean = () => {
 	const renderFooter = () => (loadingMore ? <LoadingComponent color="green" /> : null);
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
-			<View className="px-[20] border-b border-b-neutral-300 mb-5">
+		<SafeAreaView style={{ flex: 1, backgroundColor: themes[currentTheme]?.backgroundColor }}>
+			<View className="px-[20] border-b border-b-neutral-300 mb-5 pb-5">
 				<View style={shadowBoxBlack()} className="mb-5">
 					<ButtonBack />
 				</View>

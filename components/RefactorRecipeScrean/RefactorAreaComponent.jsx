@@ -4,10 +4,12 @@ import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import ModalEditComponent from "./ModalEditComponent";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const RefactorAreaComponent = ({ area, langApp, updateAreaText, Icon }) => {
 	const [modalVisible, setModalVisible] = useState(false);
-
+	const { currentTheme } = useAuth();
 	// console.log("RefactorAreaComponent area", area);
 	// console.log("RefactorAreaComponent langApp", langApp);
 
@@ -23,7 +25,10 @@ const RefactorAreaComponent = ({ area, langApp, updateAreaText, Icon }) => {
 	};
 	return (
 		<View className="justify-center">
-			<Text style={{ fontSize: hp(1.8) }} className="font-medium text-neutral-500">
+			<Text
+				style={{ fontSize: hp(1.8), color: themes[currentTheme]?.secondaryTextColor }}
+				className="font-medium "
+			>
 				{displayArea}
 			</Text>
 			<TouchableOpacity

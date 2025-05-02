@@ -166,10 +166,10 @@ const HomeScreen = () => {
 						{/*    greetings and punchline*/}
 						<View gap-y-2>
 							<View>
-								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
+								<Text style={{ fontSize: hp(3) ,color:themes[currentTheme]?.textColor }} className="font-semibold ">
 									{i18n.t("Make your own food")},
 								</Text>
-								<Text style={{ fontSize: hp(3) }} className="font-semibold text-neutral-700">
+								<Text style={{ fontSize: hp(3),color:themes[currentTheme]?.textColor }} className="font-semibold">
 									{i18n.t("stay at")} <Text className="text-amber-500">{i18n.t("home")}</Text>
 								</Text>
 							</View>

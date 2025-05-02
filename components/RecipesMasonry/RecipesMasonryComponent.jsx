@@ -9,6 +9,8 @@ import { getDeviceType } from "../../constants/getWidthDevice";
 import { hp } from "../../constants/responsiveScreen";
 import { shadowBoxBlack } from "../../constants/shadow";
 import AvatarCustom from "../AvatarCustom";
+import { themes } from "../../constants/themes";
+import { useAuth } from "../../contexts/AuthContext";
 
 const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBayCreatore = false }) => {
 	// console.log("RecipesMasonryComponent categoryRecipes", categoryRecipes);
@@ -41,7 +43,7 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBay
 	};
 
 	return (
-		<View className="flex-1 gap-y-3 mt-5">
+		<View className="flex-1 gap-y-3 gap-x-3 mt-5">
 			{!isSubCategoryView ? (
 				<MasonryList
 					data={categoryRecipes}
@@ -50,6 +52,7 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBay
 					renderItem={({ item, i }) => (
 						<CardItem item={item} index={i} onPress={handleSubCategory} langApp={langApp} />
 					)}
+					onEndReachedThreshold={0.1}
 				/>
 			) : (
 				<Animated.View entering={FadeInDown} exiting={FadeOutDown}>
@@ -65,7 +68,7 @@ const RecipesMasonryComponent = ({ categoryRecipes, langApp, isScreanAlrecipeBay
 	);
 };
 
-const CardItem = ({ item, index, onPress, langApp }) => {
+const CardItem = ({ item, index, onPress }) => {
 	// 	// console.log('CardItem',index)
 	const isEven = index % 3 === 0;
 	const imageHeight = isEven ? hp(25) : hp(35);
@@ -73,13 +76,14 @@ const CardItem = ({ item, index, onPress, langApp }) => {
 	return (
 		<Animated.View
 			entering={FadeInDown.delay(index * 200).springify()} // Задержка анимации
-			className="flex mb-[10] gap-y-1 p-[2]"
+			className="flex-1 mb-[10] gap-y-1 p-[2]"
 			style={[
 				shadowBoxBlack({
 					offset: { width: 1, height: 1 },
 					opacity: 1,
 					radius: 3,
 				}),
+				{ marginHorizontal: 2.5 },
 			]}
 		>
 			<TouchableOpacity onPress={() => onPress(item)} className="rounded-full relative items-center">
@@ -111,7 +115,7 @@ const CardItem = ({ item, index, onPress, langApp }) => {
 
 const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 	const router = useRouter();
-
+	const { currentTheme } = useAuth();
 	const handleOpenItem = async (item) => {
 		// console.log("SubCategoryView handleOpenItem", item);
 
@@ -133,7 +137,12 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 						<ArrowUturnLeftIcon size={30} color="gray" />
 					</TouchableOpacity>
 				)}
-				<Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">{item?.name}</Text>
+				<Text
+					className=" flex-1 text-center  font-semibold text-xl  mb-2"
+					style={{ color: themes[currentTheme]?.textColor }}
+				>
+					{item?.name}
+				</Text>
 			</View>
 
 			<MasonryList
@@ -152,6 +161,7 @@ const SubCategoryView = ({ item, isSubCategoryView, handleBack, langApp }) => {
 									opacity: 1,
 									radius: 3,
 								}),
+								{ marginHorizontal: 2.5 },
 							]}
 							entering={FadeInDown.delay(i * 200).springify()} // Задержка анимации
 							exiting={FadeOutDown.delay(i * 100)} // Задержка исчезновения

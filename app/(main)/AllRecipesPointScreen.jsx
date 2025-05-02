@@ -18,12 +18,14 @@ import LoadingComponent from "../../components/loadingComponent";
 import RecipePointItemComponent from "../../components/RecipesMasonry/AllRecipesPoint/RecipePointItemComponent";
 import TitleScrean from "../../components/TitleScrean";
 import { getDeviceType } from "../../constants/getWidthDevice";
-import { shadowBoxBlack } from "../../constants/shadow";
+import { shadowBoxBlack, shadowText } from "../../constants/shadow";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
 import { getAllRecipesPointMasonryMyDB } from "../../service/getDataFromDB";
 
 import { ArrowDownIcon, ArrowUpIcon, HeartIcon, StarIcon } from "react-native-heroicons/mini";
+import WrapperComponent from "../../components/WrapperComponent";
+import { themes } from "../../constants/themes";
 
 const AllRecipesPointScreen = ({
 	isScreanAlrecipeBayCreatore = false,
@@ -33,7 +35,7 @@ const AllRecipesPointScreen = ({
 	titleVisible = true,
 }) => {
 	const { point } = useLocalSearchParams();
-	const { language: langApp } = useAuth();
+	const { language: langApp, currentTheme } = useAuth();
 
 	// console.log("AllRecipesPointScreen point", point);
 	// console.log("AllRecipesPointScreen isFavoriteScrean", isFavoriteScrean);
@@ -90,14 +92,6 @@ const AllRecipesPointScreen = ({
 		setTimeout(() => {
 			setIsModalVisible(false);
 		}, 200);
-		// fetchRecipes(1).then(() => {
-		// 	setTimeout(() => {
-		// 		setIsModalVisible(false);
-		// 	}, 200);
-		// 	setTimeout(() => {
-		// 		setLoading(false);
-		// 	}, 1000);
-		// }); // Загружаем данные с новым фильтром
 	};
 
 	// ----------------------------------------------------------
@@ -111,49 +105,6 @@ const AllRecipesPointScreen = ({
 
 	// console.log('AllRecipesPointScreen',point)
 
-	// const fetchGetAllRecipesPointMasonryMyDB = async () => {
-	// 	const res = await getAllRecipesPointMasonryMyDB(point);
-	// 	// console.log("AllRecipesPointScreen res point", JSON.stringify(res.data, null, 2));
-	// 	setAllRecipes(res.data);
-	// };
-
-	// useEffect(() => {
-	// 	if (!isScreanAlrecipeBayCreatore && !isFavoriteScrean) {
-	// 		setLoading(true);
-	// 		fetchGetAllRecipesPointMasonryMyDB();
-	// 		setTimeout(() => {
-	// 			setLoading(false);
-	// 		}, 1000);
-	// 	}
-	// }, [point]);
-
-	// useEffect(() => {
-	// 	if (isScreanAlrecipeBayCreatore) {
-	// 		setLoading(true);
-
-	// 		setAllRecipes(isScreanAllRecibeData);
-	// 		setTimeout(() => {
-	// 			setLoading(false);
-	// 		}, 1000);
-
-	// 		// console.log("isScreanAlrecipeBayCreatore", allRecipes);
-	// 	}
-	// }, [isScreanAlrecipeBayCreatore, isScreanAllRecibeData]);
-
-	// useEffect(() => {
-	// 	if (isFavoriteScrean) {
-	// 		setLoading(true);
-
-	// 		setAllRecipes(allFavoriteRecipes);
-
-	// 		setTimeout(() => {
-	// 			setLoading(false);
-	// 		}, 1000);
-
-	// 		// console.log("FavoriteScrean", allRecipes);
-	// 	}
-	// }, [isFavoriteScrean]);
-
 	// Функция для получения рецептов (первая загрузка или подгрузка новых)
 	const fetchRecipes = async (pageNum, isLoadMore = false) => {
 		if (isLoadMore) {
@@ -166,17 +117,8 @@ const AllRecipesPointScreen = ({
 		const sortOptions = getSortOptions();
 		const res = await getAllRecipesPointMasonryMyDB(point, pageNum, 10, sortOptions);
 		if (res.success) {
-			// Если это подгрузка, добавляем новые рецепты к существующим
-			// console.log("fetchRecipes res", res);
-
 			setAllRecipes((prev) => (isLoadMore ? [...prev, ...res.data] : res.data));
 		}
-
-		// if (isLoadMore) {
-		// 	setLoadingMore(false);
-		// } else {
-		// 	setLoading(false);
-		// }
 	};
 
 	// Первая загрузка рецептов
@@ -228,15 +170,17 @@ const AllRecipesPointScreen = ({
 	}, [isFavoriteScrean, allFavoriteRecipes]);
 
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			{/* <ScrollView contentContainerStyle={{ marginTop: Platform.OS === "ios" ? null : 30 }}> */}
+		// <SafeAreaView style={styles.safeArea}>
+		<WrapperComponent stylesScrollView={isScreanAlrecipeBayCreatore && { paddingHorizontal: 0 }}>
+			{/*<ScrollView contentContainerStyle={{ marginTop: Platform.OS === "ios" ? null : 30 }}> */}
 			<View style={styles.container}>
 				<View
 					// className={`gap-y-3  ${isScreanAlrecipeBayCreatore || isFavoriteScrean ? null : "p-[20]"}`}
 					// style={{ backgroundColor: "red" }}
 					style={[
 						styles.innerContainer,
-						isScreanAlrecipeBayCreatore || isFavoriteScrean ? {} : { padding: 20 },
+						// { backgroundColor: "red" },
+						// isScreanAlrecipeBayCreatore || isFavoriteScrean ? {} : { padding: 20 },
 					]}
 				>
 					{/* block header*/}
@@ -299,7 +243,7 @@ const AllRecipesPointScreen = ({
 							// numColumns={2}
 							contentContainerStyle={styles.containerMasory}
 							numColumns={column}
-							style={{ gap: 10 }}
+							// style={{ bacgroundColor: "white" }}
 							showsVerticalScrollIndicator={false}
 							renderItem={({ item, i }) => (
 								<RecipePointItemComponent item={item} index={i} langApp={langApp} />
@@ -326,14 +270,21 @@ const AllRecipesPointScreen = ({
 			>
 				<TouchableWithoutFeedback onPress={closeModal}>
 					<View style={styles.modalOverlay}>
-						<View style={styles.modalContent}>
+						<View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
 							<View className="gap-y-5">
 								{/* от нового к старому стандврт */}
 								<TouchableOpacity
 									onPress={() => toggleFilter("newOld")}
 									style={[styles.itemFilter, filters.newOld ? styles.itemFilterActive : null]}
 								>
-									<Text>{i18n.t("From newest to oldest")}</Text>
+									<Text
+										style={[
+											shadowText({ offset: { width: 1, height: 1 }, radius: 1 }),
+											{ color: themes[currentTheme]?.textColor },
+										]}
+									>
+										{i18n.t("From newest to oldest")}
+									</Text>
 									<ArrowDownIcon size={20} color="green" />
 								</TouchableOpacity>
 
@@ -342,7 +293,14 @@ const AllRecipesPointScreen = ({
 									onPress={() => toggleFilter("oldNew")}
 									style={[styles.itemFilter, filters.oldNew ? styles.itemFilterActive : null]}
 								>
-									<Text>{i18n.t("From old to new")}</Text>
+									<Text
+										style={[
+											shadowText({ offset: { width: 1, height: 1 }, radius: 1 }),
+											{ color: themes[currentTheme]?.textColor },
+										]}
+									>
+										{i18n.t("From old to new")}
+									</Text>
 									<ArrowUpIcon size={20} color="blue" />
 								</TouchableOpacity>
 
@@ -351,7 +309,14 @@ const AllRecipesPointScreen = ({
 									onPress={() => toggleFilter("likes")}
 									style={[styles.itemFilter, filters.likes ? styles.itemFilterActive : null]}
 								>
-									<Text>{i18n.t("Popular")}</Text>
+									<Text
+										style={[
+											shadowText({ offset: { width: 1, height: 1 }, radius: 1 }),
+											{ color: themes[currentTheme]?.textColor },
+										]}
+									>
+										{i18n.t("Popular")}
+									</Text>
 									<HeartIcon size={20} color="red" />
 								</TouchableOpacity>
 
@@ -360,7 +325,14 @@ const AllRecipesPointScreen = ({
 									onPress={() => toggleFilter("rating")}
 									style={[styles.itemFilter, filters.rating ? styles.itemFilterActive : null]}
 								>
-									<Text>{i18n.t("High rating")}</Text>
+									<Text
+										style={[
+											shadowText({ offset: { width: 1, height: 1 }, radius: 1 }),
+											{ color: themes[currentTheme]?.textColor },
+										]}
+									>
+										{i18n.t("High rating")}
+									</Text>
 									<StarIcon size={20} color="gold" />
 								</TouchableOpacity>
 							</View>
@@ -368,8 +340,9 @@ const AllRecipesPointScreen = ({
 					</View>
 				</TouchableWithoutFeedback>
 			</Modal>
-			{/* </ScrollView> */}
-		</SafeAreaView>
+		</WrapperComponent>
+		// {/* </ScrollView> */}
+		// </SafeAreaView>
 	);
 };
 
@@ -384,7 +357,7 @@ const styles = StyleSheet.create({
 	},
 	innerContainer: {
 		flex: 1,
-		gap: 10,
+		// gap: 10,
 	},
 	containerMasory: {
 		paddingBottom: 50,
@@ -400,7 +373,7 @@ const styles = StyleSheet.create({
 		right: 0,
 		// backgroundColor: "red",
 		alignItems: "center",
-		padding: 10,
+		// padding: 10,
 	},
 	modalOverlay: {
 		flex: 1,
@@ -410,7 +383,7 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: "80%",
-		backgroundColor: "#fff",
+		// backgroundColor: "#fff",
 		borderRadius: 10,
 		padding: 20,
 		shadowColor: "#000",

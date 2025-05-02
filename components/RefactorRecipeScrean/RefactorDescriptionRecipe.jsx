@@ -10,11 +10,16 @@ import TitleDescriptionComponent from "../CreateRecipeScreen/TitleDescriptionCom
 import LoadingComponent from "../loadingComponent";
 import ImageCustom from "../recipeDetails/ImageCustom";
 import ImageSliderCustom from "../recipeDetails/ImageSliderCustom";
+import { useHrefAttrs } from "expo-router/build/link/useLinkHooks";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdateDescription, recipe }) => {
 	// console.log("RefactorDescriptionRecipe descriptionsRecipe", JSON.stringify(descriptionsRecipe, null));
 	// console.log("RefactorDescriptionRecipe descriptionsRecipe", descriptionsRecipe.lang[langApp]);
 	// console.log("RefactorDescriptionRecipe langApp", langApp);
+	const { currentTheme } = useAuth();
+
 	const [loading, setLoading] = useState(false);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedStep, setSelectedStep] = useState(null);
@@ -28,11 +33,10 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 	// }));
 	const steps = descriptionsRecipe.lang[langApp]
 		? Object.entries(descriptionsRecipe.lang[langApp]).map(([key, value]) => ({
-			step: key,
-			...value,
-		}))
+				step: key,
+				...value,
+			}))
 		: [];
-
 
 	// Хук для выбора изображений, передаём объект recipe
 	const currentImages = selectedStep ? descriptionsRecipe.lang[langApp][selectedStep]?.images || [] : [];
@@ -59,37 +63,6 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 		setTempImages([]); // Очищаем изображения
 		setModalVisible(true);
 	};
-
-	// Обновление изображений (add, remove, refactor)
-	// const handleImageUpdate = (newImages, action) => {
-	// 	const updatedLang = {};
-	// 	// Применяем изменения ко всем языкам
-	// 	Object.keys(descriptionsRecipe.lang).forEach((lang) => {
-	// 		if (descriptionsRecipe.lang[lang][selectedStep]) {
-	// 			updatedLang[lang] = {
-	// 				...descriptionsRecipe.lang[lang],
-	// 				[selectedStep]: {
-	// 					...descriptionsRecipe.lang[lang][selectedStep],
-	// 					images:
-	// 						action === "remove"
-	// 							? [] // Удаляем все изображения
-	// 							: action === "refactor"
-	// 							? newImages // Заменяем все изображения
-	// 							: [...descriptionsRecipe.lang[lang][selectedStep].images, ...newImages].slice(0, 5), // Добавляем до 5
-	// 				},
-	// 			};
-	// 		}
-	// // 	});
-
-	// 	const updatedDescription = {
-	// 		...descriptionsRecipe,
-	// 		lang: {
-	// 			...descriptionsRecipe.lang,
-	// 			...updatedLang,
-	// 		},
-	// 	};
-	// 	onUpdateDescription(updatedDescription); // Передаем обновленные данные в родительский компонент
-	// };
 
 	// Обновление временных изображений
 	const handleImageUpdate = (newImages, action) => {
@@ -142,56 +115,6 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 			setLoading(false);
 		}
 	};
-
-	// const handleSave = () => {
-	// 	if (selectedStep) {
-	// 		const updatedDescription = {
-	// 			...descriptionsRecipe,
-	// 			lang: {
-	// 				...descriptionsRecipe.lang,
-	// 				[langApp]: {
-	// 					...descriptionsRecipe.lang[langApp],
-	// 					[selectedStep]: {
-	// 						...descriptionsRecipe.lang[langApp][selectedStep],
-	// 						text: editedText, // Обновляем текст
-	// 					},
-	// 				},
-	// 			},
-	// 		};
-	// 		onUpdateDescription(updatedDescription); // Обновляем данные через проп
-	// 		setModalVisible(false);
-	// 	}
-	// };
-
-	// Сохранение изменений
-	// const handleSave = () => {
-	// 	if (selectedStep) {
-	// 		// Редактирование существующего шага
-	// 		const updatedLang = {};
-	// 		Object.keys(descriptionsRecipe.lang).forEach((lang) => {
-	// 			if (descriptionsRecipe.lang[lang][selectedStep]) {
-	// 				updatedLang[lang] = {
-	// 					...descriptionsRecipe.lang[lang],
-	// 					[selectedStep]: {
-	// 						...descriptionsRecipe.lang[lang][selectedStep],
-	// 						text: editedText, // Применяем временный текст
-	// 						images: tempImages, // Применяем временные изображения
-	// 					},
-	// 				};
-	// 			}
-	// 		});
-
-	// 		const updatedDescription = {
-	// 			...descriptionsRecipe,
-	// 			lang: {
-	// 				...descriptionsRecipe.lang,
-	// 				...updatedLang,
-	// 			},
-	// 		};
-	// 		onUpdateDescription(updatedDescription);
-	// 		setModalVisible(false);
-	// 	}
-	// };
 
 	// Сохранение изменений
 	const handleSave = () => {
@@ -246,14 +169,17 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 	};
 
 	return (
-		<View>
+		<View style={{ position: "relative" }}>
 			<TitleDescriptionComponent titleText={i18n.t("Recipe Description")} titleVisual={true} />
 			{steps?.length > 0 &&
 				steps?.map((item, index) => (
 					<View key={index} className="w-full mb-5">
 						{/* text */}
 						<View className="flex-row flex-1 ">
-							<Text className="flex-wrap flex-1 mb-3" style={{ fontSize: hp(2.5) }}>
+							<Text
+								className="flex-wrap flex-1 mb-3"
+								style={{ fontSize: hp(2.5), color: themes[currentTheme]?.textColor }}
+							>
 								<Text className="text-amber-500">
 									{item.step} {")"}{" "}
 								</Text>
@@ -314,14 +240,14 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 				onRequestClose={() => setModalVisible(false)}
 			>
 				<View style={styles.modalOverlay}>
-					<View style={styles.modalContent}>
-						<Text style={styles.modalTitle}>
+					<View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
+						<Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>
 							{selectedStep
 								? `${i18n.t("Edit")} ${selectedStep} (${langApp.toUpperCase()})`
 								: `${i18n.t("Add New Step")} (${langApp.toUpperCase()})`}
 						</Text>
 						<TextInput
-							style={styles.input}
+							style={[styles.input, { color: themes[currentTheme]?.textColor }]}
 							value={editedText}
 							onChangeText={setEditedText}
 							multiline
@@ -451,10 +377,16 @@ const RefactorDescriptionRecipe = ({ descriptionsRecipe, langApp, Icon, onUpdate
 							))}
 
 						<View style={styles.buttonContainer}>
-							<TouchableOpacity style={styles.button} onPress={handleSave}>
+							<TouchableOpacity
+								style={[styles.button, { backgroundColor: "green" }]}
+								onPress={handleSave}
+							>
 								<Text style={styles.buttonText}>{i18n.t("Save")}</Text>
 							</TouchableOpacity>
-							<TouchableOpacity style={styles.button} onPress={handleCancel}>
+							<TouchableOpacity
+								style={[styles.button, { backgroundColor: "violet" }]}
+								onPress={handleCancel}
+							>
 								<Text style={styles.buttonText}>{i18n.t("Cancel")}</Text>
 							</TouchableOpacity>
 						</View>
@@ -476,7 +408,7 @@ const styles = StyleSheet.create({
 	modalContent: {
 		width: "80%",
 
-		backgroundColor: "white",
+		// backgroundColor: "white",
 		padding: 20,
 		borderRadius: 10,
 		alignItems: "center",
@@ -504,7 +436,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	button: {
-		backgroundColor: "#ff4444",
+		// backgroundColor: "#ff4444",
 		padding: 10,
 		borderRadius: 5,
 		width: "45%",

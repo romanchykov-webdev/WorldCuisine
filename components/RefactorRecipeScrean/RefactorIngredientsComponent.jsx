@@ -7,13 +7,15 @@ import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
 import TitleDescriptionComponent from "../CreateRecipeScreen/TitleDescriptionComponent";
 import ModalEditComponent from "./ModalEditComponent";
 import RefactorAddIngredientModal from "./RefactorAddIngredientModal";
+import { useAuth } from "../../contexts/AuthContext";
+import { themes } from "../../constants/themes";
 
 const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients, iconRefactor, measurement }) => {
 	// console.log("RefactorIngredientsComponent handleSave ingredients", Object.keys(ingredients.lang));
 	// console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
 
 	const [newIngredient, setNewIngredient] = useState("");
-
+	const { currentTheme } = useAuth();
 	//
 	const [modalVisible, setModalVisible] = useState(false);
 
@@ -69,7 +71,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 			if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
 				Alert.alert(
 					i18n.t("Attention"),
-					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`,
 				);
 				return false;
 			}
@@ -85,7 +87,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 			if (!isQuantityValid || !isUnitValid || !isIngredientValid) {
 				Alert.alert(
 					i18n.t("Attention"),
-					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
+					`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`,
 				);
 				return false;
 			}
@@ -133,7 +135,7 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 		for (const language of quontityLang) {
 			updatedIngredients.lang[language] = updatedIngredients.lang[language] || [];
 			updatedIngredients.lang[language].push(
-				updatedData[language] || { ingredient: "", quantity: "1", unit: "" }
+				updatedData[language] || { ingredient: "", quantity: "1", unit: "" },
 			);
 		}
 		updateIngredients(updatedIngredients, langApp);
@@ -160,13 +162,22 @@ const RefactorIngredientsComponent = ({ langApp, ingredients, updateIngredients,
 						<View className="flex-1 flex-row flex-wrap gap-x-2">
 							<View style={{ height: 20, width: 20 }} className="bg-amber-300 rounded-full" />
 							<View className="flex-row flex-1 gap-x-2 items-center">
-								<Text style={{ fontSize: 16 }} className="font-extrabold text-neutral-700 max-w-[60%]">
+								<Text
+									style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
+									className="font-extrabold  max-w-[60%]"
+								>
 									{ingredient.ingredient}
 								</Text>
-								<Text style={{ fontSize: 16 }} className="font-medium text-neutral-600">
+								<Text
+									style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
+									className="font-medium "
+								>
 									- {ingredient.quantity}
 								</Text>
-								<Text style={{ fontSize: 16 }} className="font-medium text-neutral-600 capitalize">
+								<Text
+									style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
+									className="font-medium  capitalize"
+								>
 									{ingredient.unit}
 								</Text>
 							</View>

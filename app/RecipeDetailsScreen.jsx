@@ -34,6 +34,7 @@ import SelectLangComponent from "../components/recipeDetails/SelectLangComponent
 import SocialLinksComponent from "../components/recipeDetails/SocialLinksComponent";
 import SubscriptionsComponent from "../components/recipeDetails/SubscriptionsComponent";
 import i18n from "../lang/i18n";
+import { themes } from "../constants/themes";
 
 const RecipeDetailsScreen = ({ totalRecipe }) => {
 	// const {language: langDev} = useAuth();
@@ -55,7 +56,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 	const commentsRef = useRef(null);
 	// const [dataSource, setDataSource] = useState("unknown"); // Состояние для источника данных
 
-	const { user, language, previewRecipeReady, setPreviewRecipeReady } = useAuth();
+	const { user, language, previewRecipeReady, setPreviewRecipeReady, currentTheme } = useAuth();
 
 	// console.log("RecipeDetailsScreen rating", rating);
 	// console.log("RecipeDetailsScreen recipeDish", JSON.stringify(recipeDish, null));
@@ -74,7 +75,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 
 	const [langApp, setLangApp] = useState(
 		// user?.lang ?? currentLang ?? language
-		user?.lang ?? language
+		user?.lang ?? language,
 	);
 
 	// Парсинг totalRecipe с проверкой
@@ -217,7 +218,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 				contentContainerStyle={{
 					paddingBottom: 30,
 					// paddingBottom: hp(30), // Увеличьте, если нужно
-					backgroundColor: "white",
+					backgroundColor: themes[currentTheme]?.backgroundColor,
 					paddingHorizontal: wp(3),
 					minHeight: hp(120), // Минимальная высота, но не фиксированная
 					flexGrow: 1, // Позволяет содержимому расти
@@ -227,9 +228,7 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 			>
 				<StatusBar style="dark" />
 				{loading || recipeDish === null ? (
-					<View
-					// style={{ height: hp(150) }}
-					>
+					<View style={{ backgroundColor: themes[currentTheme]?.backgroundColor }}>
 						<LoadingComponent size="large" color="green" />
 					</View>
 				) : (
@@ -386,14 +385,20 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 							{/*    name and area*/}
 							<View className="gap-y-2">
 								<Text
-									style={[{ fontSize: hp(2.7) }, shadowTextSmall()]}
-									className="font-bold  text-neutral-700"
+									style={[
+										{ fontSize: hp(2.7), color: themes[currentTheme]?.textColor },
+										shadowTextSmall(),
+									]}
+									className="font-bold  "
 								>
 									{/*{recipeDish?.strMeal}*/}
 									{recipeDish?.title?.lang.find((item) => item.lang === langApp)?.name ||
 										recipeDish?.title?.strTitle}
 								</Text>
-								<Text style={{ fontSize: hp(1.8) }} className="font-medium text-neutral-500">
+								<Text
+									style={{ fontSize: hp(1.8), color: themes[currentTheme]?.secondaryTextColor }}
+									className="font-medium text-neutral-500"
+								>
 									{/*{recipeDish?.strArea}*/}
 									{recipeDish?.area?.[langApp]}
 								</Text>
@@ -521,8 +526,11 @@ const RecipeDetailsScreen = ({ totalRecipe }) => {
 						{/*    ingredients*/}
 						<Animated.View entering={FadeInDown.delay(800)} className="gap-y-4 ">
 							<Text
-								style={[{ fontSize: hp(2.5) }, shadowTextSmall()]}
-								className="font-bold px-4 text-neutral-700"
+								style={[
+									{ fontSize: hp(2.5), color: themes[currentTheme]?.textColor },
+									shadowTextSmall(),
+								]}
+								className="font-bold px-4 "
 							>
 								{i18n.t("Ingredients")}
 							</Text>

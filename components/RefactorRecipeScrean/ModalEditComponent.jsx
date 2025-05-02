@@ -4,6 +4,7 @@ import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } 
 import { hp } from "../../constants/responsiveScreen";
 import { useAuth } from "../../contexts/AuthContext";
 import i18n from "../../lang/i18n";
+import { themes } from "../../constants/themes";
 
 const ModalEditComponent = ({
 	visible,
@@ -17,9 +18,8 @@ const ModalEditComponent = ({
 	validateIngredientData,
 }) => {
 	// console.log("ModalEditComponent lang", lang);
-
 	// Для простого текста (например, теги, заголовки)
-	const { language: appLang } = useAuth();
+	const { language: appLang, currentTheme } = useAuth();
 	const [text, setText] = useState("");
 	// Для ингредиентов
 	const [ingredient, setIngredient] = useState("");
@@ -47,7 +47,7 @@ const ModalEditComponent = ({
 				Object.entries(measurement[appLang]).map(([key, val]) => ({
 					key,
 					val,
-				}))
+				})),
 			);
 		} else {
 			setMeasurementLangApp([]); // Устанавливаем пустой массив, если measurement или lang недоступны
@@ -103,14 +103,19 @@ const ModalEditComponent = ({
 	return (
 		<Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
 			<View style={styles.modalOverlay}>
-				<View style={styles.modalContent}>
+				<View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
 					{/*  */}
-					<Text style={styles.modalTitle}>{titleModal}</Text>
+					<Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>{titleModal}</Text>
 					{/*  */}
 					{type === "ingredients" ? (
 						<View className="w-full">
 							{/* Поле для редактирования названия ингредиента */}
-							<TextInput style={styles.input} value={ingredient} onChangeText={setIngredient} autoFocus />
+							<TextInput
+								style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
+								value={ingredient}
+								onChangeText={setIngredient}
+								autoFocus
+							/>
 
 							{/* Поле для редактирования количества */}
 							<TextInput
@@ -122,7 +127,7 @@ const ModalEditComponent = ({
 									}
 								}}
 								keyboardType="numeric"
-								style={styles.input}
+								style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
 								className="text-center"
 							/>
 
@@ -130,16 +135,29 @@ const ModalEditComponent = ({
 							<FlatList
 								data={measurementLangApp}
 								keyExtractor={(item) => item.key}
-								renderItem={({ item }) => (
+								renderItem={({ item, index }) => (
 									<TouchableOpacity
-										style={styles.langOption}
+										style={[
+											styles.langOption,
+											index === measurementLangApp.length - 1 && {
+												borderBottomColor: "transparent",
+											},
+										]}
 										onPress={() => handleSelectUnit(item.key, item.val)}
 									>
 										<Text
-											style={styles.langText}
-											className={`${
-												unit === item.val ? "text-amber-500 font-bold" : "text-neutral-900"
-											}`}
+											style={[
+												styles.langText,
+												{
+													color:
+														unit === item.val
+															? themes[currentTheme]?.isActiveColorText
+															: themes[currentTheme]?.secondaryTextColor,
+												},
+											]}
+											// className={`${
+											// 	unit === item.val ? "text-amber-500 font-bold" : "text-neutral-900"
+											// }`}
 										>
 											{item.val}
 										</Text>
@@ -149,14 +167,19 @@ const ModalEditComponent = ({
 							/>
 						</View>
 					) : (
-						<TextInput style={styles.input} value={text} onChangeText={setText} autoFocus />
+						<TextInput
+							style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
+							value={text}
+							onChangeText={setText}
+							autoFocus
+						/>
 					)}
 					{/*  */}
 					<View style={styles.buttonContainer}>
-						<TouchableOpacity style={styles.button} onPress={handleSave}>
+						<TouchableOpacity style={[styles.button, { backgroundColor: "green" }]} onPress={handleSave}>
 							<Text style={styles.buttonText}>{i18n.t("Save")}</Text>
 						</TouchableOpacity>
-						<TouchableOpacity style={styles.button} onPress={onClose}>
+						<TouchableOpacity style={[styles.button, { backgroundColor: "violet" }]} onPress={onClose}>
 							<Text style={styles.buttonText}>{i18n.t("Cancel")}</Text>
 						</TouchableOpacity>
 					</View>
@@ -176,7 +199,7 @@ const styles = StyleSheet.create({
 	},
 	modalContent: {
 		width: "80%",
-		backgroundColor: "white",
+		// backgroundColor: "white",
 		padding: 20,
 		borderRadius: 10,
 		alignItems: "center",
@@ -202,7 +225,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 	},
 	button: {
-		backgroundColor: "#ff4444",
+		// backgroundColor: "#ff4444",
 		padding: 10,
 		borderRadius: 5,
 		width: "45%",
