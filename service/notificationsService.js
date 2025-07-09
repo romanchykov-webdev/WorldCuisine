@@ -1,7 +1,7 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from '../lib/supabase'
 
-const NOTIFICATIONS_TABLE = "notifications";
-const PAGE_SIZE = 10;
+const NOTIFICATIONS_TABLE = 'notifications'
+const PAGE_SIZE = 10
 
 // export const fetchNotifications = async ({
 // 	userId,
@@ -52,45 +52,44 @@ const PAGE_SIZE = 10;
 // 	}
 // };
 
-
 /**
  * Подписывает пользователя на уведомления через Supabase Realtime
  * @param {string} userId - Идентификатор пользователя
  * @param {Function} onInsert - Callback-функция, вызываемая при добавлении нового уведомления
  * @returns {Function} - Функция для отписки от уведомлений
  */
-export const subscribeToNotifications = (userId, onInsert) => {
-	const subscription = supabase
-		.channel(`notifications-${userId}`)
-		.on(
-			"postgres_changes",
-			{
-				event: "INSERT",
-				schema: "public",
-				table: NOTIFICATIONS_TABLE,
-				filter: `user_id=eq.${userId}`,
-			},
-			onInsert
-		)
-		.subscribe();
+export function subscribeToNotifications(userId, onInsert) {
+  const subscription = supabase
+    .channel(`notifications-${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: NOTIFICATIONS_TABLE,
+        filter: `user_id=eq.${userId}`,
+      },
+      onInsert,
+    )
+    .subscribe()
 
-	return () => supabase.removeChannel(subscription);
-};
-
+  return () => supabase.removeChannel(subscription)
+}
 
 /**
  * Отмечает уведомление как прочитанное в базе данных
  * @param {string} notificationId - Идентификатор уведомления
- * @returns {Promise<{error?: Object}>} - Результат выполнения или объект ошибки
+ * @returns {Promise<{error?: object}>} - Результат выполнения или объект ошибки
  */
-export const markNotificationAsRead = async (notificationId) => {
-	try {
-		const { error } = await supabase.from(NOTIFICATIONS_TABLE).update({ is_read: true }).eq("id", notificationId);
-		return { error };
-	} catch (e) {
-		return { error: e };
-	}
-};
+export async function markNotificationAsRead(notificationId) {
+  try {
+    const { error } = await supabase.from(NOTIFICATIONS_TABLE).update({ is_read: true }).eq('id', notificationId)
+    return { error }
+  }
+  catch (e) {
+    return { error: e }
+  }
+}
 
 // export const fetchNotificationDetails = async (notificationId) => {
 // 	try {
@@ -118,33 +117,32 @@ export const markNotificationAsRead = async (notificationId) => {
 // 	}
 // };
 
-
 /**
  * Получает уведомления пользователя из базы данных
- * @param {Object} options - Параметры запроса
+ * @param {object} options - Параметры запроса
  * @param {string} options.userId - Идентификатор пользователя
- * @param {boolean} [options.isLoadMore=false] - Флаг для загрузки дополнительных уведомлений
+ * @param {boolean} [options.isLoadMore] - Флаг для загрузки дополнительных уведомлений
  * @param {string} [options.oldestLoadedDate] - Дата самого старого загруженного уведомления для пагинации
- * @param {Array} [options.notifications=[]] - Текущий список уведомлений
+ * @param {Array} [options.notifications] - Текущий список уведомлений
  * @param {string} [options.type] - Тип уведомления для фильтрации
- * @returns {Promise<{data: Array, error?: Object}>} - Список уведомлений или объект ошибки
+ * @returns {Promise<{data: Array, error?: object}>} - Список уведомлений или объект ошибки
  */
-export const fetchNotifications = async ({
-	userId,
-	isLoadMore = false,
-	oldestLoadedDate,
-	notifications = [],
-	type,
-}) => {
-	if (!userId || (isLoadMore && !notifications.length && !oldestLoadedDate)) {
-		return { data: [], error: null };
-	}
+export async function fetchNotifications({
+  userId,
+  isLoadMore = false,
+  oldestLoadedDate,
+  notifications = [],
+  type,
+}) {
+  if (!userId || (isLoadMore && !notifications.length && !oldestLoadedDate)) {
+    return { data: [], error: null }
+  }
 
-	try {
-		let query = supabase
-			.from(NOTIFICATIONS_TABLE)
-			.select(
-				`
+  try {
+    let query = supabase
+      .from(NOTIFICATIONS_TABLE)
+      .select(
+        `
 			id,
 			recipe_id,
 			message,
@@ -155,40 +153,40 @@ export const fetchNotifications = async ({
 			user_id,
 			users!actor_id(user_name, avatar),
 			all_recipes_description(title, image_header)
-		  `
-			)
-			.eq("user_id", userId)
-			.eq("is_read", false)
-			.order("created_at", { ascending: true })
-			.limit(PAGE_SIZE);
+		  `,
+      )
+      .eq('user_id', userId)
+      .eq('is_read', false)
+      .order('created_at', { ascending: true })
+      .limit(PAGE_SIZE)
 
-		if (type) {
-			query = query.eq("type", type);
-		}
+    if (type) {
+      query = query.eq('type', type)
+    }
 
-		if (isLoadMore && oldestLoadedDate) {
-			query = query.gt("created_at", notifications[notifications.length - 1].created_at);
-		}
+    if (isLoadMore && oldestLoadedDate) {
+      query = query.gt('created_at', notifications[notifications.length - 1].created_at)
+    }
 
-		const { data, error } = await query;
-		return { data: Array.isArray(data) ? data : [], error };
-	} catch (e) {
-		return { data: [], error: e };
-	}
-};
-
+    const { data, error } = await query
+    return { data: Array.isArray(data) ? data : [], error }
+  }
+  catch (e) {
+    return { data: [], error: e }
+  }
+}
 
 /**
  * Получает детали конкретного уведомления из базы данных
  * @param {string} notificationId - Идентификатор уведомления
- * @returns {Promise<{data: Object | null, error?: Object}>} - Данные уведомления или объект ошибки
+ * @returns {Promise<{data: object | null, error?: object}>} - Данные уведомления или объект ошибки
  */
-export const fetchNotificationDetails = async (notificationId) => {
-	try {
-		const { data, error } = await supabase
-			.from(NOTIFICATIONS_TABLE)
-			.select(
-				`
+export async function fetchNotificationDetails(notificationId) {
+  try {
+    const { data, error } = await supabase
+      .from(NOTIFICATIONS_TABLE)
+      .select(
+        `
 			id,
 			recipe_id,
 			message,
@@ -199,12 +197,13 @@ export const fetchNotificationDetails = async (notificationId) => {
 			user_id,
 			users!actor_id(user_name, avatar),
 			all_recipes_description(title, image_header)
-		  `
-			)
-			.eq("id", notificationId)
-			.single();
-		return { data, error };
-	} catch (e) {
-		return { data: null, error: e };
-	}
-};
+		  `,
+      )
+      .eq('id', notificationId)
+      .single()
+    return { data, error }
+  }
+  catch (e) {
+    return { data: null, error: e }
+  }
+}

@@ -1,49 +1,43 @@
-import axios from "axios";
+import axios from 'axios'
 
-export const getCategories = async () => {
-    try {
+export async function getCategories() {
+  try {
+    const response = await axios.get('https://themealdb.com/api/json/v1/1/categories.php')
 
-        const response = await axios.get("https://themealdb.com/api/json/v1/1/categories.php");
-
-        if(response && response.data){
-            return response.data;
-        }
-
-
-    }catch(err) {
-        console.log('Error getCategories',err.message);
+    if (response && response.data) {
+      return response.data
     }
+  }
+  catch (err) {
+    console.log('Error getCategories', err.message)
+  }
 }
-export const getRecipes = async (category) => {
-    // console.log('getRecipes', category)
-    try {
+export async function getRecipes(category) {
+  // console.log('getRecipes', category)
+  try {
+    const response = await axios.get(`https://themealdb.com/api/json/v1/1/filter.php?c=${category}`)
 
-        const response = await axios.get(`https://themealdb.com/api/json/v1/1/filter.php?c=${category}`);
-
-        // console.log('response',response.data)
-        if(response && response.data){
-            return response.data.meals;
-        }
-
-
-    }catch(err) {
-        console.log('Error getCategories',err.message);
+    // console.log('response',response.data)
+    if (response && response.data) {
+      return response.data.meals
     }
+  }
+  catch (err) {
+    console.log('Error getCategories', err.message)
+  }
 }
 
 // get recipe dish
-export const getRecipeDish = async (dishId) => {
-    try {
+export async function getRecipeDish(dishId) {
+  try {
+    const response = await axios.get(`https://themealdb.com/api/json/v1/1/lookup.php?i=${dishId}`)
 
-        const response = await axios.get(`https://themealdb.com/api/json/v1/1/lookup.php?i=${dishId}`);
-
-        // console.log('response',response.data)
-        if(response && response.data){
-            return response.data.meals[0];
-        }
-
-
-    }catch(err) {
-        console.log('Error getCategories',err.message);
+    // console.log('response',response.data)
+    if (response && response.data) {
+      return response.data.meals[0]
     }
+  }
+  catch (err) {
+    console.log('Error getCategories', err.message)
+  }
 }

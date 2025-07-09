@@ -1,149 +1,150 @@
-import React, { useEffect, useState } from "react";
-import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import { useEffect, useState } from 'react'
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { MapPinIcon, TrashIcon } from 'react-native-heroicons/mini'
 
-import { MapPinIcon, TrashIcon } from "react-native-heroicons/mini";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { shadowBoxBlack } from "../../constants/shadow";
-import ButtonSmallCustom from "../Buttons/ButtonSmallCustom";
-
+import MapView, { Marker } from 'react-native-maps'
+import Animated, { FadeInDown } from 'react-native-reanimated'
 // import my hook
-import { useDebounce } from "../../constants/halperFunctions";
-import i18n from "../../lang/i18n";
-import TitleDescriptionComponent from "./TitleDescriptionComponent";
+import { useDebounce } from '../../constants/halperFunctions'
+import { shadowBoxBlack } from '../../constants/shadow'
 
-const AddPointGoogleMaps = ({ setTotalRecipe, refactorRecipescrean = false, oldCoordinates, updateCoordinates }) => {
-	const [marker, setMarker] = useState(null);
-	const [mapVisible, setMapVisible] = useState(false);
+import i18n from '../../lang/i18n'
+import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
+import TitleDescriptionComponent from './TitleDescriptionComponent'
 
-	// console.log("marker", marker);
+function AddPointGoogleMaps({ setTotalRecipe, refactorRecipescrean = false, oldCoordinates, updateCoordinates }) {
+  const [marker, setMarker] = useState(null)
+  const [mapVisible, setMapVisible] = useState(false)
 
-	// Добавляем дебонсированное значение
-	const debouncedValue = useDebounce(marker, 1000);
+  // console.log("marker", marker);
 
-	// Обработчик нажатия на карту
-	const handleMapPress = (event) => {
-		setMarker(event.nativeEvent.coordinate);
-	};
+  // Добавляем дебонсированное значение
+  const debouncedValue = useDebounce(marker, 1000)
 
-	// if refactorRecipescrean = true
-	useEffect(() => {
-		if (refactorRecipescrean && oldCoordinates) {
-			setMarker(oldCoordinates);
-		}
-	}, []);
+  // Обработчик нажатия на карту
+  const handleMapPress = (event) => {
+    setMarker(event.nativeEvent.coordinate)
+  }
 
-	// Открытие карты с выбранными координатами
-	const openMap = () => {
-		if (marker) {
-			const latitude = marker.latitude;
-			const longitude = marker.longitude;
+  // if refactorRecipescrean = true
+  useEffect(() => {
+    if (refactorRecipescrean && oldCoordinates) {
+      setMarker(oldCoordinates)
+    }
+  }, [])
 
-			// Формируем ссылку для Google Maps
-			const url = `https://www.google.com/maps?q=${latitude},${longitude}`;
-			Linking.openURL(url);
-		}
-	};
+  // Открытие карты с выбранными координатами
+  const openMap = () => {
+    if (marker) {
+      const latitude = marker.latitude
+      const longitude = marker.longitude
 
-	useEffect(() => {
-		if (refactorRecipescrean && updateCoordinates) {
-			updateCoordinates(marker)
-		} else {
-			setTotalRecipe((prevRecipe) => ({
-				...prevRecipe,
-				map_coordinates: debouncedValue,
-			}));
-		}
-	}, [debouncedValue]);
+      // Формируем ссылку для Google Maps
+      const url = `https://www.google.com/maps?q=${latitude},${longitude}`
+      Linking.openURL(url)
+    }
+  }
 
-	return (
-		<View className="mb-5">
-			{marker !== null && (
-				<Animated.View
-					entering={FadeInDown.delay(100).springify()}
-					className="flex-row items-center justify-betwen mb-3"
-				>
-					<View className="flex-row items-center  flex-1">
-						<TouchableOpacity onPress={openMap}>
-							<MapPinIcon size={50} color="blue" />
-						</TouchableOpacity>
-						<Text>{i18n.t("There is a store here")}</Text>
-					</View>
+  useEffect(() => {
+    if (refactorRecipescrean && updateCoordinates) {
+      updateCoordinates(marker)
+    }
+    else {
+      setTotalRecipe(prevRecipe => ({
+        ...prevRecipe,
+        map_coordinates: debouncedValue,
+      }))
+    }
+  }, [debouncedValue])
 
-					<TouchableOpacity onPress={() => setMarker(null)}>
-						<ButtonSmallCustom tupeButton="remove" icon={TrashIcon} w={60} h={60} />
-					</TouchableOpacity>
-				</Animated.View>
-			)}
+  return (
+    <View className="mb-5">
+      {marker !== null && (
+        <Animated.View
+          entering={FadeInDown.delay(100).springify()}
+          className="flex-row items-center justify-betwen mb-3"
+        >
+          <View className="flex-row items-center  flex-1">
+            <TouchableOpacity onPress={openMap}>
+              <MapPinIcon size={50} color="blue" />
+            </TouchableOpacity>
+            <Text>{i18n.t('There is a store here')}</Text>
+          </View>
 
-			<TitleDescriptionComponent
-				titleText={i18n.t("If you have a store")}
-				titleVisual={true}
-				descriptionVisual={true}
-				descriptionText={i18n.t("You can add it to the map, and customers can find it")}
-			/>
+          <TouchableOpacity onPress={() => setMarker(null)}>
+            <ButtonSmallCustom tupeButton="remove" icon={TrashIcon} w={60} h={60} />
+          </TouchableOpacity>
+        </Animated.View>
+      )}
 
-			<TouchableOpacity
-				// style={styles.button}
-				style={shadowBoxBlack()}
-				onPress={() => setMapVisible(!mapVisible)}
-			>
-				{/*<Text style={styles.buttonText}>*/}
-				{/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'}*/}
-				{/*</Text>*/}
-				<ButtonSmallCustom
-					tupeButton="add"
-					h={60}
-					w="100%"
-					title={
-						mapVisible ? `${i18n.t("Hide")} ${i18n.t("the map")}` : `${i18n.t("Open")} ${i18n.t("the map")}`
-					}
-					buttonText={true}
-				/>
-			</TouchableOpacity>
+      <TitleDescriptionComponent
+        titleText={i18n.t('If you have a store')}
+        titleVisual={true}
+        descriptionVisual={true}
+        descriptionText={i18n.t('You can add it to the map, and customers can find it')}
+      />
 
-			{mapVisible && (
-				<MapView
-					style={styles.map}
-					mapType="hybrid" // Спутниковый вид
-					initialRegion={{
-						latitude: 48.8566, // Например, Париж
-						longitude: 2.3522,
-						latitudeDelta: 10,
-						longitudeDelta: 10,
-					}}
-					onPress={handleMapPress}
-				>
-					{marker && <Marker coordinate={marker} title={i18n.t("Selected point")} />}
-				</MapView>
-			)}
+      <TouchableOpacity
+        // style={styles.button}
+        style={shadowBoxBlack()}
+        onPress={() => setMapVisible(!mapVisible)}
+      >
+        {/* <Text style={styles.buttonText}> */}
+        {/*    {mapVisible ? 'Скрыть карту' : 'Открыть карту'} */}
+        {/* </Text> */}
+        <ButtonSmallCustom
+          tupeButton="add"
+          h={60}
+          w="100%"
+          title={
+            mapVisible ? `${i18n.t('Hide')} ${i18n.t('the map')}` : `${i18n.t('Open')} ${i18n.t('the map')}`
+          }
+          buttonText={true}
+        />
+      </TouchableOpacity>
 
-			{/* {marker && (
+      {mapVisible && (
+        <MapView
+          style={styles.map}
+          mapType="hybrid" // Спутниковый вид
+          initialRegion={{
+            latitude: 48.8566, // Например, Париж
+            longitude: 2.3522,
+            latitudeDelta: 10,
+            longitudeDelta: 10,
+          }}
+          onPress={handleMapPress}
+        >
+          {marker && <Marker coordinate={marker} title={i18n.t('Selected point')} />}
+        </MapView>
+      )}
+
+      {/* {marker && (
 				<Text className="mt-4">
 					Выбрано местоположение координаты: {marker.latitude}, {marker.longitude}
 				</Text>
 			)} */}
-		</View>
-	);
-};
+    </View>
+  )
+}
 
 const styles = StyleSheet.create({
-	map: {
-		width: "100%",
-		height: 300,
-		marginTop: 10,
-		borderRadius: 10,
-	},
-	button: {
-		backgroundColor: "#007AFF",
-		padding: 10,
-		borderRadius: 10,
-		alignItems: "center",
-	},
-	buttonText: {
-		color: "white",
-		fontWeight: "bold",
-	},
-});
+  map: {
+    width: '100%',
+    height: 300,
+    marginTop: 10,
+    borderRadius: 10,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+})
 
-export default AddPointGoogleMaps;
+export default AddPointGoogleMaps

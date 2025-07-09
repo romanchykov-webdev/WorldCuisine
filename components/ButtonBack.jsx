@@ -1,29 +1,27 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-import { ArrowUturnLeftIcon } from "react-native-heroicons/outline";
-import {shadowBoxBlack, shadowBoxWhite} from "../constants/shadow";
-import {useAuth} from "../contexts/AuthContext";
-import {themes} from "../constants/themes";
+import { useRouter } from 'expo-router'
+import { StyleSheet, TouchableOpacity } from 'react-native'
+import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline'
+import { shadowBoxBlack, shadowBoxWhite } from '../constants/shadow'
+import { useAuth } from '../contexts/AuthContext'
 
-const ButtonBack = () => {
-	const router = useRouter();
+function ButtonBack() {
+  const router = useRouter()
 
-	const {currentTheme} =useAuth()
+  const { currentTheme } = useAuth()
 
-	//
+  //
 
-	return (
-		<TouchableOpacity
-			onPress={() => router.back()}
-			className="w-[50] h-[50] justify-center items-center bg-white rounded-full"
-			style={currentTheme==='light' ? shadowBoxBlack() :shadowBoxWhite()}
-		>
-			<ArrowUturnLeftIcon size={30} color="gray" />
-		</TouchableOpacity>
-	);
-};
+  return (
+    <TouchableOpacity
+      onPress={() => router.back()}
+      className="w-[50] h-[50] justify-center items-center bg-white rounded-full"
+      style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+    >
+      <ArrowUturnLeftIcon size={30} color="gray" />
+    </TouchableOpacity>
+  )
+}
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({})
 
-export default ButtonBack;
+export default ButtonBack

@@ -1,14 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native'
 
-const Notifications = () => {
+function Notifications() {
   return (
-    <View >
+    <View>
       <Text>Notifications works!</Text>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({})
 
-export default Notifications;
+export default Notifications
