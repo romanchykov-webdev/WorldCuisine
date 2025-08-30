@@ -1,100 +1,94 @@
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon } from 'react-native-heroicons/mini'
-// import my hook
 import { useDebounce } from '../../constants/halperFunctions'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
 import i18n from '../../lang/i18n'
 import StərɪskCustomComponent from '../StərɪskCustomComponent'
-
 import ModalCreateRecipe from './ModalCreateRecipe'
 import TitleDescriptionComponent from './TitleDescriptionComponent'
 
-function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafctorScrean = false }) {
-  // console.log("SelectCreateRecipeScreenCustom setTotalRecipe", JSON.stringify(recipeDish, null));
-
+function SelectCreateRecipeScreenCustom({
+  setTotalRecipe,
+  recipeDish = {},
+  reafctorScrean = false,
+  recipeMetricsForUpdate,
+}) {
   const [modalTitle, setModalTitle] = useState('')
   const [modalDescription, setModalDescription] = useState('')
   const [modalArray, setModalArray] = useState([])
-  const [modalType, setModalType] = useState()
+  const [modalType, setModalType] = useState(undefined)
+
+  // правильные ключи
   const [modalSelectItem, setModalSelectItem] = useState({
     time: 1,
-    person: 1,
-    calorie: 1,
-    level: 'Easy',
+    serv: 1,
+    cal: 1,
+    level: 'easy',
   })
 
+  // если редактирование
   useEffect(() => {
-    if (reafctorScrean && Object.keys(recipeDish).length > 0) {
+    if (reafctorScrean && recipeDish?.recipe_metrics) {
+      const { time, serv, cal, level } = recipeDish.recipe_metrics
       setModalSelectItem({
-        time: recipeDish?.recipe_metrics.time.value,
-        person: recipeDish?.recipe_metrics.persons.value,
-        calorie: recipeDish?.recipe_metrics.calories.value,
-        level: recipeDish?.recipe_metrics.difficulty.value,
+        time: Number(recipeMetricsForUpdate?.time ?? time) || 1,
+        serv: Number(recipeMetricsForUpdate?.serv ?? serv) || 1,
+        cal: Number(recipeMetricsForUpdate?.cal ?? cal) || 1,
+        level: String(recipeMetricsForUpdate?.cal ?? level ?? 'easy').toLowerCase(),
       })
     }
-  }, [reafctorScrean])
+  }, [reafctorScrean, recipeDish])
 
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const debouncedValue = useDebounce(modalSelectItem, 300)
 
-  const debouncedValue = useDebounce(modalSelectItem, 1000)
-
-  const openModalLevel = async ({ title, description, array, type }) => {
+  const openModalLevel = ({ title, description, array, type }) => {
     setModalTitle(title)
     setModalDescription(description)
     setModalArray(array)
-    setIsModalVisible(true)
     setModalType(type)
+    setIsModalVisible(true)
   }
-  // console.log("debouncedValue", debouncedValue);
 
+  // финальная передача наверх
   useEffect(() => {
-    setTotalRecipe(prevRecipe => ({
-      ...prevRecipe,
+    setTotalRecipe((prev) => ({
+      ...prev,
       recipe_metrics: {
-        time: {
-          unit: 'mins',
-          value: debouncedValue.time,
-        },
-        persons: {
-          unit: 'person(s)',
-          value: debouncedValue.person,
-        },
-        calories: {
-          unit: 'cal',
-          value: debouncedValue.calorie,
-        },
-        difficulty: {
-          value: debouncedValue.level,
-        },
+        time: Number(debouncedValue.time) || 0,
+        serv: Number(debouncedValue.serv) || 0,
+        cal: Number(debouncedValue.cal) || 0,
+        level: String(debouncedValue.level || 'medium').toLowerCase(),
       },
     }))
-  }, [debouncedValue])
+  }, [debouncedValue, setTotalRecipe])
 
   return (
     <View>
       <TitleDescriptionComponent
-        titleVisual={true}
+        titleVisual
         titleText={i18n.t('Short description')}
-        descriptionVisual={true}
+        descriptionVisual
         descriptionText={i18n.t('Mark how long it takes to prepare the recipe')}
       />
 
       <View className="flex-row justify-around ">
-        {/* ClockIcon */}
+        {/* time */}
         <TouchableOpacity
           onPress={() =>
             openModalLevel({
               title: 'Время приготовления.',
               description: 'Здесь вы можете указать примерное время приготовления блюда.',
-              array: [1, 299],
+              array: [1, 300],
               type: 'time',
-            })}
+            })
+          }
           className="relative"
         >
           <View
-            className="flex rounded-full bg-amber-300  p-1 items-center"
+            className="flex rounded-full bg-amber-300 p-1 items-center"
             style={[{ height: 120 }, shadowBoxBlack()]}
           >
             <View className="justify-between flex-col pb-2 flex-1">
@@ -105,12 +99,9 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
                 <StərɪskCustomComponent top={-5} right={-5} />
                 <ClockIcon size={hp(4)} strokeWidth={2.5} color="gray" />
               </View>
-
-              {/*    descriptions */}
               <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold  text-neutral-700">{modalSelectItem.time}</Text>
-
-                <Text style={{ fontSize: hp(1.2) }} className="font-bold  text-neutral-500">
+                <Text className="font-bold text-neutral-700">{modalSelectItem.time}</Text>
+                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
                   {i18n.t('Mins')}
                 </Text>
               </View>
@@ -118,18 +109,20 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
           </View>
         </TouchableOpacity>
 
-        {/* users */}
+        {/* servings */}
         <TouchableOpacity
           onPress={() =>
             openModalLevel({
               title: 'Выберите количество персон.',
-              description: 'Здесь вы можете выбрать на какое количество персон рассчитан ваш рецепт.',
+              description:
+                'Здесь вы можете выбрать на какое количество персон рассчитан ваш рецепт.',
               array: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-              type: 'person',
-            })}
+              type: 'serv',
+            })
+          }
         >
           <View
-            className="flex rounded-full bg-amber-300  p-1 items-center"
+            className="flex rounded-full bg-amber-300 p-1 items-center"
             style={[{ height: 120 }, shadowBoxBlack()]}
           >
             <View className="justify-between flex-col pb-2 flex-1">
@@ -140,16 +133,9 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
                 <StərɪskCustomComponent top={-5} right={-5} />
                 <UsersIcon size={hp(4)} strokeWidth={2.5} color="gray" />
               </View>
-
-              {/*    descriptions */}
               <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold  text-neutral-700">{modalSelectItem.person}</Text>
-                <Text
-                  style={{ fontSize: hp(1.2) }}
-                  className="font-bold  text-neutral-500
-                                        {/*bg-red-500*/}
-                                        "
-                >
+                <Text className="font-bold text-neutral-700">{modalSelectItem.serv}</Text>
+                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
                   {i18n.t('Person')}
                 </Text>
               </View>
@@ -161,14 +147,15 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
         <TouchableOpacity
           onPress={() =>
             openModalLevel({
-              title: 'Выберите калорийности.',
-              description: 'Здесь вы можете выбрать уровень калорийности блюда в 100 граммах.',
+              title: 'Выберите калорийность.',
+              description: 'Здесь вы можете выбрать уровень калорийности блюда.',
               array: [1, 3000],
-              type: 'calorie',
-            })}
+              type: 'cal',
+            })
+          }
         >
           <View
-            className="flex rounded-full bg-amber-300  p-1 items-center "
+            className="flex rounded-full bg-amber-300 p-1 items-center "
             style={[{ height: 120 }, shadowBoxBlack()]}
           >
             <View className="justify-between flex-col pb-2 flex-1">
@@ -179,16 +166,9 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
                 <StərɪskCustomComponent top={-5} right={-5} />
                 <FireIcon size={hp(4)} strokeWidth={2.5} color="gray" />
               </View>
-
-              {/*    descriptions */}
               <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold  text-neutral-700">{modalSelectItem.calorie}</Text>
-                <Text
-                  style={{ fontSize: hp(1.2) }}
-                  className="font-bold  text-neutral-500
-                                        {/*bg-red-500*/}
-                                        "
-                >
+                <Text className="font-bold text-neutral-700">{modalSelectItem.cal}</Text>
+                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
                   {i18n.t('Cal')}
                 </Text>
               </View>
@@ -204,10 +184,11 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
               description: 'Здесь вы можете выбрать уровень сложности приготовления рецепта.',
               array: ['Easy', 'Medium', 'Hard'],
               type: 'level',
-            })}
+            })
+          }
         >
           <View
-            className="flex rounded-full bg-amber-300  p-1 items-center"
+            className="flex rounded-full bg-amber-300 p-1 items-center"
             style={[{ height: 120 }, shadowBoxBlack()]}
           >
             <View className="justify-between flex-col pb-2 flex-1">
@@ -218,14 +199,8 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
                 <StərɪskCustomComponent top={-5} right={-5} />
                 <Square3Stack3DIcon size={hp(4)} strokeWidth={2.5} color="gray" />
               </View>
-
-              {/*    descriptions */}
               <View className="flex items-center py-2 gap-y-1">
-                <Text
-                  style={[styles.text, { fontSize: 8 }]}
-                  numberOfLines={1} // Ограничение до одной строки
-                  ellipsizeMode="tail" // Добавляет "..." в конце длинного текста
-                >
+                <Text style={[styles.text, { fontSize: 8 }]} numberOfLines={1} ellipsizeMode="tail">
                   {modalSelectItem.level}
                 </Text>
               </View>
@@ -250,6 +225,8 @@ function SelectCreateRecipeScreenCustom({ setTotalRecipe, recipeDish = {}, reafc
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  text: { fontWeight: '700', color: '#111827' },
+})
 
 export default SelectCreateRecipeScreenCustom

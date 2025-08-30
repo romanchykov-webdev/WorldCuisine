@@ -39,8 +39,7 @@ export function myFormatNumber(num) {
       return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}K`
     }
     return num.toString()
-  }
-  catch (error) {
+  } catch (error) {
     // Если произошла ошибка, возвращаем "0"
     return '0'
   }
@@ -78,27 +77,27 @@ export function formatDateTime(isoDateString) {
 // 	// }
 // };
 export function getYoutubeVideoId(url) {
-  // console.log("getYoutubeVideoId url", url);
+  if (!url || typeof url !== 'string') return null
 
-  if (!url || typeof url !== 'string') {
-    return null
-  }
+  // watch?v=...
+  const fullUrlMatch = url.match(/[?&]v=([^&]+)/)
+  if (fullUrlMatch?.[1]) return fullUrlMatch[1]
 
-  // Регулярное выражение для полной ссылки (youtube.com/watch?v=)
-  const fullUrlRegex = /[?&]v=([^&]+)/
-  const fullUrlMatch = url.match(fullUrlRegex)
+  // youtu.be/...
+  const shortUrlMatch = url.match(/youtu\.be\/([^?&#/]+)/)
+  if (shortUrlMatch?.[1]) return shortUrlMatch[1]
 
-  if (fullUrlMatch && fullUrlMatch[1]) {
-    return fullUrlMatch[1]
-  }
+  // embed/...
+  const embedMatch = url.match(/youtube\.com\/embed\/([^?&#/]+)/)
+  if (embedMatch?.[1]) return embedMatch[1]
 
-  // Регулярное выражение для сокращенной ссылки (youtu.be)
-  const shortUrlRegex = /youtu\.be\/([^?]+)/
-  const shortUrlMatch = url.match(shortUrlRegex)
+  // shorts/...
+  const shortsMatch = url.match(/youtube\.com\/shorts\/([^?&#/]+)/)
+  if (shortsMatch?.[1]) return shortsMatch[1]
 
-  if (shortUrlMatch && shortUrlMatch[1]) {
-    return shortUrlMatch[1]
-  }
+  // live/...
+  const liveMatch = url.match(/youtube\.com\/live\/([^?&#/]+)/)
+  if (liveMatch?.[1]) return liveMatch[1]
 
   return null
 }
@@ -154,12 +153,12 @@ export function validateRecipeStructure(recipe) {
 
   // Проверка типа данных
   if (
-    typeof recipe.category !== 'string'
-    || typeof recipe.image_header !== 'string'
-    || typeof recipe.rating !== 'number'
-    || typeof recipe.likes !== 'number'
-    || typeof recipe.comments !== 'number'
-    || typeof recipe.published_id !== 'string'
+    typeof recipe.category !== 'string' ||
+    typeof recipe.image_header !== 'string' ||
+    typeof recipe.rating !== 'number' ||
+    typeof recipe.likes !== 'number' ||
+    typeof recipe.comments !== 'number' ||
+    typeof recipe.published_id !== 'string'
   ) {
     return {
       isValid: false,
@@ -177,10 +176,10 @@ export function validateRecipeStructure(recipe) {
 
   // Проверка title (объект с lang и strTitle)
   if (
-    typeof recipe.title !== 'object'
-    || !recipe.title.hasOwnProperty('lang')
-    || !Array.isArray(recipe.title.lang)
-    || recipe.title.lang.length === 0 // Массив lang не должен быть пустым
+    typeof recipe.title !== 'object' ||
+    !recipe.title.hasOwnProperty('lang') ||
+    !Array.isArray(recipe.title.lang) ||
+    recipe.title.lang.length === 0 // Массив lang не должен быть пустым
   ) {
     return {
       isValid: false,
@@ -190,26 +189,26 @@ export function validateRecipeStructure(recipe) {
   // Проверка каждого объекта в массиве lang
   for (const item of recipe.title.lang) {
     if (
-      !item.hasOwnProperty('lang')
-      || !item.hasOwnProperty('name')
-      || typeof item.lang !== 'string'
-      || item.lang.trim() === '' // Ключ lang не может быть пустой строкой после trim
-      || typeof item.name !== 'string'
-      || item.name.trim() === '' // Ключ name не может быть пустой строкой после trim
+      !item.hasOwnProperty('lang') ||
+      !item.hasOwnProperty('name') ||
+      typeof item.lang !== 'string' ||
+      item.lang.trim() === '' || // Ключ lang не может быть пустой строкой после trim
+      typeof item.name !== 'string' ||
+      item.name.trim() === '' // Ключ name не может быть пустой строкой после trim
     ) {
       return {
         isValid: false,
         message:
-					'Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.',
+          'Каждый объект в поле title.lang должен содержать непустые строки для ключей lang и name после удаления пробелов.',
       }
     }
   }
 
   // Проверка strTitle
   if (
-    !recipe.title.hasOwnProperty('strTitle')
-    || typeof recipe.title.strTitle !== 'string'
-    || recipe.title.strTitle.trim() === '' // strTitle не может быть пустой строкой после trim
+    !recipe.title.hasOwnProperty('strTitle') ||
+    typeof recipe.title.strTitle !== 'string' ||
+    recipe.title.strTitle.trim() === '' // strTitle не может быть пустой строкой после trim
   ) {
     return {
       isValid: false,
@@ -241,12 +240,12 @@ export function validateRecipeStructure(recipe) {
 
   // Проверка recipe_metrics (объект с time, persons, calories, difficulty)
   if (
-    typeof recipe.recipe_metrics !== 'object'
-    || recipe.recipe_metrics === null
-    || !recipe.recipe_metrics.hasOwnProperty('time')
-    || !recipe.recipe_metrics.hasOwnProperty('persons')
-    || !recipe.recipe_metrics.hasOwnProperty('calories')
-    || !recipe.recipe_metrics.hasOwnProperty('difficulty')
+    typeof recipe.recipe_metrics !== 'object' ||
+    recipe.recipe_metrics === null ||
+    !recipe.recipe_metrics.hasOwnProperty('time') ||
+    !recipe.recipe_metrics.hasOwnProperty('persons') ||
+    !recipe.recipe_metrics.hasOwnProperty('calories') ||
+    !recipe.recipe_metrics.hasOwnProperty('difficulty')
   ) {
     return {
       isValid: false,
@@ -256,9 +255,9 @@ export function validateRecipeStructure(recipe) {
 
   // Проверка ingredients (объект с lang и массивами ингредиентов)
   if (
-    typeof recipe.ingredients !== 'object'
-    || !recipe.ingredients.hasOwnProperty('lang')
-    || typeof recipe.ingredients.lang !== 'object'
+    typeof recipe.ingredients !== 'object' ||
+    !recipe.ingredients.hasOwnProperty('lang') ||
+    typeof recipe.ingredients.lang !== 'object'
   ) {
     return {
       isValid: false,
@@ -285,10 +284,10 @@ export function validateRecipeStructure(recipe) {
 
     for (const ingredient of ingredientsArray) {
       if (
-        typeof ingredient !== 'object'
-        || !ingredient.hasOwnProperty('unit')
-        || !ingredient.hasOwnProperty('quantity')
-        || !ingredient.hasOwnProperty('ingredient')
+        typeof ingredient !== 'object' ||
+        !ingredient.hasOwnProperty('unit') ||
+        !ingredient.hasOwnProperty('quantity') ||
+        !ingredient.hasOwnProperty('ingredient')
       ) {
         return {
           isValid: false,
@@ -383,7 +382,7 @@ export function validateRecipeStructure(recipe) {
         )}`,
       }
     }
-    if (!recipe.tags.every(tag => typeof tag === 'string')) {
+    if (!recipe.tags.every((tag) => typeof tag === 'string')) {
       return {
         isValid: false,
         message: 'Все Теги должны быть строками.',
@@ -461,11 +460,11 @@ export function filterCategoryRecipesBySubcategories(categoryRecipes, obFilterCa
   const allowedPoints = Object.values(obFilterCategory).flat()
 
   return categoryRecipes
-    .map(category => ({
+    .map((category) => ({
       ...category, // Копируем все свойства категории
       subcategories: category.subcategories.filter(
-        sub => allowedPoints.includes(sub.point), // Оставляем только подкатегории с нужными point
+        (sub) => allowedPoints.includes(sub.point), // Оставляем только подкатегории с нужными point
       ),
     }))
-    .filter(category => category.subcategories.length > 0) // Убираем категории без подкатегорий
+    .filter((category) => category.subcategories.length > 0) // Убираем категории без подкатегорий
 }

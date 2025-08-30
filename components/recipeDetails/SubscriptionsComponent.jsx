@@ -22,7 +22,7 @@ function SubscriptionsComponent({
   creatorId,
   isPreview = false,
   allRecipeBayCreatore = false,
-  recipe_id,
+  recipeDish,
 }) {
   const subscriberId = subscriber?.id
   const { currentTheme } = useAuth()
@@ -95,8 +95,7 @@ function SubscriptionsComponent({
       // console.log("fetchGetDataCreator creatorId", creatorId);
 
       const { data, success, msg } = await getCreatoreRecipeDateMyDB(creatorId)
-      if (!success)
-        throw new Error(msg)
+      if (!success) throw new Error(msg)
 
       setCreatorData({
         creatorId,
@@ -104,26 +103,22 @@ function SubscriptionsComponent({
         creatorAvatar: data?.avatar,
         creatorSubscribers: data?.subscribers,
       })
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error:', error)
     }
   }
 
   // Проверка статуса подписки
   const checkSubscriptionStatus = async () => {
-    if (!subscriberId || !creatorId)
-      return
+    if (!subscriberId || !creatorId) return
     try {
       // console.log("checkSubscriptionStatus subscriberId", subscriberId);
 
       const { data, success, msg } = await getSubscriptionCheckDateMyDB(subscriberId, creatorId)
-      if (!success)
-        throw new Error(msg)
+      if (!success) throw new Error(msg)
 
       setIsSubscribed(!!data) // Устанавливаем true, если запись существует
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error checking subscription:', error)
       setIsSubscribed(false) // По умолчанию считаем, что не подписан при ошибке
     }
@@ -131,12 +126,14 @@ function SubscriptionsComponent({
 
   // Обработка подписки/отписки
   const handleSubscribe = async () => {
-    if (isPreview)
-      return // Если режим предпросмотра
-    if (subscriber?.id === creatorId)
-      return // Если сам на себя
+    if (isPreview) return // Если режим предпросмотра
+    if (subscriber?.id === creatorId) return // Если сам на себя
     if (!subscriber) {
-      showCustomAlert('Subscribe', `${i18n.t('To subscribe, you need to log in or create an account')}`, router)
+      showCustomAlert(
+        'Subscribe',
+        `${i18n.t('To subscribe, you need to log in or create an account')}`,
+        router,
+      )
       return
     }
 
@@ -144,35 +141,30 @@ function SubscriptionsComponent({
       if (isSubscribed) {
         // Отписка
         const { success, msg } = await unsubscribeFromCreatorMyDB(subscriberId, creatorId)
-        if (!success)
-          throw new Error(msg)
+        if (!success) throw new Error(msg)
 
         setIsSubscribed(false)
         // Перезапрашиваем данные о создателе, так как триггер обновил subscribers
         await fetchGetDataCreator(creatorId)
         // showCustomAlert("Success", "You have unsubscribed.");
-      }
-      else {
+      } else {
         // Подписка
         const { success, msg } = await subscribeToCreatorMyDB(subscriberId, creatorId)
-        if (!success)
-          throw new Error(msg)
+        if (!success) throw new Error(msg)
 
         setIsSubscribed(true)
         // Перезапрашиваем данные о создателе, так как триггер обновил subscribers
         await fetchGetDataCreator(creatorId)
         // showCustomAlert("Success", "You have subscribed.");
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error handling subscription:', error)
       showCustomAlert('Error', 'Failed to update subscription. Please try again.')
     }
   }
 
   const handleGetAllRecipeCreator = () => {
-    if (isPreview)
-      return
+    if (isPreview) return
     router.push({
       pathname: '(main)/AllRecipesBayCreator',
       params: { creator_id: creatorId },
@@ -182,22 +174,29 @@ function SubscriptionsComponent({
   const nandleRefactorRecipe = () => {
     // console.log("SubscriptionsComponent recipe_id", recipe_id);
 
-    Alert.alert(`${i18n.t('Do you want to edit?')}`, `${i18n.t('Do you really want to edit your recipe?')}`, [
-      {
-        text: `${i18n.t('Cancel')}`,
-        style: 'cancel',
-        onPress: () => {},
-      },
-      {
-        text: `${i18n.t('Edit')}`,
-        onPress: () =>
-          router.push({
-            pathname: '(main)/RefactorRecipeScrean',
-            params: { recipe_id, isRefactorRecipe: true },
-          }),
-        style: 'descructive',
-      },
-    ])
+    Alert.alert(
+      `${i18n.t('Do you want to edit?')}`,
+      `${i18n.t('Do you really want to edit your recipe?')}`,
+      [
+        {
+          text: `${i18n.t('Cancel')}`,
+          style: 'cancel',
+          onPress: () => {},
+        },
+        {
+          text: `${i18n.t('Edit')}`,
+          onPress: () =>
+            router.push({
+              pathname: '(main)/CreateRecipeScreen',
+              params: {
+                recipeDish: JSON.stringify(recipeDish),
+                isRefactorRecipe: 'true',
+              },
+            }),
+          style: 'descructive',
+        },
+      ],
+    )
 
     // router.push({
     // 	pathname: "(main)/CreateRecipeScreen",
@@ -225,11 +224,16 @@ function SubscriptionsComponent({
             onPress={() => (!allRecipeBayCreatore ? handleGetAllRecipeCreator() : null)}
             // className=" rounded-full border-2 border-neutral-500"
           >
-            <AvatarCustom size={hp(allRecipeBayCreatore ? 20 : 10)} uri={creatorData?.creatorAvatar} />
+            <AvatarCustom
+              size={hp(allRecipeBayCreatore ? 20 : 10)}
+              uri={creatorData?.creatorAvatar}
+            />
           </TouchableOpacity>
         </View>
 
-        <View className={`${allRecipeBayCreatore ? 'items-center' : 'overflow-hidden w-full   flex-1'}`}>
+        <View
+          className={`${allRecipeBayCreatore ? 'items-center' : 'overflow-hidden w-full   flex-1'}`}
+        >
           <View className="flex-row items-center">
             <Text
               numberOfLines={1}
@@ -243,46 +247,47 @@ function SubscriptionsComponent({
             <UsersIcon color="grey" />
             <Text className="text-xs font-bold" numberOfLines={1}>
               {' '}
-              -
-              {' '}
-              {myFormatNumber(creatorData.creatorSubscribers || 0)}
+              - {myFormatNumber(creatorData.creatorSubscribers || 0)}
             </Text>
           </View>
         </View>
       </View>
 
       {/* <TouchableOpacity onPress={handleSubscribe} className="flex-1 m-w-[50%] " style={shadowBoxBlack()}> */}
-      {subscriber?.id === creatorId
-        ? (
-            <View className={`${allRecipeBayCreatore ? 'items-center flex-1 bg-green-500' : 'flex-1 m-w-[50%] '}`}>
-              <TouchableOpacity style={shadowBoxBlack()} onPress={isPreview ? null : nandleRefactorRecipe}>
-                <ButtonSmallCustom
-                  title={i18n.t('Edit recipe')}
-                  bg="pink"
-                  w="100%"
-                  h={60}
-                  buttonText={true}
-                  styleText={{ fontSize: 12, marginLeft: 0 }}
-                />
-              </TouchableOpacity>
-            </View>
-          )
-        : (
-            <TouchableOpacity
-              onPress={handleSubscribe}
-              className={`${allRecipeBayCreatore ? 'items-center flex-1 ' : 'flex-1 m-w-[50%] '}`}
-              style={shadowBoxBlack()}
-            >
-              <ButtonSmallCustom
-                title={isSubscribed ? `${i18n.t('Unsubscribe')}` : `${i18n.t('Subscribe')}`}
-                bg={isSubscribed ? 'red' : 'green'}
-                w={allRecipeBayCreatore ? wp(80) : '100%'}
-                h={60}
-                buttonText={true}
-                styleText={{ fontSize: 12, marginLeft: 0 }}
-              />
-            </TouchableOpacity>
-          )}
+      {subscriber?.id === creatorId ? (
+        <View
+          className={`${allRecipeBayCreatore ? 'items-center flex-1 bg-green-500' : 'flex-1 m-w-[50%] '}`}
+        >
+          <TouchableOpacity
+            style={shadowBoxBlack()}
+            onPress={isPreview ? null : nandleRefactorRecipe}
+          >
+            <ButtonSmallCustom
+              title={i18n.t('Edit recipe')}
+              bg="pink"
+              w="100%"
+              h={60}
+              buttonText={true}
+              styleText={{ fontSize: 12, marginLeft: 0 }}
+            />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          onPress={handleSubscribe}
+          className={`${allRecipeBayCreatore ? 'items-center flex-1 ' : 'flex-1 m-w-[50%] '}`}
+          style={shadowBoxBlack()}
+        >
+          <ButtonSmallCustom
+            title={isSubscribed ? `${i18n.t('Unsubscribe')}` : `${i18n.t('Subscribe')}`}
+            bg={isSubscribed ? 'red' : 'green'}
+            w={allRecipeBayCreatore ? wp(80) : '100%'}
+            h={60}
+            buttonText={true}
+            styleText={{ fontSize: 12, marginLeft: 0 }}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   )
 }

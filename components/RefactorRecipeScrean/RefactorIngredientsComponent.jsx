@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { PlusIcon, TrashIcon } from 'react-native-heroicons/outline'
 import { shadowBoxBlack } from '../../constants/shadow'
@@ -10,231 +10,134 @@ import TitleDescriptionComponent from '../CreateRecipeScreen/TitleDescriptionCom
 import ModalEditComponent from './ModalEditComponent'
 import RefactorAddIngredientModal from './RefactorAddIngredientModal'
 
-function RefactorIngredientsComponent({ langApp, ingredients, updateIngredients, iconRefactor, measurement }) {
-  // console.log("RefactorIngredientsComponent handleSave ingredients", Object.keys(ingredients.lang));
-  // console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
-
-  const [newIngredient, setNewIngredient] = useState('')
+/**
+ * ingredients (новый формат): Array<{
+ *   ves: number,
+ *   lang: string,          // язык автора/основной
+ *   mera: string,          // ключ единицы: 'g' | 'kg' | ...
+ *   value: Record<string,string> // {en:'...', ru:'...'}
+ * }>
+ * measurement (новый формат): [ { en:{key->label}, es:{}, it:{}, ru:{}, ua:{} } ]
+ */
+function RefactorIngredientsComponent({
+  langApp,
+  ingredients = [],
+  updateIngredients,
+  iconRefactor,
+  measurement,
+}) {
   const { currentTheme } = useAuth()
-  //
   const [modalVisible, setModalVisible] = useState(false)
-
+  const [addModalVisible, setAddModalVisible] = useState(false)
   const [selectedIngredient, setSelectedIngredient] = useState(null)
-
   const [selectedIndex, setSelectedIndex] = useState(null)
 
-  const [addModalVisible, setAddModalVisible] = useState(false)
+  // measurement map
+  const measurementMap = Array.isArray(measurement) && measurement[0] ? measurement[0] : {}
+  const unitsList = Object.entries(measurementMap?.[langApp] || {}).map(([key, val]) => ({
+    key,
+    val,
+  }))
 
-  const [quontityLang, setQuontityLang] = useState([])
-  useEffect(() => {
-    setQuontityLang(Object.keys(ingredients.lang))
-  }, [])
+  // список языков из первого ингредиента или дефолт
+  const langs = ingredients[0]?.value
+    ? Object.keys(ingredients[0].value)
+    : ['en', 'es', 'it', 'ru', 'ua']
+
+  const validateIngredientData = (data) => {
+    if (!data) return false
+    const namesOk = langs.every((lng) => data.value?.[lng]?.trim())
+    const vesOk = Number(data.ves) > 0
+    const meraOk = !!data.mera
+    const langOk = !!data.lang
+    const ok = namesOk && vesOk && meraOk && langOk
+    if (!ok) {
+      Alert.alert(i18n.t('Attention'), i18n.t('Please fill in all fields'))
+    }
+    return ok
+  }
 
   const refactorIngredient = (ingredient, index) => {
-    // console.log("Refactor ingredient:", ingredient);
     setSelectedIngredient(ingredient)
     setSelectedIndex(index)
-
     setModalVisible(true)
   }
 
-  const handleAddNewIngredient = () => {
-    setAddModalVisible(true)
-  }
-
-  // // Функция валидации ингредиентов
-  // const validateIngredientData = (ingredientsByLang, quantity, unit, quontityLang) => {
-  // 	const isQuantityValid = quantity !== "" && parseFloat(quantity) > 0; // Проверяем, что quantity не пустое и больше 0
-  // 	const isUnitValid = unit !== ""; // Проверяем, что unit не пустое
-  // 	const areIngredientsValid = quontityLang.every(
-  // 		(langItem) => ingredientsByLang[langItem]?.ingredient?.trim() !== ""
-  // 	); // Проверяем, что все ингредиенты заполнены
-
-  // 	if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
-  // 		Alert.alert(
-  // 			i18n.t("Attention"),
-  // 			`${i18n.t("Please fill in all fields")} : ${i18n.t("ingredient name, quantity, and unit")}`
-  // 		);
-  // 		return false;
-  // 	}
-  // 	return true;
-  // };
-  // Функция валидации ингредиентов
-  const validateIngredientData = (data, quontityLang) => {
-    // Если это объект с несколькими языками (для добавления)
-    if (typeof data === 'object' && !('ingredient' in data)) {
-      const isQuantityValid
-				= data[quontityLang[0]]?.quantity !== '' && Number.parseFloat(data[quontityLang[0]]?.quantity) > 0
-      const isUnitValid = data[quontityLang[0]]?.unit !== ''
-      const areIngredientsValid = quontityLang.every(langItem => data[langItem]?.ingredient?.trim() !== '')
-
-      if (!isQuantityValid || !isUnitValid || !areIngredientsValid) {
-        Alert.alert(
-          i18n.t('Attention'),
-          `${i18n.t('Please fill in all fields')} : ${i18n.t('ingredient name, quantity, and unit')}`,
-        )
-        return false
-      }
-      return true
-    }
-
-    // Если это объект одного ингредиента (для редактирования)
-    if ('ingredient' in data) {
-      const isQuantityValid = data.quantity !== '' && Number.parseFloat(data.quantity) > 0
-      const isUnitValid = data.unit !== ''
-      const isIngredientValid = data.ingredient.trim() !== ''
-
-      if (!isQuantityValid || !isUnitValid || !isIngredientValid) {
-        Alert.alert(
-          i18n.t('Attention'),
-          `${i18n.t('Please fill in all fields')} : ${i18n.t('ingredient name, quantity, and unit')}`,
-        )
-        return false
-      }
-      return true
-    }
-
-    return false // На случай некорректных данных
-  }
-  // const handleSave = (updatedData, lang) => {
-  // 	// Обновляем ингредиенты через переданную функцию updateIngredients
-  // 	// console.log("RefactorIngredientsComponent handleSave updatedData", updatedData);
-  // 	// console.log("RefactorIngredientsComponent handleSave lang", lang);
-  // 	// console.log("RefactorIngredientsComponent handleSave ingredients", JSON.stringify(ingredients, null));
-
-  // 	// Обновляем ингредиенты, заменяя объект на selectedIndex новым updatedData
-  // 	const updatedIngredients = {
-  // 		...ingredients,
-  // 		lang: {
-  // 			...ingredients.lang,
-  // 			[lang]: ingredients.lang[lang].map((item, idx) => (idx === selectedIndex ? updatedData : item)),
-  // 		},
-  // 	};
-
-  // 	// Передаем обновленные ингредиенты в updateIngredients
-  // 	updateIngredients(updatedIngredients, lang);
-  // 	setModalVisible(false);
-  // };
-
-  const handleSave = (updatedData, lang) => {
-    const updatedIngredients = {
-      ...ingredients,
-      lang: {
-        ...ingredients.lang,
-        [lang]: ingredients.lang[lang].map((item, idx) => (idx === selectedIndex ? updatedData : item)),
-      },
-    }
-
-    // Передаем обновленные ингредиенты в updateIngredients
-    updateIngredients(updatedIngredients, lang)
+  const handleSave = (updated) => {
+    if (!validateIngredientData(updated)) return
+    const next = ingredients.map((it, idx) => (idx === selectedIndex ? updated : it))
+    updateIngredients(next)
     setModalVisible(false)
   }
 
-  const handleAddSave = (updatedData) => {
-    const updatedIngredients = { ...ingredients }
-    for (const language of quontityLang) {
-      updatedIngredients.lang[language] = updatedIngredients.lang[language] || []
-      updatedIngredients.lang[language].push(
-        updatedData[language] || { ingredient: '', quantity: '1', unit: '' },
-      )
-    }
-    updateIngredients(updatedIngredients, langApp)
+  const handleAddSave = (newIng) => {
+    if (!validateIngredientData(newIng)) return
+    updateIngredients([...ingredients, newIng])
     setAddModalVisible(false)
   }
 
-  const handleDelete = (index, lang) => {
-    const updatedIngredients = {
-      ...ingredients,
-      lang: {
-        ...ingredients.lang,
-        [langApp]: ingredients.lang[langApp].filter((_, idx) => idx !== index),
-      },
-    }
-    updateIngredients(updatedIngredients, lang)
+  const handleDelete = (index) => {
+    updateIngredients(ingredients.filter((_, i) => i !== index))
   }
+
+  const getUnitLabel = (meraKey) => measurementMap?.[langApp]?.[meraKey] || meraKey
 
   return (
     <View className="mb-5">
-      <TitleDescriptionComponent titleVisual={true} titleText={i18n.t('Ingredients')} />
+      <TitleDescriptionComponent titleVisual titleText={i18n.t('Ingredients')} />
+
       <View className="mb-5">
-        {ingredients.lang[langApp]?.map((ingredient, index) => (
-          <View key={index} className="flex-row gap-x-4 items-center mb-2">
-            <View className="flex-1 flex-row flex-wrap gap-x-2">
-              <View style={{ height: 20, width: 20 }} className="bg-amber-300 rounded-full" />
-              <View className="flex-row flex-1 gap-x-2 items-center">
-                <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
-                  className="font-extrabold  max-w-[60%]"
-                >
-                  {ingredient.ingredient}
-                </Text>
-                <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
-                  className="font-medium "
-                >
-                  -
-                  {' '}
-                  {ingredient.quantity}
-                </Text>
-                <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.secondaryTextColor }}
-                  className="font-medium  capitalize"
-                >
-                  {ingredient.unit}
-                </Text>
-              </View>
+        {ingredients.map((ing, index) => (
+          <View key={`${ing.mera}-${index}`} className="flex-row gap-x-4 items-center mb-2">
+            <View className="flex-1 flex-row flex-wrap gap-x-2 items-center">
+              <Text style={{ color: themes[currentTheme]?.secondaryTextColor, fontWeight: 'bold' }}>
+                {ing.value?.[langApp]}
+              </Text>
+              <Text style={{ color: themes[currentTheme]?.secondaryTextColor }}>
+                {' - '}
+                {ing.ves} {getUnitLabel(ing.mera)}
+              </Text>
             </View>
-            {/* Блок рефакторинга */}
-            <View className="flex-row gap-x-3">
-              <TouchableOpacity
-                style={shadowBoxBlack()}
-                onPress={() => refactorIngredient(ingredient, index)}
-              >
-                <ButtonSmallCustom icon={iconRefactor} size={20} tupeButton="refactor" />
-              </TouchableOpacity>
-            </View>
-            {/* Блок удаления */}
-            <View className="flex-row gap-x-3">
-              <TouchableOpacity style={shadowBoxBlack()} onPress={() => handleDelete(index)}>
-                <ButtonSmallCustom icon={TrashIcon} size={20} tupeButton="remove" />
-              </TouchableOpacity>
-            </View>
+
+            <TouchableOpacity
+              style={shadowBoxBlack()}
+              onPress={() => refactorIngredient(ing, index)}
+            >
+              <ButtonSmallCustom icon={iconRefactor} size={20} tupeButton="refactor" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={shadowBoxBlack()} onPress={() => handleDelete(index)}>
+              <ButtonSmallCustom icon={TrashIcon} size={20} tupeButton="remove" />
+            </TouchableOpacity>
           </View>
         ))}
       </View>
 
-      {/* New ingredient */}
-      <View>
-        <TouchableOpacity style={shadowBoxBlack()} onPress={handleAddNewIngredient}>
-          <ButtonSmallCustom tupeButton="add" w="100%" h={60} icon={PlusIcon} size={40} />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={shadowBoxBlack()} onPress={() => setAddModalVisible(true)}>
+        <ButtonSmallCustom tupeButton="add" w="100%" h={60} icon={PlusIcon} size={40} />
+      </TouchableOpacity>
 
-      {/* Модальное окно для редактирования ингредиента */}
+      {/* модалки */}
       <ModalEditComponent
         visible={modalVisible}
-        initialData={selectedIngredient} // Передаем весь объект ингредиента
+        initialData={selectedIngredient}
         lang={langApp}
         type="ingredients"
         onSave={handleSave}
         onClose={() => setModalVisible(false)}
         measurement={measurement}
-        quontityLang={quontityLang}
-        validateIngredientData={validateIngredientData}
+        langs={langs}
       />
-      {/* Modal для добавления */}
+
       <RefactorAddIngredientModal
         visible={addModalVisible}
         onClose={() => setAddModalVisible(false)}
         onSave={handleAddSave}
-        quontityLang={quontityLang}
+        quontityLang={langs}
         measurement={measurement}
-        validateIngredientData={validateIngredientData}
       />
     </View>
   )
 }
-
-const styles = StyleSheet.create({})
 
 export default RefactorIngredientsComponent

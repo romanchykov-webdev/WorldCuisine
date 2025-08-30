@@ -25,9 +25,10 @@ function RefactorTagsComponent({ tags, updateTags, langApp }) {
 
   // Добавление нового тега
   const handleSave = (tagText) => {
-    if (tagText && !arrTags.includes(tagText)) {
+    const tagLowerCase = tagText.toLowerCase()
+    if (tagLowerCase && !arrTags.includes(tagLowerCase)) {
       // Проверяем, что тег не пустой и уникальный
-      const updatedTags = [...arrTags, tagText] // Добавляем новый тег в массив
+      const updatedTags = [...arrTags, tagLowerCase] // Добавляем новый тег в массив
       setArrTags(updatedTags) // Обновляем локальное состояние
       updateTags(updatedTags) // Передаем обновленный массив в родительский компонент
     }
@@ -38,9 +39,8 @@ function RefactorTagsComponent({ tags, updateTags, langApp }) {
   const removeTag = (tag) => {
     if (arrTags.length <= 1) {
       Alert.alert(`${i18n.t('There must be at least one tag')}`)
-    }
-    else {
-      const remove = arrTags.filter(item => item !== tag)
+    } else {
+      const remove = arrTags.filter((item) => item !== tag)
       setArrTags(remove) // Обновляем локальное состояние
       updateTags(remove) // Передаем обновленный массив в родительский компонент
     }

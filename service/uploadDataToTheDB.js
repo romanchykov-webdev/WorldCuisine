@@ -8,147 +8,106 @@ import { deleteFile, uploadFile } from './imageServices'
  */
 export async function uploadRecipeToTheServer(totalRecipe) {
   try {
-    // console.log("uploadRecipeToTheServer", totalRecipe);
-
-    // Глубокая копия объекта totalRecipe
     const recipeData = JSON.parse(JSON.stringify(totalRecipe))
 
-    // Формируем subCategory, заменяем пробелы на подчеркивания
-    const subCategory = recipeData.point.startsWith(recipeData.category)
-      ? recipeData.point.replace(recipeData.category, '').trim().replaceAll(' ', '_')
-      : recipeData.point.trim().replaceAll(' ', '_')
+    // helpers
+    const slugify = (s) =>
+      String(s || '')
+        .normalize('NFKD')
+        .replace(/[^\w\s-]/g, '') // убрать всё лишнее
+        .trim()
+        .replace(/\s+/g, '_') // пробелы -> _
 
-    // Очищаем category и subCategory от недопустимых символов для пути
-    const cleanCategory = recipeData.category
-      .replace(/[^\wа-яА-ЯёЁ -]/g, '')
-      .trim()
-      .replaceAll(' ', '_')
-    const cleanSubCategory = subCategory.replace(/[^\wа-яА-ЯёЁ -]/g, '')
+    // Если рецепт уже создан, лучше использовать его id.
+    // Если создаёшь новый — сгенерируй uuid или короткий ts-ключ.
+    const uniqueId = recipeData.id || Date.now().toString(36) // <-- замени на свой uuid если есть
 
-    // Формируем путь для изображения
-    const date = new Date() // Текущая дата и время
-    const year = date.getUTCFullYear()
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
-    const day = String(date.getUTCDate()).padStart(2, '0')
-    const hours = String(date.getUTCHours()).padStart(2, '0')
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0')
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0')
+    // Два коротких слуга
+    const catSlug = slugify(recipeData.category) // например: "Drinks"
+    const pointSlug = slugify(
+      recipeData.point.startsWith(recipeData.category)
+        ? recipeData.point.replace(recipeData.category, '').trim()
+        : recipeData.point,
+    ) // например: "Infusions"
 
-    // Формируем имя папки в формате YYYY_MM_DD_HH_MM_SS
-    let folderName = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`
+    // Итоговый базовый путь — компактный и стабильный:
+    const userPart = recipeData.published_id ? `${recipeData.published_id}/` : ''
+    const baseImagePath = `recipes_images/${userPart}${catSlug}/${pointSlug}/${uniqueId}`
 
-    // Добавляем user_id для уникальности, если он есть
-    const userId = recipeData.published_id || ''
-    if (userId) {
-      folderName += `_${userId}`
-    }
-
-    const baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${folderName}`
-    // const baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${recipeId}`;
-
-    // 1. Загружаем image_header, если он есть и это локальный файл
+    // ---- image_header
     if (
-      recipeData.image_header
-      && typeof recipeData.image_header === 'string'
-      && recipeData.image_header.startsWith('file://')
+      recipeData.image_header &&
+      typeof recipeData.image_header === 'string' &&
+      recipeData.image_header.startsWith('file://')
     ) {
       const headerExtension = recipeData.image_header.split('.').pop() || 'jpg'
       const headerPath = `${baseImagePath}/header.${headerExtension}`
       const imageRes = await uploadFile(headerPath, recipeData.image_header, true)
-      if (imageRes.success) {
-        recipeData.image_header = imageRes.data // Сохраняем только путь как строку
-      }
-      else {
-        console.error('Failed to upload image_header:', imageRes.msg)
-        recipeData.image_header = null
+      recipeData.image_header = imageRes.success ? imageRes.data : null
+      if (!imageRes.success) console.error('Failed to upload image_header:', imageRes.msg)
+    }
+
+    // ---- Сбор всех локальных картинок из instructions (НОВЫЙ ФОРМАТ)
+    // instructions: Array< { ..., images: string[] } >
+    const imageMap = new Map() // localUri -> uploadedUrl (или null пока)
+    if (Array.isArray(recipeData.instructions)) {
+      recipeData.instructions.forEach((step) => {
+        if (step?.images && Array.isArray(step.images)) {
+          step.images.forEach((img) => {
+            // уже удалённые url пропускаем
+            if (typeof img === 'string') {
+              if (img.startsWith('file://')) {
+                if (!imageMap.has(img)) imageMap.set(img, null)
+              } else {
+                // уже URL — оставляем как есть
+                if (!imageMap.has(img)) imageMap.set(img, img)
+              }
+            }
+          })
+        }
+      })
+    }
+
+    // ---- Загрузка локальных изображений
+    const uploadPromises = []
+    let imageIndex = 1
+    for (const [localUri, uploaded] of imageMap.entries()) {
+      if (uploaded === null && localUri.startsWith('file://')) {
+        const extension = localUri.split('.').pop() || 'jpg'
+        const imagePath = `${baseImagePath}/${imageIndex++}.${extension}`
+        uploadPromises.push(
+          uploadFile(imagePath, localUri, true).then((res) => ({
+            localUri,
+            uploadedPath: res.success ? res.data : null,
+            error: res.success ? null : res.msg,
+          })),
+        )
       }
     }
 
-    // 2. Собираем все уникальные изображения из instructions
-    const imageMap = new Map() // Map для хранения локальный URI → путь в хранилище
-    if (recipeData.instructions && recipeData.instructions.lang) {
-      for (const lang in recipeData.instructions.lang) {
-        const langInstructions = recipeData.instructions.lang[lang]
-        for (const step in langInstructions) {
-          const stepData = langInstructions[step]
-          if (stepData.images && Array.isArray(stepData.images)) {
-            stepData.images.forEach((image, index) => {
-              if (typeof image === 'string' && !image.startsWith('file://')) {
-                // Если это уже строка и не локальный файл, оставляем как есть
-                imageMap.set(image, image)
-              }
-              else if (typeof image === 'object' && image.uri && image.uri.startsWith('file://')) {
-                // Если это объект с локальным URI
-                if (!imageMap.has(image.uri)) {
-                  imageMap.set(image.uri, null)
-                }
-              }
-              else if (typeof image === 'string' && image.startsWith('file://')) {
-                // Если это строка с локальным URI
-                if (!imageMap.has(image)) {
-                  imageMap.set(image, null)
-                }
-              }
-            })
-          }
-        }
+    const uploadResults = await Promise.all(uploadPromises)
+    uploadResults.forEach(({ localUri, uploadedPath, error }) => {
+      if (error) {
+        console.error(`Failed to upload image ${localUri}:`, error)
+        imageMap.set(localUri, null)
+      } else {
+        imageMap.set(localUri, uploadedPath)
       }
+    })
 
-      // 3. Загружаем уникальные локальные изображения
-      const uploadPromises = []
-      let imageIndex = 1 // Начинаем с 1 для именования файлов
-      for (const [localUri] of imageMap) {
-        if (localUri.startsWith('file://')) {
-          const extension = localUri.split('.').pop() || 'jpg'
-          const imagePath = `${baseImagePath}/${imageIndex++}.${extension}`
-          uploadPromises.push(
-            uploadFile(imagePath, localUri, true).then(res => ({
-              localUri,
-              uploadedPath: res.success ? res.data : null, // Сохраняем только путь
-              error: res.success ? null : res.msg,
-            })),
-          )
-        }
-      }
-
-      // Ждем завершения всех загрузок
-      const uploadResults = await Promise.all(uploadPromises)
-      uploadResults.forEach(({ localUri, uploadedPath, error }) => {
-        if (error) {
-          console.error(`Failed to upload image ${localUri}:`, error)
-          imageMap.set(localUri, null)
-        }
-        else {
-          imageMap.set(localUri, uploadedPath) // Сохраняем только строку с путем
-        }
+    // ---- Подмена локальных URI на URL в instructions
+    if (Array.isArray(recipeData.instructions)) {
+      recipeData.instructions = recipeData.instructions.map((step) => {
+        if (!step || !Array.isArray(step.images)) return step
+        const images = step.images
+          .map((img) => {
+            if (typeof img !== 'string') return null
+            if (img.startsWith('file://')) return imageMap.get(img) || null
+            return img // уже URL
+          })
+          .filter(Boolean)
+        return { ...step, images }
       })
-
-      // 4. Обновляем все images в instructions, заменяя объекты на строки
-      for (const lang in recipeData.instructions.lang) {
-        const langInstructions = recipeData.instructions.lang[lang]
-        for (const step in langInstructions) {
-          const stepData = langInstructions[step]
-          if (stepData.images && Array.isArray(stepData.images)) {
-            stepData.images = stepData.images
-              .map((image) => {
-                if (typeof image === 'string' && !image.startsWith('file://')) {
-                  // Если это уже путь (не локальный URI), оставляем как есть
-                  return image
-                }
-                else if (typeof image === 'object' && image.uri && imageMap.has(image.uri)) {
-                  // Если это объект, возвращаем только путь как строку
-                  return imageMap.get(image.uri)
-                }
-                else if (typeof image === 'string' && imageMap.has(image)) {
-                  // Если это строка с локальным URI, возвращаем путь
-                  return imageMap.get(image)
-                }
-                return null // Если что-то пошло не так, возвращаем null
-              })
-              .filter(img => img !== null) // Убираем null значения
-          }
-        }
-      }
     }
 
     // 5. Формируем объект для вставки в таблицу
@@ -176,7 +135,10 @@ export async function uploadRecipeToTheServer(totalRecipe) {
     }
 
     // 6. Выполняем запрос на вставку
-    const { data, error } = await supabase.from('all_recipes_description').insert([recipeToInsert]).select()
+    const { data, error } = await supabase
+      .from('all_recipes_description')
+      .insert([recipeToInsert])
+      .select()
 
     if (error) {
       console.error('Supabase insert error:', error)
@@ -184,8 +146,7 @@ export async function uploadRecipeToTheServer(totalRecipe) {
     }
 
     return { success: true, data: data[0] }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error in uploadRecipeToTheServer:', error)
     return { success: false, msg: error.message }
   }
@@ -199,10 +160,7 @@ export async function uploadRecipeToTheServer(totalRecipe) {
  */
 export async function updateRecipeToTheServer(recipeId, updatedData) {
   try {
-    console.log('updateRecipeToTheServer: Received recipeId:', recipeId)
-    console.log('updateRecipeToTheServer: Received updatedData:', JSON.stringify(updatedData, null, 2))
-
-    // 1. Получаем текущие данные рецепта из базы
+    // 1) Текущие данные рецепта
     const { data: existingRecipe, error: fetchError } = await supabase
       .from('all_recipes_description')
       .select('image_header, instructions, category, point, published_id')
@@ -213,15 +171,12 @@ export async function updateRecipeToTheServer(recipeId, updatedData) {
       console.error('Supabase fetch error:', fetchError)
       return { success: false, msg: fetchError.message }
     }
+    if (!existingRecipe) return { success: false, msg: 'Recipe not found' }
 
-    if (!existingRecipe) {
-      return { success: false, msg: 'Recipe not found' }
-    }
-
-    // 2. Глубокая копия объекта updatedData
+    // 2) Копия
     const recipeToUpdate = JSON.parse(JSON.stringify(updatedData))
 
-    // 3. Формируем subCategory (для запасного пути, если image_header отсутствует)
+    // 3) Путь к папке
     const category = recipeToUpdate.category || existingRecipe.category
     const point = recipeToUpdate.point || existingRecipe.point
     const subCategory = point.startsWith(category)
@@ -234,135 +189,111 @@ export async function updateRecipeToTheServer(recipeId, updatedData) {
       .replaceAll(' ', '_')
     const cleanSubCategory = subCategory.replace(/[^\wа-яА-ЯёЁ -]/g, '')
 
-    // 4. Извлекаем путь к существующей папке из image_header
     let baseImagePath
-    if (existingRecipe.image_header) {
-      // Пример: https://res.cloudinary.com/dq0ymjvhx/image/upload/v1745587283/ratatouille_images/recipes_images/Dessert/Cakes/15c5d29d-e68c-44b0-b876-6914f1f9a3ba/header.jpg
+    if (existingRecipe.image_header && existingRecipe.image_header.includes('/image/upload/')) {
       const pathParts = existingRecipe.image_header.split('/image/upload/')[1].split('/')
-      pathParts.shift() // Удаляем ratatouille_images
-      pathParts.pop() // Удаляем имя файла (например, header.jpg)
-      baseImagePath = pathParts.join('/') // Собираем путь: recipes_images/Dessert/Cakes/15c5d29d-e68c-44b0-b876-6914f1f9a3ba
-    }
-    else {
-      // Если image_header отсутствует, формируем путь на основе recipeId
+      pathParts.shift() // ratatouille_images
+      pathParts.pop() // header.jpg
+      baseImagePath = pathParts.join('/') // recipes_images/.../folder
+    } else {
       baseImagePath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${recipeId}`
     }
 
-    console.log('updateRecipeToTheServer: Using baseImagePath:', baseImagePath)
-
-    // 5. Обрабатываем image_header
+    // 4) image_header
     if ('image_header' in recipeToUpdate) {
       if (
-        recipeToUpdate.image_header
-        && typeof recipeToUpdate.image_header === 'string'
-        && recipeToUpdate.image_header.startsWith('file://')
+        recipeToUpdate.image_header &&
+        typeof recipeToUpdate.image_header === 'string' &&
+        recipeToUpdate.image_header.startsWith('file://')
       ) {
         const headerExtension = recipeToUpdate.image_header.split('.').pop() || 'jpg'
-        const newHeaderPath = `${baseImagePath}/header.${headerExtension}` // Перезаписываем header
-
-        // Загружаем новое изображение
-        const imageRes = await uploadFile(newHeaderPath, recipeToUpdate.image_header, true, existingRecipe.image_header)
+        const newHeaderPath = `${baseImagePath}/header.${headerExtension}`
+        const imageRes = await uploadFile(
+          newHeaderPath,
+          recipeToUpdate.image_header,
+          true,
+          existingRecipe.image_header,
+        )
         if (imageRes.success) {
-          console.log('updateRecipeToTheServer: New image uploaded to:', imageRes.data)
           recipeToUpdate.image_header = imageRes.data
-        }
-        else {
+        } else {
           console.error('updateRecipeToTheServer: Failed to upload image_header:', imageRes.msg)
           return { success: false, msg: 'Failed to upload image_header' }
         }
-      }
-      else if (recipeToUpdate.image_header === null) {
+      } else if (recipeToUpdate.image_header === null) {
+        // удалить старый
         if (existingRecipe.image_header) {
-          const deleteResult = await deleteFile(existingRecipe.image_header)
-          if (!deleteResult.success) {
-            console.error('updateRecipeToTheServer: Error deleting old image_header:', deleteResult.msg)
-          }
-          else {
-            console.log('updateRecipeToTheServer: Old image_header deleted:', existingRecipe.image_header)
-          }
+          const del = await deleteFile(existingRecipe.image_header)
+          if (!del.success) console.error('delete image_header failed:', del.msg)
         }
         recipeToUpdate.image_header = null
       }
     }
 
-    // 6. Обрабатываем instructions
-    if ('instructions' in recipeToUpdate && recipeToUpdate.instructions && recipeToUpdate.instructions.lang) {
-      const imageMap = new Map()
-      const oldImages = new Set()
+    // 5) instructions: массив шагов
+    if ('instructions' in recipeToUpdate && Array.isArray(recipeToUpdate.instructions)) {
+      const imageMap = new Map() // localUri -> uploadedUrl/null
+      const oldImages = new Set() // все старые URL-ы из существующих шагов
 
-      // Собираем старые изображения
-      if (existingRecipe.instructions && existingRecipe.instructions.lang) {
-        for (const lang in existingRecipe.instructions.lang) {
-          const langInstructions = existingRecipe.instructions.lang[lang]
-          for (const step in langInstructions) {
-            const stepData = langInstructions[step]
-            if (stepData.images && Array.isArray(stepData.images)) {
-              stepData.images.forEach((image) => {
-                if (typeof image === 'string' && !image.startsWith('file://')) {
-                  oldImages.add(image)
-                }
-              })
-            }
-          }
-        }
-      }
-
-      // Собираем новые изображения
-      for (const lang in recipeToUpdate.instructions.lang) {
-        const langInstructions = recipeToUpdate.instructions.lang[lang]
-        for (const step in langInstructions) {
-          const stepData = langInstructions[step]
-          if (stepData.images && Array.isArray(stepData.images)) {
-            stepData.images.forEach((image, index) => {
-              if (typeof image === 'string' && !image.startsWith('file://')) {
-                imageMap.set(image, image)
-              }
-              else if (typeof image === 'object' && image.uri && image.uri.startsWith('file://')) {
-                if (!imageMap.has(image.uri)) {
-                  imageMap.set(image.uri, null)
-                }
-              }
-              else if (typeof image === 'string' && image.startsWith('file://')) {
-                if (!imageMap.has(image)) {
-                  imageMap.set(image, null)
-                }
+      // собрать старые
+      if (Array.isArray(existingRecipe.instructions)) {
+        existingRecipe.instructions.forEach((step) => {
+          if (step?.images && Array.isArray(step.images)) {
+            step.images.forEach((img) => {
+              if (typeof img === 'string' && !img.startsWith('file://')) {
+                oldImages.add(img)
               }
             })
           }
-        }
+        })
       }
 
-      // Удаляем старые изображения
-      const newImagePaths = new Set(imageMap.values())
-      const imagesToDelete = Array.from(oldImages).filter(image => !newImagePaths.has(image))
-      for (const image of imagesToDelete) {
-        const deleteResult = await deleteFile(image)
-        if (!deleteResult.success) {
-          console.error('updateRecipeToTheServer: Error deleting old instruction image:', deleteResult.msg)
+      // собрать новые
+      recipeToUpdate.instructions.forEach((step) => {
+        if (step?.images && Array.isArray(step.images)) {
+          step.images.forEach((img) => {
+            if (typeof img === 'string') {
+              if (img.startsWith('file://')) {
+                if (!imageMap.has(img)) imageMap.set(img, null)
+              } else {
+                imageMap.set(img, img) // уже URL
+              }
+            }
+          })
         }
-        else {
-          console.log('updateRecipeToTheServer: Old instruction image deleted:', image)
-        }
-      }
-
-      // Загружаем новые изображения в ту же папку
-      const uploadPromises = []
-      let imageIndex = 1
-      const existingImages = Array.from(oldImages).map((image) => {
-        const fileName = image.split('/').pop().split('.')[0]
-        if (fileName.match(/^\d+$/)) {
-          return Number.parseInt(fileName, 10)
-        }
-        return 0
       })
-      imageIndex = existingImages.length > 0 ? Math.max(...existingImages) + 1 : 1
 
-      for (const [localUri] of imageMap) {
-        if (localUri.startsWith('file://')) {
+      // какие старые нужно удалить (их нет среди новых)
+      const newImageUrls = new Set(
+        Array.from(imageMap.entries())
+          .map(([k, v]) => (v && !k.startsWith('file://') ? v : null))
+          .filter(Boolean),
+      )
+      const toDelete = Array.from(oldImages).filter((img) => !newImageUrls.has(img))
+      for (const url of toDelete) {
+        const del = await deleteFile(url)
+        if (!del.success) console.error('delete old instruction image failed:', del.msg)
+      }
+
+      // залить новые локальные в ту же папку
+      // найдём максимальный индекс уже существующих файлов <n>.ext
+      let imageIndex = 1
+      const existingIndexes = Array.from(oldImages).map((url) => {
+        const file = url.split('/').pop() || ''
+        const nameOnly = file.split('.')[0]
+        return /^\d+$/.test(nameOnly) ? parseInt(nameOnly, 10) : 0
+      })
+      if (existingIndexes.length) {
+        imageIndex = Math.max(...existingIndexes) + 1
+      }
+
+      const uploadPromises = []
+      for (const [localUri, uploaded] of imageMap.entries()) {
+        if (uploaded === null && localUri.startsWith('file://')) {
           const extension = localUri.split('.').pop() || 'jpg'
           const imagePath = `${baseImagePath}/${imageIndex++}.${extension}`
           uploadPromises.push(
-            uploadFile(imagePath, localUri, true).then(res => ({
+            uploadFile(imagePath, localUri, true).then((res) => ({
               localUri,
               uploadedPath: res.success ? res.data : null,
               error: res.success ? null : res.msg,
@@ -370,47 +301,39 @@ export async function updateRecipeToTheServer(recipeId, updatedData) {
           )
         }
       }
-
       const uploadResults = await Promise.all(uploadPromises)
       uploadResults.forEach(({ localUri, uploadedPath, error }) => {
         if (error) {
           console.error(`Failed to upload image ${localUri}:`, error)
           imageMap.set(localUri, null)
-        }
-        else {
+        } else {
           imageMap.set(localUri, uploadedPath)
         }
       })
 
-      // Обновляем instructions
-      for (const lang in recipeToUpdate.instructions.lang) {
-        const langInstructions = recipeToUpdate.instructions.lang[lang]
-        for (const step in langInstructions) {
-          const stepData = langInstructions[step]
-          if (stepData.images && Array.isArray(stepData.images)) {
-            stepData.images = stepData.images
-              .map((image) => {
-                if (typeof image === 'string' && !image.startsWith('file://')) {
-                  return image
-                }
-                else if (typeof image === 'object' && image.uri && imageMap.has(image.uri)) {
-                  return imageMap.get(image.uri)
-                }
-                else if (typeof image === 'string' && imageMap.has(image)) {
-                  return imageMap.get(image)
-                }
-                return null
-              })
-              .filter(img => img !== null)
-          }
-        }
-      }
+      // подмена в шагах
+      recipeToUpdate.instructions = recipeToUpdate.instructions.map((step) => {
+        if (!step || !Array.isArray(step.images)) return step
+        const images = step.images
+          .map((img) => {
+            if (typeof img !== 'string') return null
+            if (img.startsWith('file://')) return imageMap.get(img) || null
+            return img
+          })
+          .filter(Boolean)
+        return { ...step, images }
+      })
     }
 
-    // 7. Удаляем поля, которые не должны обновляться
+    // 6) Удаляем поля, которые не должны обновляться
     delete recipeToUpdate.rating
     delete recipeToUpdate.likes
     delete recipeToUpdate.comments
+
+    // 7) карта —
+    if ('map_coordinates' in recipeToUpdate && recipeToUpdate.map_coordinates === undefined) {
+      // ничего
+    }
 
     // 8. Выполняем запрос на обновление
     const { data, error } = await supabase
@@ -426,8 +349,7 @@ export async function updateRecipeToTheServer(recipeId, updatedData) {
 
     console.log('updateRecipeToTheServer: Updated recipe:', JSON.stringify(data[0], null, 2))
     return { success: true, data: data[0] }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error in updateRecipeToTheServer:', error)
     return { success: false, msg: error.message }
   }

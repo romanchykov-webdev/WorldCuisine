@@ -14,131 +14,62 @@ import ModalClearCustom from '../ModalClearCustom'
 import VideoCustom from '../recipeDetails/video/VideoCustom'
 import TitleDescriptionComponent from './TitleDescriptionComponent'
 
-function AddLinkVideo({ setTotalRecipe, refactorRecipescrean = false, oldLinkVideo = {}, updateLinkVideo }) {
-  // https://www.youtube.com/watch?v=q4xBdh4Cjfk
-  // https://youtu.be/q4xBdh4Cjfk?si=9mRK-JSkw-wIfwZz
-  // https://youtu.be/itSxa5_-1cE?si=ZIi0QSI7Z8LytxlB
-  // console.log("AddLinkVideo oldLinkVideo", oldLinkVideo);
+function AddLinkVideo({
+  setTotalRecipe,
+  refactorRecipescrean = false,
+  updateLinkVideo,
+  videoForUpdate,
+}) {
+  // console.log('oldLinkVideo', oldLinkVideo)
 
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  const [inputLink, setInputLink] = useState('')
-
-  const [link, setLink] = useState(null)
-
-  const [linkVideo, setLinkVideo] = useState({
-    strYoutube: null,
-    strYouVideo: null,
-  })
+  const [inputLink, setInputLink] = useState(videoForUpdate ?? '')
 
   // Добавляем дебонсированное значение
-  const debouncedValue = useDebounce(linkVideo, 1000)
-
-  useEffect(() => {
-    // console.log("Обновленный linkVideo:", linkVideo);
-  }, [linkVideo])
-
-  useEffect(() => {
-    if (refactorRecipescrean && oldLinkVideo) {
-      // Проверяем, отличается ли oldLinkVideo от текущего linkVideo
-      if (
-        (oldLinkVideo.strYouVideo !== linkVideo.strYouVideo
-          || oldLinkVideo.strYoutube !== linkVideo.strYoutube)
-        && (oldLinkVideo.strYouVideo !== null || oldLinkVideo.strYoutube !== null)
-      ) {
-        setLinkVideo({
-          strYoutube: oldLinkVideo.strYoutube || null,
-          strYouVideo: oldLinkVideo.strYouVideo || null,
-        })
-      }
-    }
-  }, [refactorRecipescrean, oldLinkVideo]) // Зависимость от oldLinkVideo
-
-  // Обновление родительского состояния при изменении debouncedValue
-  useEffect(() => {
-    if (refactorRecipescrean) {
-      // В режиме редактирования передаём изменения через updateLinkVideo
-      if (updateLinkVideo) {
-        updateLinkVideo(linkVideo) // Передаём текущее значение linkVideo
-      }
-    }
-    else {
-      // В режиме создания обновляем totalRecipe
-      setTotalRecipe(prevRecipe => ({
-        ...prevRecipe,
-        video: debouncedValue,
-      }))
-    }
-    // console.log("linkVideo", linkVideo);
-  }, [debouncedValue, refactorRecipescrean, setTotalRecipe, updateLinkVideo, linkVideo])
+  const debouncedValue = useDebounce(inputLink, 1000)
 
   const closeModal = () => {
     setIsModalVisible(false)
   }
 
   const handleSave = () => {
-    setIsModalVisible(false)
-
     if (inputLink.trim() === '') {
       setInputLink('')
-      return
+    }
+    console.log('debouncedValue', debouncedValue)
+    if (refactorRecipescrean) {
+      updateLinkVideo(inputLink)
     }
 
-    if (link === 'YouTube') {
-      setLinkVideo({
-        strYoutube: inputLink,
-        strYouVideo: null,
-      })
-    }
-    if (link === 'Google Disk') {
-      setLinkVideo({
-        strYoutube: null,
-        strYouVideo: inputLink,
-      })
-    }
-  }
-
-  const handleTuLink = (link) => {
-    if (link === 'YouTube') {
-      setLink('YouTube')
-      // console.log("YouTube")
-      setIsModalVisible(true)
-    }
-    if (link === 'Google Disk') {
-      // console.log("googleDisk")
-      setLink('Google Disk')
-      setIsModalVisible(true)
-    }
-  }
-
-  const removeLink = async () => {
-    // setInputLink("");
-    setLinkVideo({
-      strYoutube: null,
-      strYouVideo: null,
-    })
-    // setIsModalVisible(false)
-    // setLink(null)
+    // setTotalRecipe((prevRecipe) => ({
+    //   ...prevRecipe,
+    //   video: debouncedValue,
+    // }))
+    setIsModalVisible(false)
   }
 
   const removeVideo = () => {
-    setLinkVideo({
-      strYoutube: null,
-      strYouVideo: null,
-    })
+    setInputLink('')
   }
 
   return (
     <View>
-      {(linkVideo.strYoutube !== null || linkVideo.strYouVideo !== null) && (
+      {inputLink !== '' && (
         <View className="mb-5">
-          <VideoCustom video={linkVideo} />
+          <VideoCustom video={inputLink} />
 
           <TouchableOpacity
             className="absolute top-0 right-0 justify-center items-center"
             onPress={removeVideo}
           >
-            <ButtonSmallCustom buttonText={false} icon={TrashIcon} tupeButton="remove" w={30} h={30} />
+            <ButtonSmallCustom
+              buttonText={false}
+              icon={TrashIcon}
+              tupeButton="remove"
+              w={30}
+              h={30}
+            />
           </TouchableOpacity>
         </View>
       )}
@@ -152,7 +83,7 @@ function AddLinkVideo({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
       <View className="gap-x-2 flex-row flex-1">
         {/* YouTube */}
         <TouchableOpacity
-          onPress={() => handleTuLink('YouTube')}
+          onPress={() => setIsModalVisible(true)}
           style={[shadowBoxBlack(), styles.buttonWrapper, { backgroundColor: '#EF4444' }]}
         >
           <PlayCircleIcon size={25} color="white" />
@@ -160,13 +91,6 @@ function AddLinkVideo({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
         </TouchableOpacity>
 
         {/* Google disk */}
-        <TouchableOpacity
-          onPress={() => handleTuLink('Google Disk')}
-          style={[shadowBoxBlack(), styles.buttonWrapper, { backgroundColor: 'green' }]}
-        >
-          <CircleStackIcon size={25} color="white" />
-          <Text style={styles.ButtonText}>Google Disk</Text>
-        </TouchableOpacity>
       </View>
 
       <ModalClearCustom
@@ -176,12 +100,6 @@ function AddLinkVideo({ setTotalRecipe, refactorRecipescrean = false, oldLinkVid
         closeModal={closeModal}
         handleSave={handleSave}
         animationType="fade"
-        childrenSubheader={(
-          <Text className="underline font-bold text-[18px] mb-[15] text-center ">
-            {link}
-            .
-          </Text>
-        )}
       >
         <View>
           <InputComponent

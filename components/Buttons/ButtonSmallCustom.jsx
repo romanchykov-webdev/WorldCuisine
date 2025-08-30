@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 
-// Объект с соответствиями значений tupeButton и цветов
+// соответствие типа → цвет
 const buttonTypeColors = {
-  remove: 'red',
-  refactor: 'purple',
-  add: 'green',
-  default: 'white', // цвет по умолчанию, если tupeButton не указан или не соответствует
+  remove: '#EF4444', // red-500
+  refactor: '#8B5CF6', // violet-500
+  add: '#22C55E', // green-500
+  default: '#FFFFFF',
 }
 
 function ButtonSmallCustom({
@@ -15,27 +15,32 @@ function ButtonSmallCustom({
   icon: Icon,
   size = 20,
   color = 'white',
-  bg = 'white',
+  bg,
   title,
   styleText,
   styleIcon,
   buttonText = false,
   iconVisual = false,
   tupeButton = false,
+  fullWidth = false, // если true → игнорируем w и растягиваем
 }) {
-  // Определяем цвет фона: если tupeButton задан и есть в buttonTypeColors, берем его, иначе bg
-  const backgroundColor = tupeButton && buttonTypeColors[tupeButton] ? buttonTypeColors[tupeButton] : bg
+  const backgroundColor =
+    (tupeButton && buttonTypeColors[tupeButton]) || bg || buttonTypeColors.default
+
+  let widthStyle = {}
+  if (fullWidth || w === '100%') {
+    widthStyle = { alignSelf: 'stretch' } // на всю ширину контейнера
+  } else if (typeof w === 'number') {
+    widthStyle = { width: w }
+  }
+
   return (
-    <View
-      className="border-2  border-neutral-300 rounded-[10] justify-center items-center flex-row overflow-hidden bg-red-500"
-      style={{
-        backgroundColor,
-        width: w,
-        height: h,
-        ...styleWrapperButton,
-      }}
-    >
-      <View style={[styles.icon, styleIcon]}>{Icon && <Icon size={size} color={color} />}</View>
+    <View style={[styles.wrapper, { backgroundColor, height: h }, widthStyle, styleWrapperButton]}>
+      {Icon && (
+        <View style={[styles.icon, styleIcon]}>
+          <Icon size={size} color={color} />
+        </View>
+      )}
 
       {buttonText && (
         <Text numberOfLines={1} style={[styles.buttonText, styleText]}>
@@ -47,6 +52,15 @@ function ButtonSmallCustom({
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    borderWidth: 2,
+    borderColor: '#d1d5db',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
   icon: {},
   buttonText: {
     textAlign: 'center',
@@ -54,7 +68,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     marginLeft: 10,
-    // textAlign: "center",
   },
 })
 

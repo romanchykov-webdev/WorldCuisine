@@ -12,19 +12,19 @@ import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
 import StərɪskCustomComponent from '../StərɪskCustomComponent'
 import TitleDescriptionComponent from './TitleDescriptionComponent'
 
-function TagsCustom({ styleInput, styleTextDesc, setTotalRecipe }) {
+function TagsCustom({ styleInput, styleTextDesc, setTotalRecipe, tagsForUpdate }) {
   const { currentTheme } = useAuth()
 
   const [inputTags, setInputTags] = useState('')
 
-  const [arrayTags, setArrayTags] = useState([])
+  const [arrayTags, setArrayTags] = useState(tagsForUpdate ? tagsForUpdate : [])
 
   const debouncedValue = useDebounce(arrayTags, 1000)
 
   // useEffect(() => {}, [inputTags]);
 
   useEffect(() => {
-    setTotalRecipe(prevRecipe => ({
+    setTotalRecipe((prevRecipe) => ({
       ...prevRecipe,
       tags: debouncedValue,
     }))
@@ -36,7 +36,7 @@ function TagsCustom({ styleInput, styleTextDesc, setTotalRecipe }) {
   }
 
   const addTagHandler = (inputTags) => {
-    const clearTags = inputTags.trim()
+    const clearTags = inputTags.trim().toLowerCase()
 
     if (clearTags === '') {
       Alert.alert(`${i18n.t('Please enter the tag')}`)
@@ -48,13 +48,13 @@ function TagsCustom({ styleInput, styleTextDesc, setTotalRecipe }) {
       return
     }
 
-    setArrayTags(prev => [...prev, clearTags])
+    setArrayTags((prev) => [...prev, clearTags])
     setInputTags('')
   }
 
   const removeTag = (tagToRemove) => {
     // console.log(tagToRemove);
-    const updateTage = arrayTags.filter(tag => tag !== tagToRemove)
+    const updateTage = arrayTags.filter((tag) => tag !== tagToRemove)
     setArrayTags(updateTage)
   }
 
@@ -102,7 +102,7 @@ function TagsCustom({ styleInput, styleTextDesc, setTotalRecipe }) {
           <StərɪskCustomComponent />
           <TextInput
             style={[styleInput, { color: themes[currentTheme]?.textColor }]}
-            onChangeText={value => handleChange(value)}
+            onChangeText={(value) => handleChange(value)}
             value={inputTags}
             placeholder={i18n.t('Enter tag')}
             placeholderTextColor="grey"

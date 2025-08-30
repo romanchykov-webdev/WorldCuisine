@@ -1,5 +1,13 @@
 import Slider from '@react-native-community/slider'
-import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { themes } from '../../constants/themes'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -18,8 +26,7 @@ function ModalCreateRecipe({
   const changeTime = (time) => {
     if (time < 60) {
       return `${time} минут`
-    }
-    else {
+    } else {
       const hours = Math.floor(time / 60) // Целое количество часов
       const minutes = time % 60 // Оставшиеся минуты
       return `${hours} час${hours > 1 ? 'а' : ''} ${minutes > 0 ? `${minutes} минут` : ''}`.trim()
@@ -29,16 +36,16 @@ function ModalCreateRecipe({
   const handleSelect = (item) => {
     switch (modalType) {
       case 'time':
-        setModalSelectItem(prev => ({ ...prev, time: item }))
+        setModalSelectItem((prev) => ({ ...prev, time: item }))
         break
-      case 'person':
-        setModalSelectItem(prev => ({ ...prev, person: item }))
+      case 'serv':
+        setModalSelectItem((prev) => ({ ...prev, serv: item }))
         break
-      case 'calorie':
-        setModalSelectItem(prev => ({ ...prev, calorie: item }))
+      case 'cal':
+        setModalSelectItem((prev) => ({ ...prev, cal: item }))
         break
       case 'level':
-        setModalSelectItem(prev => ({ ...prev, level: item }))
+        setModalSelectItem((prev) => ({ ...prev, level: item }))
         break
     }
     setIsModalVisible(false)
@@ -52,94 +59,93 @@ function ModalCreateRecipe({
       onRequestClose={() => setIsModalVisible(false)}
       // onRequestClose={closeModal}
     >
-
       <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
+          <View
+            style={[
+              styles.modalContent,
+              { backgroundColor: themes[currentTheme]?.backgroundColor },
+            ]}
+          >
             <View>
-              <Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>{title}</Text>
-              <Text className=" text-xs text-center mb-2" style={{ color: themes[currentTheme]?.secondaryTextColor }}>
+              <Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>
+                {title}
+              </Text>
+              <Text
+                className=" text-xs text-center mb-2"
+                style={{ color: themes[currentTheme]?.secondaryTextColor }}
+              >
                 {description}
               </Text>
             </View>
 
-            {
-              modalType === 'time' || modalType === 'calorie'
-                ? (
-                    <>
-                      {
-                        modalType === 'time'
-                          ? (
-                              <View>
-                                <Text
-                                  className="text-xl text-center mb-2"
-                                  style={{ color: themes[currentTheme]?.textColor }}
-                                >
-                                  {changeTime(modalSelectItem.time)}
-                                </Text>
-                                <Slider
-                                  style={{ width: '100%', height: 40 }}
-                                  minimumValue={array[0]}
-                                  maximumValue={array[1]}
-                                  step={5} // Шаг перемещения
-                                  value={Number.parseInt(modalSelectItem.time, 10)} // Текущее значение
-                                  minimumTrackTintColor="#000000"
-                                  maximumTrackTintColor="#CCCCCC"
-                                  onValueChange={value => setModalSelectItem(prev => ({
-                                    ...prev,
-                                    time: value.toString(),
-                                  }))}
-                                />
-                              </View>
-                            )
-                          : (
-                              <View>
-                                <Text
-                                  className="text-xl text-center mb-2"
-                                  style={{ color: themes[currentTheme]?.textColor }}
-                                >
-                                  {modalSelectItem.calorie}
-                                  {' '}
-                                  calories
-                                </Text>
-                                <Slider
-                                  style={{ width: '100%', height: 40 }}
-                                  minimumValue={array[0]}
-                                  maximumValue={array[1]}
-                                  step={5} // Шаг перемещения
-                                  value={Number.parseInt(modalSelectItem.calorie, 10)} // Текущее значение
-                                  minimumTrackTintColor="#000000"
-                                  maximumTrackTintColor="#CCCCCC"
-                                  onValueChange={value => setModalSelectItem(prev => ({
-                                    ...prev,
-                                    calorie: value.toString(),
-                                  }))}
-                                />
-                              </View>
-                            )
+            {modalType === 'time' || modalType === 'cal' ? (
+              <>
+                {modalType === 'time' ? (
+                  <View>
+                    <Text
+                      className="text-xl text-center mb-2"
+                      style={{ color: themes[currentTheme]?.textColor }}
+                    >
+                      {changeTime(modalSelectItem.time)}
+                    </Text>
+                    <Slider
+                      style={{ width: '100%', height: 40 }}
+                      minimumValue={array[0]}
+                      maximumValue={array[1]}
+                      step={5} // Шаг перемещения
+                      value={Number.parseInt(modalSelectItem.time, 10)} // Текущее значение
+                      minimumTrackTintColor="#000000"
+                      maximumTrackTintColor="#CCCCCC"
+                      onValueChange={(value) =>
+                        setModalSelectItem((prev) => ({
+                          ...prev,
+                          time: value.toString(),
+                        }))
                       }
-                    </>
-                  )
-                : (
-                    <FlatList
-                      data={array}
-                      keyExtractor={(item, index) => index.toString()}
-                      renderItem={({ item }) => (
-                        <TouchableOpacity
-                          style={styles.langOption}
-                          onPress={() => handleSelect(item)}
-                        >
-                          <Text style={[styles.langText, { color: themes[currentTheme]?.textColor }]}>{item}</Text>
-                        </TouchableOpacity>
-                      )}
                     />
-                  )
-            }
+                  </View>
+                ) : (
+                  <View>
+                    <Text
+                      className="text-xl text-center mb-2"
+                      style={{ color: themes[currentTheme]?.textColor }}
+                    >
+                      {modalSelectItem.cal} calories
+                    </Text>
+                    <Slider
+                      style={{ width: '100%', height: 40 }}
+                      minimumValue={array[0]}
+                      maximumValue={array[1]}
+                      step={5} // Шаг перемещения
+                      value={Number.parseInt(modalSelectItem.cal, 10)} // Текущее значение
+                      minimumTrackTintColor="#000000"
+                      maximumTrackTintColor="#CCCCCC"
+                      onValueChange={(value) =>
+                        setModalSelectItem((prev) => ({
+                          ...prev,
+                          cal: value.toString(),
+                        }))
+                      }
+                    />
+                  </View>
+                )}
+              </>
+            ) : (
+              <FlatList
+                data={array}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.langOption} onPress={() => handleSelect(item)}>
+                    <Text style={[styles.langText, { color: themes[currentTheme]?.textColor }]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
 
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => setIsModalVisible(false)}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
               <Text style={styles.cancelText}>Close</Text>
             </TouchableOpacity>
           </View>

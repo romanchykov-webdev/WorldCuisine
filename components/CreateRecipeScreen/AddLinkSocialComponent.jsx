@@ -13,7 +13,7 @@ import TitleDescriptionComponent from './TitleDescriptionComponent'
 function AddLinkSocialComponent({
   setTotalRecipe,
   refactorRecipescrean = false,
-  oldSocialLinks,
+  socialLinksForUpdate,
   updateSocialLinks,
 }) {
   const [inputValue, setInputValue] = useState('')
@@ -27,19 +27,19 @@ function AddLinkSocialComponent({
   // console.log("AddLinkSocialComponent oldSocialLinks", oldSocialLinks);
 
   const [previewUrl, setPreviewUrl] = useState({
-    facebook: null,
-    instagram: null,
-    tiktok: null,
+    facebook: socialLinksForUpdate.facebook,
+    instagram: socialLinksForUpdate.instagram,
+    tiktok: socialLinksForUpdate.tiktok,
   })
 
   // Инициализация previewUrl только при первом рендере или изменении oldSocialLinks
   useEffect(() => {
-    if (refactorRecipescrean && oldSocialLinks) {
-      setPreviewUrl(prev => ({
+    if (refactorRecipescrean && socialLinksForUpdate) {
+      setPreviewUrl((prev) => ({
         ...prev,
-        facebook: oldSocialLinks.facebook,
-        instagram: oldSocialLinks.instagram,
-        tiktok: oldSocialLinks.tiktok,
+        facebook: inputValue.facebook ?? null,
+        instagram: inputValue.instagram ?? null,
+        tiktok: inputValue.tiktok ?? null,
       }))
     }
   }, [])
@@ -50,9 +50,8 @@ function AddLinkSocialComponent({
   useEffect(() => {
     if (refactorRecipescrean && updateSocialLinks) {
       updateSocialLinks(previewUrl) // Передаём текущее значение напрямую
-    }
-    else if (setTotalRecipe) {
-      setTotalRecipe(prevRecipe => ({
+    } else if (setTotalRecipe) {
+      setTotalRecipe((prevRecipe) => ({
         ...prevRecipe,
         social_links: debouncedValue,
       }))
@@ -66,49 +65,13 @@ function AddLinkSocialComponent({
 
   // Функция для определения платформы по URL
   const determinePlatform = (url) => {
-    if (!url)
-      return null
+    if (!url) return null
     url = url.toLowerCase()
-    if (url.includes('facebook.com'))
-      return 'facebook'
-    if (url.includes('instagram.com'))
-      return 'instagram'
-    if (url.includes('tiktok.com'))
-      return 'tiktok'
+    if (url.includes('facebook.com')) return 'facebook'
+    if (url.includes('instagram.com')) return 'instagram'
+    if (url.includes('tiktok.com')) return 'tiktok'
     return null
   }
-
-  // const handleAddLink = () => {
-  // 	if (inputValue.trim() === "") {
-  // 		Alert.alert(`${i18n.t("Add link")}`, `${i18n.t("Please enter a valid link")}`);
-  // 		return;
-  // 	}
-
-  // 	const platform = determinePlatform(inputValue);
-  // 	if (!platform) {
-  // 		Alert.alert(
-  // 			`${i18n.t("Invalid link")}`,
-  // 			`${i18n.t("Please enter a valid link")} ${i18n.t("from Facebook, Instagram, or TikTok")}`
-  // 		);
-  // 		return;
-  // 	}
-
-  // 	// Проверяем, не добавлена ли уже ссылка для этой платформы
-  // 	if (previewUrl[platform]) {
-  // 		Alert.alert(
-  // 			`${i18n.t("Link already added")} ${platform}`,
-  // 			`${i18n.t("If you want to update or change the link")}.`
-  // 		);
-  // 		return;
-  // 	}
-
-  // 	// Добавляем ссылку в previewUrl
-  // 	setPreviewUrl((prev) => ({
-  // 		...prev,
-  // 		[platform]: inputValue,
-  // 	}));
-  // 	setInputValue(""); // Очищаем поле ввода после добавления
-  // };
 
   const handleAddLink = () => {
     if (inputValue.trim() === '') {
@@ -128,19 +91,19 @@ function AddLinkSocialComponent({
     // Проверяем, не добавлена ли уже ссылка для этой платформы
     if (previewUrl[platform]) {
       Alert.alert(
-        `${i18n.t('Link already added for')} ${platform}`,
-        `${i18n.t('Do you want to replace the existing link?')}`,
+        `Link already added for ${platform}`,
+        `Do you want to replace the existing link?`,
         [
           {
-            text: `${i18n.t('No')}`,
+            text: `No`,
             onPress: () => {},
             style: 'cancel',
           },
           {
-            text: `${i18n.t('Yes')}`,
+            text: `Yes`,
             onPress: () => {
               // Заменяем существующую ссылку на новую
-              setPreviewUrl(prev => ({
+              setPreviewUrl((prev) => ({
                 ...prev,
                 [platform]: inputValue,
               }))
@@ -154,7 +117,7 @@ function AddLinkSocialComponent({
     }
 
     // Если ссылки для этой платформы еще нет, добавляем новую
-    setPreviewUrl(prev => ({
+    setPreviewUrl((prev) => ({
       ...prev,
       [platform]: inputValue,
     }))

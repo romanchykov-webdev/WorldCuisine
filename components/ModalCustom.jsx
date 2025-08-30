@@ -1,5 +1,13 @@
 import Slider from '@react-native-community/slider'
-import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import {
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 import { themes } from '../constants/themes'
 import { useAuth } from '../contexts/AuthContext'
 import i18n from '../lang/i18n'
@@ -11,8 +19,13 @@ function ModalCustom({
   animationType = 'fade',
   ingredient,
   setIngredient,
-  array,
-  onPressHandler,
+  array, // [{key,val}]
+  onPressHandler, // (key) => void
+  langApp = '',
+  // новое:
+  showNameInput = false,
+  nameLabelLang = '', // какой язык редактируем по имени
+  onSave, // сохранить (кастомный хендлер)
 }) {
   const { currentTheme } = useAuth()
   return (
@@ -20,12 +33,18 @@ function ModalCustom({
       animationType={animationType}
       transparent={true}
       visible={isModalVisible}
-      onRequestClose={() => setIsModalVisible(false)}
+      // onRequestClose={() => setIsModalVisible(false)}
       // onRequestClose={closeModal}
     >
-      <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
+      {/*<TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>*/}
+      <TouchableWithoutFeedback onPress={() => {}}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
+          <View
+            style={[
+              styles.modalContent,
+              { backgroundColor: themes[currentTheme]?.backgroundColor },
+            ]}
+          >
             <View>
               <TitleDescriptionComponent
                 titleVisual={true}
@@ -36,7 +55,12 @@ function ModalCustom({
                 descriptionText={i18n.t('Select the unit of measurement')}
               />
 
-              <Text className="text-xl text-center mb-2" style={{ color: themes[currentTheme]?.textColor }}>{ingredient.quantity}</Text>
+              <Text
+                className="text-xl text-center mb-2"
+                style={{ color: themes[currentTheme]?.textColor }}
+              >
+                {ingredient.quantity}
+              </Text>
               <Slider
                 style={{ width: '100%', height: 40 }}
                 minimumValue={1}
@@ -45,26 +69,40 @@ function ModalCustom({
                 value={Number.parseInt(ingredient.quantity, 1)} // Текущее значение
                 minimumTrackTintColor="#000000"
                 maximumTrackTintColor="#CCCCCC"
-                onValueChange={value =>
-                  setIngredient(prev => ({
+                onValueChange={(value) =>
+                  setIngredient((prev) => ({
                     ...prev,
                     quantity: value.toString(),
-                  }))}
+                  }))
+                }
               />
             </View>
 
             <FlatList
               data={array}
-              // keyExtractor={(item, index) => index.toString()}
-              keyExtractor={item => item.key}
+              keyExtractor={(item) => item.key}
               renderItem={({ item, index }) => {
                 return (
                   <TouchableOpacity
-                    style={[styles.langOption, index === array.length - 1 && { borderBottomColor: 'transparent' }]}
-                    // onPress={() => handleSelect(item.key)}
-                    onPress={() => onPressHandler(item.key)} // обновленный обработчик
+                    style={[
+                      styles.langOption,
+                      index === array.length - 1 && { borderBottomColor: 'transparent' },
+                    ]}
+                    onPress={() => onPressHandler(item.key)}
                   >
-                    <Text style={[styles.langText, { color: themes[currentTheme]?.textColor }]}>{item.val}</Text>
+                    <Text
+                      style={[
+                        styles.langText,
+                        {
+                          color:
+                            ingredient.unit?.[langApp] === item.val
+                              ? '#f59e0b' // amber-500
+                              : themes[currentTheme]?.textColor,
+                        },
+                      ]}
+                    >
+                      {item.val}
+                    </Text>
                   </TouchableOpacity>
                 )
               }}

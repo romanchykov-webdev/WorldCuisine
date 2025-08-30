@@ -1,66 +1,78 @@
-import { useEffect, useState } from 'react'
-import { TextInput, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { Text, TextInput, View } from 'react-native'
 import { useDebounce } from '../../constants/halperFunctions'
 import { themes } from '../../constants/themes'
-import { useAuth } from '../../contexts/AuthContext'
 import StərɪskCustomComponent from '../StərɪskCustomComponent'
 
 function InputCreateRecipeScreenCustom({
+  styleTextDesc,
   styleInput,
   placeholderText,
   placeholderColor,
   totalLangRecipe,
   setTotalRecipe,
+  currentTheme,
+  areaForUpdate = null,
 }) {
-  // console.log("totalLangRecipe", totalLangRecipe);
-  const { currentTheme } = useAuth()
-  // Инициализируем состояние как объект
-  const [inputValues, setInputValues] = useState({})
+  // локальное состояние: { en:'', ru:'', ... }
+  const hydratedFromUpdate = useRef(false) // чтобы не перезаписывать ввод пользователя
 
-  // Добавляем дебонсированное значение
-  const debouncedInputValue = useDebounce(inputValues, 1000) // 1000мс = 1 секунда
+  const [inputValues, setInputValues] = useState(() => {
+    const init = {}
+    totalLangRecipe?.forEach((lang) => {
+      init[lang] = ''
+    })
+    return init
+  })
+  console.log('areaForUpdate', areaForUpdate)
 
-  // Инициализация начальных значений
+  // 1) Гидратация из areaForUpdate один раз (или когда areaForUpdate поменялся на валидный объект)
   useEffect(() => {
-    if (totalLangRecipe && totalLangRecipe.length > 0) {
-      const initialValues = {}
-      totalLangRecipe.forEach((lang) => {
-        initialValues[lang] = ''
-      })
-      setInputValues(initialValues)
+    if (areaForUpdate && typeof areaForUpdate === 'object' && !hydratedFromUpdate.current) {
+      setInputValues(areaForUpdate) // заполняем локальные инпуты
+      hydratedFromUpdate.current = true
     }
-  }, [totalLangRecipe])
+  }, [areaForUpdate])
 
+  // дебаунс чтобы не дёргать родителя каждую букву
+  const debouncedValues = useDebounce(inputValues, 500)
+
+  // обновляем родителя
   useEffect(() => {
-    setTotalRecipe(prevRecipe => ({
-      ...prevRecipe,
-      area: debouncedInputValue,
+    setTotalRecipe((prev) => ({
+      ...prev,
+      area: debouncedValues, // отдаём ровно { en:'', ru:'', ... }
     }))
-  }, [debouncedInputValue, setTotalRecipe])
+  }, [debouncedValues, setTotalRecipe])
 
-  // Обработчик изменения значения для конкретного языка
-  const handleInputChange = (value, lang) => {
-    setInputValues(prevValues => ({
-      ...prevValues,
+  // обновление конкретного языка
+  const handleInputChange = (lang, value) => {
+    setInputValues((prev) => ({
+      ...prev,
       [lang]: value,
     }))
   }
 
-  // console.log("inputValues", inputValues);
-
   return (
     <View className="mb-2">
-      {totalLangRecipe?.map((lang, index) => (
-        <View key={index} className="mb-3">
-          <StərɪskCustomComponent />
-          <TextInput
-            // className="bg-red-500"
-            value={inputValues[lang]}
-            style={[styleInput, { color: themes[currentTheme]?.textColor }]}
-            onChangeText={value => handleInputChange(value, lang)}
-            placeholder={`${placeholderText} ${lang}`}
-            placeholderTextColor={placeholderColor}
-          />
+      {totalLangRecipe?.map((lang) => (
+        <View key={lang} className="mb-3">
+          <Text
+            style={[styleTextDesc, { fontSize: 12, color: themes[currentTheme]?.textColor }]}
+            className="mt-2"
+          >
+            {placeholderText} {lang}
+          </Text>
+          <View>
+            <StərɪskCustomComponent />
+            <TextInput
+              value={inputValues[lang]}
+              style={[styleInput, { color: themes[currentTheme]?.textColor }]}
+              onChangeText={(val) => handleInputChange(lang, val)}
+              placeholder={`${placeholderText} ${lang}`}
+              placeholderTextColor={placeholderColor}
+            />
+          </View>
         </View>
       ))}
     </View>
