@@ -107,7 +107,7 @@ function AddPointGoogleMaps({
             <TouchableOpacity onPress={openMap}>
               <MapPinIcon size={50} color="blue" />
             </TouchableOpacity>
-            <Text>{i18n.t('There is a store here')}</Text>
+            <Text>{i18n.t('There is a stores here')}</Text>
           </View>
 
           <TouchableOpacity
@@ -122,7 +122,7 @@ function AddPointGoogleMaps({
       )}
 
       <TitleDescriptionComponent
-        titleText={i18n.t('If you have a store')}
+        titleText={i18n.t('If you have a stores')}
         titleVisual
         descriptionVisual
         descriptionText={i18n.t('You can add it to the map, and customers can find it')}
