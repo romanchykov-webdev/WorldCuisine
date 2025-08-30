@@ -1,91 +1,72 @@
-import { useEvent } from 'expo';
-import { useVideoPlayer, VideoView } from 'expo-video';
-import { useEffect, useState } from 'react';
+import { useEvent } from 'expo'
+import { useVideoPlayer, VideoView } from 'expo-video'
+import { useEffect, useState } from 'react'
 
-import { StyleSheet, View } from 'react-native';
-import YouTubeIframe from 'react-native-youtube-iframe';
-import {
-    convertGoogleDriveLink,
-    getYoutubeVideoId,
-} from '../../../constants/halperFunctions';
+import { StyleSheet, View } from 'react-native'
+import YouTubeIframe from 'react-native-youtube-iframe'
+import { convertGoogleDriveLink, getYoutubeVideoId } from '../../../constants/halperFunctions'
 
-import { shadowBoxBlack } from '../../../constants/shadow';
+import { shadowBoxBlack } from '../../../constants/shadow'
 // translate
-import i18n from '../../../lang/i18n';
+import i18n from '../../../lang/i18n'
 
-import TitleDescriptionComponent from '../../CreateRecipeScreen/TitleDescriptionComponent';
-import LoadingComponent from '../../loadingComponent';
+import TitleDescriptionComponent from '../../CreateRecipeScreen/TitleDescriptionComponent'
+import LoadingComponent from '../../loadingComponent'
 
 function VideoCustom({ video }) {
-    // console.log('VideoCustom video', video);
+  // console.log('VideoCustom video', video)
 
-    const [loadingVideo, setLoadingVideo] = useState(true);
+  const [loadingVideo, setLoadingVideo] = useState(true)
+  const [ytId, setYtId] = useState(null)
 
-    const [youTobeLink, setYouTobeLink] = useState(null);
-    const [youVideoLink, setYouVideoLink] = useState(null);
+  useEffect(() => {
+    if (video) {
+      setLoadingVideo(true)
+      setYtId(getYoutubeVideoId(video))
+    }
+    const timeout = setTimeout(() => setLoadingVideo(false), 500)
+    return () => clearTimeout(timeout)
+  }, [video])
 
-    useEffect(() => {
-        if (video) {
-            setLoadingVideo(true);
-            setYouTobeLink(getYoutubeVideoId(video));
+  // // for expo video
+  // // Использование expo-video
+  // const player = useVideoPlayer(youTobeLink) // Передаем только ссылку на видео
+  // // console.log('youTobeLink', youTobeLink)
 
-            setTimeout(() => {
-                setLoadingVideo(false);
-            }, 2000);
-        }
-    }, [video]);
+  // useEffect(() => {
+  //   if (player) {
+  //     player.loop = true // Настроим плеер на зацикливание
+  //     player.pause() // Начинаем воспроизведение
+  //   }
+  // }, [player])
 
-    // for expo video
-    // Использование expo-video
-    const player = useVideoPlayer(youVideoLink); // Передаем только ссылку на видео
+  // const { isPlaying } = useEvent(player, 'playingChange', {
+  //   isPlaying: player.playing,
+  // })
+  // for expo video
 
-    useEffect(() => {
-        if (player) {
-            player.loop = true; // Настроим плеер на зацикливание
-            player.pause(); // Начинаем воспроизведение
-        }
-    }, [player]);
-
-    const { isPlaying } = useEvent(player, 'playingChange', {
-        isPlaying: player.playing,
-    });
-    // for expo video
-
-    return (
-        <View>
-            <TitleDescriptionComponent
-                titleText={i18n.t('Recipe video')}
-                titleVisual={true}
-            />
-            <View
-                style={shadowBoxBlack({
-                    color: '#000',
-                    offset: { width: 1, height: 1 },
-                    opacity: 1,
-                    radius: 2,
-                    elevation: 2,
-                })}
-            >
-                {youTobeLink != null && (
-                    <View>
-                        <View
-                            style={[{ height: 200 }]}
-                            className="rounded-[20] overflow-hidden border-2 border-neutral-700"
-                        >
-                            {loadingVideo ? (
-                                <LoadingComponent />
-                            ) : (
-                                <YouTubeIframe
-                                    videoId={youTobeLink}
-                                    height="100%"
-                                />
-                            )}
-                        </View>
-                    </View>
-                )}
-            </View>
+  return (
+    <View>
+      <TitleDescriptionComponent titleText={i18n.t('Recipe video')} titleVisual />
+      <View
+        style={shadowBoxBlack()}
+        className="rounded-[20px] overflow-hidden border-2 border-neutral-700"
+      >
+        <View style={styles.frame}>
+          {loadingVideo ? (
+            <LoadingComponent />
+          ) : ytId ? (
+            <YouTubeIframe videoId={ytId} height="100%" />
+          ) : null}
         </View>
-    );
+      </View>
+    </View>
+  )
 }
 
-export default VideoCustom;
+const styles = StyleSheet.create({
+  frame: {
+    height: 200,
+  },
+})
+export default VideoCustom

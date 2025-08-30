@@ -8,46 +8,36 @@ import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
 import ModalEditComponent from './ModalEditComponent'
 
 function RefactorTitle({ title, langApp, updateHeaderTitle, Icon }) {
-  // console.log("RefactorTitleAria title", title);
-  // console.log("RefactorTitleAria area", area);
   const { currentTheme } = useAuth()
   const [modalVisible, setModalVisible] = useState(false)
 
-  // Извлекаем название на основе текущего языка
-  const displayTitle = title?.lang?.find(item => item.lang === langApp)?.name || title?.strTitle || 'Без названия'
+  // Новая структура: просто берём строку по текущему языку
+  const displayTitle = (title && title[langApp]) || title?.en || 'Без названия'
 
-  // Функция обработки сохранения изменений
   const handleSave = (newText, lang) => {
     if (newText !== displayTitle) {
+      // родитель должен обновить title[lang] = newText
       updateHeaderTitle(newText, lang)
-      console.log(`Заголовок изменен с "${displayTitle}" на "${newText}" для языка "${lang}"`)
     }
-    setModalVisible(false) // Закрываем модальное окно
+    setModalVisible(false)
   }
 
   return (
-    <View className=" ">
-      {/*    name and area */}
-
-      <View className="flex-1 flex-row justify-between ">
+    <View>
+      <View className="flex-row justify-between items-start">
         <Text
-          style={[{ fontSize: hp(2.7), color: themes[currentTheme]?.textColor }]}
-          className="font-bold flex-1 "
+          style={{ fontSize: hp(2.7), color: themes[currentTheme]?.textColor }}
+          className="font-bold flex-1"
+          numberOfLines={2}
         >
           {displayTitle}
         </Text>
 
-        {/* buttom refactor */}
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={shadowBoxBlack()}
-          // className="absolute top-[-5px] right-0"
-        >
+        <TouchableOpacity onPress={() => setModalVisible(true)} style={shadowBoxBlack()}>
           <ButtonSmallCustom icon={Icon} tupeButton="refactor" size={15} w={30} h={30} />
         </TouchableOpacity>
       </View>
 
-      {/* Модальное окно */}
       <ModalEditComponent
         visible={modalVisible}
         initialData={displayTitle}

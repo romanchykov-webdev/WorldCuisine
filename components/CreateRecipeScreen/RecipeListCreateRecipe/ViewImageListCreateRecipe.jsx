@@ -3,19 +3,29 @@ import { StyleSheet, View } from 'react-native'
 import { shadowBoxBlack } from '../../../constants/shadow'
 
 function ViewImageListCreateRecipe({ image }) {
-  // console.log('ViewImageListCreateRecipe',image[0].uri);
+  // image: строка URL ИЛИ массив вида [{ uri }]
+  console.log('image', image)
+  let imageSource = null
+
+  if (typeof image === 'string' && image) {
+    imageSource = { uri: image }
+  } else if (Array.isArray(image) && image[0] && image[0].uri) {
+    imageSource = { uri: image[0].uri }
+  }
+
   return (
     <View className="p-[1px]">
-      <View style={shadowBoxBlack({
-        offset: { width: 1, height: 1 }, // Смещение тени по горизонтали и вертикали (по умолчанию вниз на 4px)
-        opacity: 0.9, // Прозрачность тени (по умолчанию 30%)
-      })}
+      <View
+        style={shadowBoxBlack({
+          offset: { width: 1, height: 1 },
+          opacity: 0.9,
+        })}
       >
         <Image
-          source={image[0]?.uri}
+          source={imageSource ?? require('../../../assets/images/react-logo3x.png')}
           transition={100}
           style={styles.image}
-          contentFit="cover" // Заменяем resizeMode на contentFit для 'expo-image'
+          contentFit="cover"
         />
       </View>
     </View>

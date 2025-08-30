@@ -23,24 +23,24 @@ import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
 import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../lang/i18n'
-import { getMeasurementCreateRecipeMyDB, getRecipesDescriptionMyDB } from '../../service/getDataFromDB'
+import {
+  getMeasurementCreateRecipeMyDB,
+  getRecipesDescriptionMyDB,
+} from '../../service/getDataFromDB'
 import { deleteRecipeFromMyDB } from '../../service/removeRecipe'
 import { updateRecipeToTheServer } from '../../service/uploadDataToTheDB'
 
 // Функция для глубокого сравнения двух значений
 function areEqual(a, b) {
   // Если это один и тот же объект или оба undefined/null
-  if (a === b)
-    return true
+  if (a === b) return true
 
   // Если один из них null или undefined, а другой нет
-  if (a == null || b == null)
-    return false
+  if (a == null || b == null) return false
 
   // Если это массивы
   if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length)
-      return false
+    if (a.length !== b.length) return false
     return a.every((item, index) => areEqual(item, b[index]))
   }
 
@@ -48,9 +48,8 @@ function areEqual(a, b) {
   if (typeof a === 'object' && typeof b === 'object') {
     const keysA = Object.keys(a)
     const keysB = Object.keys(b)
-    if (keysA.length !== keysB.length)
-      return false
-    return keysA.every(key => areEqual(a[key], b[key]))
+    if (keysA.length !== keysB.length) return false
+    return keysA.every((key) => areEqual(a[key], b[key]))
   }
 
   // Для примитивных типов
@@ -62,7 +61,7 @@ function RefactorRecipeScrean() {
 
   const { user } = useAuth()
 
-  const [langApp, setLangApp] = useState(user?.lang)
+  const [langApp, setLangApp] = useState(user?.app_lang)
 
   const [loading, setLoading] = useState(true)
 
@@ -79,10 +78,6 @@ function RefactorRecipeScrean() {
   // console.log(params);
   const { recipe_id, isRefactorRecipe } = params
 
-  // console.log("RefactorRecipeScrean recipe_id", recipe_id);
-  // console.log("RefactorRecipeScrean isRefactorRecipe", isRefactorRecipe);
-  // console.log("RefactorRecipeScrean isRefactorRecipe", isRefactorRecipe);
-
   const fetchGetRecipeForRefactoring = async (id) => {
     try {
       const res = await getRecipesDescriptionMyDB(id)
@@ -95,19 +90,18 @@ function RefactorRecipeScrean() {
         // console.log("RefactorRecipeScrean res.data[0]", JSON.stringify(res.data[0], null));
 
         // Обновляем totalLangRecipe, добавляя все языки из ingredients
-        const ingredientLangs = res.data[0]?.ingredients?.lang ? Object.keys(res.data[0].ingredients.lang) : []
+        const ingredientLangs = res.data[0]?.ingredients?.lang
+          ? Object.keys(res.data[0].ingredients.lang)
+          : []
         const uniqueLangs = [...new Set([langApp, ...ingredientLangs])]
         setTotalLangRecipe(uniqueLangs)
-      }
-      else {
+      } else {
         Alert.alert('Error', 'Recipe not found')
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error loading recipe:', error)
       Alert.alert('Error', 'Failed to load recipe')
-    }
-    finally {
+    } finally {
       setTimeout(() => {
         setLoading(false)
       }, 500)
@@ -120,7 +114,7 @@ function RefactorRecipeScrean() {
   const fetchMeasurement = async () => {
     const res = await getMeasurementCreateRecipeMyDB()
     // console.log(res.data);
-    setMeasurement(res.data[0].lang)
+    setMeasurement(res.data)
   }
 
   useEffect(() => {
@@ -128,8 +122,7 @@ function RefactorRecipeScrean() {
       setLoading(true)
       fetchGetRecipeForRefactoring(recipe_id)
       fetchMeasurement()
-    }
-    else {
+    } else {
       setLoading(false)
     }
   }, [recipe_id, isRefactorRecipe])
@@ -143,45 +136,32 @@ function RefactorRecipeScrean() {
 
   // update image header
   const handleImageUpdate = (newImage) => {
-    setRecipeDish(prev => ({ ...prev, image_header: newImage }))
+    setRecipeDish((prev) => ({ ...prev, image_header: newImage }))
     // console.log("handleImageUpdate recipeDish.image_header", recipeDish.image_header);
   }
 
   // update header title
   const updateHeaderTitle = async (newTitle, lang) => {
     setRecipeDish((prev) => {
-      const updatedDish = { ...prev }
+      if (!prev) return prev
 
-      // Находим индекс записи для указанного языка
-      const langIndex = updatedDish.title.lang.findIndex(item => item.lang === lang)
-
-      // Если язык существует, обновляем его; если нет, добавляем новый
-      if (langIndex !== -1) {
-        updatedDish.title.lang[langIndex] = {
-          ...updatedDish.title.lang[langIndex],
-          name: newTitle,
-        }
-      }
-      else {
-        updatedDish.title.lang.push({
-          lang,
-          name: newTitle,
-        })
+      const updatedDish = {
+        ...prev,
+        title: {
+          ...prev.title,
+          [lang]: newTitle, // просто перезаписываем по ключу языка
+        },
       }
 
-      // Обновляем strTitle, если изменяется английский язык
-      if (lang === 'en') {
-        updatedDish.title.strTitle = newTitle
-      }
-      // console.log("RefactorRecipeScrean updateHeaderTitle updatedDish", JSON.stringify(updatedDish, null, 2));
       return updatedDish
     })
 
     // console.log("Обновленный заголовок:", newTitle, "для языка:", lang);
   }
+
   // update area text
   const updateAreaText = async (text, lang) => {
-    setRecipeDish(prev => ({
+    setRecipeDish((prev) => ({
       ...prev,
       area: { ...prev.area, [lang]: text },
     }))
@@ -189,32 +169,21 @@ function RefactorRecipeScrean() {
 
   // update tags
   const updateTags = async (newTags) => {
-    setRecipeDish(prev => ({
+    setRecipeDish((prev) => ({
       ...prev,
       tags: newTags,
     }))
   }
 
-  // изменения ингредиентов
-  // const updateIngredients = (newIngredients) => {
-  // 	console.log("RefactorRecipeScrean updateIngredients", newIngredients);
-  // 	setRecipeDish((prev) => ({
-  // 		...prev,
-  // 		ingredients: newIngredients,
-  // 	}));
-  // };
   const updateIngredients = (updatedData, lang) => {
-    // console.log("RefactorRecipeScrean updatedData", updatedData);
-    // console.log("RefactorRecipeScrean lang", lang);
-    // console.log("RefactorRecipeScrean recipeDish.ingredients", JSON.stringify(recipeDish.ingredients, null));
-    setRecipeDish(prev => ({
+    setRecipeDish((prev) => ({
       ...prev,
       ingredients: updatedData,
     }))
   }
 
   const onUpdateDescription = (updateDescription) => {
-    setRecipeDish(prev => ({
+    setRecipeDish((prev) => ({
       ...prev,
       instructions: updateDescription,
     }))
@@ -222,14 +191,15 @@ function RefactorRecipeScrean() {
 
   const updateLinkVideo = (updateVideo) => {
     // Проверяем, изменилось ли значение, чтобы избежать лишних обновлений
+    console.log('updateVideo', updateVideo)
+    console.log('recipeDish', recipeDish)
+
     setRecipeDish((prev) => {
-      if (areEqual(prev.video, updateVideo)) {
-        return prev // Если значение не изменилось, не обновляем состояние
-      }
-      return {
-        ...prev,
-        video: updateVideo,
-      }
+      if (!prev) return prev
+      // если ссылка не изменилась — ничего не делаем
+      if (areEqual(prev.video, updateVideo)) return prev
+      // иначе — возвращаем НОВЫЙ объект состояния
+      return { ...prev, video: updateVideo }
     })
   }
 
@@ -274,53 +244,12 @@ function RefactorRecipeScrean() {
     })
   }
 
-  // Функция для получения измененных полей
-  // const getChangedFields = async () => {
-  // 	const changedFields = {};
-  // 	// console.log("recipeDish before comparison:", JSON.stringify(recipeDish, null, 2));
-  // 	// console.log("originalRecipe before comparison:", JSON.stringify(originalRecipe, null, 2));
-
-  // 	// Проверяем каждое поле на изменение
-  // 	for (const key in recipeDish) {
-  // 		if (key === "rating" || key === "likes" || key === "comments") continue; // Пропускаем неизменяемые поля
-
-  // 		if (!areEqual(recipeDish[key], originalRecipe[key])) {
-  // 			if (key === "image_header" && recipeDish[key].startsWith("file://")) {
-  // 				// Загружаем новое изображение, если это локальный файл
-  // 				const headerExtension = recipeDish[key].split(".").pop() || "jpg";
-  // 				const cleanCategory = recipeDish.category
-  // 					.replace(/[^a-zA-Z0-9а-яА-ЯёЁ _-]/g, "")
-  // 					.trim()
-  // 					.replaceAll(" ", "_");
-  // 				const cleanSubCategory = recipeDish.point
-  // 					.replace(recipeDish.category, "")
-  // 					.trim()
-  // 					.replaceAll(" ", "_")
-  // 					.replace(/[^a-zA-Z0-9а-яА-ЯёЁ _-]/g, "");
-  // 				const folderName = `${new Date().toISOString().replace(/[^0-9]/g, "")}_${recipeDish.published_id}`;
-  // 				const headerPath = `recipes_images/${cleanCategory}/${cleanSubCategory}/${folderName}/header.${headerExtension}`;
-  // 				const imageRes = await uploadFile(headerPath, recipeDish[key], true);
-  // 				if (imageRes.success) {
-  // 					changedFields[key] = imageRes.data; // Сохраняем путь
-  // 				} else {
-  // 					throw new Error(`Failed to upload image_header: ${imageRes.msg}`);
-  // 				}
-  // 			} else {
-  // 				changedFields[key] = recipeDish[key];
-  // 			}
-  // 		}
-  // 	}
-
-  // 	return changedFields;
-  // };
-
   // Функция для получения изменённых полей
   const getChangedFields = () => {
     const changedFields = {}
 
     for (const key in recipeDish) {
-      if (key === 'rating' || key === 'likes' || key === 'comments')
-        continue
+      if (key === 'rating' || key === 'likes' || key === 'comments') continue
 
       if (!areEqual(recipeDish[key], originalRecipe[key])) {
         changedFields[key] = recipeDish[key]
@@ -330,62 +259,12 @@ function RefactorRecipeScrean() {
     return changedFields
   }
 
-  // save refactor recipe
-  // const saveRefactor = async () => {
-  // 	try {
-  // 		setLoading(true);
-
-  // 		// Валидация полной структуры рецепта
-  // 		//   const validationResult = validateRecipeStructure(recipeDish);
-  // 		//   if (!validationResult.isValid) {
-  // 		// 	Alert.alert("Ошибка валидации", validationResult.message);
-  // 		// 	return;
-  // 		//   }
-
-  // 		// Получаем только измененные поля
-  // 		const changedFields = await getChangedFields();
-  // 		// console.log("Changed fields:", JSON.stringify(changedFields, null, 2));
-
-  // 		if (Object.keys(changedFields).length === 0) {
-  // 			Alert.alert("Информация", "Ничего не изменено");
-  // 			return;
-  // 		}
-
-  // 		// Отправляем только измененные поля
-  // 		const response = await updateRecipeMyDB({ id: recipeDish.id, ...changedFields });
-  // 		if (response.success) {
-  // 			// Обновляем исходный рецепт после успешного сохранения
-  // 			setOriginalRecipe({ ...recipeDish });
-  // 			Alert.alert("Успех", "Рецепт успешно сохранен!");
-  // 		} else {
-  // 			throw new Error(response.msg || "Ошибка при сохранении рецепта");
-  // 		}
-
-  // 		// паосле сохранения переходим на экран рецепта
-  // 		router.replace({
-  // 			pathname: "RecipeDetailsScreen",
-  // 			params: { id: recipeDish.id },
-  // 		});
-  // 	} catch (error) {
-  // 		console.error("Ошибка при сохранении:", error);
-  // 		Alert.alert("Ошибка", error.message || "Не удалось сохранить рецепт");
-  // 	} finally {
-  // 		setLoading(false);
-  // 	}
-  // };
   const saveRefactor = async () => {
     try {
       setLoading(true)
 
       // Получаем изменённые поля
       const changedFields = getChangedFields()
-      // console.log("saveRefactor: Changed fields:", JSON.stringify(changedFields, null, 2));
-
-      // if (Object.keys(changedFields).length === 0) {
-      // 	Alert.alert("Информация", "Ничего не изменено");
-      // 	return;
-      // }
-      // console.log("saveRefactor changedFields", changedFields);
 
       // // Отправляем только изменённые поля
       const response = await updateRecipeToTheServer(recipeDish.id, changedFields)
@@ -397,52 +276,44 @@ function RefactorRecipeScrean() {
           pathname: 'RecipeDetailsScreen',
           params: { id: recipeDish.id },
         })
-      }
-      else {
+      } else {
         throw new Error(response.msg || 'Ошибка при сохранении рецепта')
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('saveRefactor: Error:', error)
       Alert.alert('Ошибка', error.message || 'Не удалось сохранить рецепт')
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }
 
   const removeRecipe = () => {
     // console.log("RefactorRecipeScreen removeRecipe");
-    Alert.alert(
-      i18n.t('Confirm'),
-      i18n.t('Are you sure you want to DELETE this recipe?'),
-      [
-        {
-          text: i18n.t('Cancel'),
-          onPress: () => console.log('Delete cancelled'),
-          style: 'cancel',
+    Alert.alert(i18n.t('Confirm'), i18n.t('Are you sure you want to DELETE this recipe?'), [
+      {
+        text: i18n.t('Cancel'),
+        onPress: () => console.log('Delete cancelled'),
+        style: 'cancel',
+      },
+      {
+        text: i18n.t('Delete'),
+        onPress: async () => {
+          // console.log("RefactorRecipeScreen removeRecipe");
+          setLoading(true)
+          const res = await deleteRecipeFromMyDB(recipeDish.id)
+          // console.log("Delete result:", res);
+          if (res.success) {
+            setLoading(false)
+            Alert.alert(i18n.t('Success'), i18n.t('Recipe deleted successfully'))
+            router.replace('/homeScreen') // Перенаправляем на список рецептов
+          } else {
+            setLoading(false)
+            Alert.alert('Error', res.msg || 'Failed to delete recipe')
+          }
         },
-        {
-          text: i18n.t('Delete'),
-          onPress: async () => {
-            // console.log("RefactorRecipeScreen removeRecipe");
-            setLoading(true)
-            const res = await deleteRecipeFromMyDB(recipeDish.id)
-            // console.log("Delete result:", res);
-            if (res.success) {
-              setLoading(false)
-              Alert.alert(i18n.t('Success'), i18n.t('Recipe deleted successfully'))
-              router.replace('/homeScreen') // Перенаправляем на список рецептов
-            }
-            else {
-              setLoading(false)
-              Alert.alert('Error', res.msg || 'Failed to delete recipe')
-            }
-          },
-          style: 'destructive',
-        },
-      ],
-    )
+        style: 'destructive',
+      },
+    ])
   }
 
   // Пока данные загружаются, показываем только индикатор загрузки
@@ -465,7 +336,10 @@ function RefactorRecipeScrean() {
       </WrapperComponent>
     )
   }
-  // console.log("recipeDish?.ingredients", recipeDish);
+
+  // console.log('recipeDish?.ingredients', recipeDish?.ingredients)
+  // console.log('recipeDish', recipeDish?.instructions)
+  // console.log('recipeDish?.video', recipeDish?.video)
 
   return (
     <WrapperComponent>
@@ -491,10 +365,8 @@ function RefactorRecipeScrean() {
         <View className="mb-10">
           <RefactorTitle
             title={recipeDish?.title}
-            // area={recipeDish?.area}
             langApp={langApp}
             updateHeaderTitle={updateHeaderTitle}
-            // updateAreaText={updateAreaText}
             Icon={PencilSquareIcon}
           />
         </View>
@@ -532,7 +404,7 @@ function RefactorRecipeScrean() {
           />
         </View>
 
-        {/* descritpion recipe */}
+        {/* description recipe */}
         <View className="mb-10">
           <RefactorDescriptionRecipe
             descriptionsRecipe={recipeDish?.instructions}
@@ -550,49 +422,6 @@ function RefactorRecipeScrean() {
             refactorRecipescrean={true}
             updateLinkVideo={updateLinkVideo}
           />
-          {/* <Text>add anase social tiktok facebuok instagram telegram </Text> */}
-        </View>
-
-        {/*    add Update link to the author */}
-        <LinkToTheCopyright
-          oldCopyring={recipeDish?.link_copyright}
-          updateCopyring={updateCopyring}
-          refactorRecipescrean={true}
-        />
-
-        {/*    AddPintGoogleMaps    */}
-        <AddPointGoogleMaps
-          oldCoordinates={recipeDish?.map_coordinates}
-          refactorRecipescrean={true}
-          updateCoordinates={updateCoordinates}
-        />
-        {/* add update links social facebook instargra tiktok */}
-        <View className="mb-10">
-          <AddLinkSocialComponent
-            refactorRecipescrean={true}
-            oldSocialLinks={recipeDish?.social_links}
-            updateSocialLinks={updateSocialLinks}
-          />
-        </View>
-
-        {/* refactor and save and remove recipe */}
-        <View className="flex-1 flex-row justify-center mt-5  mb-10 gap-x-2">
-          {/* cancel */}
-          <TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={() => router.back()}>
-            <ButtonSmallCustom buttonText={true} title={i18n.t('Cancel')} w="100%" h={60} tupeButton="add" />
-          </TouchableOpacity>
-
-          {/* Save */}
-          <TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={saveRefactor}>
-            <ButtonSmallCustom buttonText={true} title={i18n.t('Save')} w="100%" h={60} tupeButton="refactor" />
-          </TouchableOpacity>
-
-        </View>
-        <View>
-          {/* delete recipe */}
-          <TouchableOpacity style={shadowBoxBlack()} className="flex-1" onPress={removeRecipe}>
-            <ButtonSmallCustom buttonText={true} title={i18n.t('Delete recipe')} w="100%" h={60} tupeButton="remove" />
-          </TouchableOpacity>
         </View>
       </View>
     </WrapperComponent>

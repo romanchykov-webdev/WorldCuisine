@@ -1,9 +1,8 @@
 import * as ImagePicker from 'expo-image-picker'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { PhotoIcon, PlusIcon, TrashIcon } from 'react-native-heroicons/mini'
 import Animated, { FadeInDown } from 'react-native-reanimated'
-// import my hook
 import { useDebounce } from '../../../constants/halperFunctions'
 import { shadowBoxBlack } from '../../../constants/shadow'
 import { themes } from '../../../constants/themes'
@@ -16,314 +15,200 @@ import LoadingComponent from '../../loadingComponent'
 import TitleDescriptionComponent from '../TitleDescriptionComponent'
 import SliderImagesListCreateRecipe from './SliderImagesListCreateRecipe'
 import ViewImageListCreateRecipe from './ViewImageListCreateRecipe'
+import ImageCustom from '../../recipeDetails/ImageCustom'
+import ImageSliderCustom from '../../recipeDetails/ImageSliderCustom'
 
-function RecipeListCreateRecipe({ placeholderText, placeholderColor, totalLangRecipe, setTotalRecipe }) {
-  const [addImages, setAddImages] = useState([])
-  useEffect(() => {}, [addImages])
-  const { currentTheme } = useAuth()
+function RecipeListCreateRecipe({
+  placeholderText,
+  placeholderColor,
+  totalLangRecipe,
+  setTotalRecipe,
+  instructionsForUpdate,
+  currentTheme,
+}) {
+  // единственный источник правды внутри — новый формат
+  const [instructions, setInstructions] = useState([])
   const [changeLang, setChangeLang] = useState(totalLangRecipe[0])
-  const handleChangeLang = (item) => {
-    setChangeLang(item)
-  }
 
-  const [loadingCompresImg, setLoadingCompresImg] = useState(false)
+  // черновик нового шага
+  const emptyDraft = useMemo(() => {
+    const obj = {}
+    totalLangRecipe.forEach((code) => (obj[code] = ''))
+    return obj
+  }, [totalLangRecipe])
+  const [draft, setDraft] = useState(emptyDraft)
+  const [draftImages, setDraftImages] = useState([])
+  const [loadingImages, setLoadingImages] = useState(false)
 
-  // const [recipeArray, setRecipeArray] = useState(() => {
-  // 	// Инициализируем пустой объект для каждого языка
-  // 	const initialArray = {};
-  // 	totalLangRecipe.forEach((lang) => {
-  // 		initialArray[lang] = { text: "", images: [] };
-  // 	});
-  // 	return initialArray;
-  // });
-  const [recipeArray, setRecipeArray] = useState({})
-  // добавить проверку если обьект пуст то просто не отрисоввывать !!!!!!!!!!!!!
-
-  // Добавляем дебонсированное значение
-  const debouncedValue = useDebounce(recipeArray, 1000)
-  // console.log("recipeArray", recipeArray);
-  // console.log("debouncedValue", debouncedValue);
+  // гидратация из пропса один раз
+  const hydratedOnce = useRef(false)
   useEffect(() => {
-    setTotalRecipe(prevRecipe => ({
-      ...prevRecipe,
-      instructions: { lang: debouncedValue },
-    }))
-  }, [debouncedValue])
+    if (hydratedOnce.current) return
+    if (Array.isArray(instructionsForUpdate) && instructionsForUpdate.length > 0) {
+      setInstructions(instructionsForUpdate)
+    }
+    hydratedOnce.current = true
+  }, [instructionsForUpdate])
 
-  const handleTextChange = (lang, value) => {
-    setRecipeArray(prev => ({
-      ...prev,
-      [lang]: {
-        ...prev[lang],
-        text: value,
-      },
-    }))
-  }
+  // отдаём наверх при каждом изменении
+  useEffect(() => {
+    setTotalRecipe((prev) => ({ ...prev, instructions }))
+  }, [instructions, setTotalRecipe])
 
-  const addImageRecipeList = async () => {
-    // console.log('Add Recipe List');
-    if (addImages.length >= 5) {
-      Alert.alert(`${i18n.t('You have reached the image limit for one item')}`)
+  const handleChangeLang = (l) => setChangeLang(l)
+  const handleDraftChange = (lang, text) => setDraft((p) => ({ ...p, [lang]: text }))
+
+  const addImage = async () => {
+    if (draftImages.length >= 5) {
+      Alert.alert(i18n.t('You have reached the image limit for one item'))
       return
     }
+    setLoadingImages(true)
+    try {
+      const res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      })
+      if (!res.canceled && res.assets?.[0]?.uri) {
+        setDraftImages((prev) => [...prev, res.assets[0].uri])
+      }
+    } finally {
+      setLoadingImages(false)
+    }
+  }
 
-    setLoadingCompresImg(true)
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    })
-
-    if (result && result.assets && result.assets[0]) {
-      const originalUri = result.assets[0].uri
-
-      // Получаем размер оригинального изображения
-      const originalResponse = await fetch(originalUri)
-      const originalBlob = await originalResponse.blob()
-      const originalSizeInMB = (originalBlob.size / (1024 * 1024)).toFixed(2)
-      // console.log(`Original image size: ${originalSizeInMB} MB`);
-
-      // Сжимаем изображение перед использованием
-      // const compressedImage = await compressImage(originalUri, 1, 300, 300);
-      const compressedImage = await compressImage100(originalUri, 0.2)
-
-      // Получаем размер сжатого изображения
-      const compressedResponse = await fetch(compressedImage.uri)
-      const compressedBlob = await compressedResponse.blob()
-      const compressedSizeInMB = (compressedBlob.size / (1024 * 1024)).toFixed(2)
-      // console.log(`Compressed image size: ${compressedSizeInMB} MB`);
-
-      // Обновляем состояние
-      setAddImages(prev => [...prev, compressedImage])
-
-      // Выводим обновленный список изображений
-      // console.log('add image for recipe list', addImages);
-
-      // Выводим информацию в alert
+  const addStep = () => {
+    // все языки должны быть заполнены
+    const empty = totalLangRecipe.some((code) => !draft[code] || !draft[code].trim())
+    if (empty) {
       Alert.alert(
-        'Size image',
-        `Original size: ${originalSizeInMB} MB\n` + `Compressed size:, ${compressedSizeInMB} MB`,
+        i18n.t('Preview error'),
+        i18n.t('Here you can describe the recipe in the language'),
       )
-      setLoadingCompresImg(false)
-    }
-    else {
-      // console.error("Image selection canceled or failed", result);
-      Alert.alert(`${i18n.t('You did not add an image')}`)
-    }
-  }
-
-  const addStepRecipe = () => {
-    // console.log(recipeArray);
-
-    // Проверка на наличие пустых полей
-    const hasEmptyFields = totalLangRecipe.some((lang) => {
-      const text = recipeArray[lang]?.text
-      return typeof text !== 'string' || !text.trim()
-    })
-
-    if (hasEmptyFields) {
-      Alert.alert('Ошибка добавления.', 'Заполните все поля перед добавлением нового шага.')
       return
     }
-
-    setRecipeArray((prev) => {
-      const updatedArray = { ...prev }
-
-      // Добавляем новый шаг для каждого языка
-      totalLangRecipe.forEach((lang) => {
-        const steps = Object.keys(updatedArray[lang] || {})
-          .filter(key => !isNaN(Number(key)))
-          .map(Number)
-
-        const nextStep = steps.length > 0 ? Math.max(...steps) + 1 : 1
-
-        // Убедимся, что структура языка существует
-        updatedArray[lang] = {
-          ...updatedArray[lang],
-          [nextStep]: {
-            images: addImages,
-            text: updatedArray[lang]?.text?.trim() || '',
-          },
-        }
-
-        // Удаляем верхнеуровневые поля `text` и `images`
-        delete updatedArray[lang].text
-        delete updatedArray[lang].images
-      })
-
-      setAddImages([])
-      // console.log('Updated Recipe Array with Steps:', JSON.stringify(updatedArray, null, 2));
-      return updatedArray
-    })
+    const newStep = { ...draft, images: [...draftImages] }
+    setInstructions((prev) => [...prev, newStep])
+    setDraft(emptyDraft)
+    setDraftImages([])
   }
 
-  const removeStepRecipe = (item) => {
-    // console.log("remove stepRecipe", item);
-    // console.log("remove stepRecipe recipeArray", recipeArray);
-
-    setRecipeArray((prevArray) => {
-      const updatedArray = { ...prevArray } // Создаем копию текущего состояния
-
-      // Перебираем все языки в объекте
-      Object.keys(updatedArray).forEach((lang) => {
-        // Проверяем, есть ли шаг с номером item (номер шага)
-        if (updatedArray[lang][item]) {
-          // Удаляем шаг по номеру
-          delete updatedArray[lang][item]
-        }
-      })
-
-      // console.log("Updated recipeArray after removal:", updatedArray);
-      return updatedArray // Возвращаем обновленный объект
-    })
+  const removeStep = (index) => {
+    setInstructions((prev) => prev.filter((_, i) => i !== index))
   }
 
   return (
     <View>
-      {/* show result description */}
+      {/* переключатель языков просмотра */}
+      {totalLangRecipe?.length > 1 && (
+        <View className="mb-2">
+          <Text
+            className="mb-3 text-xl font-bold"
+            style={{ color: themes[currentTheme]?.textColor }}
+          >
+            {i18n.t('View in language')}{' '}
+            <Text className="capitalize text-amber-500"> {changeLang}</Text>
+          </Text>
 
-      <View>
-        {/* block lang */}
-        {totalLangRecipe?.length > 1 && (
-          <View className="mb-2">
-            <Text className="mb-3 text-xl  font-bold" style={{ color: themes[currentTheme]?.textColor }}>
-              {i18n.t('View in language')}
-              {' '}
-              {' '}
-              <Text className="capitalize text-amber-500">
-                {' '}
-                {changeLang}
-              </Text>
-            </Text>
-
-            <View className="flex-row flex-wrap gap-x-2 mb-2 items-center justify-around">
-              {totalLangRecipe.map((item, index) => {
-                return (
-                  <TouchableOpacity
-                    style={changeLang === item ? shadowBoxBlack() : null}
-                    className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${
-                      changeLang === item ? `bg-amber-500` : `bg-transparent`
-                    } `}
-                    key={index}
-                    onPress={() => {
-                      handleChangeLang(item)
-                    }}
-                  >
-                    <Text style={{ color: themes[currentTheme]?.textColor }}>{item.toUpperCase()}</Text>
-                  </TouchableOpacity>
-                )
-              })}
-            </View>
+          <View className="flex-row flex-wrap gap-x-2 mb-2 items-center justify-around">
+            {totalLangRecipe.map((code) => (
+              <TouchableOpacity
+                key={code}
+                style={changeLang === code ? shadowBoxBlack() : null}
+                className={`border-[1px] border-neutral-500 rounded-2xl px-5 py-2 ${
+                  changeLang === code ? `bg-amber-500` : `bg-transparent`
+                } `}
+                onPress={() => handleChangeLang(code)}
+              >
+                <Text style={{ color: themes[currentTheme]?.textColor }}>{code.toUpperCase()}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-        )}
+        </View>
+      )}
 
-        {
-          // Проверяем, есть ли данные для выбранного языка
-          recipeArray[changeLang]
-            ? Object.keys(recipeArray[changeLang]).map((stepIndex, index) => {
-                // Выводим только те элементы, которые являются шагами (то есть числами)
-                if (!isNaN(Number(stepIndex))) {
-                  return (
-                    <Animated.View
-                      entering={FadeInDown.duration(300).springify()}
-                      key={stepIndex}
-                      className="mb-5 mt-5 "
-                    >
-                      <View className="flex-1 flex-row">
-                        <Text className="mb-2 flex-1">
-                          <Text className="text-amber-500">
-                            {/* {stepIndex}) {" "} */}
-                            {index + 1}
-                            )
-                            {'  '}
-                          </Text>
-                          <Text style={{ color: themes[currentTheme]?.textColor }}>
-                            {recipeArray[changeLang][stepIndex]?.text}
-                          </Text>
-                        </Text>
-
-                        {/*    button remove */}
-                        <TouchableOpacity
-                          onPress={() => {
-                            removeStepRecipe(stepIndex)
-                          }}
-                          style={shadowBoxBlack()}
-                        >
-                          <ButtonSmallCustom
-                            icon={TrashIcon}
-                            color="white"
-                            tupeButton="remove"
-                          />
-                        </TouchableOpacity>
-                      </View>
-
-                      <View>
-                        {recipeArray[changeLang][stepIndex]?.images.length > 0
-                          && (recipeArray[changeLang][stepIndex]?.images.length === 1
-                            ? (
-                                <ViewImageListCreateRecipe
-                                  image={recipeArray[changeLang][stepIndex]?.images}
-                                />
-                              )
-                            : (
-                                <SliderImagesListCreateRecipe
-                                  createRecipe={true}
-                                  images={recipeArray[changeLang][stepIndex]?.images}
-                                />
-                              ))}
-                      </View>
-                    </Animated.View>
-                  )
-                }
-              })
-            : null
-        }
-      </View>
-
-      <TitleDescriptionComponent
-        titleText={i18n.t('Recipe Description')}
-        titleVisual={true}
-        descriptionVisual={true}
-        descriptionText={i18n.t('Here you can write a recipe as text or in bullet points')}
-      />
-
-      {totalLangRecipe?.map((item, index) => {
+      {/* список шагов (новый формат), но показываем текст на выбранном языке */}
+      {instructions.map((step, idx) => {
+        console.log('step', step)
+        const imgs = Array.isArray(step.images) ? step.images.filter(Boolean) : []
         return (
-          <TextInput
-            key={index}
-            className="border-2 border-neutral-500 rounded-[15] p-2 mb-3"
-            value={recipeArray[item]?.text || ''}
-            onChangeText={value => handleTextChange(item, value)}
-            placeholder={`${placeholderText} ${item}`}
-            placeholderTextColor={placeholderColor}
-            multiline={true}
-            style={{ minHeight: 100, color: themes[currentTheme]?.textColor }}
-          />
+          <Animated.View
+            entering={FadeInDown.duration(300).springify()}
+            key={`step-${idx}`}
+            className="mb-10 mt-10 "
+          >
+            <View className="flex-row gap-x-2  flex-1">
+              <TouchableOpacity
+                className=" flex-1"
+                onPress={() => removeStep(idx)}
+                style={shadowBoxBlack()}
+              >
+                <ButtonSmallCustom w="100%" icon={TrashIcon} color="white" tupeButton="remove" />
+              </TouchableOpacity>
+            </View>
+            <View className="flex-1 flex-row w-full ">
+              <Text className="mb-2 flex-1">
+                <Text className="text-amber-500">
+                  {idx + 1}){'  '}
+                </Text>
+                <Text style={{ color: themes[currentTheme]?.textColor }}>
+                  {step?.[changeLang] || ''}
+                </Text>
+              </Text>
+            </View>
+
+            <View>
+              {imgs.length > 0 &&
+                (imgs.length === 1 ? (
+                  <ImageCustom image={imgs} />
+                ) : (
+                  <ImageSliderCustom images={imgs} />
+                ))}
+            </View>
+          </Animated.View>
         )
       })}
 
+      <TitleDescriptionComponent
+        titleText={i18n.t('Recipe Description')}
+        titleVisual
+        descriptionVisual
+        descriptionText={i18n.t('Here you can write a recipe as text or in bullet points')}
+      />
+
+      {/* поля ввода для черновика нового шага */}
+      {totalLangRecipe.map((code) => (
+        <TextInput
+          key={code}
+          className="border-2 border-neutral-500 rounded-[15] p-2 mb-3"
+          value={draft[code]}
+          onChangeText={(v) => handleDraftChange(code, v)}
+          placeholder={`${placeholderText} ${code}`}
+          placeholderTextColor={placeholderColor}
+          multiline
+          style={{ minHeight: 100, color: themes[currentTheme]?.textColor }}
+        />
+      ))}
+
       <View className="flex-row gap-x-2 ">
         <TouchableOpacity
-          onPress={loadingCompresImg ? null : addImageRecipeList}
+          onPress={loadingImages ? null : addImage}
           style={[{ flex: 1 }, shadowBoxBlack()]}
           className="flex-1 h-[60px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center "
         >
-          {loadingCompresImg ? <LoadingComponent color="green" size="small" /> : <PhotoIcon color="white" size={20} />}
-          {/* {loadingCompresImg ? <LoadingComponent/> : <ButtonSmallCustom */}
-          {/* icon={PhotoIcon} */}
-          {/* tupeButton="refactor" */}
-          {/* h={60} */}
-          {/* w="100%" */}
-          {/* />} */}
-          {addImages?.length > 0 && (
+          {loadingImages ? (
+            <LoadingComponent color="green" size="small" />
+          ) : (
+            <PhotoIcon color="white" size={20} />
+          )}
+
+          {draftImages.length > 0 && (
             <Animated.View
-              entering={FadeInDown.duration(200).springify()} // Добавим нужную анимацию с параметрами
+              entering={FadeInDown.duration(200).springify()}
               style={[
-                shadowBoxBlack({
-                  offset: { width: 1, height: 1 },
-                }),
+                shadowBoxBlack({ offset: { width: 1, height: 1 } }),
                 {
                   position: 'absolute',
                   top: -5,
@@ -336,31 +221,18 @@ function RecipeListCreateRecipe({ placeholderText, placeholderColor, totalLangRe
               ]}
               className="border-2 border-neutral-500 rounded-3xl bg-violet-700"
             >
-              <Text className="text-neutral-900 text-[16px]">{addImages?.length}</Text>
+              <Text className="text-neutral-900 text-[16px]">{draftImages.length}</Text>
             </Animated.View>
           )}
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[{ flex: 1 }, shadowBoxBlack()]}
-          onPress={loadingCompresImg ? null : addStepRecipe}
+          onPress={addStep}
           className="flex-1 h-[60px] bg-green-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
         >
-          {loadingCompresImg ? <LoadingComponent size="small" color="grey" /> : <PlusIcon color="white" size={20} />}
-          {/* {loadingCompresImg ? <LoadingComponent /> : <ButtonSmallCustom */}
-          {/* icon={PlusIcon} */}
-          {/* h={60} */}
-          {/* w="100%" */}
-          {/* tupeButton="add" */}
-          {/* />} */}
+          <PlusIcon color="white" size={20} />
         </TouchableOpacity>
-
-        {/* <TouchableOpacity */}
-        {/*    style={shadowBoxBlack()} */}
-        {/*    onPress={resetFields} */}
-        {/*    className="flex-1 h-[50px] bg-red-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"> */}
-        {/*    <Text style={{ color: 'white' }}>Reset</Text> */}
-        {/* </TouchableOpacity> */}
       </View>
     </View>
   )

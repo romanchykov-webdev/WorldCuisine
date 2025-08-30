@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-
 import { hp } from '../../constants/responsiveScreen'
 import { themes } from '../../constants/themes'
 import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../lang/i18n'
 
+/**
+ * props:
+ * - visible, onClose, onSave
+ * - initialData: { ves, lang, mera, value:{...} }   // новый формат ингредиента
+ * - lang: string           // текущий язык интерфейса (для заголовка модалки)
+ * - type: 'ingredients' | ...
+ * - measurement: [ { en:{key:label}, ... } ]
+ * - langs: string[]        // список языков, которые должны быть в value
+ * - validateIngredientData: (obj, langs[]) => boolean
+ */
 function ModalEditComponent({
   visible,
   initialData,
@@ -14,76 +23,72 @@ function ModalEditComponent({
   onSave,
   onClose,
   measurement,
-  quontityLang,
+  langs = ['en', 'es', 'it', 'ru', 'ua'],
   validateIngredientData,
 }) {
-  // console.log("ModalEditComponent lang", lang);
-  // Для простого текста (например, теги, заголовки)
   const { language: appLang, currentTheme } = useAuth()
-  const [text, setText] = useState('')
-  // Для ингредиентов
-  const [ingredient, setIngredient] = useState('')
-  const [quantity, setQuantity] = useState('1')
-  const [unit, setUnit] = useState('')
-  const [measurementLangApp, setMeasurementLangApp] = useState([])
 
-  // Обновляем состояние в зависимости от типа данных
+  // для нового формата
+  const [namesByLang, setNamesByLang] = useState({})
+  const [ves, setVes] = useState('1')
+  const [meraKey, setMeraKey] = useState('')
+
+  const [text, setText] = useState('') // для прочих типов (tags/title/area и т.п.)
+  const [unitsForLang, setUnitsForLang] = useState([])
+
+  // Инициализация по типу
   useEffect(() => {
-    if (!visible)
-      return
+    if (!visible) return
 
     if (type === 'ingredients' && initialData) {
-      setIngredient(initialData.ingredient || '')
-      setQuantity(initialData.quantity || '1')
-      setUnit(initialData.unit || '')
+      // наполняем состояние из объекта нового формата
+      const values = initialData.value || {}
+      const initNames = {}
+      langs.forEach((l) => {
+        initNames[l] = values[l] || ''
+      })
+      setNamesByLang(initNames)
+      setVes(typeof initialData.ves === 'number' ? String(initialData.ves) : initialData.ves || '1')
+      setMeraKey(initialData.mera || '')
+    } else if (initialData) {
+      setText(typeof initialData === 'string' ? initialData : '')
     }
-    else if (initialData) {
-      setText(initialData || '')
-    }
-  }, [initialData, visible, type])
+  }, [visible, initialData, type])
 
-  // Обновление единиц измерения для текущего языка
+  // список единиц для текущего языка
   useEffect(() => {
-    if (measurement && lang && measurement[appLang]) {
-      setMeasurementLangApp(
-        Object.entries(measurement[appLang]).map(([key, val]) => ({
-          key,
-          val,
-        })),
-      )
-    }
-    else {
-      setMeasurementLangApp([]) // Устанавливаем пустой массив, если measurement или lang недоступны
-    }
+    const map = Array.isArray(measurement) && measurement[0] ? measurement[0] : {}
+    const dict = map?.[appLang] || {}
+    const list = Object.entries(dict).map(([key, val]) => ({ key, val }))
+    setUnitsForLang(list)
   }, [measurement, appLang])
+
+  const handleSelectUnit = (key /*, val */) => {
+    setMeraKey(key) // храним ключ
+  }
+
+  const handleNameChange = (lng, value) => {
+    setNamesByLang((prev) => ({ ...prev, [lng]: value }))
+  }
 
   const handleSave = () => {
     if (type === 'ingredients') {
-      // Для ингредиентов возвращаем объект
-      const updatedIngredient = {
-        ingredient,
-        quantity,
-        unit,
+      const updated = {
+        ves: Number(ves),
+        lang: initialData?.lang || appLang,
+        mera: meraKey,
+        value: { ...namesByLang },
       }
-
-      if (validateIngredientData(updatedIngredient, quontityLang)) {
-        onSave(updatedIngredient, lang)
-        onClose()
-      }
-      // console.log("ModalEditComponent handleSave updatedIngredient", updatedIngredient);
-      // console.log("ModalEditComponent handleSave lang", lang);
-
-      // onSave(updatedIngredient, lang);
-    }
-    else {
-      // Для других типов возвращаем текст
+      onSave(updated, lang)
+      onClose()
+      // if (validateIngredientData(updated, langs)) {
+      //   onSave(updated, lang)
+      //   onClose()
+      // }
+    } else {
       onSave(text, lang)
       onClose()
     }
-  }
-
-  const handleSelectUnit = (key, val) => {
-    setUnit(val) // Устанавливаем выбранную единицу измерения
   }
 
   let titleModal = ''
@@ -98,70 +103,69 @@ function ModalEditComponent({
       titleModal = `${i18n.t('Edit')} ${lang?.toUpperCase() || ''}`
       break
   }
-  // console.log("ModalEditComponent measurement", measurement);
-  // console.log("ModalEditComponent lang", lang);
-  // console.log("ModalEditComponent text", text);
-  // console.log("ModalEditComponent type", type);
-  // console.log("ModalEditComponent initialData", initialData);
 
   return (
-    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}>
-          {/*  */}
-          <Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>{titleModal}</Text>
-          {/*  */}
+        <View
+          style={[styles.modalContent, { backgroundColor: themes[currentTheme]?.backgroundColor }]}
+        >
+          <Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>
+            {titleModal}
+          </Text>
+
           {type === 'ingredients' ? (
             <View className="w-full">
-              {/* Поле для редактирования названия ингредиента */}
-              <TextInput
-                style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
-                value={ingredient}
-                onChangeText={setIngredient}
-                autoFocus
+              {/* названия на всех языках */}
+              <FlatList
+                data={langs}
+                keyExtractor={(item) => item}
+                style={{ maxHeight: hp(30), width: '100%', marginBottom: 10 }}
+                renderItem={({ item }) => (
+                  <TextInput
+                    style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
+                    value={namesByLang[item] || ''}
+                    onChangeText={(v) => handleNameChange(item, v)}
+                    placeholder={item.toUpperCase()}
+                  />
+                )}
               />
 
-              {/* Поле для редактирования количества */}
+              {/* количество */}
               <TextInput
-                value={quantity}
+                value={ves}
                 onChangeText={(value) => {
-                  // Разрешаем только цифры
-                  if (/^\d*$/.test(value)) {
-                    setQuantity(value)
-                  }
+                  if (/^\d*\.?\d*$/.test(value)) setVes(value)
                 }}
                 keyboardType="numeric"
                 style={[styles.input, { color: themes[currentTheme]?.secondaryTextColor }]}
                 className="text-center"
+                placeholder={i18n.t('Quantity')}
               />
 
-              {/* Список для выбора единицы измерения */}
+              {/* единицы (подпись — на текущем языке, сохраняем ключ) */}
+
               <FlatList
-                data={measurementLangApp}
-                keyExtractor={item => item.key}
+                data={unitsForLang}
+                keyExtractor={(item) => item.key}
                 renderItem={({ item, index }) => (
                   <TouchableOpacity
                     style={[
                       styles.langOption,
-                      index === measurementLangApp.length - 1 && {
-                        borderBottomColor: 'transparent',
-                      },
+                      index === unitsForLang.length - 1 && { borderBottomColor: 'transparent' },
                     ]}
-                    onPress={() => handleSelectUnit(item.key, item.val)}
+                    onPress={() => handleSelectUnit(item.key)}
                   >
                     <Text
                       style={[
                         styles.langText,
                         {
                           color:
-														unit === item.val
-														  ? themes[currentTheme]?.isActiveColorText
-														  : themes[currentTheme]?.secondaryTextColor,
+                            meraKey === item.key
+                              ? themes[currentTheme]?.isActiveColorText
+                              : themes[currentTheme]?.secondaryTextColor,
                         },
                       ]}
-                      // className={`${
-                      // 	unit === item.val ? "text-amber-500 font-bold" : "text-neutral-900"
-                      // }`}
                     >
                       {item.val}
                     </Text>
@@ -178,12 +182,18 @@ function ModalEditComponent({
               autoFocus
             />
           )}
-          {/*  */}
+
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.button, { backgroundColor: 'green' }]} onPress={handleSave}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: 'green' }]}
+              onPress={handleSave}
+            >
               <Text style={styles.buttonText}>{i18n.t('Save')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, { backgroundColor: 'violet' }]} onPress={onClose}>
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: 'violet' }]}
+              onPress={onClose}
+            >
               <Text style={styles.buttonText}>{i18n.t('Cancel')}</Text>
             </TouchableOpacity>
           </View>
@@ -196,24 +206,12 @@ function ModalEditComponent({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  modalContent: {
-    width: '80%',
-    // backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: hp(2.5),
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  modalContent: { width: '80%', padding: 20, borderRadius: 10, alignItems: 'center' },
+  modalTitle: { fontSize: hp(2.5), fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
   input: {
     width: '100%',
     borderWidth: 1,
@@ -221,38 +219,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: hp(2),
-    marginBottom: 20,
+    marginBottom: 12,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  button: {
-    // backgroundColor: "#ff4444",
-    padding: 10,
-    borderRadius: 5,
-    width: '45%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: hp(2),
-    fontWeight: 'bold',
-  },
+  buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
+  button: { padding: 10, borderRadius: 5, width: '45%', alignItems: 'center' },
+  buttonText: { color: 'white', fontSize: hp(2), fontWeight: 'bold' },
   langOption: {
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     marginBottom: 10,
   },
-  langText: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  flatList: {
-    maxHeight: hp(40), // Ограничиваем высоту до 60% экрана
-  },
+  langText: { fontSize: 16, textAlign: 'center' },
+  flatList: { maxHeight: hp(40) },
 })
 
 export default ModalEditComponent
