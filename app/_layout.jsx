@@ -1,35 +1,76 @@
 import { Stack, usePathname, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-
+import { Appearance, AppState } from 'react-native'
+import { QueryClientProvider, focusManager } from '@tanstack/react-query'
+//
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
+//
 import { supabase } from '../lib/supabase'
+//
+import { queryClient } from '../lib/queryClient'
 import { getUserData } from '../service/userService'
-import '../global.css'
+import { useAuthStore } from '../stores/authStore'
+import { useThemeStore } from '../stores/themeStore'
+import { useLangStore } from '../stores/langStore'
 
-// translate
-// import i18n from'../i18n'
+import '../global.css'
+import i18n from '../lang/i18n'
 
 function _layout() {
+  //
+  const lang = useLangStore((s) => s.lang)
+
+  // Подсказка фокусу для RN: активное состояние приложения = "focused"
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (status) => {
+      focusManager.setFocused(status === 'active')
+    })
+    return () => sub.remove()
+  }, [])
+
+  // lang
+  useEffect(() => {
+    i18n.locale = lang
+  }, [lang])
+
   return (
-    <AuthProvider>
-      <RootLayout />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RootLayout />
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 
 function RootLayout() {
+  const setLang = useLangStore((s) => s.setLang)
   const router = useRouter()
-
-  // const { setAuth, setUserData } = useAuth();
   const pathname = usePathname()
-  const { setAuth } = useAuth() // Изменено: используем только setAuth
+
+  // CONTEXT (временно, для совместимости экранов)
+  const { setAuth: setAuthCtx } = useAuth()
+
+  // ZUSTAND
+  const setAuth = useAuthStore((s) => s.setAuth)
+  const setUserData = useAuthStore((s) => s.setUserData)
+
+  const preferredTheme = useThemeStore((s) => s.preferredTheme)
+  const setPreferredTheme = useThemeStore((s) => s.setPreferredTheme)
+  const applyTheme = useThemeStore((s) => s.applyTheme)
 
   const [isLoading, setIsLoading] = useState(true)
+  const [initialRoute, setInitialRoute] = useState(null)
 
-  const [initialRoute, setInitialRoute] = useState(null) // Храним начальный маршрут
+  // sync device theme when 'auto'
+  useEffect(() => {
+    if (preferredTheme !== 'auto') return
+    const listener = Appearance.addChangeListener(() => {
+      applyTheme()
+    })
+    return () => listener.remove()
+  }, [preferredTheme, applyTheme])
 
   useEffect(() => {
-    // console.log("useEffect triggered, pathname:", pathname);
     let isMounted = true
 
     const checkInitialSession = async () => {
@@ -37,10 +78,8 @@ function RootLayout() {
         const {
           data: { session },
         } = await supabase.auth.getSession()
-        // console.log("Initial session:", session);
 
-        if (!isMounted)
-          return
+        if (!isMounted) return
 
         let authData = null
         const route = '/homeScreen'
@@ -48,54 +87,64 @@ function RootLayout() {
         if (session) {
           const res = await getUserData(session.user.id)
           authData = res.success ? { ...session.user, ...res.data } : session.user
-          // route = "/homeScreen";
-          // console.log("Setting auth with:", authData);
+
+          // ZUSTAND: записываем пользователя
+          setAuth(authData)
+          // ТЕМА: берём из профиля если есть, иначе auto
+          const userTheme = authData?.theme || 'auto'
+          setPreferredTheme(userTheme)
+          applyTheme()
+
+          setLang(authData?.app_lang || 'en')
+          // CONTEXT: для совместимости
+          setAuthCtx(authData)
+        } else {
+          setAuth(null)
+          setAuthCtx(null)
         }
 
-        // Объединяем setState для минимизации ререндеров
-        setAuth(authData)
         setInitialRoute(route)
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 3000)
-      }
-      catch (error) {
+        setTimeout(() => setIsLoading(false), 3000)
+      } catch (error) {
         console.error('Error checking initial session:', error)
-        if (!isMounted)
-          return
+        if (!isMounted) return
         setAuth(null)
-        setInitialRoute('/homeScreen') // Даже при ошибке перенаправляем на homeScreen
-        // setInitialRoute("/(main)/welcome");
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 3000)
+        setAuthCtx(null)
+        setInitialRoute('/homeScreen')
+        setTimeout(() => setIsLoading(false), 3000)
       }
     }
 
     checkInitialSession()
 
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      // console.log("onAuthStateChange event:", _event, "session:", session);
-
-      if (!isMounted)
-        return
+      if (!isMounted) return
 
       if (_event === 'SIGNED_IN' && session && _event !== 'INITIAL_SESSION') {
         try {
           const res = await getUserData(session.user.id)
           const authData = res.success ? { ...session.user, ...res.data } : session.user
-          // console.log("Setting auth with:", authData);
+
+          // ZUSTAND
           setAuth(authData)
+          setUserData(authData) // опционально, если нужно дополнить
+          const userTheme = authData?.theme || 'auto'
+          setPreferredTheme(userTheme)
+          applyTheme()
+          setLang(authData?.app_lang || 'en')
+          // CONTEXT (временно)
+          setAuthCtx(authData)
+
           if (pathname === '/' || pathname === '/(main)/welcome') {
             router.replace('/homeScreen')
           }
-        }
-        catch (error) {
+        } catch (error) {
           console.error('Error updating user data on sign in:', error)
         }
-      }
-      else if (_event === 'SIGNED_OUT') {
+      } else if (_event === 'SIGNED_OUT') {
         setAuth(null)
+        setAuthCtx(null)
+        setLang('en')
         if (pathname !== '/(main)/welcome') {
           router.replace('/(main)/welcome')
         }
@@ -103,20 +152,17 @@ function RootLayout() {
     })
 
     return () => {
-      // console.log("Unsubscribing from auth listener");
       isMounted = false
       authListener.subscription.unsubscribe()
     }
-  }, [pathname, setAuth])
+  }, [pathname, router, setAuth, setUserData, setPreferredTheme, applyTheme, setAuthCtx, setLang])
 
-  // Добавляем useEffect для перенаправления после загрузки
   useEffect(() => {
     if (!isLoading) {
-      router.replace('/homeScreen') // Перенаправляем всех на homeScreen после завершения загрузки
+      router.replace('/homeScreen')
     }
   }, [isLoading])
 
-  // Если ещё загружаемся, показываем только индексный экран
   if (isLoading) {
     return (
       <Stack>
@@ -124,13 +170,8 @@ function RootLayout() {
       </Stack>
     )
   }
-
-  /*
-	 *	Пропс initialRouteName в <Stack>
-	 *	задаёт начальный маршрут, основанный
-	 *	на результате проверки сессии.
-	 */
-
+  // useAuthStore.getState()
+  // console.log('layout useAuthStore', useAuthStore.getState())
   return (
     <Stack initialRouteName={initialRoute}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -152,4 +193,5 @@ function RootLayout() {
     </Stack>
   )
 }
+
 export default _layout

@@ -51,3 +51,6 @@ Join our community of developers creating universal apps.
 
 
 tree -I "node_modules"
+
+
+React Native Debugger.app

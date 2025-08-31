@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar'
-import { useEffect, useState } from 'react'
+
 import { Platform, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native'
+
 import HeaderComponent from '../components/HeaderComponent'
-// translate
 import LoadingComponent from '../components/loadingComponent'
 import RecipesMasonryComponent from '../components/RecipesMasonry/RecipesMasonryComponent'
 
@@ -10,100 +10,39 @@ import SearchComponent from '../components/SearchComponent'
 
 import TopRecipeComponent from '../components/topRecipe/TopRecipeComponent'
 import { hp, wp } from '../constants/responsiveScreen'
-import { themes } from '../constants/themes'
-import { useAuth } from '../contexts/AuthContext'
+
 import i18n from '../lang/i18n'
-import { getCategoriesMyDB, getCategoryRecipeMasonryMyDB } from '../service/getDataFromDB'
+import { useCategories } from '../queries/recipes'
+
+//
+import { useAuthStore } from '../stores/authStore'
+import { useThemeColors, useThemeStore } from '../stores/themeStore'
+import { useLangStore } from '../stores/langStore'
 
 function HomeScreen() {
-  const { user, unreadCommentsCount, unreadLikesCount, currentTheme } = useAuth()
-  // const router = useRouter();
+  const colors = useThemeColors()
 
-  const { language: langDev } = useAuth()
-  useEffect(() => {
-    i18n.locale = langDev // Устанавливаем текущий язык
-  }, [langDev])
+  // Zustand
 
-  const [isAuth, setIsAuth] = useState(null)
-  const [isRefreshing, setIsRefreshing] = useState(false) // Состояние для отслеживания процесса обновления
-  const [isLoading, setIsLoading] = useState(false) // Состояние для отслеживания загрузки данных
+  const user = useAuthStore((s) => s.user)
 
-  const [activeCategory, setActiveCategory] = useState('Beef')
+  const currentTheme = useThemeStore((s) => s.currentTheme)
 
-  const [categories, setCategories] = useState(null)
-  // console.log('homescreen user',user)
+  const lang = useLangStore((s) => s.lang)
 
-  const changeLanguage = (newLocale) => {
-    if (newLocale !== undefined) {
-      i18n.locale = newLocale
-      // console.log("homescreen newLocale", newLocale);
-    } else {
-      i18n.locale = 'en'
-      console.log('homescreen newLocale else i18n undefine', newLocale)
-    }
+  const unreadCommentsCount = 0
 
-    // Здесь можно обновить состояние компонента, чтобы интерфейс обновился
-  }
+  const unreadLikesCount = 0
 
-  useEffect(() => {
-    if (user) {
-      setIsAuth(true)
-      changeLanguage(user.app_lang)
-      // console.log("HomeScreen useEffect if user");
-    } else if (!user && !isAuth) {
-      setIsAuth(false)
-    }
-  }, [user, isAuth])
+  const isAuth = !!user
 
-  // get all categories
-  const getAllCategories = async () => {
-    const res = await getCategoriesMyDB()
-    setCategories(res.data)
-    // console.log('home screen categories',res)
-    // console.log("home screen categories", res);
-  }
+  // Zustand
 
-  const [categoryRecipes, setCategoryRecipes] = useState([])
+  const { data: categoryRecipes, isLoading, isFetching, refetch } = useCategories(lang)
 
-  const fetchCategoryRecipeMasonry = async () => {
-    const res = await getCategoryRecipeMasonryMyDB(user?.app_lang ?? langDev)
-    setCategoryRecipes(res.data)
-  }
-
-  useEffect(() => {
-    getAllCategories()
-    fetchCategoryRecipeMasonry()
-  }, [])
-
-  // const handleChangeCategory = (category) => {
-  const handleChangeCategory = (category) => {
-    setActiveCategory(category)
-    setRecipes([]) // Очищаем рецепты при смене категории
-
-    fetchRecipes(activeCategory)
-  }
-  // Используем useEffect для вызова fetchRecipes, когда activeCategory изменяется
-  useEffect(() => {
-    // fetchRecipes(activeCategory)
-  }, [activeCategory]) // Следим за изменением activeCategory
-
-  // Функция для обновления данных при свайпе вниз
-  const onRefresh = async () => {
-    setIsRefreshing(true)
-    setIsLoading(true) // Устанавливаем загрузку в true
-    await getAllCategories() // Загрузка категорий
-    // await fetchRecipes(activeCategory);  // Загрузка рецептов
-    await fetchCategoryRecipeMasonry()
-    setIsRefreshing(false) // Завершаем процесс обновления
-
-    setTimeout(() => {
-      setIsLoading(false) // Завершаем процесс загрузки
-    }, 1000)
-  }
-  // console.log('currentTheme.backgroundColor',themes[currentTheme]?.backgroundColor)
-
+  // if (__DEV__) useLogQueries('home')
   return (
-    <SafeAreaView style={{ backgroundColor: themes[currentTheme]?.backgroundColor, flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
       <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -115,13 +54,11 @@ function HomeScreen() {
         }}
         refreshControl={
           <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={onRefresh}
-            // Кастомизация под тему
-            tintColor={themes[currentTheme]?.textColor} // iOS спиннер
-            title="" // iOS подпись, если нужна
-            colors={[themes[currentTheme]?.textColor || '#000']} // Android спиннер
-            progressBackgroundColor={themes[currentTheme]?.backgroundColor}
+            refreshing={isFetching}
+            onRefresh={refetch}
+            tintColor={colors.textColor}
+            colors={[colors.textColor || '#000']}
+            progressBackgroundColor={colors.backgroundColor}
           />
         }
       >
@@ -135,7 +72,6 @@ function HomeScreen() {
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            // className="bg-red-500 absolute top-0 left-0 w-full h-full flex-1"
           >
             <LoadingComponent size="large" color="green" />
           </View>
@@ -145,6 +81,7 @@ function HomeScreen() {
             <HeaderComponent
               isAuth={isAuth}
               user={user}
+              colors={colors}
               unreadCommentsCount={unreadCommentsCount}
               unreadLikesCount={unreadLikesCount}
             />
@@ -155,7 +92,7 @@ function HomeScreen() {
                 <Text
                   style={{
                     fontSize: hp(3),
-                    color: themes[currentTheme]?.textColor,
+                    color: colors.textColor,
                   }}
                   className="font-semibold "
                 >
@@ -164,7 +101,7 @@ function HomeScreen() {
                 <Text
                   style={{
                     fontSize: hp(3),
-                    color: themes[currentTheme]?.textColor,
+                    color: colors.textColor,
                   }}
                   className="font-semibold"
                 >
@@ -173,7 +110,7 @@ function HomeScreen() {
               </View>
             </View>
 
-            {/* ?search bar */}
+            {/* search bar */}
             <SearchComponent />
 
             {/*    categories */}
@@ -181,8 +118,8 @@ function HomeScreen() {
 
             {/*    RecipesMasonryComponent */}
             <RecipesMasonryComponent
-              categoryRecipes={categoryRecipes}
-              langApp={user?.app_lang ?? langDev}
+              categoryRecipes={categoryRecipes || {}}
+              langApp={user?.app_lang ?? lang}
             />
           </>
         )}
@@ -190,5 +127,5 @@ function HomeScreen() {
     </SafeAreaView>
   )
 }
-
+// noinspection JSUnusedGlobalSymbols
 export default HomeScreen
