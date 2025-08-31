@@ -4,7 +4,7 @@ import { shadowText } from '../constants/shadow'
 import { themes } from '../constants/themes'
 import { useAuth } from '../contexts/AuthContext'
 
-function TitleScrean({ title, styleTitle }) {
+function TitleScreen({ title, styleTitle }) {
   const { currentTheme } = useAuth()
   return (
     <Text
@@ -22,4 +22,4 @@ function TitleScrean({ title, styleTitle }) {
 
 const styles = StyleSheet.create({})
 
-export default TitleScrean
+export default TitleScreen

@@ -16,6 +16,7 @@ import {
 } from '../../service/getDataFromDB'
 import AvatarCustom from '../AvatarCustom'
 import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
+import { formatNumber } from '../../utils/numberFormat'
 
 function SubscriptionsComponent({
   subscriber,
@@ -247,7 +248,7 @@ function SubscriptionsComponent({
             <UsersIcon color="grey" />
             <Text className="text-xs font-bold" numberOfLines={1}>
               {' '}
-              - {myFormatNumber(creatorData.creatorSubscribers || 0)}
+              - {formatNumber(creatorData.creatorSubscribers || 0)}
             </Text>
           </View>
         </View>
