@@ -5,7 +5,7 @@ import { shadowBoxBlack } from '../constants/shadow'
 import ButtonBack from './ButtonBack'
 import TitleScreen from './TitleScreen'
 
-function HeaderScreanComponent({
+function HeaderScreenComponent({
   headerAllCeripe = false,
   titleScreanText,
   fontSizeTitle = 4,
@@ -43,4 +43,4 @@ function HeaderScreanComponent({
 
 const styles = StyleSheet.create({})
 
-export default HeaderScreanComponent
+export default HeaderScreenComponent

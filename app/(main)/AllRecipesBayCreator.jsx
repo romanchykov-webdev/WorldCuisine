@@ -12,7 +12,7 @@ import {
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import Icon from 'react-native-vector-icons/Entypo'
 import IconComent from 'react-native-vector-icons/EvilIcons'
-import HeaderScreanComponent from '../../components/HeaderScreanComponent'
+import HeaderScreenComponent from '../../components/HeaderScreenComponent'
 
 import LoadingComponent from '../../components/loadingComponent'
 import ToggleListCategoryComponent from '../../components/profile/ToggleListCategoryComponent'
@@ -180,7 +180,7 @@ function AllRecipesBayCreator() {
 							/>
 						</Animated.View>
 					)} */}
-          <HeaderScreanComponent
+          <HeaderScreenComponent
             fontSizeTitle={3}
             headerAllCeripe={headerAllCeripe}
             titleScreanText={i18n.t('Your recipes')}

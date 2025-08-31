@@ -53,7 +53,7 @@ const CategoryCard = React.memo(function CategoryCard({ item, index, onPress }) 
         shadowBoxBlack({ offset: { width: 1, height: 2 }, opacity: 1, radius: 3 }),
       ]}
     >
-      <TouchableOpacity onPress={() => onOpen?.(item)} activeOpacity={0.8}>
+      <TouchableOpacity onPress={() => onPress?.(item)} activeOpacity={0.8}>
         <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
         <Text
           className="absolute bottom-[20] text-white font-semibold text-lg"

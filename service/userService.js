@@ -16,8 +16,7 @@ export async function getUserData(userId) {
     }
 
     return { success: true, data }
-  }
-  catch (error) {
+  } catch (error) {
     console.log('error', error)
     return { success: false, msg: error.message }
   }
@@ -58,8 +57,7 @@ export async function updateUser(userId, data) {
     }
 
     return { success: true, data }
-  }
-  catch (error) {
+  } catch (error) {
     console.log('error', error)
     return { success: false, msg: error.message }
   }
@@ -67,21 +65,15 @@ export async function updateUser(userId, data) {
 
 // delete user account
 // export const deleteUser = async (userId) => {
+//   const { error } = await supabase.from('users').delete().eq('id', userId)
 //
-//     const {error} = await supabase
-//         .from('users')
-//         .delete()
-//         .eq('id', userId)
+//   if (error) {
+//     console.error('Error deleting user auth data:', error)
+//     return { success: false, error }
+//   }
 //
-//     if (error) {
-//         console.error('Error deleting user auth data:', error)
-//         return { success: false, error }
-//     }
-//
-//     console.log('User auth data deleted successfully')
-//     return { success: true }
-//
-//
+//   console.log('User auth data deleted successfully')
+//   return { success: true }
 // }
 
 // Удаление пользователя
@@ -102,8 +94,7 @@ export async function deleteUser(userId) {
 
     // console.log("User successfully deleted from auth.users. Trigger handled cascading delete.");
     return { success: true }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Unexpected error:', error)
     return { success: false, msg: 'Unexpected error occurred.' }
   }

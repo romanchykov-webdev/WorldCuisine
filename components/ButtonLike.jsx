@@ -1,65 +1,45 @@
-import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+// components/ButtonLike.jsx
+import { TouchableOpacity, Text } from 'react-native'
 import { HeartIcon } from 'react-native-heroicons/solid'
-// translate
-import { myFormatNumber, showCustomAlert } from '../constants/halperFunctions'
-
-import { shadowBoxWhite } from '../constants/shadow'
+import { useRouter } from 'expo-router'
 import i18n from '../lang/i18n'
-import { addLikeRecipeMyDB, checkIfUserLikedRecipe } from '../service/getDataFromDB'
+import { showCustomAlert } from '../constants/halperFunctions'
+import { useIsLiked, useToggleLike } from '../queries/recipeDetails'
+import { shadowBoxWhite } from '../constants/shadow'
 import { formatNumber } from '../utils/numberFormat'
+import { useAuthStore } from '../stores/authStore'
 
-function ButtonLike({ user, recipeId, isPreview, totalCountLike }) {
-  const [isLike, setIsLike] = useState(false)
-
+function ButtonLike({ recipeId, isPreview, totalCountLike }) {
   const router = useRouter()
+  const user = useAuthStore((s) => s.user)
+  const userId = user?.id
 
-  const fetchGetLikes = async () => {
-    if (user !== null && isPreview === false) {
-      const res = await checkIfUserLikedRecipe({
-        recipeId,
-        userId: user.id,
-      })
-      setIsLike(res?.liked)
-      // console.log("res", res.liked);
-    } else {
-      setIsLike(false)
-    }
-  }
+  const { data: liked = false } = useIsLiked(recipeId, userId, !isPreview)
+  const { mutate: toggleLike } = useToggleLike(recipeId, userId)
 
-  const toggleLike = async () => {
-    if (isPreview) return // если это предпросмотр
-
-    if (user === null) {
+  const onPress = () => {
+    if (isPreview) return
+    if (!userId) {
       showCustomAlert(
         'Like',
-        `${i18n.t('To add a recipe to your favorites you must log in or create an account')}`,
+        i18n.t('To add a recipe to your favorites you must log in or create an account'),
         router,
       )
-    } else {
-      setIsLike(!isLike)
-      // add new like
-      await addLikeRecipeMyDB({
-        recipeId,
-        userIdLike: user?.id,
-      })
+      return
     }
+    toggleLike()
   }
 
-  useEffect(() => {
-    fetchGetLikes()
-  }, [])
-
+  const count = totalCountLike ?? 0
   return (
     <TouchableOpacity
-      onPress={toggleLike}
+      onPress={onPress}
       className="w-[50] h-[50] justify-center items-center bg-white rounded-full relative"
       style={shadowBoxWhite()}
+      activeOpacity={0.8}
     >
-      {isLike ? <HeartIcon size={30} color="red" /> : <HeartIcon size={30} color="gray" />}
-
-      <Text className="absolute text-[8px] text-neutral-900">{formatNumber(totalCountLike)}</Text>
+      <HeartIcon size={30} color={liked ? 'red' : 'gray'} />
+      <Text className="absolute text-[8px] text-neutral-900">{formatNumber(count)}</Text>
     </TouchableOpacity>
   )
 }

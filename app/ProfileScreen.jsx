@@ -17,9 +17,9 @@ import { shadowBoxBlack, shadowBoxWhite } from '../constants/shadow'
 import { themes } from '../constants/themes'
 import i18n from '../lang/i18n'
 
-import { logOut } from '../service/userService'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
+import { logoutTQ } from '../service/TQuery/auth'
 
 function ProfileScreen() {
   const router = useRouter()
@@ -44,7 +44,7 @@ function ProfileScreen() {
         text: 'LogOut',
         style: 'destructive',
         onPress: async () => {
-          await logOut()
+          await logoutTQ()
           resetAuth()
           router.replace('/(auth)/LogInScreen')
         },
