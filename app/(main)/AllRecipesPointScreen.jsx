@@ -31,13 +31,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../lang/i18n'
 import { getAllRecipesPointMasonryMyDB } from '../../service/getDataFromDB'
 
-function AllRecipesPointScreen({
-  isScreanAlrecipeBayCreatore = false,
-  isScreanAllRecibeData = [],
-  isFavoriteScrean = false,
-  allFavoriteRecipes = [],
-  titleVisible = true,
-}) {
+function AllRecipesPointScreen({}) {
   const { point } = useLocalSearchParams()
   const { language: langApp, currentTheme } = useAuth()
 

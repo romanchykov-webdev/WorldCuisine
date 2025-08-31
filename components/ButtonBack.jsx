@@ -2,13 +2,12 @@ import { useRouter } from 'expo-router'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline'
 import { shadowBoxBlack, shadowBoxWhite } from '../constants/shadow'
-import { useAuth } from '../contexts/AuthContext'
+import { useThemeStore } from '../stores/themeStore'
 
 function ButtonBack() {
   const router = useRouter()
 
-  const { currentTheme } = useAuth()
-
+  const currentTheme = useThemeStore((s) => s.currentTheme)
   //
 
   return (

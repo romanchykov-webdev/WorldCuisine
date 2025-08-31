@@ -6,7 +6,10 @@ import LoadingComponent from '../../components/loadingComponent'
 import ToggleListCategoryComponent from '../../components/profile/ToggleListCategoryComponent'
 import RecipesMasonrySearchScreenComponent from '../../components/SearchScreen/RecipesMasonrySearchScreenComponent'
 import WrapperComponent from '../../components/WrapperComponent'
-import { createCategoryPointObject, filterCategoryRecipesBySubcategories } from '../../constants/halperFunctions'
+import {
+  createCategoryPointObject,
+  filterCategoryRecipesBySubcategories,
+} from '../../constants/halperFunctions'
 import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../lang/i18n'
 import {
@@ -16,7 +19,7 @@ import {
 } from '../../service/getDataFromDB'
 import AllRecipesPointScreen from './AllRecipesPointScreen'
 
-function FavoriteScrean() {
+function FavoriteScreen() {
   const { user } = useAuth()
 
   const [loading, setLoading] = useState(true)
@@ -45,8 +48,7 @@ function FavoriteScrean() {
       }
 
       return { success: true, data: recipesResponse.data }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in fetchLikedRecipes:', error.message)
       return { success: false, msg: error.message }
     }
@@ -61,10 +63,12 @@ function FavoriteScrean() {
       }
 
       const allCategories = categoriesResponse.data // Массив категорий из categories_masonry
-      const filteredCategories = filterCategoryRecipesBySubcategories(allCategories, obFilterCategory)
+      const filteredCategories = filterCategoryRecipesBySubcategories(
+        allCategories,
+        obFilterCategory,
+      )
       return { success: true, data: filteredCategories }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in fetchCategoryRecipes:', error.message)
       return { success: false, msg: error.message }
     }
@@ -84,13 +88,11 @@ function FavoriteScrean() {
           const categoryResponse = await fetchCategoryRecipes(user?.lang || 'en')
           if (categoryResponse.success) {
             setCategoryRecipes(categoryResponse.data)
-          }
-          else {
+          } else {
             setError(categoryResponse.msg)
           }
         }
-      }
-      else {
+      } else {
         setError(likedRecipesResponse.msg)
       }
 
@@ -157,12 +159,12 @@ function FavoriteScrean() {
             {loading ? (
               <LoadingComponent color="green" />
             ) : toggleFolderList ? (
-            // <RecipesMasonryComponent
-            // 	categoryRecipes={categoryRecipes}
-            // 	langApp={user?.lang || "en"}
-            // 	isScreanFavorite={true}
-            // 	isScreanAllRecibeData={allFavoriteRecipes}
-            // />
+              // <RecipesMasonryComponent
+              // 	categoryRecipes={categoryRecipes}
+              // 	langApp={user?.lang || "en"}
+              // 	isScreanFavorite={true}
+              // 	isScreanAllRecibeData={allFavoriteRecipes}
+              // />
               <RecipesMasonrySearchScreenComponent
                 recipes={allFavoriteRecipes} // Передаём результаты поиска
                 langApp={user?.lang}
@@ -185,4 +187,4 @@ function FavoriteScrean() {
 
 const styles = StyleSheet.create({})
 
-export default FavoriteScrean
+export default FavoriteScreen
