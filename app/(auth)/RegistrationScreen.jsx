@@ -1,49 +1,40 @@
+// app/(auth)/RegistrationScreen.jsx
 import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { useRef, useState } from 'react'
+import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native'
 import { EnvelopeIcon, EyeIcon, EyeSlashIcon, UserCircleIcon } from 'react-native-heroicons/outline'
-import ButtonBack from '../../components/ButtonBack'
 
+import ButtonBack from '../../components/ButtonBack'
 import InputComponent from '../../components/InputComponent'
 import LanguagesWrapper from '../../components/LanguagesWrapper'
 import ThemeWrapper from '../../components/ThemeWrapper'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
-// translate
 import i18n from '../../lang/i18n'
 
-import { supabase } from '../../lib/supabase'
+import { useSignUp, useLogin } from '../../queries/users'
+import { useThemeColors, useThemeStore } from '../../stores/themeStore'
+import { useLangStore } from '../../stores/langStore'
+import { useAuthStore } from '../../stores/authStore'
+import WrapperComponent from '../../components/WrapperComponent'
 
 function RegistrationScreen() {
-  // translate
-
-  // translate
-
   const router = useRouter()
+  const colors = useThemeColors()
 
-  // change lang
-  const [lang, setLang] = useState('en') // Устанавливаем язык
-  // console.log('lang', lang);
+  // Zustand
+  const lang = useLangStore((s) => s.lang)
+  const setLang = useLangStore((s) => s.setLang)
+  const setAuth = useAuthStore((s) => s.setAuth)
 
-  // change theme
-  const [theme, setTheme] = useState('auto')
-  // console.log('theme', theme);
+  const preferredTheme = useThemeStore((s) => s.preferredTheme)
+  const setPreferredTheme = useThemeStore((s) => s.setPreferredTheme)
+  const applyTheme = useThemeStore((s) => s.applyTheme)
 
-  // Для переключения видимости пароля
+  const passwordRef = useRef(null)
+  const repeatPasswordRef = useRef(null)
+
   const [secureTextEntry, setSecureTextEntry] = useState(true)
-
-  const [loading, setLoading] = useState(false)
-
   const [form, setForm] = useState({
     userName: '',
     email: '',
@@ -51,9 +42,8 @@ function RegistrationScreen() {
     repeatPassword: '',
   })
 
-  useEffect(() => {
-
-  }, [form.password, form.repeatPassword, form.userName, form.email, lang, theme])
+  const { mutateAsync: signUp, isPending: isSigningUp } = useSignUp()
+  const { mutateAsync: login, isPending: isLoggingIn } = useLogin()
 
   const submitting = async () => {
     const email = form.email.trim()
@@ -61,222 +51,205 @@ function RegistrationScreen() {
     const password = form.password.trim()
     const repeatPassword = form.repeatPassword.trim()
 
+    if (!email || !password || !repeatPassword || !userName) {
+      Alert.alert('Sign Up', 'Please fill all the fields!')
+      return
+    }
     if (password !== repeatPassword) {
       Alert.alert('Sign Up', 'Enter two identical passwords!')
       return
     }
 
-    setLoading(true)
-    // console.log('userName', form.userName)
-    // console.log('email', form.email)
-    // console.log('password', form.password)
-    // console.log('repeatPassword', form.repeatPassword)
-
-    if (!email || !password || !repeatPassword || !userName) {
-      Alert.alert('Sign Up', 'Please fill all the fields!')
-      setLoading(false)
-      return
-    }
-
     try {
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.signUp({
+      // Регистрируем с метаданными (язык/тема)
+      const { user, session } = await signUp({
         email,
         password,
-        options: {
-          data: {
-            user_name: userName,
-            lang,
-            theme,
-            avatar: null,
-          },
-        },
+        userName,
+        lang,
+        theme: preferredTheme ?? 'auto',
       })
 
-      if (error)
-        throw error
+      // Если проект Supabase требует подтверждение email — session === null
+      if (!session) {
+        // Попробуем авто-логин (сработает, если подтверждение не требуется)
+        try {
+          const loggedIn = await login({ email, password, withProfile: false })
+          // применяем тему/язык из metadata
+          const metadata = loggedIn?.user_metadata ?? {}
+          const metaTheme = metadata?.theme || 'auto'
+          const metaLang = metadata?.lang || lang
 
-      setForm({
-        userName: '',
-        email: '',
-        password: '',
-        repeatPassword: '',
-      })
-      setLang('En')
-      setTheme('Auto')
+          setPreferredTheme(metaTheme)
+          applyTheme()
+          setLang(metaLang)
+          i18n.locale = metaLang
 
-      // console.log('session', session)
-    }
-    catch (error) {
-      Alert.alert('Sign Up', error.message)
-    }
-    finally {
-      setLoading(false)
-      setLang('En')
-      setTheme('Auto')
+          setAuth(loggedIn)
+          router.replace('/homeScreen')
+          return
+        } catch {
+          // Если не удалось — значит нужно подтверждение email
+          Alert.alert(
+            'Sign Up',
+            'Check your inbox to confirm your email. After confirmation you can log in.',
+          )
+          router.replace('/(auth)/LogInScreen')
+          return
+        }
+      }
+
+      // Если session есть — сразу авторизуем и настраиваем тему/язык
+      const metadata = user?.user_metadata ?? {}
+      const metaTheme = metadata?.theme || 'auto'
+      const metaLang = metadata?.lang || lang
+
+      setPreferredTheme(metaTheme)
+      applyTheme()
+      setLang(metaLang)
+      i18n.locale = metaLang
+
+      setAuth(user)
+      router.replace('/homeScreen')
+    } catch (e) {
+      Alert.alert('Sign Up', e?.message || 'Unknown error')
+    } finally {
+      setForm({ userName: '', email: '', password: '', repeatPassword: '' })
     }
   }
-  // console.log('email',form.email);
+
+  const loading = isSigningUp || isLoggingIn
+
   return (
-    <SafeAreaView
-      className="flex-1  mx-5 "
-      // style={{ flex: 1, marginHorizontal: 16 }}
-    >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <ScrollView
-          keyboardDismissMode="on-drag"
-          // contentContainerStyle={{flex: 1}}
-          contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'center',
-            paddingBottom: 20, // добавить немного отступа снизу
-          }}
+    <WrapperComponent>
+      <View className="h-full">
+        <View className="mb-10">
+          <ButtonBack />
+        </View>
 
-        >
+        {/* welcome text */}
+        <View className="mb-5">
+          <Text
+            className="font-bold tracking-widest"
+            style={{ fontSize: hp(4), color: colors.textColor }}
+          >
+            {i18n.t('Let`s,')}
+          </Text>
+          <Text
+            className="font-bold tracking-widest"
+            style={{ fontSize: hp(3.9), color: colors.textColor }}
+          >
+            {i18n.t('Get Started')}
+          </Text>
+        </View>
 
-          <View className=" h-full">
+        {/* form */}
+        <View className="gap-5">
+          <Text
+            className="text-neutral-500"
+            style={{ fontSize: hp(1.2), color: colors.secondaryTextColor }}
+          >
+            {i18n.t('Please fill the details to create an account')}
+          </Text>
 
-            <View className="mb-10">
-              <ButtonBack />
-            </View>
+          {/* user name */}
+          <InputComponent
+            icon={<UserCircleIcon size={30} color="grey" />}
+            placeholder={i18n.t('User name')}
+            value={form.userName}
+            onChangeText={(v) => setForm((s) => ({ ...s, userName: v }))}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+          />
 
-            {/* welcome text */}
-            <View className="mb-5">
-              <Text
-                className="font-bold tracking-widest text-neutral-700"
-                style={{ fontSize: hp(4) }}
-              >
-                {i18n.t('Let`s,')}
-              </Text>
-              <Text
-                className="font-bold tracking-widest text-neutral-700"
-                style={{ fontSize: hp(3.9) }}
-              >
-                {i18n.t('Get Started')}
-              </Text>
+          {/* email */}
+          <InputComponent
+            type="email"
+            icon={<EnvelopeIcon size={30} color="grey" />}
+            placeholder={i18n.t('Email')}
+            value={form.email}
+            onChangeText={(v) => setForm((s) => ({ ...s, email: v }))}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordRef.current?.focus()}
+          />
 
-            </View>
-
-            {/*    form sign up */}
-            <View className="gap-5">
-              <Text
-                className="text-neutral-500"
-                style={{ fontSize: hp(1.2) }}
-              >
-                {i18n.t('Please fill the details to create an account')}
-              </Text>
-
-              {/* user name */}
-              <InputComponent
-                icon={<UserCircleIcon size={30} color="grey" />}
-                placeholder={i18n.t('User name')}
-                value={form.userName}
-                onChangeText={(value) => {
-                  setForm({ ...form, userName: value })
-                }}
-              />
-
-              {/* email */}
-              <InputComponent
-                icon={<EnvelopeIcon size={30} color="grey" />}
-                placeholder={i18n.t('Email')}
-                value={form.email}
-                onChangeText={(value) => {
-                  setForm({ ...form, email: value })
-                }}
-              />
-
-              {/* password */}
-              <InputComponent
-                icon={(
-                  <TouchableOpacity
-                    onPress={() => setSecureTextEntry(prev => !prev)}
-                  >
-                    {
-                      secureTextEntry
-                        ? <EyeSlashIcon size={30} color="grey" />
-                        : <EyeIcon size={30} color="grey" />
-                    }
-                  </TouchableOpacity>
+          {/* password */}
+          <InputComponent
+            ref={passwordRef}
+            icon={
+              <TouchableOpacity onPress={() => setSecureTextEntry((p) => !p)}>
+                {secureTextEntry ? (
+                  <EyeSlashIcon size={30} color="grey" />
+                ) : (
+                  <EyeIcon size={30} color="grey" />
                 )}
-                placeholder={i18n.t('Password')}
-                value={form.password}
-                onChangeText={(value) => {
-                  setForm({ ...form, password: value })
-                }}
-                secureTextEntry={secureTextEntry}
-              />
-              {/* repeat password */}
-              <InputComponent
-                icon={(
-                  <TouchableOpacity
-                    onPress={() => setSecureTextEntry(prev => !prev)}
-                  >
-                    {
-                      secureTextEntry
-                        ? <EyeSlashIcon size={30} color="grey" />
-                        : <EyeIcon size={30} color="grey" />
-                    }
-                  </TouchableOpacity>
-                )}
-                placeholder={i18n.t('Please repeat password')}
-                value={form.repeatPassword}
-                onChangeText={(value) => {
-                  setForm({ ...form, repeatPassword: value })
-                }}
-                secureTextEntry={secureTextEntry}
-              />
-
-              {/* Select lang */}
-              <LanguagesWrapper setLang={setLang} lang={lang} />
-
-              {/* theme wrapper */}
-              <ThemeWrapper setTheme={setTheme} theme={theme} />
-
-              {/* button submitting sign Up */}
-              <TouchableOpacity
-                style={shadowBoxBlack({
-                  offset: { width: 0, height: 1 },
-                  radius: 2,
-                  elevation: 2,
-                })}
-                onPress={submitting}
-                className=" px-10 p-5 rounded-full items-center mb-5
-                            bg-green-500
-                            "
-              >
-                {
-                  loading
-                    ? <ActivityIndicator size={30} color="white" />
-                    : <Text className="text-xl font-bold text-neutral-700">{i18n.t('Sign Up')}</Text>
-                }
-
               </TouchableOpacity>
+            }
+            placeholder={i18n.t('Password')}
+            value={form.password}
+            onChangeText={(v) => setForm((s) => ({ ...s, password: v }))}
+            secureTextEntry={secureTextEntry}
+            returnKeyType="next"
+            onSubmitEditing={() => repeatPasswordRef.current?.focus()}
+          />
 
-              <View className=" w-full flex-row justify-center items-center">
-                <Text className=" text-xs text-neutral-500">
-                  {i18n.t('Already have an account,')}
-                </Text>
-                <Text
-                  onPress={() => router.push('/(auth)/LogInScreen')}
-                  className="text-amber-500 items-center justify-center ml-2 font-bold"
-                >
-                  {i18n.t('Log In')}
-                </Text>
-              </View>
+          {/* repeat password */}
+          <InputComponent
+            ref={repeatPasswordRef}
+            icon={
+              <TouchableOpacity onPress={() => setSecureTextEntry((p) => !p)}>
+                {secureTextEntry ? (
+                  <EyeSlashIcon size={30} color="grey" />
+                ) : (
+                  <EyeIcon size={30} color="grey" />
+                )}
+              </TouchableOpacity>
+            }
+            placeholder={i18n.t('Please repeat password')}
+            value={form.repeatPassword}
+            onChangeText={(v) => setForm((s) => ({ ...s, repeatPassword: v }))}
+            secureTextEntry={secureTextEntry}
+            returnKeyType="done"
+            onSubmitEditing={submitting}
+          />
 
-            </View>
+          <LanguagesWrapper lang={lang} setLang={setLang} />
+          <ThemeWrapper lang={lang} setLang={setLang} />
 
+          {/* submit */}
+          <TouchableOpacity
+            disabled={loading}
+            style={shadowBoxBlack({
+              offset: { width: 0, height: 1 },
+              radius: 2,
+              elevation: 2,
+              opacity: loading ? 0.7 : 1,
+            })}
+            onPress={submitting}
+            className="px-10 p-5 rounded-full items-center mb-5 bg-green-500"
+          >
+            {loading ? (
+              <ActivityIndicator size={30} color="white" />
+            ) : (
+              <Text className="text-xl font-bold text-neutral-700">{i18n.t('Sign Up')}</Text>
+            )}
+          </TouchableOpacity>
+
+          <View className="w-full flex-row justify-center items-center">
+            <Text className="text-xs" style={{ color: colors.secondaryTextColor }}>
+              {i18n.t('Already have an account,')}
+            </Text>
+            <Text
+              onPress={() => router.push('/(auth)/LogInScreen')}
+              className="ml-2 font-bold"
+              style={{ color: colors.isActiveColorText }}
+            >
+              {i18n.t('Log In')}
+            </Text>
           </View>
-
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </View>
+      </View>
+    </WrapperComponent>
   )
 }
 

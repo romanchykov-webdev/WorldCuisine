@@ -1,26 +1,22 @@
 import { Stack, usePathname, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Appearance, AppState } from 'react-native'
+import { AppState } from 'react-native'
 import { QueryClientProvider, focusManager } from '@tanstack/react-query'
-//
-import { AuthProvider, useAuth } from '../contexts/AuthContext'
-//
+import * as Localization from 'expo-localization'
+
 import { supabase } from '../lib/supabase'
-//
 import { queryClient } from '../lib/queryClient'
 import { getUserData } from '../service/userService'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
-import { useLangStore } from '../stores/langStore'
-
+import { getDeviceLang, useLangStore } from '../stores/langStore'
 import '../global.css'
 import i18n from '../lang/i18n'
 
 function _layout() {
-  //
   const lang = useLangStore((s) => s.lang)
 
-  // Подсказка фокусу для RN: активное состояние приложения = "focused"
+  // Effect #1: фокус для React Query
   useEffect(() => {
     const sub = AppState.addEventListener('change', (status) => {
       focusManager.setFocused(status === 'active')
@@ -28,96 +24,85 @@ function _layout() {
     return () => sub.remove()
   }, [])
 
-  // lang
+  // Effect #2: обновляем i18n при смене lang
   useEffect(() => {
     i18n.locale = lang
   }, [lang])
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RootLayout />
-      </AuthProvider>
+      <RootLayout />
     </QueryClientProvider>
   )
 }
 
 function RootLayout() {
-  const setLang = useLangStore((s) => s.setLang)
   const router = useRouter()
   const pathname = usePathname()
 
-  // CONTEXT (временно, для совместимости экранов)
-  const { setAuth: setAuthCtx } = useAuth()
-
-  // ZUSTAND
+  const setLang = useLangStore((s) => s.setLang)
   const setAuth = useAuthStore((s) => s.setAuth)
   const setUserData = useAuthStore((s) => s.setUserData)
 
-  const preferredTheme = useThemeStore((s) => s.preferredTheme)
   const setPreferredTheme = useThemeStore((s) => s.setPreferredTheme)
   const applyTheme = useThemeStore((s) => s.applyTheme)
+  const subscribeToSystemTheme = useThemeStore((s) => s.subscribeToSystemTheme)
 
   const [isLoading, setIsLoading] = useState(true)
-  const [initialRoute, setInitialRoute] = useState(null)
+  const [initialRoute, setInitialRoute] = useState('/homeScreen')
 
-  // sync device theme when 'auto'
-  useEffect(() => {
-    if (preferredTheme !== 'auto') return
-    const listener = Appearance.addChangeListener(() => {
-      applyTheme()
-    })
-    return () => listener.remove()
-  }, [preferredTheme, applyTheme])
-
+  // Effect #3: инициализация (сессия + подписки)
   useEffect(() => {
     let isMounted = true
+    const unsubscribeTheme = subscribeToSystemTheme() // одна подписка на системную тему
 
-    const checkInitialSession = async () => {
+    const init = async () => {
       try {
+        // применим текущую тему немедленно
+        applyTheme()
+
         const {
           data: { session },
         } = await supabase.auth.getSession()
-
         if (!isMounted) return
-
-        let authData = null
-        const route = '/homeScreen'
 
         if (session) {
           const res = await getUserData(session.user.id)
-          authData = res.success ? { ...session.user, ...res.data } : session.user
+          const authData = res.success ? { ...session.user, ...res.data } : session.user
 
-          // ZUSTAND: записываем пользователя
           setAuth(authData)
-          // ТЕМА: берём из профиля если есть, иначе auto
-          const userTheme = authData?.theme || 'auto'
-          setPreferredTheme(userTheme)
+          setUserData(authData)
+
+          // тема из профиля или auto
+          setPreferredTheme(authData?.theme || 'auto')
           applyTheme()
 
-          setLang(authData?.app_lang || 'en')
-          // CONTEXT: для совместимости
-          setAuthCtx(authData)
+          // язык из профиля или язык устройства
+          setLang(authData?.app_lang || getDeviceLang())
         } else {
           setAuth(null)
-          setAuthCtx(null)
+          setLang(getDeviceLang())
+          setPreferredTheme('auto')
+          applyTheme()
         }
 
-        setInitialRoute(route)
-        setTimeout(() => setIsLoading(false), 3000)
-      } catch (error) {
-        console.error('Error checking initial session:', error)
+        setIsLoading(false)
+      } catch (e) {
+        console.error('init session error:', e)
         if (!isMounted) return
         setAuth(null)
-        setAuthCtx(null)
-        setInitialRoute('/homeScreen')
-        setTimeout(() => setIsLoading(false), 3000)
+        setLang(getDeviceLang())
+        setPreferredTheme('auto')
+        applyTheme()
+        setIsLoading(false)
       }
     }
 
-    checkInitialSession()
+    init()
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted) return
 
       if (_event === 'SIGNED_IN' && session && _event !== 'INITIAL_SESSION') {
@@ -125,26 +110,27 @@ function RootLayout() {
           const res = await getUserData(session.user.id)
           const authData = res.success ? { ...session.user, ...res.data } : session.user
 
-          // ZUSTAND
           setAuth(authData)
-          setUserData(authData) // опционально, если нужно дополнить
-          const userTheme = authData?.theme || 'auto'
-          setPreferredTheme(userTheme)
+          setUserData(authData)
+
+          setPreferredTheme(authData?.theme || 'auto')
           applyTheme()
-          setLang(authData?.app_lang || 'en')
-          // CONTEXT (временно)
-          setAuthCtx(authData)
+
+          setLang(authData?.app_lang || getDeviceLang())
 
           if (pathname === '/' || pathname === '/(main)/welcome') {
             router.replace('/homeScreen')
           }
         } catch (error) {
-          console.error('Error updating user data on sign in:', error)
+          console.error('onAuthStateChange SIGNED_IN error:', error)
         }
-      } else if (_event === 'SIGNED_OUT') {
+      }
+
+      if (_event === 'SIGNED_OUT') {
         setAuth(null)
-        setAuthCtx(null)
-        setLang('en')
+        setLang(getDeviceLang())
+        setPreferredTheme('auto')
+        applyTheme()
         if (pathname !== '/(main)/welcome') {
           router.replace('/(main)/welcome')
         }
@@ -153,15 +139,16 @@ function RootLayout() {
 
     return () => {
       isMounted = false
-      authListener.subscription.unsubscribe()
+      subscription.unsubscribe()
+      unsubscribeTheme()
     }
-  }, [pathname, router, setAuth, setUserData, setPreferredTheme, applyTheme, setAuthCtx, setLang])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]) // router не обязателен, Expo Router стабилен
 
+  // Небольшой эффект редиректа после загрузки
   useEffect(() => {
-    if (!isLoading) {
-      router.replace('/homeScreen')
-    }
-  }, [isLoading])
+    if (!isLoading) router.replace('/homeScreen')
+  }, [isLoading, router])
 
   if (isLoading) {
     return (
@@ -170,8 +157,7 @@ function RootLayout() {
       </Stack>
     )
   }
-  // useAuthStore.getState()
-  // console.log('layout useAuthStore', useAuthStore.getState())
+
   return (
     <Stack initialRouteName={initialRoute}>
       <Stack.Screen name="index" options={{ headerShown: false }} />

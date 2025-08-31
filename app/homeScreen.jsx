@@ -14,7 +14,6 @@ import { hp, wp } from '../constants/responsiveScreen'
 import i18n from '../lang/i18n'
 import { useCategories } from '../queries/recipes'
 
-//
 import { useAuthStore } from '../stores/authStore'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
 import { useLangStore } from '../stores/langStore'
@@ -118,8 +117,9 @@ function HomeScreen() {
 
             {/*    RecipesMasonryComponent */}
             <RecipesMasonryComponent
-              categoryRecipes={categoryRecipes || {}}
+              categoryRecipes={categoryRecipes || []}
               langApp={user?.app_lang ?? lang}
+              loading={isLoading}
             />
           </>
         )}
@@ -127,5 +127,4 @@ function HomeScreen() {
     </SafeAreaView>
   )
 }
-// noinspection JSUnusedGlobalSymbols
 export default HomeScreen

@@ -7,6 +7,7 @@ import { shadowBoxBlack } from '../constants/shadow'
 import i18n from '../lang/i18n'
 import AvatarCustom from './AvatarCustom'
 import { useRouter } from 'expo-router'
+import { truncateText } from '../utils/truncateText'
 
 function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLikesCount }) {
   const router = useRouter()
@@ -63,7 +64,7 @@ function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLike
         <View className="flex-row">
           <Text style={{ fontSize: hp(1.7), color: colors.textColor }}>{i18n.t('Hello')}, </Text>
           <Text style={{ fontSize: hp(1.7), color: colors.textColor }} className=" capitalize">
-            {user?.user_name} !
+            {truncateText(user?.user_name, 7, true)}
           </Text>
         </View>
       )}

@@ -1,9 +1,6 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
-import { themes } from '../constants/themes'
-import { useAuth } from '../contexts/AuthContext'
 
 function LoadingComponent(props) {
-  const { currentTheme } = useAuth()
   const { size, color } = props
   const activityIndicatorSize = typeof size === 'number' ? size : 'large'
   return (

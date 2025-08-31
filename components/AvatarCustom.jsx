@@ -28,7 +28,11 @@ function AvatarCustom({
       source={source}
       transition={100}
       className="rounded-full"
-      style={[styles.avatar, { height: size, width: size, borderRadius: rounded }, style]}
+      style={[
+        styles.avatar,
+        { height: size, width: size, borderRadius: rounded, overflow: 'hidden' },
+        style,
+      ]}
       contentFit={isOpenImageInModal ? 'contain' : 'cover'}
     />
   )

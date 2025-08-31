@@ -23,31 +23,42 @@ import { wp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack, shadowBoxWhite } from '../../constants/shadow'
 import { themes } from '../../constants/themes'
 
-import { useAuth } from '../../contexts/AuthContext'
-
 import i18n from '../../lang/i18n'
 
 // for compress image avatar
 import { compressImage } from '../../lib/imageUtils'
 import { getUserImageSrc, uploadFile } from '../../service/imageServices'
 import { deleteUser, logOut, updateUser } from '../../service/userService'
+import { useAuthStore } from '../../stores/authStore'
+import { useThemeStore } from '../../stores/themeStore'
+import { useLangStore } from '../../stores/langStore'
+import AvatarCustom from '../../components/AvatarCustom'
 
 function EditProfile() {
-  const { user: currentUser, setAuth, setUserData, currentTheme } = useAuth()
+  // Zustand
+
+  const currentUser = useAuthStore((s) => s.user)
+
+  const currentTheme = useThemeStore((s) => s.currentTheme)
+
+  const lang = useLangStore((s) => s.lang)
+
+  const unreadCommentsCount = 0
+
+  const unreadLikesCount = 0
+
+  const isAuth = !!user
+
+  // Zustand
   const router = useRouter()
 
   // console.log("EditProfile currentUser", currentUser);
 
   const [loading, setLoading] = useState(false)
 
-  const [user, setUser] = useState({
-    user_name: '',
-    app_lang: '',
-    avatar: '',
-    theme: '',
-  })
+  const [user, setUser] = useState(currentUser)
   // const [user, setUser] = useState({})
-  // console.log('currentUser', user.avatar)
+  // console.log('currentUser', currentUser)
   useEffect(() => {
     if (currentUser) {
       setUser({
@@ -99,7 +110,7 @@ function EditProfile() {
 
     // Загрузка аватара, если он был изменен
     if (typeof avatar === 'object' && avatar?.uri) {
-      console.log('avatar', avatar)
+      // console.log('avatar', avatar)
       const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.png`
       const imageRes = await uploadFile(uniqueFilePath, avatar.uri, true, currentUser?.avatar)
       if (imageRes.success) {
@@ -133,7 +144,7 @@ function EditProfile() {
         Alert.alert('Error', res.msg)
         return
       }
-      console.log('User deleted successfully.')
+      // console.log('User deleted successfully.')
 
       // Выход из сессии
       await logOut({ setAuth, router })
@@ -183,14 +194,7 @@ function EditProfile() {
         {/* avatar */}
         <View className="gap-y-5 items-center mb-5 ">
           <View style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}>
-            <Image
-              source={user?.avatar}
-              style={{
-                width: wp(50),
-                height: wp(50),
-                borderRadius: 100,
-              }}
-            />
+            <AvatarCustom uri={user?.avatar} size={wp(50)} style={{ borderRadius: 100 }} />
             <View
               className="absolute bottom-5 right-5"
               style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
