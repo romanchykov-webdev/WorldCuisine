@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
 
-import { useEffect, useState } from 'react'
 import { Platform, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native'
 
 import HeaderComponent from '../components/HeaderComponent'
@@ -11,33 +10,39 @@ import SearchComponent from '../components/SearchComponent'
 
 import TopRecipeComponent from '../components/topRecipe/TopRecipeComponent'
 import { hp, wp } from '../constants/responsiveScreen'
-import { themes } from '../constants/themes'
-import { useAuthStore } from '../stores/authStore'
-import { useThemeStore } from '../stores/themeStore'
+
 import i18n from '../lang/i18n'
 import { useCategories } from '../queries/recipes'
 
+//
+import { useAuthStore } from '../stores/authStore'
+import { useThemeColors, useThemeStore } from '../stores/themeStore'
+import { useLangStore } from '../stores/langStore'
+
 function HomeScreen() {
+  const colors = useThemeColors()
+
   // Zustand
+
   const user = useAuthStore((s) => s.user)
+
   const currentTheme = useThemeStore((s) => s.currentTheme)
+
+  const lang = useLangStore((s) => s.lang)
+
   const unreadCommentsCount = 0
+
   const unreadLikesCount = 0
 
-  // язык берём из профиля пользователя или оставляем текущий
-  const langDev = user?.app_lang || i18n.locale
-  useEffect(() => {
-    i18n.locale = langDev
-  }, [langDev])
   const isAuth = !!user
 
   // Zustand
 
-  const { data: categoryRecipes, isLoading, isFetching, refetch } = useCategories(langDev)
+  const { data: categoryRecipes, isLoading, isFetching, refetch } = useCategories(lang)
 
   // if (__DEV__) useLogQueries('home')
   return (
-    <SafeAreaView style={{ backgroundColor: themes[currentTheme]?.backgroundColor, flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
       <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -51,10 +56,9 @@ function HomeScreen() {
           <RefreshControl
             refreshing={isFetching}
             onRefresh={refetch}
-            tintColor={themes[currentTheme]?.textColor} // iOS спиннер
-            title="" // iOS подпись, если нужна
-            colors={[themes[currentTheme]?.textColor || '#000']} // Android спиннер
-            progressBackgroundColor={themes[currentTheme]?.backgroundColor}
+            tintColor={colors.textColor}
+            colors={[colors.textColor || '#000']}
+            progressBackgroundColor={colors.backgroundColor}
           />
         }
       >
@@ -68,7 +72,6 @@ function HomeScreen() {
               justifyContent: 'center',
               alignItems: 'center',
             }}
-            // className="bg-red-500 absolute top-0 left-0 w-full h-full flex-1"
           >
             <LoadingComponent size="large" color="green" />
           </View>
@@ -78,6 +81,7 @@ function HomeScreen() {
             <HeaderComponent
               isAuth={isAuth}
               user={user}
+              colors={colors}
               unreadCommentsCount={unreadCommentsCount}
               unreadLikesCount={unreadLikesCount}
             />
@@ -88,7 +92,7 @@ function HomeScreen() {
                 <Text
                   style={{
                     fontSize: hp(3),
-                    color: themes[currentTheme]?.textColor,
+                    color: colors.textColor,
                   }}
                   className="font-semibold "
                 >
@@ -97,7 +101,7 @@ function HomeScreen() {
                 <Text
                   style={{
                     fontSize: hp(3),
-                    color: themes[currentTheme]?.textColor,
+                    color: colors.textColor,
                   }}
                   className="font-semibold"
                 >
@@ -106,7 +110,7 @@ function HomeScreen() {
               </View>
             </View>
 
-            {/* ?search bar */}
+            {/* search bar */}
             <SearchComponent />
 
             {/*    categories */}
@@ -115,7 +119,7 @@ function HomeScreen() {
             {/*    RecipesMasonryComponent */}
             <RecipesMasonryComponent
               categoryRecipes={categoryRecipes || {}}
-              langApp={user?.app_lang ?? langDev}
+              langApp={user?.app_lang ?? lang}
             />
           </>
         )}
@@ -123,5 +127,5 @@ function HomeScreen() {
     </SafeAreaView>
   )
 }
-
+// noinspection JSUnusedGlobalSymbols
 export default HomeScreen

@@ -2,16 +2,24 @@ import { Stack, usePathname, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Appearance, AppState } from 'react-native'
 import { QueryClientProvider, focusManager } from '@tanstack/react-query'
-
+//
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
+//
 import { supabase } from '../lib/supabase'
+//
 import { queryClient } from '../lib/queryClient'
 import { getUserData } from '../service/userService'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
+import { useLangStore } from '../stores/langStore'
+
 import '../global.css'
+import i18n from '../lang/i18n'
 
 function _layout() {
+  //
+  const lang = useLangStore((s) => s.lang)
+
   // Подсказка фокусу для RN: активное состояние приложения = "focused"
   useEffect(() => {
     const sub = AppState.addEventListener('change', (status) => {
@@ -19,6 +27,11 @@ function _layout() {
     })
     return () => sub.remove()
   }, [])
+
+  // lang
+  useEffect(() => {
+    i18n.locale = lang
+  }, [lang])
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -30,6 +43,7 @@ function _layout() {
 }
 
 function RootLayout() {
+  const setLang = useLangStore((s) => s.setLang)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -81,6 +95,7 @@ function RootLayout() {
           setPreferredTheme(userTheme)
           applyTheme()
 
+          setLang(authData?.app_lang || 'en')
           // CONTEXT: для совместимости
           setAuthCtx(authData)
         } else {
@@ -116,7 +131,7 @@ function RootLayout() {
           const userTheme = authData?.theme || 'auto'
           setPreferredTheme(userTheme)
           applyTheme()
-
+          setLang(authData?.app_lang || 'en')
           // CONTEXT (временно)
           setAuthCtx(authData)
 
@@ -129,6 +144,7 @@ function RootLayout() {
       } else if (_event === 'SIGNED_OUT') {
         setAuth(null)
         setAuthCtx(null)
+        setLang('en')
         if (pathname !== '/(main)/welcome') {
           router.replace('/(main)/welcome')
         }
@@ -139,7 +155,7 @@ function RootLayout() {
       isMounted = false
       authListener.subscription.unsubscribe()
     }
-  }, [pathname, router, setAuth, setUserData, setPreferredTheme, applyTheme, setAuthCtx])
+  }, [pathname, router, setAuth, setUserData, setPreferredTheme, applyTheme, setAuthCtx, setLang])
 
   useEffect(() => {
     if (!isLoading) {

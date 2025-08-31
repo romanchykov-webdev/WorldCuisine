@@ -1,24 +1,17 @@
-import { useRouter } from 'expo-router'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import { Cog6ToothIcon } from 'react-native-heroicons/mini'
-import { default as Icon, default as IconComent } from 'react-native-vector-icons/EvilIcons'
+import EvilIcon from 'react-native-vector-icons/EvilIcons'
 import { hp } from '../constants/responsiveScreen'
 import { shadowBoxBlack } from '../constants/shadow'
-import { themes } from '../constants/themes'
-
-import { useAuth } from '../contexts/AuthContext'
-// for translate
 import i18n from '../lang/i18n'
 import AvatarCustom from './AvatarCustom'
+import { useRouter } from 'expo-router'
 
-function HeaderComponent({ isAuth, user, unreadCommentsCount, unreadLikesCount }) {
-  const { currentTheme } = useAuth()
+function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLikesCount }) {
   const router = useRouter()
 
-  // console.log('HeaderComponent user',user)
-  // console.log('user HeaderComponent',user)
-
-  // console.log('home component isAuth',isAuth)
+  const hasUnread = (unreadCommentsCount ?? 0) > 0 || (unreadLikesCount ?? 0) > 0
 
   return (
     <View>
@@ -29,9 +22,7 @@ function HeaderComponent({ isAuth, user, unreadCommentsCount, unreadLikesCount }
             className="w-[25] h-[25] rounded-full mr-1"
             resizeMode="cover"
           />
-          <Text style={{ fontSize: 24, color: themes[currentTheme]?.textColor }}>
-            Ratatouille
-          </Text>
+          <Text style={{ fontSize: 24, color: colors.textColor }}>Ratatouille</Text>
         </View>
         <View>
           {isAuth ? (
@@ -50,11 +41,12 @@ function HeaderComponent({ isAuth, user, unreadCommentsCount, unreadLikesCount }
                   style={{ borderWidth: 0.2 }}
                   rounded={50}
                 />
-                <View className="  absolute left-[-10] gap-y-5 top-[-5px]">
-                  {unreadCommentsCount > 0 && <IconComent name="comment" size={20} color="red" />}
-                  {unreadLikesCount > 0 && <Icon name="heart" size={20} color="red" />}
-                  {/* <Icon name="heart" size={20} color="red" /> */}
-                </View>
+                {hasUnread && (
+                  <View className="absolute left-[-10] top-[-5px] gap-y-5">
+                    {unreadCommentsCount > 0 && <EvilIcon name="comment" size={20} color="red" />}
+                    {unreadLikesCount > 0 && <EvilIcon name="heart" size={20} color="red" />}
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           ) : (
@@ -66,29 +58,17 @@ function HeaderComponent({ isAuth, user, unreadCommentsCount, unreadLikesCount }
             </View>
           )}
         </View>
-
-        {/* <TouchableOpacity> */}
-        {/*    <Cog6ToothIcon size={hp(4)} color="gray"/> */}
-        {/* </TouchableOpacity> */}
       </View>
       {isAuth && (
         <View className="flex-row">
-          <Text style={{ fontSize: hp(1.7), color: themes[currentTheme]?.textColor }}>
-            {i18n.t('Hello')}
-            ,
-            {' '}
-          </Text>
-          <Text style={{ fontSize: hp(1.7), color: themes[currentTheme]?.textColor }} className=" capitalize">
-            {user?.user_name}
-            {' '}
-            !
+          <Text style={{ fontSize: hp(1.7), color: colors.textColor }}>{i18n.t('Hello')}, </Text>
+          <Text style={{ fontSize: hp(1.7), color: colors.textColor }} className=" capitalize">
+            {user?.user_name} !
           </Text>
         </View>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({})
 
 export default HeaderComponent

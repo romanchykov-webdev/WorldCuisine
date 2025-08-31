@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { Appearance } from 'react-native'
+import { getTheme } from '../constants/themes'
 
 export const useThemeStore = create((set, get) => ({
   currentTheme: 'light', // реальная тема, применённая сейчас
@@ -15,3 +16,9 @@ export const useThemeStore = create((set, get) => ({
     }
   },
 }))
+
+// хук, чтобы сразу получать палитру
+export const useThemeColors = () => {
+  const mode = useThemeStore((s) => s.currentTheme)
+  return getTheme(mode)
+}
