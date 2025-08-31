@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { PaperAirplaneIcon, TrashIcon } from 'react-native-heroicons/mini'
 import { formatDateTime } from '../../constants/halperFunctions'
 import { hp } from '../../constants/responsiveScreen'
@@ -17,11 +25,9 @@ import {
 import AvatarCustom from '../AvatarCustom'
 import LoadingComponent from '../loadingComponent'
 
-function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId }) {
+function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId, currentTheme }) {
   // console.log('CommentsComponent recepId',recepId)
   // console.log('CommentsComponent user',user)
-
-  const { currentTheme } = useAuth()
 
   // user?.id===comment?.userIdCommented || user?.id===publishedId
 
@@ -42,14 +48,13 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
       setCommentsAll(res.data)
 
       // Извлекаем все userIdCommented из массива commentsAll
-      const usersId = res.data.map(comment => comment.user_id_commented)
+      const usersId = res.data.map((comment) => comment.user_id_commented)
       setUserIdCommented(usersId)
 
       // if (user?.id === comment?.userIdCommented || user?.id === publishedId) {
       //
       // }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Ошибка при получении комментариев:', error)
     }
   }
@@ -61,7 +66,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
 
     // Объединение данных
     const mergedData = commentsAll.map((comment) => {
-      const user = res.data.find(user => user.id === comment.user_id_commented)
+      const user = res.data.find((user) => user.id === comment.user_id_commented)
       return {
         ...comment,
         ...(user ? { avatar: user.avatar, user_name: user.user_name } : {}),
@@ -121,8 +126,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
     setLoading(true)
     if (inputText === '') {
       Alert.alert('Comment', 'Write a comment')
-    }
-    else {
+    } else {
       if (recepId && user?.id && inputText) {
         const { success, data } = await addNewCommentToRecipeMyDB({
           postId: recepId,
@@ -130,7 +134,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
           comment: inputText,
         })
         if (success && data) {
-          setCommentsAll(prev => [data[0], ...prev]) // Обновляем состояние с данными из базы
+          setCommentsAll((prev) => [data[0], ...prev]) // Обновляем состояние с данными из базы
           setInputText('')
         }
       }
@@ -177,8 +181,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
                 // Перезагружаем список комментариев
                 await fetchComments()
                 //   Alert.alert("Success", "Comment deleted successfully.");
-              }
-              catch (error) {
+              } catch (error) {
                 console.error('Error deleting comment:', error)
                 Alert.alert('Error', 'Failed to delete comment. Please try again.')
               }
@@ -188,8 +191,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
         ],
         { cancelable: true },
       )
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Unexpected error in deleteComment:', error)
       Alert.alert('Error', 'An unexpected error occurred.')
     }
@@ -217,7 +219,7 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId 
             placeholderTextColor="gray"
             multiline={true}
             value={inputText}
-            onChangeText={value => changeText(value)}
+            onChangeText={(value) => changeText(value)}
             style={[
               {
                 fontSize: hp(1.7),

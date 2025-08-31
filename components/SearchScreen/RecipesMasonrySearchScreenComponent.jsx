@@ -2,7 +2,7 @@ import { useState } from 'react'
 import MasonryList from '@react-native-seoul/masonry-list'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import {
   ArrowUturnLeftIcon,
   ChatBubbleOvalLeftEllipsisIcon,

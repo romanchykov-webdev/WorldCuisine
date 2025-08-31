@@ -8,9 +8,7 @@ import LoadingComponent from '../loadingComponent'
 import ImageCustom from './ImageCustom'
 import ImageSliderCustom from './ImageSliderCustom'
 
-function RecipeInstructions({ instructions, langDev, isPreview }) {
-  const { currentTheme } = useAuth()
-
+function RecipeInstructions({ instructions, langDev, currentTheme }) {
   if (!instructions || instructions.length === 0) {
     return <LoadingComponent />
   }

@@ -9,7 +9,7 @@ import AddLinkVideo from '../../components/CreateRecipeScreen/AddLinkVideo'
 import AddPointGoogleMaps from '../../components/CreateRecipeScreen/AddPintGoogleMaps'
 import LinkToTheCopyright from '../../components/CreateRecipeScreen/LinkToTheCopyright'
 import SelectCreateRecipeScreenCustom from '../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom'
-import HeaderScreanComponent from '../../components/HeaderScreanComponent'
+import HeaderScreenComponent from '../../components/HeaderScreenComponent'
 import LoadingComponent from '../../components/loadingComponent'
 import SelectLangComponent from '../../components/recipeDetails/SelectLangComponent'
 import RefactorAreaComponent from '../../components/RefactorRecipeScrean/RefactorAreaComponent'
@@ -329,7 +329,7 @@ function RefactorRecipeScreen() {
   if (!recipeDish) {
     return (
       <WrapperComponent>
-        <HeaderScreanComponent titleScreanText="Refactor Recipe" />
+        <HeaderScreenComponent titleScreanText="Refactor Recipe" />
         <View className="flex-1 justify-center items-center">
           <Text>No recipe data available</Text>
         </View>
@@ -345,7 +345,7 @@ function RefactorRecipeScreen() {
     <WrapperComponent>
       <View className="gap-y-5">
         {/* header */}
-        <HeaderScreanComponent titleScreanText={i18n.t('Edit')} />
+        <HeaderScreenComponent titleScreanText={i18n.t('Edit')} />
 
         {/* section select lang */}
         <SelectLangComponent
