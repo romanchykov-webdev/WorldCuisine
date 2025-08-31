@@ -11,13 +11,28 @@ function TitleDescriptionComponent({
   descriptionVisual = false,
   stileDescripton,
   descriptionText,
+  currentTheme,
 }) {
-  const { currentTheme } = useAuth()
+  // const { currentTheme } = useAuth()
   return (
     <View style={[styles.wrapper, slyleWrapper]}>
-      {titleVisual && <Text style={[styles.title, styleTitle, { color: themes[currentTheme]?.textColor }]}>{titleText}</Text>}
+      {titleVisual && (
+        <Text style={[styles.title, styleTitle, { color: themes[currentTheme]?.textColor }]}>
+          {titleText}
+        </Text>
+      )}
 
-      {descriptionVisual && <Text style={[styles.description, stileDescripton, { color: themes[currentTheme]?.secondaryTextColor }]}>{descriptionText}</Text>}
+      {descriptionVisual && (
+        <Text
+          style={[
+            styles.description,
+            stileDescripton,
+            { color: themes[currentTheme]?.secondaryTextColor },
+          ]}
+        >
+          {descriptionText}
+        </Text>
+      )}
     </View>
   )
 }

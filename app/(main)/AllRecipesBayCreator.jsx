@@ -1,10 +1,18 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import Icon from 'react-native-vector-icons/Entypo'
 import IconComent from 'react-native-vector-icons/EvilIcons'
-import HeaderScreanComponent from '../../components/HeaderScreanComponent'
+import HeaderScreenComponent from '../../components/HeaderScreenComponent'
 
 import LoadingComponent from '../../components/loadingComponent'
 import ToggleListCategoryComponent from '../../components/profile/ToggleListCategoryComponent'
@@ -23,14 +31,23 @@ import { themes } from '../../constants/themes'
 import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../lang/i18n'
 
-import { getAllRecipesBayCreatoreListMyDB, getCategoryRecipeMasonryMyDB } from '../../service/getDataFromDB'
+import {
+  getAllRecipesBayCreatoreListMyDB,
+  getCategoryRecipeMasonryMyDB,
+} from '../../service/getDataFromDB'
 import AllRecipesPointScreen from './AllRecipesPointScreen'
 
 function AllRecipesBayCreator() {
   const router = useRouter()
   const params = useLocalSearchParams()
 
-  const { user: userData, unreadCommentsCount, unreadLikesCount, language: langDev, currentTheme } = useAuth()
+  const {
+    user: userData,
+    unreadCommentsCount,
+    unreadLikesCount,
+    language: langDev,
+    currentTheme,
+  } = useAuth()
   // console.log("AllRecipesBayCreator unreadCommentsCount", unreadCommentsCount);
   // console.log("AllRecipesBayCreator langDev", langDev);
   // console.log("AllRecipesBayCreator userData?.lang", userData?.lang);
@@ -80,8 +97,7 @@ function AllRecipesBayCreator() {
           setLoading(false)
         }, 1000)
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error in featGetAllRecipeBayCreator:', error)
       throw error // Пробрасываем ошибку, чтобы её можно было обработать снаружи
     }
@@ -111,8 +127,7 @@ function AllRecipesBayCreator() {
     }
     if (!toggleFolderList) {
       featGetAllRecipeBayCreator(creator_id)
-    }
-    else {
+    } else {
       fetchCategoryRecipeMasonry()
     }
   }, [userData, creator_id, toggleFolderList])
@@ -159,13 +174,13 @@ function AllRecipesBayCreator() {
           {/* Остальные элементы */}
           {/* {!headerAllCeripe && (
 						<Animated.View entering={FadeInDown.springify().delay(200)}>
-							<TitleScrean
+							<TitleScreen
 								title={i18n.t("Your recipes")}
 								styleTitle={{ textAlign: "center", fontSize: hp(3) }}
 							/>
 						</Animated.View>
 					)} */}
-          <HeaderScreanComponent
+          <HeaderScreenComponent
             fontSizeTitle={3}
             headerAllCeripe={headerAllCeripe}
             titleScreanText={i18n.t('Your recipes')}
@@ -212,9 +227,7 @@ function AllRecipesBayCreator() {
                   >
                     <IconComent name="comment" size={50} color="red" />
                     <Text className="absolute" style={{ fontSize: 12 }}>
-                      +
-                      {' '}
-                      {myFormatNumber(unreadCommentsCount)}
+                      + {myFormatNumber(unreadCommentsCount)}
                     </Text>
                   </TouchableOpacity>
                 </Animated.View>
@@ -230,9 +243,7 @@ function AllRecipesBayCreator() {
                   >
                     <Icon name="heart" size={50} color="red" />
                     <Text className="absolute" style={{ fontSize: 12 }}>
-                      +
-                      {' '}
-                      {myFormatNumber(unreadLikesCount)}
+                      + {myFormatNumber(unreadLikesCount)}
                     </Text>
                   </TouchableOpacity>
                 </Animated.View>
@@ -246,39 +257,33 @@ function AllRecipesBayCreator() {
           className=" flex-1"
           // style={{ borderWidth: 1, borderColor: "red" }}
         >
-          {loading
-            ? (
-                <LoadingComponent color="green" />
-              )
-            : (
-                <View>
-                  {allRecipesCreator.length === 0
-                    ? (
-                        <Animated.Text
-                          className="text-lg font-bold text-center"
-                          entering={FadeInDown.delay(500).springify().damping(30)}
-                        >
-                          {i18n.t('You don\'t have any published recipes yet')}
-                        </Animated.Text>
-                      )
-                    : toggleFolderList
-                      ? (
-                          <RecipesMasonryComponent
-                            categoryRecipes={categoryRecipes}
-                            langApp={userData?.lang ?? langDev}
-                            isScreanAlrecipeBayCreatore={true}
-                            isScreanAllRecibeData={allRecipesCreator}
-                          />
-                        )
-                      : (
-                          <AllRecipesPointScreen
-                            isScreanAlrecipeBayCreatore={true}
-                            titleVisible={false}
-                            isScreanAllRecibeData={allRecipesCreator}
-                          />
-                        )}
-                </View>
+          {loading ? (
+            <LoadingComponent color="green" />
+          ) : (
+            <View>
+              {allRecipesCreator.length === 0 ? (
+                <Animated.Text
+                  className="text-lg font-bold text-center"
+                  entering={FadeInDown.delay(500).springify().damping(30)}
+                >
+                  {i18n.t("You don't have any published recipes yet")}
+                </Animated.Text>
+              ) : toggleFolderList ? (
+                <RecipesMasonryComponent
+                  categoryRecipes={categoryRecipes}
+                  langApp={userData?.lang ?? langDev}
+                  isScreanAlrecipeBayCreatore={true}
+                  isScreanAllRecibeData={allRecipesCreator}
+                />
+              ) : (
+                <AllRecipesPointScreen
+                  isScreanAlrecipeBayCreatore={true}
+                  titleVisible={false}
+                  isScreanAllRecibeData={allRecipesCreator}
+                />
               )}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,222 +1,229 @@
-import MasonryList from '@react-native-seoul/masonry-list';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline';
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
-import { getDeviceType } from '../../constants/getWidthDevice';
-import { hp } from '../../constants/responsiveScreen';
-import { shadowBoxBlack } from '../../constants/shadow';
-import { themes } from '../../constants/themes';
-import { useAuth } from '../../contexts/AuthContext';
-import AvatarCustom from '../AvatarCustom';
+// components/RecipesMasonry/RecipesMasonryComponent.jsx
+import React, { useCallback, useMemo, useState } from 'react'
+import MasonryList from '@react-native-seoul/masonry-list'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated'
+import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline'
 
-function RecipesMasonryComponent({
-    categoryRecipes,
-    langApp,
-    isScreanAlrecipeBayCreatore = false,
-}) {
-    // console.log("RecipesMasonryComponent categoryRecipes", categoryRecipes);
-    // console.log("RecipesMasonryComponent langApp", langApp);
-    // console.log("RecipesMasonryComponent isScreanAlrecipeBayCreatore", isScreanAlrecipeBayCreatore);
-    // console.log("RecipesMasonryComponent isScreanAllRecibeData", isScreanAllRecibeData);
-    useEffect(() => {}, [langApp]);
+import { hp } from '../../constants/responsiveScreen'
+import { shadowBoxBlack } from '../../constants/shadow'
+import AvatarCustom from '../AvatarCustom'
+import { useThemeColors } from '../../stores/themeStore'
+import Shimmer from '../Skeleton/Shimmer'
 
-    const [isSubCategoryView, setIsSubCategoryView] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+// ===== Skeletons =====
+const ShimmerCard = React.memo(function ShimmerCard({ index }) {
+  const isEven = index % 3 === 0
+  const h = isEven ? hp(25) : hp(35)
+  return (
+    <View style={[styles.card, { marginHorizontal: 2.5 }, shadowBoxBlack({ opacity: 0.25 })]}>
+      <Shimmer width="100%" height={h} borderRadius={35} />
+    </View>
+  )
+})
 
-    const [column, setColumn] = useState(0);
+const ShimmerGrid = React.memo(function ShimmerGrid({ count = 6 }) {
+  const data = useMemo(() => Array.from({ length: count }, (_, i) => i), [count])
+  return (
+    <View style={{ marginTop: 10 }}>
+      <MasonryList
+        data={data}
+        keyExtractor={(i) => `sk-${i}`}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item: i }) => <ShimmerCard index={i} />}
+      />
+    </View>
+  )
+})
 
-    // console.log('Recipes Recipes',recipes)
+// ===== Category card =====
+const CategoryCard = React.memo(function CategoryCard({ item, index, onPress }) {
+  const isEven = index % 3 === 0
+  const imageHeight = isEven ? hp(25) : hp(35)
 
-    useEffect(() => {
-        // Определяем тип устройства и обновляем количество колонок
-        const type = getDeviceType(window.innerWidth);
-        setColumn(type);
-    }, []);
-
-    const handleSubCategory = item => {
-        setSelectedItem(item); // Устанавливаем текущий элемент
-        setIsSubCategoryView(true); // Переходим к отображению подкатегорий
-    };
-
-    const handleBack = () => {
-        setIsSubCategoryView(false); // Возвращаемся к основным категориям
-        setSelectedItem(null); // Сбрасываем выбранный элемент
-    };
-
-    return (
-        <View className="flex-1 gap-y-3 gap-x-3 mt-5">
-            {!isSubCategoryView ? (
-                <MasonryList
-                    data={categoryRecipes}
-                    keyExtractor={(_, index) => index.toString()}
-                    numColumns={2}
-                    renderItem={({ item, i }) => (
-                        <CardItem
-                            item={item}
-                            index={i}
-                            onPress={handleSubCategory}
-                            langApp={langApp}
-                        />
-                    )}
-                    onEndReachedThreshold={0.1}
-                />
-            ) : (
-                <Animated.View entering={FadeInDown} exiting={FadeOutDown}>
-                    <SubCategoryView
-                        item={selectedItem}
-                        isSubCategoryView={isSubCategoryView}
-                        handleBack={handleBack}
-                        langApp={langApp}
-                    />
-                </Animated.View>
-            )}
-        </View>
-    );
-}
-
-function CardItem({ item, index, onPress }) {
-    // 	// console.log('CardItem',index)
-    const isEven = index % 3 === 0;
-    const imageHeight = isEven ? hp(25) : hp(35);
-
-    return (
-        <Animated.View
-            entering={FadeInDown.delay(index * 200).springify()} // Задержка анимации
-            className="flex-1 mb-[10] gap-y-1 p-[2]"
-            style={[
-                shadowBoxBlack({
-                    offset: { width: 1, height: 1 },
-                    opacity: 1,
-                    radius: 3,
-                }),
-                { marginHorizontal: 2.5 },
-            ]}
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(index * 120).springify()}
+      style={[
+        styles.card,
+        { marginHorizontal: 2, borderRadius: 35 },
+        shadowBoxBlack({ offset: { width: 1, height: 2 }, opacity: 1, radius: 3 }),
+      ]}
+    >
+      <TouchableOpacity onPress={() => onPress?.(item)} activeOpacity={0.8}>
+        <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
+        <Text
+          className="absolute bottom-[20] text-white font-semibold text-lg"
+          numberOfLines={1}
+          style={{ textAlign: 'center', width: '100%' }}
         >
+          {item?.name}
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  )
+})
+
+// ===== Subcategory card =====
+const SubCategoryCard = React.memo(function SubCategoryCard({ item, index, onOpen }) {
+  const isEven = index % 3 === 0
+  const imageHeight = isEven ? hp(25) : hp(35)
+
+  return (
+    <Animated.View
+      entering={FadeInDown.delay(index * 120).springify()}
+      style={[
+        styles.card,
+        { marginHorizontal: 2, borderRadius: 35 },
+        shadowBoxBlack({ offset: { width: 1, height: 2 }, opacity: 1, radius: 3 }),
+      ]}
+    >
+      <TouchableOpacity onPress={() => onOpen?.(item)} activeOpacity={0.8}>
+        <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
+        <Text
+          className="absolute bottom-[20] text-white font-semibold text-lg"
+          numberOfLines={1}
+          style={{ textAlign: 'center', width: '100%' }}
+        >
+          {item?.name}
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  )
+})
+
+/**
+ * @param {Array}  categoryRecipes [{ name, image, point, subcategories: [{ name, image, point }, ...] }, ...]
+ * @param {String} langApp
+ * @param {Boolean} loading - если true, рисуем скелетоны
+ */
+function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = false }) {
+  const [selected, setSelected] = useState(null) // выбранная категория
+  const colors = useThemeColors()
+
+  const data = useMemo(
+    () => (Array.isArray(categoryRecipes) ? categoryRecipes : []),
+    [categoryRecipes],
+  )
+  const isLoading = loading || data.length === 0
+
+  const onPressCategory = useCallback((item) => setSelected(item), [])
+  const onBack = useCallback(() => setSelected(null), [])
+
+  // key extractors
+  const keyCat = useCallback((it, idx) => String(it?.point || it?.name || idx), [])
+  const keySub = useCallback((it, idx) => String(it?.point || it?.name || idx), [])
+
+  // рендеры
+  const renderCategory = useCallback(
+    ({ item, i, index }) => (
+      <CategoryCard item={item} index={index ?? i} onPress={onPressCategory} />
+    ),
+    [onPressCategory],
+  )
+
+  const router = useRouter()
+  const openSub = useCallback(
+    (sub) => {
+      router.push({
+        pathname: '(main)/AllRecipesPointScreen',
+        params: { point: sub?.point, langApp, preview: false },
+      })
+    },
+    [router, langApp],
+  )
+
+  const renderSubcategory = useCallback(
+    ({ item, i, index }) => <SubCategoryCard item={item} index={index ?? i} onOpen={openSub} />,
+    [openSub],
+  )
+
+  // ---- FIX: сначала показываем КАТЕГОРИИ, а при selected — ПОДКАТЕГОРИИ
+  if (isLoading && !selected) {
+    return <ShimmerGrid count={8} />
+  }
+
+  return (
+    <View className="flex-1 mt-5">
+      {!selected ? (
+        <MasonryList
+          data={data}
+          keyExtractor={keyCat}
+          numColumns={2}
+          renderItem={renderCategory}
+          showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0.1}
+        />
+      ) : (
+        <Animated.View entering={FadeInDown}>
+          {/* back */}
+          <View className="flex-row items-center mb-5 mt-5">
             <TouchableOpacity
-                onPress={() => onPress(item)}
-                className="rounded-full relative items-center"
+              onPress={onBack}
+              style={shadowBoxBlack()}
+              className="absolute left-0 z-10 w-[50] h-[50] justify-center items-center bg-white rounded-full"
             >
-                <AvatarCustom
-                    uri={item.image}
-                    style={{
-                        borderWidth: 0.2,
-                        width: '100%',
-                        height: imageHeight,
-                    }}
-                    rounded={35}
-                />
-                <LinearGradient
-                    colors={['transparent', '#18181b']}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        borderRadius: 35,
-                    }}
-                    start={{ x: 0.5, y: 0.2 }}
-                    end={{ x: 0.5, y: 1 }}
-                />
-                <Text className="absolute bottom-[20] text-white font-semibold">
-                    {item.name}
-                </Text>
+              <ArrowUturnLeftIcon size={30} color="gray" />
             </TouchableOpacity>
-        </Animated.View>
-    );
-}
 
-function SubCategoryView({ item, isSubCategoryView, handleBack, langApp }) {
-    const router = useRouter();
-    const { currentTheme } = useAuth();
-    const handleOpenItem = async item => {
-        // console.log("SubCategoryView handleOpenItem", item);
+            <Text
+              className="flex-1 text-center font-semibold text-xl"
+              style={{ color: colors.textColor }}
+              numberOfLines={1}
+            >
+              {selected?.name}
+            </Text>
+          </View>
 
-        router.push({
-            pathname: '(main)/AllRecipesPointScreen',
-            params: { point: item.point, langApp, preview: false },
-        });
-    };
-    // console.log(item);
-    return (
-        <View className="gap-y-3">
-            <View className="flex-row items-center mb-5 mt-5">
-                {isSubCategoryView && (
-                    <TouchableOpacity
-                        className="absolute left-0 z-10 w-[50] h-[50] justify-center items-center bg-white rounded-full"
-                        onPress={handleBack}
-                        style={shadowBoxBlack()}
-                    >
-                        <ArrowUturnLeftIcon size={30} color="gray" />
-                    </TouchableOpacity>
-                )}
-                <Text
-                    className=" flex-1 text-center  font-semibold text-xl  mb-2"
-                    style={{ color: themes[currentTheme]?.textColor }}
-                >
-                    {item?.name}
-                </Text>
-            </View>
-
+          {Array.isArray(selected?.subcategories) && selected.subcategories.length > 0 ? (
             <MasonryList
-                data={item.subcategories || []}
-                keyExtractor={(subItem, index) =>
-                    subItem.name + index.toString()
-                } // Используем уникальный ключ
-                numColumns={2}
-                renderItem={({ item, i }) => {
-                    // console.log('SubCategoryView',i)
-                    const isEven = i % 3 === 0;
-                    const imageHeight = isEven ? hp(25) : hp(35);
-                    return (
-                        <Animated.View
-                            style={[
-                                shadowBoxBlack({
-                                    offset: { width: 1, height: 1 },
-                                    opacity: 1,
-                                    radius: 3,
-                                }),
-                                { marginHorizontal: 2.5 },
-                            ]}
-                            entering={FadeInDown.delay(i * 200).springify()} // Задержка анимации
-                            exiting={FadeOutDown.delay(i * 100)} // Задержка исчезновения
-                            className="flex mb-[10] gap-y-1 p-[2]"
-                        >
-                            <TouchableOpacity
-                                onPress={() => handleOpenItem(item)}
-                                className="rounded-full relative items-center"
-                            >
-                                <AvatarCustom
-                                    uri={item.image}
-                                    style={{
-                                        borderWidth: 0.2,
-                                        width: '100%',
-                                        height: imageHeight,
-                                    }}
-                                    rounded={35}
-                                />
-                                <LinearGradient
-                                    colors={['transparent', '#18181b']}
-                                    style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        position: 'absolute',
-                                        borderRadius: 35,
-                                    }}
-                                    start={{ x: 0.5, y: 0.2 }}
-                                    end={{ x: 0.5, y: 1 }}
-                                />
-                                <Text className="absolute bottom-[10] text-white font-semibold">
-                                    {item.name}
-                                </Text>
-                            </TouchableOpacity>
-                        </Animated.View>
-                    );
-                }}
+              data={selected.subcategories}
+              keyExtractor={keySub}
+              numColumns={2}
+              renderItem={renderSubcategory}
+              showsVerticalScrollIndicator={false}
+              onEndReachedThreshold={0.1}
             />
-        </View>
-    );
+          ) : (
+            <View style={{ paddingVertical: 16 }}>
+              <Text style={{ textAlign: 'center', color: colors.secondaryTextColor }}>
+                No subcategories found
+              </Text>
+            </View>
+          )}
+        </Animated.View>
+      )}
+    </View>
+  )
 }
 
-export default RecipesMasonryComponent;
+function CardImageShell({ uri, height, radius = 35 }) {
+  return (
+    <View style={{ width: '100%', height, borderRadius: radius, overflow: 'hidden' }}>
+      <AvatarCustom
+        uri={uri}
+        style={{ borderWidth: 0.2, width: '100%', height }}
+        rounded={radius}
+      />
+      <LinearGradient
+        colors={['transparent', '#18181b']}
+        style={[StyleSheet.absoluteFill, { borderRadius: radius }]} // <— ВАЖНО
+        start={{ x: 0.5, y: 0.2 }}
+        end={{ x: 0.5, y: 1 }}
+      />
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  card: {
+    flex: 1,
+    padding: 2,
+    marginBottom: 10,
+  },
+})
+
+export default React.memo(RecipesMasonryComponent)

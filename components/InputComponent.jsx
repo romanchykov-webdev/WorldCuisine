@@ -1,50 +1,118 @@
-import { TextInput, View } from 'react-native'
+// components/InputComponent.jsx
+import React, { forwardRef, memo, useMemo } from 'react'
+import { Text, TextInput, View } from 'react-native'
 import { hp } from '../constants/responsiveScreen'
-import { themes } from '../constants/themes'
-import { useAuth } from '../contexts/AuthContext'
-// envelope-open
+import { useThemeColors } from '../stores/themeStore'
 
-function InputComponent({
-  icon,
-  placeholder,
-  value,
-  onChangeText,
-  containerStyle,
-  secureTextEntry = false,
-  email = false,
-  ...props
-}) {
-  // console.log('props', props);
-  const { currentTheme } = useAuth()
-  // const { icon, placeholder, value, onChangeText,containerStyle, secureTextEntry = false, email=false}=props
+/**
+ * Универсальный инпут с иконкой.
+ *
+ * Props:
+ * - icon: ReactNode слева
+ * - value, onChangeText
+ * - placeholder
+ * - type: 'text' | 'email' | 'password'  (задаёт keyboardType, autoCapitalize и т.д.)
+ * - secureTextEntry (перекрывает поведение type='password', если нужно)
+ * - containerStyle, inputStyle
+ * - errorText?: string
+ * - disabled?: boolean
+ * - ...rest — любые пропсы TextInput
+ */
+const InputComponent = forwardRef(function InputComponent(
+  {
+    icon,
+    value,
+    onChangeText,
+    placeholder,
+    type = 'text',
+    secureTextEntry,
+    containerStyle,
+    inputStyle,
+    errorText,
+    disabled = false,
+    ...rest
+  },
+  ref,
+) {
+  const colors = useThemeColors()
+
+  // Подбираем настройки по типу
+  const config = useMemo(() => {
+    switch (type) {
+      case 'email':
+        return {
+          keyboardType: 'email-address',
+          autoCapitalize: 'none',
+          autoCorrect: false,
+          textContentType: 'emailAddress',
+          autoComplete: 'email',
+          secure: false,
+        }
+      case 'password':
+        return {
+          keyboardType: 'default',
+          autoCapitalize: 'none',
+          autoCorrect: false,
+          textContentType: 'password',
+          autoComplete: 'password',
+          secure: true,
+        }
+      default:
+        return {
+          keyboardType: 'default',
+          autoCapitalize: 'sentences',
+          autoCorrect: true,
+          textContentType: 'none',
+          autoComplete: 'off',
+          secure: false,
+        }
+    }
+  }, [type])
+
+  const isSecure = secureTextEntry ?? config.secure
 
   return (
-    <View
-      className="flex-row items-center rounded-2xl border-[1px]
-        border-neutral-700 gap-2 px-5 mb-5
-        {/*bg-red-500*/}
-        "
-      style={containerStyle}
-    >
-      {icon && icon}
+    <View style={containerStyle}>
+      <View
+        className="flex-row items-center rounded-2xl border px-5 mb-2 gap-2"
+        style={{
+          borderColor: '#404040',
+          backgroundColor: 'transparent',
+          opacity: disabled ? 0.6 : 1,
+        }}
+      >
+        {!!icon && <View className="pr-1">{icon}</View>}
 
-      <TextInput
-        style={{ fontSize: hp(2), color: themes[currentTheme]?.textColor }}
-        className="flex-1 p-5"
-        placeholder={placeholder}
-        placeholderTextColor="grey"
-        value={value}
-        onChangeText={onChangeText}
-        autoCorrect={false} // Отключает автозамены
-        autoCapitalize="none" // Отключает автоматическую капитализацию
-        autoCompleteType="off" // Отключает автозаполнение
-        textContentType="none" // Для iOS
-        keyboardType={email ? 'email-address' : 'default'}
-        secureTextEntry={secureTextEntry} // Для пароля
-        {...props}
-      />
+        <TextInput
+          ref={ref}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="grey"
+          editable={!disabled}
+          style={[
+            { fontSize: hp(2), color: colors.textColor, paddingVertical: 16, flex: 1 },
+            inputStyle,
+          ]}
+          keyboardType={config.keyboardType}
+          autoCapitalize={config.autoCapitalize}
+          autoCorrect={config.autoCorrect}
+          autoComplete={config.autoComplete}
+          textContentType={config.textContentType}
+          secureTextEntry={isSecure}
+          returnKeyType={rest.returnKeyType ?? 'done'}
+          {...rest}
+        />
+      </View>
+
+      {!!errorText && (
+        <Text className="mt-1" style={{ color: '#ef4444', fontSize: hp(1.6) }}>
+          {errorText}
+        </Text>
+      )}
     </View>
   )
-}
+})
 
-export default InputComponent
+// лёгкая мемоизация по базовым пропсам
+export default memo(InputComponent)

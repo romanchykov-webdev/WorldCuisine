@@ -11,12 +11,16 @@ import Animated, {
 import { shadowBoxBlack } from '../constants/shadow'
 import ButtonSmallCustom from './Buttons/ButtonSmallCustom'
 
-function ButtonClearInputCustomComponent({ inputValue, setInputValue, top = 0, left = 0, right = 0, bottom = 0 }) {
-  // const [inputValue, setInputValue] = useState("");
-
-  // opacity for animatio
+function ButtonClearInputCustomComponent({
+  inputValue,
+  setInputValue,
+  top = 0,
+  left = 0,
+  right = 0,
+  bottom = 0,
+}) {
   const opacity = useSharedValue(0)
-  // Создаем стиль для анимации
+
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }))
@@ -26,21 +30,15 @@ function ButtonClearInputCustomComponent({ inputValue, setInputValue, top = 0, l
   }, [inputValue])
 
   return (
-    <View
-      style={{ position: 'absolute', top, left, right, bottom }}
-      // className="absolute top-[-15] left-[-5]"
-      // className="absolute top-2 left-2"
-    >
+    <View style={{ position: 'absolute', top, left, right, bottom }}>
       <Animated.View
-        style={{ animatedStyle }}
+        style={animatedStyle} // ✅ исправлено
         entering={FadeInDown.springify()}
         exiting={FadeOutDown}
-
-        // key={inputValue} // Пересоздает компонент при каждом изменении inputValue
       >
         <TouchableOpacity
           onPress={() => setInputValue('')}
-          className=" w-[30] h-[30]  justify-center items-center "
+          className="w-[30] h-[30] justify-center items-center"
           style={shadowBoxBlack()}
         >
           <ButtonSmallCustom

@@ -1,15 +1,14 @@
 import { StyleSheet, Text } from 'react-native'
 import { hp } from '../constants/responsiveScreen'
 import { shadowText } from '../constants/shadow'
-import { themes } from '../constants/themes'
-import { useAuth } from '../contexts/AuthContext'
+import { useThemeColors } from '../stores/themeStore'
 
-function TitleScrean({ title, styleTitle }) {
-  const { currentTheme } = useAuth()
+function TitleScreen({ title, styleTitle }) {
+  const colors = useThemeColors()
   return (
     <Text
       style={[
-        { fontSize: hp(4), color: themes[currentTheme]?.textColor },
+        { fontSize: hp(4), color: colors.textColor },
         shadowText({ color: 'rgba(0,0,0,0.4)', offset: { width: 1.5, height: 1.5 }, radius: 1 }),
         styleTitle,
       ]}
@@ -22,4 +21,4 @@ function TitleScrean({ title, styleTitle }) {
 
 const styles = StyleSheet.create({})
 
-export default TitleScrean
+export default TitleScreen

@@ -28,7 +28,7 @@ import TagsCustom from '../../components/CreateRecipeScreen/TagsCustom'
 import TitleDescriptionComponent from '../../components/CreateRecipeScreen/TitleDescriptionComponent'
 import UploadHeaderImage from '../../components/CreateRecipeScreen/UploadHeaderImage'
 import LoadingComponent from '../../components/loadingComponent'
-import TitleScreen from '../../components/TitleScrean'
+import TitleScreen from '../../components/TitleScreen'
 
 import { validateRecipeStructure } from '../../constants/halperFunctions'
 import { hp } from '../../constants/responsiveScreen'

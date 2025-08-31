@@ -1,5 +1,5 @@
 import { Image } from 'expo-image'
-import { ActivityIndicator, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { hp } from '../constants/responsiveScreen'
 import { getUserImageSrc } from '../service/imageServices'
 
@@ -28,7 +28,11 @@ function AvatarCustom({
       source={source}
       transition={100}
       className="rounded-full"
-      style={[styles.avatar, { height: size, width: size, borderRadius: rounded }, style]}
+      style={[
+        styles.avatar,
+        { height: size, width: size, borderRadius: rounded, overflow: 'hidden' },
+        style,
+      ]}
       contentFit={isOpenImageInModal ? 'contain' : 'cover'}
     />
   )

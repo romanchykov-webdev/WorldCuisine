@@ -3,9 +3,9 @@ import Animated, { FadeInDown } from 'react-native-reanimated'
 import { hp } from '../constants/responsiveScreen'
 import { shadowBoxBlack } from '../constants/shadow'
 import ButtonBack from './ButtonBack'
-import TitleScrean from './TitleScrean'
+import TitleScreen from './TitleScreen'
 
-function HeaderScreanComponent({
+function HeaderScreenComponent({
   headerAllCeripe = false,
   titleScreanText,
   fontSizeTitle = 4,
@@ -31,17 +31,16 @@ function HeaderScreanComponent({
       {/* Остальные элементы */}
       {!headerAllCeripe && (
         <Animated.View entering={FadeInDown.springify().delay(200)} style={styleWrapperTitleScrean}>
-          <TitleScrean
+          <TitleScreen
             title={titleScreanText}
             styleTitle={{ textAlign: 'center', fontSize: hp(fontSizeTitle) }}
           />
         </Animated.View>
       )}
-
     </View>
   )
 }
 
 const styles = StyleSheet.create({})
 
-export default HeaderScreanComponent
+export default HeaderScreenComponent
