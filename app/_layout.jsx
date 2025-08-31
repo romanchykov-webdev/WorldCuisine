@@ -183,13 +183,13 @@ function RootLayout() {
       <Stack.Screen name="(auth)/RegistrationScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/editProfile" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/CreateRecipeScreen" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/RefactorRecipeScrean" options={{ headerShown: false }} />
+      <Stack.Screen name="(main)/RefactorRecipeScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/AllRecipesPointScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/AllRecipesBayCreator" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/FavoriteScrean" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/NewCommentsScrean" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/NewLikesScrean" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/SearchRecipeScrean" options={{ headerShown: false }} />
+      <Stack.Screen name="(main)/FavoriteScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="(main)/NewCommentsScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="(main)/NewLikesScreen" options={{ headerShown: false }} />
+      <Stack.Screen name="(main)/SearchRecipeScreen" options={{ headerShown: false }} />
     </Stack>
   )
 }

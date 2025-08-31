@@ -4,7 +4,7 @@ import { Animated, FlatList, SafeAreaView, Text, View } from 'react-native'
 import ButtonBack from '../../components/ButtonBack'
 import LoadingComponent from '../../components/loadingComponent'
 import NotificationItem from '../../components/NotificationComponent/NotificationItem'
-import TitleScrean from '../../components/TitleScrean'
+import TitleScreen from '../../components/TitleScreen'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
 import { themes } from '../../constants/themes'
@@ -18,7 +18,7 @@ import {
 } from '../../service/notificationsService'
 import { createFadeAnimation, createHeightCollapseAnimation } from '../../utils/animations'
 
-function NewCommentsScrean() {
+function NewCommentsScreen() {
   const { user, markAsRead, unreadCommentsCount, language, currentTheme } = useAuth()
   const [notifications, setNotifications] = useState([])
   const [switchStates, setSwitchStates] = useState({})
@@ -46,8 +46,7 @@ function NewCommentsScrean() {
 
     if (error) {
       setErrorMessage(`Error: ${error.message}`)
-    }
-    else {
+    } else {
       setNotifications((prev) => {
         const newNotifications = isLoadMore ? [...prev, ...data] : data
         data.forEach((notification, index) => {
@@ -66,9 +65,9 @@ function NewCommentsScrean() {
         })
         return newNotifications
       })
-      setSwitchStates(prev => ({
+      setSwitchStates((prev) => ({
         ...prev,
-        ...Object.fromEntries(data.map(n => [n.id, true])),
+        ...Object.fromEntries(data.map((n) => [n.id, true])),
       }))
       setHasMore(data.length === 10)
       if (data.length > 0) {
@@ -84,12 +83,10 @@ function NewCommentsScrean() {
     loadNotifications()
 
     const handleInsert = async (payload) => {
-      if (payload.new.is_read || payload.new.type !== 'comment')
-        return
+      if (payload.new.is_read || payload.new.type !== 'comment') return
 
       setNotifications((prev) => {
-        if (prev.some(n => n.id === payload.new.id))
-          return prev
+        if (prev.some((n) => n.id === payload.new.id)) return prev
         const newNotification = {
           ...payload.new,
           users: { user_name: 'Loading...', avatar: null },
@@ -107,11 +104,11 @@ function NewCommentsScrean() {
         })
         return [...prev, newNotification]
       })
-      setSwitchStates(prev => ({ ...prev, [payload.new.id]: true }))
+      setSwitchStates((prev) => ({ ...prev, [payload.new.id]: true }))
 
       const { data, error } = await fetchNotificationDetails(payload.new.id)
       if (!error && data) {
-        setNotifications(prev => prev.map(n => (n.id === data.id ? data : n)))
+        setNotifications((prev) => prev.map((n) => (n.id === data.id ? data : n)))
       }
     }
 
@@ -138,12 +135,11 @@ function NewCommentsScrean() {
             console.error('Error marking notification as read:', error.message)
             return
           }
-          setNotifications(prev => prev.filter(n => n.id !== notificationId))
+          setNotifications((prev) => prev.filter((n) => n.id !== notificationId))
           markAsRead('comment', recipeId, notificationId)
         },
       })
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Unexpected error in toggleReadStatus:', error.message)
     }
   }
@@ -170,49 +166,45 @@ function NewCommentsScrean() {
           <ButtonBack />
         </View>
         <View className="items-center">
-          <TitleScrean
+          <TitleScreen
             title={`${i18n.t('Last Comments')} (${unreadCommentsCount})`}
             styleTitle={{ textAlign: 'center' }}
           />
         </View>
       </View>
-      {loading
-        ? (
-            <LoadingComponent color="green" />
-          )
-        : errorMessage
-          ? (
-              <Text className="text-center text-lg mt-5 text-red-500">{errorMessage}</Text>
-            )
-          : (
-              <FlatList
-                data={notifications}
-                renderItem={({ item, index }) => (
-                  <NotificationItem
-                    item={item}
-                    animatedHeights={animatedHeights}
-                    fadeAnim={fadeAnim}
-                    switchStates={switchStates}
-                    onToggleRead={toggleReadStatus}
-                    onNavigate={navigateToRecipe}
-                  />
-                )}
-                keyExtractor={item => item.id}
-                contentContainerStyle={{
-                  paddingHorizontal: 20,
-                  paddingBottom: 20,
-                  minHeight: hp(100),
-                }}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={<Text className="text-center text-lg mt-5">No new comments</Text>}
-                onEndReached={loadMore}
-                onEndReachedThreshold={0.1}
-                ListFooterComponent={renderFooter}
-                ref={flatListRef}
-              />
-            )}
+      {loading ? (
+        <LoadingComponent color="green" />
+      ) : errorMessage ? (
+        <Text className="text-center text-lg mt-5 text-red-500">{errorMessage}</Text>
+      ) : (
+        <FlatList
+          data={notifications}
+          renderItem={({ item, index }) => (
+            <NotificationItem
+              item={item}
+              animatedHeights={animatedHeights}
+              fadeAnim={fadeAnim}
+              switchStates={switchStates}
+              onToggleRead={toggleReadStatus}
+              onNavigate={navigateToRecipe}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 20,
+            minHeight: hp(100),
+          }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={<Text className="text-center text-lg mt-5">No new comments</Text>}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={renderFooter}
+          ref={flatListRef}
+        />
+      )}
     </SafeAreaView>
   )
 }
 
-export default NewCommentsScrean
+export default NewCommentsScreen

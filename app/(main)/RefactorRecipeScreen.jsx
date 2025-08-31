@@ -56,7 +56,7 @@ function areEqual(a, b) {
   return a === b
 }
 
-function RefactorRecipeScrean() {
+function RefactorRecipeScreen() {
   const router = useRouter()
 
   const { user } = useAuth()
@@ -439,4 +439,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default RefactorRecipeScrean
+export default RefactorRecipeScreen

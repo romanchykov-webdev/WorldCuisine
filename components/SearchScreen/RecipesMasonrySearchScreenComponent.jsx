@@ -135,7 +135,7 @@ function RecipePointItem({ item, index, langApp }) {
   const imageHeight = isEven ? hp(25) : hp(35)
 
   const categoryTitle = Array.isArray(item.title.lang)
-    ? item.title.lang.find(it => it.lang === langApp)?.name || item.title.strTitle
+    ? item.title.lang.find((it) => it.lang === langApp)?.name || item.title.strTitle
     : item.title.strTitle
 
   return (
@@ -151,7 +151,8 @@ function RecipePointItem({ item, index, langApp }) {
           router.push({
             pathname: 'RecipeDetailsScreen',
             params: { id: item.full_recipe_id, langApp },
-          })}
+          })
+        }
         style={{ width: '100%' }}
         className="rounded-full relative items-center"
       >
@@ -284,13 +285,14 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
 
   const { currentTheme } = useAuth()
 
+  console.log('recipes', recipes)
+
   // Создаём obFilterCategory на основе recipes
   useEffect(() => {
     if (recipes && recipes.length > 0) {
       const filterObj = createCategoryPointObject(recipes)
       setObFilterCategory(filterObj)
-    }
-    else {
+    } else {
       setObFilterCategory({})
     }
   }, [recipes])
@@ -303,16 +305,13 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
       if (res.success) {
         const filteredCategories = filterCategoryRecipesBySubcategories(res.data, obFilterCategory)
         setCategoryRecipes(filteredCategories)
-      }
-      else {
+      } else {
         setCategoryRecipes([])
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Unexpected error:', error)
       setCategoryRecipes([])
-    }
-    finally {
+    } finally {
       setTimeout(() => {
         setLoading(false)
       }, 1000)
@@ -323,8 +322,7 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
   useEffect(() => {
     if (Object.keys(obFilterCategory).length > 0) {
       fetchCategoryRecipeMasonry()
-    }
-    else {
+    } else {
       setCategoryRecipes([])
       setLoading(false)
     }
@@ -337,19 +335,18 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
   }, [recipes])
 
   // Находим название категории
-  const selectedCategoryName
-		= selectedCategory && categoryRecipes.length > 0
-		  ? categoryRecipes.find(cat => cat.point === selectedCategory)?.name || 'Unknown Category'
-		  : null
+  const selectedCategoryName =
+    selectedCategory && categoryRecipes.length > 0
+      ? categoryRecipes.find((cat) => cat.point === selectedCategory)?.name || 'Unknown Category'
+      : null
 
   // Находим название подкатегории
-  const selectedSubcategoryName
-		= selectedSubcategory && categoryRecipes.length > 0
-		  ? categoryRecipes
-		    .flatMap(cat => cat.subcategories || [])
-		    .find(subcat => subcat.point === selectedSubcategory)
-		    ?.name || 'Unknown Subcategory'
-		  : null
+  const selectedSubcategoryName =
+    selectedSubcategory && categoryRecipes.length > 0
+      ? categoryRecipes
+          .flatMap((cat) => cat.subcategories || [])
+          .find((subcat) => subcat.point === selectedSubcategory)?.name || 'Unknown Subcategory'
+      : null
 
   return (
     <View className="flex-1">
@@ -366,24 +363,27 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
               <ArrowUturnLeftIcon size={30} color="gray" />
             </TouchableOpacity>
 
-            <Text className=" flex-1 text-center  font-semibold text-xl  " style={{ color: themes[currentTheme]?.textColor }}>
+            <Text
+              className=" flex-1 text-center  font-semibold text-xl  "
+              style={{ color: themes[currentTheme]?.textColor }}
+            >
               {selectedSubcategoryName}
             </Text>
           </View>
-          {recipes.filter(recipe => recipe.point === selectedSubcategory).length > 0
-            ? (
-                <MasonryList
-                  data={recipes.filter(recipe => recipe.point === selectedSubcategory)}
-                  keyExtractor={(item, index) => `${item.id}-${index}`}
-                  numColumns={numColumns}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({ item, i }) => <RecipePointItem item={item} index={i} langApp={langApp} />}
-                  onEndReachedThreshold={0.1}
-                />
-              )
-            : (
-                <Text className="text-center mt-5">No recipes found for this subcategory</Text>
+          {recipes.filter((recipe) => recipe.point === selectedSubcategory).length > 0 ? (
+            <MasonryList
+              data={recipes.filter((recipe) => recipe.point === selectedSubcategory)}
+              keyExtractor={(item, index) => `${item.id}-${index}`}
+              numColumns={numColumns}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, i }) => (
+                <RecipePointItem item={item} index={i} langApp={langApp} />
               )}
+              onEndReachedThreshold={0.1}
+            />
+          ) : (
+            <Text className="text-center mt-5">No recipes found for this subcategory</Text>
+          )}
         </Animated.View>
       ) : selectedCategory ? (
         <Animated.View entering={FadeInDown.duration(300)}>
@@ -397,48 +397,53 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
 
               {/* <Text className="text-blue-500">Back to categories</Text> */}
             </TouchableOpacity>
-            <Text className=" flex-1 text-center  font-semibold text-xl  " style={{ color: themes[currentTheme]?.textColor }}>
+            <Text
+              className=" flex-1 text-center  font-semibold text-xl  "
+              style={{ color: themes[currentTheme]?.textColor }}
+            >
               {selectedCategoryName}
             </Text>
           </View>
-          {categoryRecipes.find(cat => cat.point === selectedCategory)?.subcategories.length > 0
-            ? (
-                <MasonryList
-                  data={categoryRecipes.find(cat => cat.point === selectedCategory).subcategories}
-                  keyExtractor={(item, index) => `${item.point}-${index}`}
-                  numColumns={numColumns}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({ item, i }) => (
-                    <SubCategoryView
-                      item={item}
-                      index={i}
-                      onSubcategorySelect={setSelectedSubcategory}
-                      langApp={langApp}
-                    />
-                  )}
-                  onEndReachedThreshold={0.1}
-                />
-              )
-            : (
-                <Text className="text-center mt-5">No subcategories found</Text>
-              )}
-        </Animated.View>
-      ) : categoryRecipes.length > 0
-        ? (
+          {categoryRecipes.find((cat) => cat.point === selectedCategory)?.subcategories.length >
+          0 ? (
             <MasonryList
-              data={categoryRecipes}
+              data={categoryRecipes.find((cat) => cat.point === selectedCategory).subcategories}
               keyExtractor={(item, index) => `${item.point}-${index}`}
               numColumns={numColumns}
               showsVerticalScrollIndicator={false}
               renderItem={({ item, i }) => (
-                <CategoryView item={item} index={i} onCategorySelect={setSelectedCategory} langApp={langApp} />
+                <SubCategoryView
+                  item={item}
+                  index={i}
+                  onSubcategorySelect={setSelectedSubcategory}
+                  langApp={langApp}
+                />
               )}
               onEndReachedThreshold={0.1}
             />
-          )
-        : (
-            <Text className="text-center mt-5">No categories found for the search results</Text>
+          ) : (
+            <Text className="text-center mt-5">No subcategories found</Text>
           )}
+        </Animated.View>
+      ) : categoryRecipes.length > 0 ? (
+        <MasonryList
+          data={categoryRecipes}
+          keyExtractor={(item, index) => `${item.point}-${index}`}
+          numColumns={numColumns}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, i }) => (
+            <CategoryView
+              item={item}
+              index={i}
+              onCategorySelect={setSelectedCategory}
+              langApp={langApp}
+            />
+          )}
+          onEndReachedThreshold={0.1}
+        />
+      ) : (
+        <Text className="text-center mt-5">No categories found for the search results</Text>
+      )}
     </View>
   )
 }
