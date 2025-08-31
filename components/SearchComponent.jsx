@@ -6,10 +6,10 @@ import { MagnifyingGlassIcon } from 'react-native-heroicons/mini'
 import i18n from '../lang/i18n'
 import { hp } from '../constants/responsiveScreen'
 import { shadowBoxBlack } from '../constants/shadow'
-import { useDebounce } from '../constants/halperFunctions'
 import ButtonClearInputCustomComponent from './ButtonClearInputCustomComponent'
 import { useThemeColors } from '../stores/themeStore'
 import PulseRing from './PulseRing'
+import { useDebounce } from '../utils/useDebounce'
 
 function SearchComponent({ mode = 'home', initialValue = '', onSearchChange }) {
   const colors = useThemeColors()

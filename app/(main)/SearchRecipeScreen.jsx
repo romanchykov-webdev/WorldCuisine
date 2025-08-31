@@ -18,6 +18,7 @@ import i18n from '../../lang/i18n'
 
 import { useSearchRecipes } from '../../queries/recipes'
 import { useThemeStore } from '../../stores/themeStore'
+import { useLangStore } from '../../stores/langStore'
 
 function SearchRecipeScreen() {
   //
@@ -27,6 +28,8 @@ function SearchRecipeScreen() {
   //
   const currentTheme = useThemeStore((s) => s.currentTheme)
 
+  //
+  const lang = useLangStore((s) => s.lang)
   // локальный текст запроса (инициализируем из параметра ссылки)
   const [currentQuery, setCurrentQuery] = useState(searchQuery || '')
 
@@ -184,15 +187,13 @@ function SearchRecipeScreen() {
         {isLoading || isFetching ? (
           <LoadingComponent color="green" />
         ) : displayFilters === 'folder' ? (
-          <RecipesMasonrySearchScreenComponent recipes={filteredRecipes} />
+          <RecipesMasonrySearchScreenComponent recipes={filteredRecipes} langApp={lang} />
         ) : (
-          <RecipeListSearchScreenComponent recipes={filteredRecipes} />
+          <RecipeListSearchScreenComponent recipes={filteredRecipes} langApp={lang} />
         )}
       </View>
     </WrapperComponent>
   )
 }
-
-const styles = StyleSheet.create({})
 
 export default SearchRecipeScreen
