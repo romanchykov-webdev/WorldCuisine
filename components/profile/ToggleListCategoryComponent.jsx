@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import Icon from 'react-native-vector-icons/Entypo'
 import { shadowBoxBlack } from '../../constants/shadow'
@@ -38,7 +38,5 @@ function ToggleListCategoryComponent({ toggleFolderList, onToggleChange, hasReci
     </View>
   )
 }
-
-const styles = StyleSheet.create({})
 
 export default ToggleListCategoryComponent

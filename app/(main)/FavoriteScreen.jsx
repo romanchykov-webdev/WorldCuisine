@@ -1,17 +1,16 @@
-// app/(main)/FavoriteScreen.jsx
-import { useState, useMemo } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { useState } from 'react'
+import { Text, View } from 'react-native'
 import WrapperComponent from '../../components/WrapperComponent'
 import HeaderScreenComponent from '../../components/HeaderScreenComponent'
 import ToggleListCategoryComponent from '../../components/profile/ToggleListCategoryComponent'
 import LoadingComponent from '../../components/loadingComponent'
-import RecipesMasonrySearchScreenComponent from '../../components/SearchScreen/RecipesMasonrySearchScreenComponent'
-import AllRecipesPointScreen from './AllRecipesPointScreen' // оставим как есть для варианта «список»
-import i18n from '../../lang/i18n'
+import RecipesMasonryComponent from '../../components/RecipesMasonry/RecipesMasonryComponent'
+import AllRecipesPointScreen from './AllRecipesPointScreen'
 
 import { useAuthStore } from '../../stores/authStore'
 import { useLangStore } from '../../stores/langStore'
 import { useFavoriteIds, useFavoriteRecipes, useFavoriteCategories } from '../../queries/favorites'
+import i18n from '../../lang/i18n'
 
 function FavoriteScreen() {
   const user = useAuthStore((s) => s.user)
@@ -27,9 +26,13 @@ function FavoriteScreen() {
   // 3) Категории, отфильтрованные по избранному
   const { data: categories = [], isLoading: l3, isError: e3 } = useFavoriteCategories(lang, recipes)
 
+  //
+  console.log('FAV ids:', ids?.length, ids)
+  console.log('FAV recipes:', recipes?.length)
+  console.log('FAV cats:', categories?.length)
+
   const loading = l1 || l2 || (showFolders && l3)
   const hasError = e1 || e2 || (showFolders && e3)
-
   const hasRecipes = (recipes || []).length > 0
 
   return (
@@ -47,19 +50,20 @@ function FavoriteScreen() {
         {loading ? (
           <LoadingComponent color="green" />
         ) : hasError ? (
-          <View style={{ paddingVertical: 16 }}>{/* можно показать тост/ошибку */}</View>
+          <View style={{ paddingVertical: 16 }}>
+            <Text style={{ textAlign: 'center', opacity: 0.6 }}>Something went wrong</Text>
+          </View>
         ) : !hasRecipes ? (
-          <View style={{ paddingVertical: 16 }}>{/* пустое состояние */}</View>
+          <View style={{ paddingVertical: 16 }}>
+            <Text style={{ textAlign: 'center', opacity: 0.6 }}>
+              There are no recipes you like yet
+            </Text>
+          </View>
         ) : showFolders ? (
-          // папки (категории из Masonry, уже отфильтрованные по избранному)
-          <RecipesMasonrySearchScreenComponent
-            // этот компонент у тебя отображает masonry по массиву рецептов;
-            // если нужен именно masonry-категорий — используй свой RecipesMasonryComponent
-            recipes={recipes}
-            langApp={lang}
-          />
+          // Папки (категории masonry, уже отфильтрованные по избранному)
+          <RecipesMasonryComponent categoryRecipes={categories} langApp={lang} />
         ) : (
-          // список: переиспользуем AllRecipesPointScreen, но ему нужен массив
+          // Список рецептов
           <AllRecipesPointScreen
             allFavoriteRecipes={recipes}
             isFavoriteScrean
@@ -72,5 +76,4 @@ function FavoriteScreen() {
   )
 }
 
-const styles = StyleSheet.create({})
 export default FavoriteScreen

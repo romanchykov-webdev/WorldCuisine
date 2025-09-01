@@ -1,5 +1,6 @@
-// service/TQuery/auth.js
+//TQuery
 import { supabase } from '../../lib/supabase'
+import { getUserData } from '../userService'
 
 /**
  * Логин через Supabase Auth + (опционально) подкачка профиля.

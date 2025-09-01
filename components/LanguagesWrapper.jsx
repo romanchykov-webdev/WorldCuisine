@@ -1,14 +1,8 @@
-// components/LanguagesWrapper.jsx
-import { StyleSheet } from 'react-native'
 import { LanguageIcon } from 'react-native-heroicons/outline'
 import i18n from '../lang/i18n'
 import SelectCustom from './SelectCustom'
-import { useLangStore } from '../stores/langStore'
 
 function LanguagesWrapper({ setLang, lang }) {
-  // const lang = useLangStore((s) => s.lang)
-  // const setLang = useLangStore((s) => s.setLang)
-
   const languageNames = {
     en: 'English',
     ru: 'Русский',
@@ -31,5 +25,4 @@ function LanguagesWrapper({ setLang, lang }) {
   )
 }
 
-const styles = StyleSheet.create({})
 export default LanguagesWrapper

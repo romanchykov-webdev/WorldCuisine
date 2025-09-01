@@ -1,268 +1,242 @@
-import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { useEffect, useMemo, useState } from 'react'
+import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { CameraIcon } from 'react-native-heroicons/mini'
+
+import AvatarCustom from '../../components/AvatarCustom'
 import ButtonBack from '../../components/ButtonBack'
 import LanguagesWrapper from '../../components/LanguagesWrapper'
 import ThemeWrapper from '../../components/ThemeWrapper'
-// translate
 import TitleScreen from '../../components/TitleScreen'
+import WrapperComponent from '../../components/WrapperComponent'
+
 import { wp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack, shadowBoxWhite } from '../../constants/shadow'
 import { themes } from '../../constants/themes'
-
 import i18n from '../../lang/i18n'
 
-// for compress image avatar
 import { compressImage } from '../../lib/imageUtils'
 import { getUserImageSrc, uploadFile } from '../../service/imageServices'
-import { deleteUser, logOut, updateUser } from '../../service/userService'
+
 import { useAuthStore } from '../../stores/authStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useLangStore } from '../../stores/langStore'
-import AvatarCustom from '../../components/AvatarCustom'
+import { useUpdateUser, useDeleteUser, useLogout } from '../../queries/users'
 
 function EditProfile() {
-  // Zustand
-
-  const currentUser = useAuthStore((s) => s.user)
-
-  const currentTheme = useThemeStore((s) => s.currentTheme)
-
-  const lang = useLangStore((s) => s.lang)
-
-  const unreadCommentsCount = 0
-
-  const unreadLikesCount = 0
-
-  const isAuth = !!user
-
-  // Zustand
   const router = useRouter()
 
-  // console.log("EditProfile currentUser", currentUser);
+  // Zustand stores
+  const currentUser = useAuthStore((s) => s.user)
+  const setUserData = useAuthStore((s) => s.setUserData)
+  const signOutLocal = useAuthStore((s) => s.signOutLocal)
+  const currentTheme = useThemeStore((s) => s.currentTheme)
+  const appLang = useLangStore((s) => s.lang)
 
-  const [loading, setLoading] = useState(false)
+  // Локальный стейт формы
+  const [form, setForm] = useState(() => ({
+    user_name: currentUser?.user_name,
+    app_lang: currentUser?.app_lang,
+    theme: currentUser?.theme,
+    avatar: currentUser?.avatar,
+  }))
 
-  const [user, setUser] = useState(currentUser)
-  // const [user, setUser] = useState({})
-  // console.log('currentUser', currentUser)
-  useEffect(() => {
-    if (currentUser) {
-      setUser({
-        user_name: currentUser.user_name,
-        app_lang: currentUser.app_lang,
-        theme: currentUser.theme,
-        avatar: currentUser.avatar,
-      })
-    }
-  }, [currentUser])
+  // мутации
+  const updateMutation = useUpdateUser()
+  const deleteMutation = useDeleteUser()
+  const logoutMutation = useLogout()
 
-  // let imageSource = user?.avatar && typeof user.avatar === 'object' ? user.avatar : getUserImageSrc(user?.avatar);
-  const imageSource =
-    user?.avatar && typeof user.avatar == 'object' ? user.avatar.uri : getUserImageSrc(user?.avatar)
+  const isSubmitting = updateMutation.isPending
+  const isDeleting = deleteMutation.isPending
 
-  const updateAvatar = async () => {
-    console.log('updateAvatar')
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      // mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    })
-
-    // console.log('result',result);
-
-    if (result) {
-      // Сжимаем изображение перед использованием
-      const compressedImage = await compressImage(result.assets[0].uri, 0.5, 200, 200)
-      // console.log("EditProfile compressedImage", compressedImage);
-
-      setUser({ ...user, avatar: compressedImage })
-      // console.log("EditProfile user", user);
-      // console.log('Compressed image:', compressedImage);
-      // setUser({...user, avatar: result.assets[0]});
-      // console.log('user avatar update', user)
-    } else {
-      console.error('Image selection canceled or failed', result)
-    }
-  }
-
-  const handleSubmit = async () => {
-    setLoading(true)
-
-    const userData = { ...user }
-
-    const { user_name, app_lang, theme, avatar } = userData
-
-    // Загрузка аватара, если он был изменен
-    if (typeof avatar === 'object' && avatar?.uri) {
-      // console.log('avatar', avatar)
-      const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.png`
-      const imageRes = await uploadFile(uniqueFilePath, avatar.uri, true, currentUser?.avatar)
-      if (imageRes.success) {
-        userData.avatar = imageRes.data
-      } else {
-        console.error('Failed to upload avatar:', imageRes.msg)
-        userData.avatar = currentUser?.avatar // Оставляем старый аватар при ошибке
-      }
-    }
-
-    // console.log("before submit", userData);
-
-    const res = await updateUser(currentUser?.id, userData)
-
-    if (res.success) {
-      setUserData({ ...currentUser, ...userData })
-    } else {
-      console.error('Failed to update user:', res.msg)
-    }
-
-    setLoading(false)
-  }
-
-  const DeleteAccount = async () => {
+  // Выбор и сжатие изображения
+  const pickAvatar = async () => {
     try {
-      // Удаление пользователя
-      // const res = await deleteUser(userData?.id);
-      const res = await deleteUser(user?.id)
-      if (!res.success) {
-        console.error('Error:', res.msg)
-        Alert.alert('Error', res.msg)
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (status !== 'granted') {
+        Alert.alert(i18n.t('Permission'), i18n.t('Permission to access photos is required.'))
         return
       }
-      // console.log('User deleted successfully.')
 
-      // Выход из сессии
-      await logOut({ setAuth, router })
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      })
 
-      // Перенаправление после успешного выполнения
-      router.replace('/homeScreen')
-    } catch (error) {
-      console.error('Error deleting user or logging out:', error)
-      Alert.alert('Error', 'Something went wrong!')
+      if (result.canceled) return
+
+      const uri = result.assets?.[0]?.uri
+      if (!uri) return
+
+      const compressed = await compressImage(uri, 0.7, 600, 600)
+      setForm((prev) => ({ ...prev, avatar: { uri: compressed.uri } }))
+    } catch (e) {
+      console.error('pickAvatar error', e)
+      Alert.alert(i18n.t('Error'), i18n.t('Failed to pick image.'))
     }
   }
 
-  const handleDeleteProfile = async () => {
-    Alert.alert('Confirm', 'Are you sure you want to DELETE ACCOUNT?', [
+  const onSubmit = async () => {
+    if (!currentUser?.id) return
+    try {
+      let avatarField = form.avatar
+
+      // Если пришёл объект {uri} — грузим и заменяем на строку пути
+      if (avatarField && typeof avatarField === 'object' && avatarField.uri) {
+        const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.jpg`
+        const uploaded = await uploadFile(
+          uniqueFilePath,
+          avatarField.uri,
+          true,
+          currentUser?.avatar,
+        )
+        if (!uploaded?.success) {
+          Alert.alert(i18n.t('Error'), i18n.t('Failed to upload avatar.'))
+          // оставляем старый avatar
+          avatarField = currentUser?.avatar ?? null
+        } else {
+          avatarField = uploaded.data // строка пути/URL
+        }
+      }
+
+      const payload = {
+        userId: currentUser.id,
+        data: {
+          user_name: form.user_name?.trim() || currentUser.user_name,
+          app_lang: form.app_lang,
+          theme: form.theme,
+          avatar: form.avatar,
+        },
+      }
+
+      await updateMutation.mutateAsync(payload)
+
+      // Обновим Zustand (если мутация не сделала этого сама onSuccess)
+      if (typeof setUserData === 'function') {
+        setUserData(payload.data)
+      }
+
+      Alert.alert(i18n.t('Success'), i18n.t('Profile updated'))
+      router.back()
+    } catch (e) {
+      console.error('update profile error', e)
+      Alert.alert(i18n.t('Error'), e?.message ?? 'Failed to update profile')
+    }
+  }
+
+  const onDeleteAccount = () => {
+    Alert.alert(i18n.t('Confirm'), i18n.t('Are you sure you want to DELETE ACCOUNT?'), [
+      { text: i18n.t('Cancel'), style: 'cancel' },
       {
-        text: 'Cancel',
-        onPress: () => console.log('modal cancelled'),
-        style: 'cancel',
-      },
-      {
-        text: 'DELETE',
-        onPress: () => DeleteAccount(),
+        text: i18n.t('DELETE'),
         style: 'destructive',
+        onPress: async () => {
+          try {
+            if (!currentUser?.id) return
+            await deleteMutation.mutateAsync({ userId: currentUser.id })
+            // после удаления выходим из сессии
+            await logoutMutation.mutateAsync()
+            signOutLocal()
+            router.replace('/homeScreen')
+          } catch (e) {
+            console.error('delete account error', e)
+            Alert.alert(i18n.t('Error'), e?.message ?? 'Failed to delete account')
+          }
+        },
       },
     ])
   }
 
   return (
-    <ScrollView
-      keyboardDismissMode="on-drag"
-      contentContainerStyle={{
-        paddingHorizontal: wp(4),
-        marginTop: Platform.OS === 'ios' ? null : 60,
-      }}
-      showsVerticalScrollIndicator={false}
-      style={{ backgroundColor: themes[currentTheme]?.backgroundColor }}
-    >
-      <SafeAreaView>
-        {/* header */}
-        <View className="flex-row items-center justify-center pt-5 pb-5 ">
-          <View className="absolute left-0" style={shadowBoxBlack()}>
-            <ButtonBack />
-          </View>
-          <TitleScreen title={`${i18n.t('Edit Profile')} !`} styleTitle={[{ fontSize: 20 }]} />
+    <WrapperComponent>
+      {/* header */}
+      <View className="flex-row items-center justify-center pt-5 pb-5 ">
+        <View className="absolute left-0" style={shadowBoxBlack()}>
+          <ButtonBack />
         </View>
+        <TitleScreen title={`${i18n.t('Edit Profile')} !`} styleTitle={[{ fontSize: 20 }]} />
+      </View>
 
-        {/* avatar */}
-        <View className="gap-y-5 items-center mb-5 ">
-          <View style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}>
-            <AvatarCustom uri={user?.avatar} size={wp(50)} style={{ borderRadius: 100 }} />
-            <View
-              className="absolute bottom-5 right-5"
-              style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+      {/* avatar */}
+      <View className="gap-y-5 items-center mb-5 ">
+        <View style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}>
+          <AvatarCustom uri={form?.avatar} size={wp(50)} style={{ borderRadius: 100 }} />
+          <View
+            className="absolute bottom-5 right-5"
+            style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+          >
+            <TouchableOpacity
+              onPress={pickAvatar}
+              className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
             >
-              <TouchableOpacity
-                onPress={updateAvatar}
-                className="bg-white p-2 border-[1px] border-neutral-300 rounded-full"
-              >
-                <CameraIcon size={30} color="grey" />
-              </TouchableOpacity>
-            </View>
+              <CameraIcon size={30} color="grey" />
+            </TouchableOpacity>
           </View>
         </View>
+      </View>
 
-        <View
-          className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
-          style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-        >
-          <TextInput
-            style={{ color: themes[currentTheme]?.textColor }}
-            value={user.user_name}
-            onChangeText={(value) => setUser({ ...user, user_name: value })}
-            className=" text-xl p-3"
-          />
-        </View>
+      {/* name */}
+      <View
+        className="mb-5 border-[0.5px] border-neutral-700  rounded-xl pb-2"
+        style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+      >
+        <TextInput
+          value={form?.user_name}
+          onChangeText={(v) => setForm((p) => ({ ...p, user_name: v }))}
+          className=" text-xl p-3"
+          placeholder={i18n.t('Your name')}
+          placeholderTextColor="#9CA3AF"
+          style={{ color: themes[currentTheme]?.textColor }}
+        />
+      </View>
 
-        <View className="mb-5">
-          <LanguagesWrapper
-            lang={user?.app_lang}
-            setLang={(newLang) => setUser({ ...user, app_lang: newLang })}
-          />
-        </View>
+      {/* language */}
+      <View className="mb-5">
+        <LanguagesWrapper
+          lang={form?.app_lang}
+          setLang={(newLang) => setForm((p) => ({ ...p, app_lang: newLang }))}
+        />
+      </View>
 
-        {/* theme */}
-        <View className="mb-5">
-          <ThemeWrapper
-            setTheme={(newTheme) => setUser({ ...user, theme: newTheme })}
-            theme={user?.theme}
-          />
-        </View>
+      {/* theme */}
+      <View className="mb-5">
+        <ThemeWrapper
+          theme={form?.theme}
+          setTheme={(newTheme) => setForm((p) => ({ ...p, theme: newTheme }))}
+        />
+      </View>
 
-        {/*update Profile*/}
-        <TouchableOpacity
-          onPress={handleSubmit}
-          style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-          className="bg-green-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center"
-        >
-          {loading ? (
-            <ActivityIndicator color="green" size={20} />
-          ) : (
-            <Text className="text-neutral-700 text-xl">{i18n.t('Update your Profile')}</Text>
-          )}
-        </TouchableOpacity>
+      {/* update */}
+      <TouchableOpacity
+        onPress={onSubmit}
+        disabled={isSubmitting}
+        style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+        className="bg-green-500 rounded-full w-full p-5 mb-10 items-center justify-center"
+      >
+        {isSubmitting ? (
+          <ActivityIndicator color="white" size={20} />
+        ) : (
+          <Text className="text-white text-xl">{i18n.t('Update your Profile')}</Text>
+        )}
+      </TouchableOpacity>
 
-        {/*    delete profile */}
-        <TouchableOpacity
-          onPress={handleDeleteProfile}
-          style={shadowBoxBlack()}
-          className="bg-rose-500 botder-[1] rounded-full w-full p-5 mb-10 items-center justify-center mt-20"
-        >
-          {loading ? (
-            <ActivityIndicator color="green" size={20} />
-          ) : (
-            <Text className="text-neutral-700 text-xl">{i18n.t('Delete your Profile')} ?</Text>
-          )}
-        </TouchableOpacity>
-      </SafeAreaView>
-    </ScrollView>
+      {/* delete */}
+      <TouchableOpacity
+        onPress={onDeleteAccount}
+        disabled={isDeleting}
+        style={shadowBoxBlack()}
+        className="bg-rose-500 rounded-full w-full p-5 mb-10 items-center justify-center mt-20"
+      >
+        {isDeleting ? (
+          <ActivityIndicator color="white" size={20} />
+        ) : (
+          <Text className="text-white text-xl">{i18n.t('Delete your Profile')} ?</Text>
+        )}
+      </TouchableOpacity>
+    </WrapperComponent>
   )
 }
 
