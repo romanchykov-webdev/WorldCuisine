@@ -5,7 +5,6 @@ import { getTheme } from '../constants/themes'
 const getSystemTheme = () => Appearance.getColorScheme() || 'light'
 
 export const useThemeStore = create((set, get) => ({
-  // ИНИЦИАЛИЗИРУЕМСЯ от системы, а не 'light'
   currentTheme: getSystemTheme(), // 'light' | 'dark'
   preferredTheme: 'auto', // 'light' | 'dark' | 'auto'
 

@@ -202,15 +202,25 @@ function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = fals
 
 function CardImageShell({ uri, height, radius = 35 }) {
   return (
-    <View style={{ width: '100%', height, borderRadius: radius, overflow: 'hidden' }}>
+    <View
+      style={{
+        width: '100%',
+        height,
+        borderRadius: radius,
+        overflow: 'hidden',
+        backgroundColor: 'transparent',
+      }}
+    >
       <AvatarCustom
         uri={uri}
         style={{ borderWidth: 0.2, width: '100%', height }}
         rounded={radius}
       />
       <LinearGradient
-        colors={['transparent', '#18181b']}
-        style={[StyleSheet.absoluteFill, { borderRadius: radius }]} // <— ВАЖНО
+        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}
+        locations={[0, 1]}
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { borderRadius: radius, zIndex: 1 }]}
         start={{ x: 0.5, y: 0.2 }}
         end={{ x: 0.5, y: 1 }}
       />
