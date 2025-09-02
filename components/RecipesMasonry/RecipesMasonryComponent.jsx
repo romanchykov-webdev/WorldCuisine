@@ -216,14 +216,20 @@ function CardImageShell({ uri, height, radius = 35 }) {
         style={{ borderWidth: 0.2, width: '100%', height }}
         rounded={radius}
       />
-      <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}
-        locations={[0, 1]}
-        pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { borderRadius: radius, zIndex: 1 }]}
-        start={{ x: 0.5, y: 0.2 }}
-        end={{ x: 0.5, y: 1 }}
-      />
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          { borderRadius: radius, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+        ]}
+      ></View>
+      {/*<LinearGradient*/}
+      {/*  colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}*/}
+      {/*  locations={[0, 1]}*/}
+      {/*  pointerEvents="none"*/}
+      {/*  style={[StyleSheet.absoluteFill, { borderRadius: radius, zIndex: 1 }]}*/}
+      {/*  start={{ x: 0.5, y: 0.2 }}*/}
+      {/*  end={{ x: 0.5, y: 1 }}*/}
+      {/*/>*/}
     </View>
   )
 }

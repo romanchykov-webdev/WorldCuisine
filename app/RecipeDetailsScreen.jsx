@@ -1,18 +1,8 @@
-// app/RecipeDetailsScreen.jsx
-import { Image } from 'expo-image'
-import { LinearGradient } from 'expo-linear-gradient'
 import { StatusBar } from 'expo-status-bar'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useMemo, useRef, useState } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
-import { ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon } from 'react-native-heroicons/mini'
-import { ChatBubbleOvalLeftIcon, StarIcon } from 'react-native-heroicons/outline'
-
-import AvatarCustom from '../components/AvatarCustom'
-import ButtonBack from '../components/ButtonBack'
-import ButtonLike from '../components/ButtonLike'
-import ButtonSmallCustom from '../components/Buttons/ButtonSmallCustom'
 import LoadingComponent from '../components/loadingComponent'
 import RatingComponents from '../components/RatingComponents'
 import CommentsComponent from '../components/recipeDetails/CommentsComponent'
@@ -26,7 +16,7 @@ import VideoCustom from '../components/recipeDetails/video/VideoCustom'
 import MapCoordinatesComponent from '../components/recipeDetails/MapCoordinatesComponent'
 
 import { hp, wp } from '../constants/responsiveScreen'
-import { shadowBoxBlack, shadowTextSmall } from '../constants/shadow'
+import { shadowTextSmall } from '../constants/shadow'
 import { themes } from '../constants/themes'
 import i18n from '../lang/i18n'
 
@@ -168,6 +158,7 @@ function RecipeDetailsScreen() {
           cal={recipeDish?.recipe_metrics?.cal}
           level={recipeDish?.recipe_metrics?.level}
         />
+
         {/* ingredients */}
         <Animated.View entering={FadeInDown.delay(800)} className="gap-y-4">
           <Text
