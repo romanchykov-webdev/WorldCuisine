@@ -8,7 +8,8 @@ import { hp } from '../../../constants/responsiveScreen'
 import { shadowBoxBlack, shadowText } from '../../../constants/shadow'
 import AvatarCustom from '../../AvatarCustom'
 import { PlayCircleIcon } from 'react-native-heroicons/solid'
-import { formatNumber } from '../../../utils/numberFormat' // если есть иконка play
+import { formatNumber } from '../../../utils/numberFormat'
+import React from 'react' // если есть иконка play
 
 function RecipePointItemComponent({ item, index, langApp }) {
   const router = useRouter()
@@ -85,6 +86,12 @@ function RecipePointItemComponent({ item, index, langApp }) {
         )}
 
         {/* Градиент */}
+        {/*<View*/}
+        {/*  style={[*/}
+        {/*    StyleSheet.absoluteFill,*/}
+        {/*    { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
+        {/*  ]}*/}
+        {/*></View>*/}
         <LinearGradient
           colors={['transparent', '#18181b']}
           style={{

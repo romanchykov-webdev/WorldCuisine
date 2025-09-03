@@ -3,11 +3,16 @@ import MasonryList from '@react-native-seoul/masonry-list'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 
-import { useEffect, useState } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 // icons import
-import { ChatBubbleOvalLeftEllipsisIcon, HeartIcon, PlayCircleIcon, StarIcon } from 'react-native-heroicons/outline'
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  HeartIcon,
+  PlayCircleIcon,
+  StarIcon,
+} from 'react-native-heroicons/outline'
 
 import Animated, { FadeInDown } from 'react-native-reanimated'
 
@@ -36,13 +41,14 @@ function Recipes({ recipes, langApp }) {
   return (
     <View className="gap-y-3">
       <Text
-        style={[{ fontSize: hp(3) }, shadowText(
-          {
+        style={[
+          { fontSize: hp(3) },
+          shadowText({
             color: 'rgba(0,0,0,0.4)',
             offset: { width: 1.5, height: 1.5 },
             radius: 1,
-          },
-        )]}
+          }),
+        ]}
         className="font-semibold text-neutral-700 mb-2"
       >
         {i18n.t('Recipes')}
@@ -52,28 +58,25 @@ function Recipes({ recipes, langApp }) {
       {
         // categories === 0 ? null : (
         // categories.lenght === 0 ||
-        recipes.length == 0
-          ? (
-              <LoadingComponent size="large" color="gray" />
-            )
-          : (
-              <MasonryList
-                // data={mealData}
-                data={recipes}
-                keyExtractor={item => item.idMeal}
-                // numColumns={2}
-                numColumns={column}
-                style={{ gap: 10 }}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item, i }) => <CardItem item={item} index={i} langApp={langApp} />}
-                // refreshing={isLoadingNext}
-                // onRefresh={() => refetch({first: ITEM_CNT})}
-                onEndReachedThreshold={0.1}
-                // onEndReached={() => loadNext(ITEM_CNT)}
-              />
-            )
+        recipes.length == 0 ? (
+          <LoadingComponent size="large" color="gray" />
+        ) : (
+          <MasonryList
+            // data={mealData}
+            data={recipes}
+            keyExtractor={(item) => item.idMeal}
+            // numColumns={2}
+            numColumns={column}
+            style={{ gap: 10 }}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item, i }) => <CardItem item={item} index={i} langApp={langApp} />}
+            // refreshing={isLoadingNext}
+            // onRefresh={() => refetch({first: ITEM_CNT})}
+            onEndReachedThreshold={0.1}
+            // onEndReached={() => loadNext(ITEM_CNT)}
+          />
+        )
       }
-
     </View>
   )
 }
@@ -90,28 +93,31 @@ function CardItem({ item, index, langApp }) {
   // Находим название категории в зависимости от выбранного языка
 
   const categoryTitle = Array.isArray(item.title.lang)
-    ? item.title.lang.find(it => it.lang === langApp)?.name || item.title.strTitle
+    ? item.title.lang.find((it) => it.lang === langApp)?.name || item.title.strTitle
     : item.title.strTitle
 
   // console.log('categoryTitle',categoryTitle)
 
   return (
     <Animated.View
-      entering={FadeInDown.delay((index + 4) * 200).springify().damping(30)}
+      entering={FadeInDown.delay((index + 4) * 200)
+        .springify()
+        .damping(30)}
       // key={index}
       key={item.id}
       className="flex justify-center mb-[10] gap-y-1  p-[2]"
       style={[shadowBoxBlack({ offset: { width: 1, height: 1 }, opacity: 1, radius: 3 })]}
     >
       <TouchableOpacity
-        onPress={() => router.push({
-          pathname: '/RecipeDetailsScreen',
-          params: { id: item.fullRecipeId },
-        })}
+        onPress={() =>
+          router.push({
+            pathname: '/RecipeDetailsScreen',
+            params: { id: item.fullRecipeId },
+          })
+        }
         style={{ width: '100%' }}
         className="rounded-full relative items-center "
       >
-
         {/* block up video user */}
         <View
           style={shadowBoxBlack({
@@ -120,12 +126,10 @@ function CardItem({ item, index, langApp }) {
             radius: 1, // Радиус размытия тени (по умолчанию 5px)
             elevation: 3, // Высота "подъема" для создания тени на Android (по умолчанию 6)
           })}
-          className={`${item.video ? 'justify-between' : 'justify-end'} items-start flex-row w-full absolute top-2 left-0 z-10 px-5 
+          className={`${item.video ? 'justify-between' : 'justify-end'} items-start flex-row w-full absolute top-2 left-0 z-10 px-5
                     `}
         >
-          {
-            item.video && <PlayCircleIcon size={25} color="red" />
-          }
+          {item.video && <PlayCircleIcon size={25} color="red" />}
 
           <View className=" items-center ">
             <AvatarCustom
@@ -141,9 +145,7 @@ function CardItem({ item, index, langApp }) {
             >
               {item.publishedUser.username}
             </Text>
-
           </View>
-
         </View>
 
         <AvatarCustom
@@ -152,78 +154,73 @@ function CardItem({ item, index, langApp }) {
           rounded={35}
         />
         <LinearGradient
-
           colors={['transparent', '#18181b']}
           style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 0.5, y: 1 }}
         />
+        {/*<View*/}
+        {/*  style={[*/}
+        {/*    StyleSheet.absoluteFill,*/}
+        {/*    { borderRadius: radius, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
+        {/*  ]}*/}
+        {/*></View>*/}
 
         {/*    icons like comments rating */}
         <View className=" absolute bottom-[20] items-center justify-around">
-          <Text
-            className=" text-white font-medium text-center mb-2"
-            style={shadowText()}
-          >
+          <Text className=" text-white font-medium text-center mb-2" style={shadowText()}>
             {categoryTitle}
           </Text>
 
           {/* icons */}
-          <View className="flex-row items-center justify-around  w-full min-h-[25px]
+          <View
+            className="flex-row items-center justify-around  w-full min-h-[25px]
                     {/*bg-red-500*/}
                     "
           >
             {/*    like */}
-            {
-              item.likes > 0 && (
-                <View className="items-center ">
-                  <HeartIcon size={25} color="gray" />
-                  {/* <HeartIcon size={30} color='gray' fill='red'/> */}
-                  <Text
-                    style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
-                    className="text-white"
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {myFormatNumber(item.likes)}
-                    {/* {item.likes}234 */}
-                  </Text>
-                </View>
-              )
-            }
+            {item.likes > 0 && (
+              <View className="items-center ">
+                <HeartIcon size={25} color="gray" />
+                {/* <HeartIcon size={30} color='gray' fill='red'/> */}
+                <Text
+                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  className="text-white"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {myFormatNumber(item.likes)}
+                  {/* {item.likes}234 */}
+                </Text>
+              </View>
+            )}
 
             {/*    comments */}
-            {
-              item.comments > 0 && (
-                <View className="items-center ">
-                  <ChatBubbleOvalLeftEllipsisIcon size={25} color="gray" />
-                  <Text
-                    style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
-                    className="text-white"
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {myFormatNumber(item.comments)}
-                    {/* {item.comments} */}
-                  </Text>
-                </View>
-              )
-            }
+            {item.comments > 0 && (
+              <View className="items-center ">
+                <ChatBubbleOvalLeftEllipsisIcon size={25} color="gray" />
+                <Text
+                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  className="text-white"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {myFormatNumber(item.comments)}
+                  {/* {item.comments} */}
+                </Text>
+              </View>
+            )}
 
             {/*    StarIcon */}
-            {
-              item.rating > 0 && (
-                <View className="items-center">
-                  <StarIcon size={25} color="gray" />
-                  <Text style={{ fontSize: 8 }} className="text-white">
-                    {item.rating}
-                  </Text>
-                </View>
-              )
-            }
-
+            {item.rating > 0 && (
+              <View className="items-center">
+                <StarIcon size={25} color="gray" />
+                <Text style={{ fontSize: 8 }} className="text-white">
+                  {item.rating}
+                </Text>
+              </View>
+            )}
           </View>
-
         </View>
       </TouchableOpacity>
     </Animated.View>

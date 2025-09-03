@@ -23,7 +23,7 @@ function HeaderScreenComponent({
       {/*  */}
       <Animated.View
         entering={FadeInDown.springify().delay(100)}
-        className={`${headerAllCeripe ? 'mb-10 self-start' : 'absolute left-0'}`}
+        className={`${headerAllCeripe ? ' self-start' : 'absolute left-0'}`}
         style={[shadowBoxBlack(), styleWrapperButton]}
       >
         <ButtonBack />

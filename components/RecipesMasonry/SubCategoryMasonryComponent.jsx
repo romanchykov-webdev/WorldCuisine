@@ -7,6 +7,7 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
 import AvatarCustom from '../AvatarCustom'
+import React from 'react'
 
 function SubCategoryMasonryComponent({ item, isSubCategoryView, handleBack, langApp }) {
   const router = useRouter()
@@ -33,7 +34,9 @@ function SubCategoryMasonryComponent({ item, isSubCategoryView, handleBack, lang
             {/* <ButtonBack /> */}
           </TouchableOpacity>
         )}
-        <Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">{item?.name}</Text>
+        <Text className=" flex-1 text-center  font-semibold text-xl text-neutral-700 mb-2">
+          {item?.name}
+        </Text>
       </View>
 
       <MasonryList
@@ -70,6 +73,12 @@ function SubCategoryMasonryComponent({ item, isSubCategoryView, handleBack, lang
                   }}
                   rounded={35}
                 />
+                {/*<View*/}
+                {/*  style={[*/}
+                {/*    StyleSheet.absoluteFill,*/}
+                {/*    { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
+                {/*  ]}*/}
+                {/*></View>*/}
                 <LinearGradient
                   colors={['transparent', '#18181b']}
                   style={{
