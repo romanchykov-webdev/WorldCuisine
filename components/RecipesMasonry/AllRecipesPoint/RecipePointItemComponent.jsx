@@ -13,12 +13,19 @@ import React from 'react' // если есть иконка play
 
 function RecipePointItemComponent({ item, index, langApp }) {
   const router = useRouter()
-  const isEven = index % 3 === 0
-  const imageHeight = isEven ? hp(25) : hp(35)
+  // высоты  для "кладки"
+  const heightBuckets = [hp(24), hp(35)]
 
-  // Получаем название категории в зависимости от языка
+  function hashToBucket(key) {
+    const s = String(key)
+    let h = 0
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
+    return h % heightBuckets.length
+  }
+
+  const bucket = hashToBucket(item.full_recipe_id ?? item.id ?? index)
+  const imageHeight = heightBuckets[bucket]
   const categoryTitle = item.title?.[langApp] || item.title?.en || item.title[0]
-  // console.log('RecipePointItemComponent item', item);
   return (
     <Animated.View
       entering={FadeInDown.delay((index % 10) * 100)

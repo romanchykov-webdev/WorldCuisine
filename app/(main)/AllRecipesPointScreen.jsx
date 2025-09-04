@@ -8,9 +8,10 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  FlatList,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+
+import { BlurView } from 'expo-blur'
 
 import Animated, { FadeInDown, FadeInLeft, FadeInRight, FadeInUp } from 'react-native-reanimated'
 import {
@@ -31,8 +32,8 @@ import { useThemeStore, useThemeColors } from '../../stores/themeStore'
 import { useLangStore } from '../../stores/langStore'
 import { useRecipesByPointInfinite } from '../../queries/recipes'
 import { StatusBar } from 'expo-status-bar'
-import { createTheme } from '@rneui/themed'
-import colors from 'tailwindcss/colors'
+
+import MasonryList from '@react-native-seoul/masonry-list'
 
 function AllRecipesPointScreen() {
   const { point } = useLocalSearchParams()
@@ -75,65 +76,36 @@ function AllRecipesPointScreen() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.backgroundColor,
-        paddingHorizontal: 20,
-        paddingBottom: Platform.OS === 'ios' ? 10 : 120,
-        marginBottom: 20,
-        marginTop: Platform.OS === 'ios' ? 10 : 60,
-      }}
-    >
+    <View style={[styles.root, { backgroundColor: colors.backgroundColor }]}>
       <StatusBar style={currentTheme === 'light' ? 'dark' : 'light'} />
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.container}>
           {/* header */}
-          <View
-            style={[
-              styles.headerWrap,
-              shadowBoxBlack(),
-              { backgroundColor: colors.backgroundColor },
-            ]}
+          <BlurView
+            intensity={30}
+            tint="dark"
+            reducedTransparencyFallbackColor="rgba(0,0,0,0.06)"
+            style={[styles.headerWrap]}
           >
-            <Animated.View
-              entering={FadeInLeft.delay(300).springify().damping(30)}
-              // className="absolute left-0"
-              // style={shadowBoxBlack()}
-            >
+            <Animated.View entering={FadeInLeft.delay(200).springify().damping(30)}>
               <ButtonBack />
             </Animated.View>
 
-            <Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
+            <Animated.View entering={FadeInUp.delay(300).springify().damping(30)}>
               <TitleScreen title={i18n.t('Recipes')} />
             </Animated.View>
 
-            <Animated.View
-              // className="absolute right-0"
-              entering={FadeInRight.delay(700).springify().damping(30)}
-            >
-              {items.length > 0 ? (
+            <Animated.View entering={FadeInRight.delay(400).springify().damping(30)}>
+              {items.length > 0 && (
                 <TouchableOpacity
                   onPress={() => setFilterOpen(true)}
-                  style={[
-                    {
-                      height: 50,
-                      width: 50,
-                      borderWidth: 0.2,
-                      borderColor: 'black',
-                      borderRadius: 50,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: 'white',
-                    },
-                    shadowBoxBlack(),
-                  ]}
+                  style={[styles.filterBtn, shadowBoxBlack()]}
                 >
-                  <AdjustmentsVerticalIcon color="grey" size={30} />
+                  <AdjustmentsVerticalIcon color="grey" size={22} />
                 </TouchableOpacity>
-              ) : null}
+              )}
             </Animated.View>
-          </View>
+          </BlurView>
 
           {/* content */}
           {showLoading ? (
@@ -152,30 +124,19 @@ function AllRecipesPointScreen() {
               </Text>
             </Animated.View>
           ) : (
-            <View style={styles.screen}>
-              <FlatList
+            <View style={styles.listWrap}>
+              <MasonryList
+                showsVerticalScrollIndicator={false}
                 data={items}
                 keyExtractor={(item) => String(item.id)}
                 numColumns={2}
-                columnWrapperStyle={{ gap: 8, paddingTop: 56 }}
-                contentContainerStyle={{ padding: 8, paddingBottom: 120 }}
-                renderItem={({ item, index }) => (
-                  <View style={{ flex: 1, marginBottom: 8 }}>
-                    <RecipePointItemComponent item={item} index={index} langApp={langApp} />
-                  </View>
+                contentContainerStyle={{ paddingTop: 70 }}
+                renderItem={({ item, i }) => (
+                  <RecipePointItemComponent item={item} index={i} langApp={langApp} />
                 )}
-                showsVerticalScrollIndicator={false}
-                onEndReachedThreshold={0.6}
-                onEndReached={() => {
-                  if (hasNextPage && !isFetchingNextPage) fetchNextPage()
-                }}
-                ListFooterComponent={
-                  isFetchingNextPage ? (
-                    <View style={{ paddingVertical: 16 }}>
-                      <LoadingComponent color="green" />
-                    </View>
-                  ) : null
-                }
+                onEndReachedThreshold={0.2}
+                onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+                ListFooterComponent={isFetchingNextPage ? <LoadingComponent color="green" /> : null}
                 refreshing={isFetching && !isFetchingNextPage}
                 onRefresh={() => {
                   refetch()
@@ -186,6 +147,7 @@ function AllRecipesPointScreen() {
         </View>
 
         {/* Filter modal */}
+
         <Modal
           animationType="fade"
           transparent
@@ -248,38 +210,75 @@ function FilterItem({ active, onPress, icon, text, theme }) {
   )
 }
 
+const HEADER_HEIGHT = 56
+
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 10 : 10,
+  },
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : 30,
     position: 'relative',
   },
+
+  // СТЕКЛЯННЫЙ ХЕДЕР
   headerWrap: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    // marginBottom: 16,
-    height: 56,
-    width: '100%',
     position: 'absolute',
     top: 0,
     left: 0,
     zIndex: 10,
-    opacity: 0.9,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    // overflow: 'hidden',
-    paddingHorizontal: 2,
+    height: HEADER_HEIGHT,
+    width: '100%',
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    // Полупрозрачность + скругление
+    overflow: 'hidden',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.18)',
   },
 
+  filterBtn: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    borderWidth: 0.2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+
+  listWrap: {
+    flex: 1,
+    // paddingTop: HEADER_HEIGHT + 8,
+  },
+
+  masonryContent: {
+    // paddingBottom: 120,
+  },
+
+  // Модалка-фильтр
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  modalContent: {
+    width: '80%',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   itemFilter: {
     padding: 12,
     borderWidth: 0.2,
@@ -295,23 +294,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
-  //
-  screen: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : 30,
-    // backgroundColor: 'red',
-  },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  empty: { textAlign: 'center', opacity: 0.6, fontSize: 16, marginTop: 24 },
-  reloadBtn: {
-    alignSelf: 'center',
-    marginTop: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 0.5,
-  },
-  reloadText: { fontSize: 14 },
 })
 
 export default AllRecipesPointScreen
