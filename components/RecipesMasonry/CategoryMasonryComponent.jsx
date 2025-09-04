@@ -1,9 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
 import AvatarCustom from '../AvatarCustom'
+import React from 'react'
 
 function CategoryMasonryComponent({ item, index, onPress, langApp }) {
   const isEven = index % 3 === 0
@@ -21,7 +22,10 @@ function CategoryMasonryComponent({ item, index, onPress, langApp }) {
         }),
       ]}
     >
-      <TouchableOpacity onPress={() => onPress(item)} className="rounded-full relative items-center">
+      <TouchableOpacity
+        onPress={() => onPress(item)}
+        className="rounded-full relative items-center"
+      >
         <AvatarCustom
           uri={item.image}
           style={{
@@ -31,17 +35,23 @@ function CategoryMasonryComponent({ item, index, onPress, langApp }) {
           }}
           rounded={35}
         />
-        <LinearGradient
-          colors={['transparent', '#18181b']}
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            borderRadius: 35,
-          }}
-          start={{ x: 0.5, y: 0.2 }}
-          end={{ x: 0.5, y: 1 }}
-        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+          ]}
+        ></View>
+        {/*<LinearGradient*/}
+        {/*  colors={['transparent', '#18181b']}*/}
+        {/*  style={{*/}
+        {/*    width: '100%',*/}
+        {/*    height: '100%',*/}
+        {/*    position: 'absolute',*/}
+        {/*    borderRadius: 35,*/}
+        {/*  }}*/}
+        {/*  start={{ x: 0.5, y: 0.2 }}*/}
+        {/*  end={{ x: 0.5, y: 1 }}*/}
+        {/*/>*/}
         <Text className="absolute bottom-[20] text-white font-semibold">{item.name}</Text>
       </TouchableOpacity>
     </Animated.View>

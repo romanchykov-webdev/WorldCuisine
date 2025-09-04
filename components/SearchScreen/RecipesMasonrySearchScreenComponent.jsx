@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import MasonryList from '@react-native-seoul/masonry-list'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import {
   ArrowUturnLeftIcon,
   ChatBubbleOvalLeftEllipsisIcon,
@@ -51,12 +51,18 @@ function CategoryView({ item, index, onCategorySelect }) {
           />
         )}
 
-        <LinearGradient
-          colors={['transparent', '#18181b']}
-          style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}
-          start={{ x: 0.5, y: 0.2 }}
-          end={{ x: 0.5, y: 1 }}
-        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+          ]}
+        ></View>
+        {/*<LinearGradient*/}
+        {/*  colors={['transparent', '#18181b']}*/}
+        {/*  style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}*/}
+        {/*  start={{ x: 0.5, y: 0.2 }}*/}
+        {/*  end={{ x: 0.5, y: 1 }}*/}
+        {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
           <Text className="text-white font-medium text-center mb-2" style={shadowText()}>
@@ -93,13 +99,18 @@ function SubCategoryView({ item, index, onSubcategorySelect }) {
             rounded={35}
           />
         )}
-
-        <LinearGradient
-          colors={['transparent', '#18181b']}
-          style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}
-          start={{ x: 0.5, y: 0.2 }}
-          end={{ x: 0.5, y: 1 }}
-        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+          ]}
+        ></View>
+        {/*<LinearGradient*/}
+        {/*  colors={['transparent', '#18181b']}*/}
+        {/*  style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}*/}
+        {/*  start={{ x: 0.5, y: 0.2 }}*/}
+        {/*  end={{ x: 0.5, y: 1 }}*/}
+        {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
           <Text className="text-white font-medium text-center mb-2" style={shadowText()}>
@@ -174,13 +185,18 @@ function RecipePointItem({ item, index, langApp }) {
             rounded={35}
           />
         )}
-
-        <LinearGradient
-          colors={['transparent', '#18181b']}
-          style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}
-          start={{ x: 0.5, y: 0.2 }}
-          end={{ x: 0.5, y: 1 }}
-        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+          ]}
+        ></View>
+        {/*<LinearGradient*/}
+        {/*  colors={['transparent', '#18181b']}*/}
+        {/*  style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}*/}
+        {/*  start={{ x: 0.5, y: 0.2 }}*/}
+        {/*  end={{ x: 0.5, y: 1 }}*/}
+        {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
           <Text className="text-white font-medium text-center mb-2" style={shadowText()}>

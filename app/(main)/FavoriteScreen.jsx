@@ -1,74 +1,65 @@
-import { useState } from 'react'
-import { Text, View } from 'react-native'
+import React, { useMemo } from 'react'
+import { View } from 'react-native'
 import WrapperComponent from '../../components/WrapperComponent'
 import HeaderScreenComponent from '../../components/HeaderScreenComponent'
-import ToggleListCategoryComponent from '../../components/profile/ToggleListCategoryComponent'
 import LoadingComponent from '../../components/loadingComponent'
-import RecipesMasonryComponent from '../../components/RecipesMasonry/RecipesMasonryComponent'
-import AllRecipesPointScreen from './AllRecipesPointScreen'
 
 import { useAuthStore } from '../../stores/authStore'
 import { useLangStore } from '../../stores/langStore'
-import { useFavoriteIds, useFavoriteRecipes, useFavoriteCategories } from '../../queries/favorites'
+import { useFavoriteIds, useFavoriteRecipes, useLazyLoadRecipes } from '../../queries/favorites'
 import i18n from '../../lang/i18n'
+import RecipePointItemComponent from '../../components/RecipesMasonry/AllRecipesPoint/RecipePointItemComponent'
+import MasonryList from '@react-native-seoul/masonry-list'
 
 function FavoriteScreen() {
   const user = useAuthStore((s) => s.user)
   const lang = useLangStore((s) => s.lang)
-  const [showFolders, setShowFolders] = useState(false)
 
   // 1) IDs
   const { data: ids = [], isLoading: l1, isError: e1 } = useFavoriteIds(user?.id)
 
-  // 2) Сами рецепты
-  const { data: recipes = [], isLoading: l2, isError: e2 } = useFavoriteRecipes(ids)
+  // 2) Рецепты по 10, infinite
+  const {
+    data,
+    isLoading: l2,
+    isFetching: f2,
+    isError: e2,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useLazyLoadRecipes(ids, 10)
 
-  // 3) Категории, отфильтрованные по избранному
-  const { data: categories = [], isLoading: l3, isError: e3 } = useFavoriteCategories(lang, recipes)
-
-  //
-  console.log('FAV ids:', ids?.length, ids)
-  console.log('FAV recipes:', recipes?.length)
-  console.log('FAV cats:', categories?.length)
-
-  const loading = l1 || l2 || (showFolders && l3)
-  const hasError = e1 || e2 || (showFolders && e3)
-  const hasRecipes = (recipes || []).length > 0
+  const recipes = useMemo(() => (data?.pages || []).flat(), [data])
+  const loading = l1 || f2
 
   return (
     <WrapperComponent>
       <View style={{ flex: 1 }}>
-        <View className="mb-5">
+        <View>
           <HeaderScreenComponent titleScreanText={i18n.t('Liked')} />
-          <ToggleListCategoryComponent
-            toggleFolderList={showFolders}
-            onToggleChange={setShowFolders}
-            hasRecipes={hasRecipes}
-          />
         </View>
 
         {loading ? (
           <LoadingComponent color="green" />
-        ) : hasError ? (
-          <View style={{ paddingVertical: 16 }}>
-            <Text style={{ textAlign: 'center', opacity: 0.6 }}>Something went wrong</Text>
-          </View>
-        ) : !hasRecipes ? (
-          <View style={{ paddingVertical: 16 }}>
-            <Text style={{ textAlign: 'center', opacity: 0.6 }}>
-              There are no recipes you like yet
-            </Text>
-          </View>
-        ) : showFolders ? (
-          // Папки (категории masonry, уже отфильтрованные по избранному)
-          <RecipesMasonryComponent categoryRecipes={categories} langApp={lang} />
         ) : (
           // Список рецептов
-          <AllRecipesPointScreen
-            allFavoriteRecipes={recipes}
-            isFavoriteScrean
-            isScreanAlrecipeBayCreatore={false}
-            titleVisible={false}
+          <MasonryList
+            data={recipes}
+            keyExtractor={(item) => String(item.id)}
+            numColumns={2}
+            contentContainerStyle={{ marginBottom: 50 }}
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item, i }) => (
+              <RecipePointItemComponent item={item} index={i} langApp={lang} />
+            )}
+            onEndReachedThreshold={0.2}
+            onEndReached={() => {
+              if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+            }}
+            ListFooterComponent={isFetchingNextPage ? <LoadingComponent color="green" /> : null}
+            refreshing={f2 && !isFetchingNextPage}
+            onRefresh={refetch}
           />
         )}
       </View>

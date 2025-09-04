@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar'
 import { Platform, ScrollView, StyleSheet, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context' // ВАЖНО: из safe-area-context
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { hp } from '../constants/responsiveScreen'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
 

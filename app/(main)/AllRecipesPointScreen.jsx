@@ -1,6 +1,5 @@
-// app/(main)/AllRecipesPointScreen.jsx
 import { useLocalSearchParams } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import {
   Modal,
   Platform,
@@ -9,9 +8,11 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  useWindowDimensions,
 } from 'react-native'
-import MasonryList from '@react-native-seoul/masonry-list'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
+import { BlurView } from 'expo-blur'
+
 import Animated, { FadeInDown, FadeInLeft, FadeInRight, FadeInUp } from 'react-native-reanimated'
 import {
   AdjustmentsVerticalIcon,
@@ -25,34 +26,37 @@ import ButtonBack from '../../components/ButtonBack'
 import LoadingComponent from '../../components/loadingComponent'
 import RecipePointItemComponent from '../../components/RecipesMasonry/AllRecipesPoint/RecipePointItemComponent'
 import TitleScreen from '../../components/TitleScreen'
-import WrapperComponent from '../../components/WrapperComponent'
 import { shadowBoxBlack, shadowText } from '../../constants/shadow'
 import i18n from '../../lang/i18n'
 import { useThemeStore, useThemeColors } from '../../stores/themeStore'
 import { useLangStore } from '../../stores/langStore'
 import { useRecipesByPointInfinite } from '../../queries/recipes'
+import { StatusBar } from 'expo-status-bar'
+
+import MasonryList from '@react-native-seoul/masonry-list'
 
 function AllRecipesPointScreen() {
   const { point } = useLocalSearchParams()
   const colors = useThemeColors()
   const currentTheme = useThemeStore((s) => s.currentTheme)
   const langApp = useLangStore((s) => s.lang)
-
-  // сортировки (одно активно)
-  const [sort, setSort] = useState({ sortBy: 'created_at', ascending: false })
   const [filterOpen, setFilterOpen] = useState(false)
 
-  // колонки адаптивно (без window.innerWidth)
-  const { width } = useWindowDimensions()
-  const numColumns = width >= 900 ? 3 : 2
+  // сорт по умолчанию — новые сверху
+  const [sort, setSort] = React.useState({ sortBy: 'created_at', ascending: false })
+  const PAGE_SIZE = 6
 
-  // TQuery infinite
   const { data, isLoading, isFetching, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
-    useRecipesByPointInfinite(point, sort, /*pageSize*/ 20)
+    useRecipesByPointInfinite(String(point), sort, PAGE_SIZE)
 
-  const flat = useMemo(() => (data?.pages || []).flat(), [data])
+  const pages = data?.pages ?? []
+  const items = React.useMemo(() => pages.flat(), [pages])
 
-  // helpers UI
+  // индикаторы
+  const showLoading = isLoading || (isFetching && items.length === 0)
+  const showEmpty = !showLoading && items.length === 0
+
+  // filters
   const applyFilter = (type) => {
     switch (type) {
       case 'newOld':
@@ -71,131 +75,124 @@ function AllRecipesPointScreen() {
     setFilterOpen(false)
   }
 
-  const onEnd = () => {
-    if (hasNextPage && !isFetchingNextPage) fetchNextPage()
-  }
-
   return (
-    <WrapperComponent>
-      <View style={styles.container}>
-        {/* header */}
-        <View style={styles.headerWrap}>
-          <Animated.View
-            entering={FadeInLeft.delay(300).springify().damping(30)}
-            className="absolute left-0"
-            style={shadowBoxBlack()}
+    <View style={[styles.root, { backgroundColor: colors.backgroundColor }]}>
+      <StatusBar style={currentTheme === 'light' ? 'dark' : 'light'} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.container}>
+          {/* header */}
+          <BlurView
+            intensity={30}
+            tint="dark"
+            reducedTransparencyFallbackColor="rgba(0,0,0,0.06)"
+            style={[styles.headerWrap]}
           >
-            <ButtonBack />
-          </Animated.View>
+            <Animated.View entering={FadeInLeft.delay(200).springify().damping(30)}>
+              <ButtonBack />
+            </Animated.View>
 
-          <Animated.View entering={FadeInUp.delay(500).springify().damping(30)}>
-            <TitleScreen title={i18n.t('Recipes')} />
-          </Animated.View>
+            <Animated.View entering={FadeInUp.delay(300).springify().damping(30)}>
+              <TitleScreen title={i18n.t('Recipes')} />
+            </Animated.View>
 
-          <Animated.View
-            className="absolute right-0"
-            entering={FadeInRight.delay(700).springify().damping(30)}
-          >
-            <TouchableOpacity
-              onPress={() => setFilterOpen(true)}
-              style={[
-                {
-                  height: 50,
-                  width: 50,
-                  borderWidth: 0.2,
-                  borderColor: 'black',
-                  borderRadius: 50,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'white',
-                },
-                shadowBoxBlack(),
-              ]}
-            >
-              <AdjustmentsVerticalIcon color="grey" size={30} />
-            </TouchableOpacity>
-          </Animated.View>
+            <Animated.View entering={FadeInRight.delay(400).springify().damping(30)}>
+              {items.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => setFilterOpen(true)}
+                  style={[styles.filterBtn, shadowBoxBlack()]}
+                >
+                  <AdjustmentsVerticalIcon color="grey" size={22} />
+                </TouchableOpacity>
+              )}
+            </Animated.View>
+          </BlurView>
+
+          {/* content */}
+          {showLoading ? (
+            <LoadingComponent size="large" color="green" />
+          ) : showEmpty ? (
+            <Animated.View entering={FadeInDown.delay(300).springify()}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: colors.textColor,
+                  fontSize: 18,
+                  paddingTop: 100,
+                }}
+              >
+                There are no recipes yet
+              </Text>
+            </Animated.View>
+          ) : (
+            <View style={styles.listWrap}>
+              <MasonryList
+                showsVerticalScrollIndicator={false}
+                data={items}
+                keyExtractor={(item) => String(item.id)}
+                numColumns={2}
+                contentContainerStyle={{ paddingTop: 70 }}
+                renderItem={({ item, i }) => (
+                  <RecipePointItemComponent item={item} index={i} langApp={langApp} />
+                )}
+                onEndReachedThreshold={0.2}
+                onEndReached={() => hasNextPage && !isFetchingNextPage && fetchNextPage()}
+                ListFooterComponent={isFetchingNextPage ? <LoadingComponent color="green" /> : null}
+                refreshing={isFetching && !isFetchingNextPage}
+                onRefresh={() => {
+                  refetch()
+                }}
+              />
+            </View>
+          )}
         </View>
 
-        {/* content */}
-        {isLoading ? (
-          <LoadingComponent size="large" color="green" />
-        ) : flat.length === 0 ? (
-          <Animated.View entering={FadeInDown.delay(300).springify()}>
-            <Text style={{ textAlign: 'center', color: colors.textColor, fontSize: 18 }}>
-              {i18n.t('There are no recipes yet')}
-            </Text>
-          </Animated.View>
-        ) : (
-          <MasonryList
-            data={flat}
-            keyExtractor={(item) => String(item.id)}
-            numColumns={numColumns}
-            contentContainerStyle={styles.masonry}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item, i }) => (
-              <RecipePointItemComponent item={item} index={i} langApp={langApp} />
-            )}
-            onEndReached={onEnd}
-            onEndReachedThreshold={0.2}
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <View style={styles.footer}>
-                  <LoadingComponent color="green" />
-                </View>
-              ) : null
-            }
-            refreshing={isFetching && !isFetchingNextPage}
-            onRefresh={refetch}
-          />
-        )}
-      </View>
+        {/* Filter modal */}
 
-      {/* Filter modal */}
-      <Modal
-        animationType="fade"
-        transparent
-        visible={filterOpen}
-        onRequestClose={() => setFilterOpen(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setFilterOpen(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.backgroundColor }]}>
-              <View style={{ gap: 12 }}>
-                <FilterItem
-                  active={sort.sortBy === 'created_at' && !sort.ascending}
-                  onPress={() => applyFilter('newOld')}
-                  icon={<ArrowDownIcon size={20} color="green" />}
-                  text={i18n.t('From newest to oldest')}
-                  theme={currentTheme}
-                />
-                <FilterItem
-                  active={sort.sortBy === 'created_at' && sort.ascending}
-                  onPress={() => applyFilter('oldNew')}
-                  icon={<ArrowUpIcon size={20} color="blue" />}
-                  text={i18n.t('From old to new')}
-                  theme={currentTheme}
-                />
-                <FilterItem
-                  active={sort.sortBy === 'likes'}
-                  onPress={() => applyFilter('likes')}
-                  icon={<HeartIcon size={20} color="red" />}
-                  text={i18n.t('Popular')}
-                  theme={currentTheme}
-                />
-                <FilterItem
-                  active={sort.sortBy === 'rating'}
-                  onPress={() => applyFilter('rating')}
-                  icon={<StarIcon size={20} color="gold" />}
-                  text={i18n.t('High rating')}
-                  theme={currentTheme}
-                />
+        <Modal
+          animationType="fade"
+          transparent
+          visible={filterOpen}
+          onRequestClose={() => setFilterOpen(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setFilterOpen(false)}>
+            <View style={styles.modalOverlay}>
+              <View style={[styles.modalContent, { backgroundColor: colors.backgroundColor }]}>
+                <View style={{ gap: 12 }}>
+                  <FilterItem
+                    active={sort.sortBy === 'created_at' && !sort.ascending}
+                    onPress={() => applyFilter('newOld')}
+                    icon={<ArrowDownIcon size={20} color="green" />}
+                    text={i18n.t('From newest to oldest')}
+                    theme={currentTheme}
+                  />
+                  <FilterItem
+                    active={sort.sortBy === 'created_at' && sort.ascending}
+                    onPress={() => applyFilter('oldNew')}
+                    icon={<ArrowUpIcon size={20} color="blue" />}
+                    text={i18n.t('From old to new')}
+                    theme={currentTheme}
+                  />
+                  <FilterItem
+                    active={sort.sortBy === 'likes'}
+                    onPress={() => applyFilter('likes')}
+                    icon={<HeartIcon size={20} color="red" />}
+                    text={i18n.t('Popular')}
+                    theme={currentTheme}
+                  />
+                  <FilterItem
+                    active={sort.sortBy === 'rating'}
+                    onPress={() => applyFilter('rating')}
+                    icon={<StarIcon size={20} color="gold" />}
+                    text={i18n.t('High rating')}
+                    theme={currentTheme}
+                  />
+                </View>
               </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </WrapperComponent>
+          </TouchableWithoutFeedback>
+        </Modal>
+      </SafeAreaView>
+    </View>
   )
 }
 
@@ -213,25 +210,60 @@ function FilterItem({ active, onPress, icon, text, theme }) {
   )
 }
 
+const HEADER_HEIGHT = 56
+
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 10 : 10,
+  },
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : 30,
+    position: 'relative',
   },
+
+  // СТЕКЛЯННЫЙ ХЕДЕР
   headerWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 10,
+    height: HEADER_HEIGHT,
+    width: '100%',
+    paddingHorizontal: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+
+    // Полупрозрачность + скругление
+    overflow: 'hidden',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+
+  filterBtn: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    borderWidth: 0.2,
+    borderColor: 'black',
     justifyContent: 'center',
-    marginBottom: 16,
-    height: 56,
-  },
-  masonry: {
-    paddingBottom: 50,
-  },
-  footer: {
-    height: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'white',
   },
+
+  listWrap: {
+    flex: 1,
+    // paddingTop: HEADER_HEIGHT + 8,
+  },
+
+  masonryContent: {
+    // paddingBottom: 120,
+  },
+
+  // Модалка-фильтр
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -240,7 +272,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '80%',
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 20,
     shadowColor: '#000',
     shadowOpacity: 0.25,
