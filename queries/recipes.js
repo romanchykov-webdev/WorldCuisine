@@ -44,15 +44,16 @@ export function useRecipesByPointInfinite(point, sort, pageSize = 20) {
   return useInfiniteQuery({
     queryKey: ['recipesByPoint', point, sort, pageSize],
     enabled: !!point,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
     initialPageParam: 0, // offset
     queryFn: ({ pageParam }) =>
       getRecipesByPointTQ({ point, offset: pageParam, limit: pageSize, sort }),
+
     getNextPageParam: (lastPage, allPages) => {
-      // если меньше, чем pageSize — дальше нет
-      if (!lastPage || lastPage.length < pageSize) return undefined
-      const loaded = allPages.reduce((acc, p) => acc + (p?.length || 0), 0)
-      return loaded
+      const loaded = allPages.reduce((a, p) => a + (p?.length || 0), 0)
+      console.log('lastPage len:', lastPage?.length, 'loaded so far:', loaded, 'point:', point)
+      return lastPage?.length === pageSize ? loaded : undefined
     },
-    staleTime: 30_000,
   })
 }

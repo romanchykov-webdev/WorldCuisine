@@ -9,6 +9,22 @@ import { supabase } from '../../lib/supabase'
  * @param {Object} p.sort    - { sortBy: 'created_at'|'likes'|'rating', ascending: boolean }
  * @returns {Promise<Array>}
  */
+// export async function getRecipesByPointTQ({ point, offset = 0, limit = 20, sort }) {
+//   if (!point) return []
+//
+//   const sortBy = sort?.sortBy || 'created_at'
+//   const ascending = !!sort?.ascending
+//
+//   const { data, error } = await supabase
+//     .from('short_desc')
+//     .select('*')
+//     .eq('point', point)
+//     .order(sortBy, { ascending: sort.ascending })
+//     .range(offset, offset + limit - 1)
+//
+//   if (error) throw new Error(error.message)
+//   return Array.isArray(data) ? data : []
+// }
 export async function getRecipesByPointTQ({ point, offset = 0, limit = 20, sort }) {
   if (!point) return []
 
@@ -19,7 +35,8 @@ export async function getRecipesByPointTQ({ point, offset = 0, limit = 20, sort 
     .from('short_desc')
     .select('*')
     .eq('point', point)
-    .order(sortBy, { ascending })
+    .order(sortBy, { ascending }) // 1-я сортировка
+    .order('id', { ascending }) // 2-я сортировка для стабильности!
     .range(offset, offset + limit - 1)
 
   if (error) throw new Error(error.message)

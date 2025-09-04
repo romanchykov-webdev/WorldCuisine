@@ -7,7 +7,7 @@ import AvatarCustom from '../AvatarCustom'
 import { LinearGradient } from 'expo-linear-gradient'
 import ButtonBack from '../ButtonBack'
 import ButtonLike from '../ButtonLike'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ChatBubbleOvalLeftIcon, StarIcon } from 'react-native-heroicons/outline'
 
 export const HeaderImageRecipe = ({

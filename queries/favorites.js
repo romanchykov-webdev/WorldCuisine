@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import {
   getFavoriteIdsTQ,
   getFavoritesListTQ,
@@ -10,23 +10,56 @@ import {
 } from '../utils/categoryFilters'
 import { useMemo } from 'react'
 
+export function useLazyLoadRecipes(recipeIds, pageSize = 1) {
+  const ids = Array.isArray(recipeIds) ? [...recipeIds].sort() : []
+  const enabled = ids.length > 0
+
+  return useInfiniteQuery({
+    queryKey: ['favoriteRecipesInfinite', ids, pageSize],
+    // pageParam — это offset; по умолчанию 0
+    queryFn: ({ pageParam = 0 }) =>
+      getFavoritesListTQ({
+        recipeIds: ids,
+        limit: pageSize,
+        offset: pageParam,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      // если назад пришло меньше, чем pageSize — страниц больше нет
+      if (!lastPage || lastPage.length < pageSize) return undefined
+      // следующий offset
+      return allPages.length * pageSize
+    },
+    enabled,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+  })
+}
+
 export function useFavoriteIds(userId) {
   return useQuery({
     queryKey: ['favoriteIds', userId],
     queryFn: () => getFavoriteIdsTQ({ userId }),
     enabled: !!userId,
-    staleTime: 60_000,
+    // staleTime: 60_000,
   })
 }
 
 export function useFavoriteRecipes(recipeIds) {
-  const enabled = Array.isArray(recipeIds) && recipeIds.length > 0
+  const ids = Array.isArray(recipeIds) ? [...recipeIds].sort() : []
+
+  const enabled = ids.length > 0
+
   return useQuery({
-    queryKey: ['favoriteRecipes', enabled ? recipeIds.length : 0],
-    queryFn: () => getFavoritesListTQ({ recipeIds }),
+    queryKey: ['favoriteRecipes', ids], // ключ зависит от самих ID
+    queryFn: () => getFavoritesListTQ({ recipeIds: ids }),
     enabled,
-    staleTime: 60_000,
-    initialData: [],
+    // placeholderData показывает скелет/плейсхолдер, но статус остаётся "loading"
+    placeholderData: [],
+    // чтобы при повторном заходе точно дёрнулся рефетч
+    refetchOnMount: 'always',
+    // в RN обычно не нужен рефетч при возврате в приложение
+    refetchOnWindowFocus: false,
   })
 }
 
