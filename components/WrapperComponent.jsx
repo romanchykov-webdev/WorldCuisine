@@ -1,38 +1,55 @@
+// WrapperComponent.jsx
 import { StatusBar } from 'expo-status-bar'
-import { Platform, ScrollView, StyleSheet, View } from 'react-native'
+import React from 'react'
+import { Platform, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { hp } from '../constants/responsiveScreen'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
 
-function WrapperComponent({ children, marginTopIos = 10, marginTopAnd = 60, stylesScrollView }) {
+function WrapperComponent({
+  children,
+  marginTopIos = 10,
+  marginTopAnd = 60,
+  stylesScrollView,
+  scroll = true,
+}) {
   const colors = useThemeColors()
   const currentTheme = useThemeStore((s) => s.currentTheme)
 
+  const commonPadding = {
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'ios' ? marginTopIos : marginTopAnd + 60,
+    marginBottom: 20,
+    marginTop: Platform.OS === 'ios' ? marginTopIos : marginTopAnd,
+    flexGrow: 1,
+  }
+
   return (
-    // Корневой View с фоном — закрашивает всё (в т.ч. под safe area)
     <View style={{ flex: 1, backgroundColor: colors.backgroundColor }}>
       <StatusBar style={currentTheme === 'light' ? 'dark' : 'light'} />
-      <SafeAreaView
-        style={{ flex: 1 }}
-        // какие края учитывать; top/left/right обычно достаточно
-        edges={['top', 'left', 'right']}
-      >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          keyboardDismissMode="on-drag"
-          contentContainerStyle={[
-            {
-              paddingHorizontal: 20,
-              paddingBottom: Platform.OS === 'ios' ? marginTopIos : marginTopAnd + 60,
-              marginBottom: 20,
-              marginTop: Platform.OS === 'ios' ? marginTopIos : marginTopAnd,
-              minHeight: hp ? hp(100) : '100%',
-            },
-            stylesScrollView,
-          ]}
-        >
-          {children}
-        </ScrollView>
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'left', 'right']}>
+        {scroll ? (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardDismissMode="on-drag"
+            contentContainerStyle={[commonPadding, stylesScrollView]}
+          >
+            {children}
+          </ScrollView>
+        ) : (
+          // без ScrollView, чтобы внутренний MasonryList сам управлял скроллом
+          <View
+            style={[
+              {
+                flex: 1,
+                paddingHorizontal: 20,
+                paddingTop: Platform.OS === 'ios' ? marginTopIos : marginTopAnd,
+              },
+              stylesScrollView,
+            ]}
+          >
+            {children}
+          </View>
+        )}
       </SafeAreaView>
     </View>
   )
