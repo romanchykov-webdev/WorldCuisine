@@ -3,6 +3,7 @@ import {
   getFavoriteIdsTQ,
   getFavoritesListTQ,
   getCategoriesMasonryTQ,
+  getFavoriteRecipesPageTQ,
 } from '../service/TQuery/favorites'
 import {
   createCategoryPointObject,
@@ -36,12 +37,38 @@ export function useLazyLoadRecipes(recipeIds, pageSize = 1) {
   })
 }
 
+// export function useFavoriteIds(userId) {
+//   return useQuery({
+//     queryKey: ['favoriteIds', userId],
+//     queryFn: () => getFavoriteIdsTQ({ userId }),
+//     enabled: !!userId,
+//     // staleTime: 60_000,
+//   })
+// }
+/** Хук: получить IDs избранного */
 export function useFavoriteIds(userId) {
   return useQuery({
     queryKey: ['favoriteIds', userId],
-    queryFn: () => getFavoriteIdsTQ({ userId }),
     enabled: !!userId,
-    // staleTime: 60_000,
+    queryFn: () => getFavoriteIdsTQ(userId),
+  })
+}
+/** Хук: бесконечная подгрузка избранных рецептов по 6 шт. */
+export function useFavoriteRecipesInfinite(ids = [], pageSize = 8) {
+  return useInfiniteQuery({
+    queryKey: ['favoriteRecipesInfinite', ids, pageSize],
+    enabled: Array.isArray(ids) && ids.length > 0,
+    initialPageParam: 0, // offset
+    queryFn: ({ pageParam }) =>
+      getFavoriteRecipesPageTQ({ ids, offset: pageParam, limit: pageSize }),
+
+    // если последняя страница вернула limit элементов — значит ещё могут быть
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((sum, p) => sum + (p?.length || 0), 0)
+      return lastPage?.length === pageSize && loaded < ids.length ? loaded : undefined
+    },
+
+    refetchOnWindowFocus: false,
   })
 }
 

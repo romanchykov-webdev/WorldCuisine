@@ -18,6 +18,7 @@ function ButtonLike({ recipeId, isPreview, totalCountLike }) {
   const { mutate: toggleLike } = useToggleLike(recipeId, userId)
 
   const onPress = () => {
+    // console.log('ButtonLike onPress recipeId', recipeId)
     if (isPreview) return
     if (!userId) {
       showCustomAlert(

@@ -40,7 +40,7 @@ export function useTopRecipes(limit = 50) {
  * @param {{sortBy:string, ascending:boolean}} sort
  * @param {number} pageSize
  */
-export function useRecipesByPointInfinite(point, sort, pageSize = 20) {
+export function useRecipesByPointInfinite(point, sort, pageSize = 6) {
   return useInfiniteQuery({
     queryKey: ['recipesByPoint', point, sort, pageSize],
     enabled: !!point,
