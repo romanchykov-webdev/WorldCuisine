@@ -17,7 +17,7 @@ function HeaderScreenComponent({
     <View
       className={`relative  ${
         headerAllCeripe ? ' flex-1 w-full' : 'flex-row mb-5'
-      } items-center justify-center   flex-1 `}
+      } items-center justify-center   flex-1 bg-red-500 w-full `}
       style={styleWrapper || []}
     >
       {/*  */}
@@ -30,7 +30,10 @@ function HeaderScreenComponent({
       </Animated.View>
       {/* Остальные элементы */}
       {!headerAllCeripe && (
-        <Animated.View entering={FadeInDown.springify().delay(200)} style={styleWrapperTitleScrean}>
+        <Animated.View
+          entering={FadeInDown.springify().delay(200)}
+          style={styleWrapperTitleScrean}
+        >
           <TitleScreen
             title={titleScreanText}
             styleTitle={{ textAlign: 'center', fontSize: hp(fontSizeTitle) }}
