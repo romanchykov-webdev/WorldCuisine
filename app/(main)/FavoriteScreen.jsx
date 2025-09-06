@@ -35,7 +35,7 @@ function FavoriteScreen() {
     refetch,
   } = useFavoriteRecipesInfinite(ids)
 
-  // расплющили страницы в один массив
+  // расплющил страницы в один массив
   const recipes = useMemo(() => (data?.pages || []).flat(), [data])
   // console.log('FavoriteScreen recipes', recipes)
 
