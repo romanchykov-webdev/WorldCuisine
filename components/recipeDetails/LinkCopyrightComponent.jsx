@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import i18n from '../../lang/i18n'
 
 function LinkCopyrightComponent({ linkCopyright }) {
-  console.log('LinkCopyrightComponent', linkCopyright)
+  // console.log('LinkCopyrightComponent', linkCopyright)
 
   if (!linkCopyright) {
     return null // Или placeholder, например: <Text>Ссылка отсутствует</Text>

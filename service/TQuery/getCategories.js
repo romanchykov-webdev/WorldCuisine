@@ -8,7 +8,7 @@ import { supabase } from '../../lib/supabase'
 export async function getCategoriesTQ(lang) {
   if (!lang) throw new Error('getCategoryRecipeMasonry: "lang" is required')
 
-  // пробуем найти запись для нужного языка
+  // запись для нужного языка
   let { data, error } = await supabase
     .from('categories_masonry')
     .select('title')
@@ -19,7 +19,7 @@ export async function getCategoriesTQ(lang) {
     throw new Error(`getCategoryRecipeMasonry: ${error.message}`)
   }
 
-  // опциональный fallback на английский, если нет записи для lang
+  //  fallback на английский, если нет записи для lang
   if (!data?.title && lang !== 'en') {
     const fallback = await supabase
       .from('categories_masonry')

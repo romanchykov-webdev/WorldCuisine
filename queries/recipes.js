@@ -4,6 +4,7 @@ import { getCategoriesTQ } from '../service/TQuery/getCategories'
 import { searchRecipesByTagTQ } from '../service/TQuery/search'
 import { getTopRecipesTQ } from '../service/TQuery/topRecipes'
 import { getRecipesByPointTQ } from '../service/TQuery/getRecipesByPoint'
+import { getMeasurementTQ } from '../service/TQuery/getMeasurement'
 
 // categoryMasonry рецепты по текущему языку
 export function useCategories(lang) {
@@ -11,6 +12,15 @@ export function useCategories(lang) {
     queryKey: ['categoryMasonry', lang],
     queryFn: () => getCategoriesTQ(lang),
     enabled: !!lang,
+  })
+}
+
+// useMeasurement рецепты по текущему языку
+export function useMeasurement() {
+  return useQuery({
+    queryKey: ['measurement'],
+    queryFn: () => getMeasurementTQ(),
+    initialData: {},
   })
 }
 
@@ -52,7 +62,7 @@ export function useRecipesByPointInfinite(point, sort, pageSize = 6) {
 
     getNextPageParam: (lastPage, allPages) => {
       const loaded = allPages.reduce((a, p) => a + (p?.length || 0), 0)
-      console.log('lastPage len:', lastPage?.length, 'loaded so far:', loaded, 'point:', point)
+      // console.log('lastPage len:', lastPage?.length, 'loaded so far:', loaded, 'point:', point)
       return lastPage?.length === pageSize ? loaded : undefined
     },
   })

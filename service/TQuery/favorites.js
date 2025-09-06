@@ -13,63 +13,37 @@ export async function getFavoriteIdsTQ(userId) {
 }
 
 /**
- * Страница рецептов по массиву IDs (offset/limit).
- * Возвращает не более `limit` рецептов, начиная с `offset`.
- * ВАЖНО: фильтруем по full_recipe_id, т.к. в likes хранится именно он.
+ * Получить избранные рецепты по массиву IDs с пагинацией и сортировкой.
+ *
+ * @param {Object} p
+ * @param {string[]} p.ids     - массив full_recipe_id (избранные рецепты пользователя)
+ * @param {number} p.offset    - смещение (0, pageSize, 2*pageSize...)
+ * @param {number} p.limit     - размер страницы (кол-во рецептов на одну подгрузку)
+ * @param {Object} p.sort      - объект сортировки
+ * @param {string} p.sort.sortBy - поле для сортировки ('created_at' | 'likes' | 'rating')
+ * @param {boolean} p.sort.ascending - направление сортировки (true = по возрастанию)
+ *
+ * @returns {Promise<Array>}   - массив рецептов с учётом пагинации и сортировки
  */
-export async function getFavoriteRecipesPageTQ({ ids = [], offset = 0, limit = 8 }) {
+export async function getFavoriteRecipesPageTQ({
+  ids = [],
+  offset = 0,
+  limit = 8,
+  sort,
+}) {
   if (!ids.length) return []
 
-  const slice = ids.slice(offset, offset + limit)
-  if (!slice.length) return []
+  const sortBy = sort?.sortBy || 'created_at'
+  const ascending = !!sort?.ascending
 
-  // грузим рецепты по этим FULL IDs
   const { data, error } = await supabase
     .from('short_desc')
     .select('*')
-    .in('full_recipe_id', slice)
-    .order('id', { ascending: true })
+    .in('full_recipe_id', ids) // фильтруем по ВСЕМ избранным
+    .order(sortBy, { ascending }) // основная сортировка
+    .order('id', { ascending: true }) // стабильная вторичная сортировка
+    .range(offset, offset + limit - 1) // страница
 
   if (error) throw new Error(error.message)
-
-  // восстанавливаем порядок как в slice
-  const byFullId = new Map((data || []).map((r) => [r.full_recipe_id, r]))
-  return slice.map((fid) => byFullId.get(fid)).filter(Boolean)
-}
-
-/** Список избранных рецептов по массиву ID (поддержка full_recipe_id и fullRecipeId) */
-export async function getFavoritesListTQ({ recipeIds }) {
-  if (!recipeIds?.length) return []
-
-  // 1) пробуем snake_case
-  let { data, error } = await supabase
-    .from('short_desc')
-    .select('*')
-    .in('full_recipe_id', recipeIds)
-
-  if (error) throw new Error(error.message)
-
-  // 2) если пусто — пробуем camelCase
-  if (!data || data.length === 0) {
-    const fallback = await supabase
-      .from('short_desc')
-      .select('*')
-      .in('fullRecipeId', recipeIds)
-
-    if (fallback.error) throw new Error(fallback.error.message)
-    data = fallback.data || []
-  }
-
-  return data
-}
-
-/** Категории Masonry для языка */
-export async function getCategoriesMasonryTQ({ lang }) {
-  const { data, error } = await supabase
-    .from('categories_masonry')
-    .select('*')
-    .eq('lang', lang)
-
-  if (error) throw new Error(error.message)
-  return data?.[0]?.title ?? []
+  return Array.isArray(data) ? data : []
 }

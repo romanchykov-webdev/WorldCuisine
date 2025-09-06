@@ -1,4 +1,3 @@
-// components/InputComponent.jsx
 import React, { forwardRef, memo, useMemo } from 'react'
 import { Text, TextInput, View } from 'react-native'
 import { hp } from '../constants/responsiveScreen'

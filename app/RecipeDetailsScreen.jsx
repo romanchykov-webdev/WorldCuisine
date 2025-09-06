@@ -31,6 +31,7 @@ import { HeaderImageRecipe } from '../components/recipeDetails/HeaderImageRecipe
 import { TitleAreaRecipe } from '../components/recipeDetails/TitleAreaRecipe'
 import { MetricsRecipe } from '../components/recipeDetails/MetricsRecipe'
 import { hasSocialLinks } from '../utils/hasSocialLinks'
+import { useMeasurement } from '../queries/recipes'
 
 function RecipeDetailsScreen() {
   const { id, totalRecipe: totalRecipeString, preview } = useLocalSearchParams()
@@ -61,6 +62,8 @@ function RecipeDetailsScreen() {
     refetch: refetchDetails,
   } = useRecipeDetails(id, { preview: isPreview })
 
+  const { data: measurement, isLoading } = useMeasurement()
+
   const recipeDish = isPreview ? parsedTotalRecipe : details
   const rating = recipeDish?.rating ?? 0
 
@@ -70,8 +73,9 @@ function RecipeDetailsScreen() {
 
   const scrollToComments = () => {
     if (isPreview) return
-    commentsRef.current?.measureLayout(scrollViewRef.current.getNativeScrollRef(), (_x, y) =>
-      scrollViewRef.current.scrollTo({ y, animated: true }),
+    commentsRef.current?.measureLayout(
+      scrollViewRef.current.getNativeScrollRef(),
+      (_x, y) => scrollViewRef.current.scrollTo({ y, animated: true }),
     )
   }
 
@@ -100,9 +104,17 @@ function RecipeDetailsScreen() {
     )
   }
 
-  const titleText = recipeDish?.title?.[langApp] || recipeDish?.title?.en || 'No title'
-  const areaText = recipeDish?.area?.[langApp] || recipeDish?.area?.en || 'No area'
+  const titleText =
+    recipeDish?.title?.[langApp] ||
+    recipeDish?.title?.en ||
+    Object.values(recipeDish?.title)[0]
 
+  const areaText =
+    recipeDish?.area?.[langApp] ||
+    recipeDish?.area?.en ||
+    Object.values(recipeDish?.area)[0]
+
+  // console.log('recipescreen  recipeDish', JSON.stringify(recipeDish, null))
   return (
     <ScrollView
       ref={scrollViewRef}
@@ -128,7 +140,11 @@ function RecipeDetailsScreen() {
         />
 
         {/* rating stars (интерактивные) */}
-        <RatingComponents isPreview={isPreview} rating={rating} recipeId={recipeDish?.id} />
+        <RatingComponents
+          isPreview={isPreview}
+          rating={rating}
+          recipeId={recipeDish?.id}
+        />
 
         {/* subscriptions block */}
         <Animated.View entering={FadeInDown.delay(550)}>
@@ -149,7 +165,11 @@ function RecipeDetailsScreen() {
         </Animated.View>
 
         {/* title + area */}
-        <TitleAreaRecipe titleText={titleText} areaText={areaText} currentTheme={currentTheme} />
+        <TitleAreaRecipe
+          titleText={titleText}
+          areaText={areaText}
+          currentTheme={currentTheme}
+        />
 
         {/* metrics */}
         <MetricsRecipe
@@ -175,6 +195,7 @@ function RecipeDetailsScreen() {
               recIng={recipeDish?.ingredients}
               langDev={langApp}
               currentTheme={currentTheme}
+              measurement={measurement}
             />
           </View>
         </Animated.View>
