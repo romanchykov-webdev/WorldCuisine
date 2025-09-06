@@ -75,18 +75,21 @@ function RecipesList({
     setFilterOpen(false)
   }
 
+  const isDisabled = data.length === 0
   // фильтр кнопка в хедере
-  const rightAction =
-    data.length > 0 ? (
-      <Animated.View entering={FadeInRight.delay(400).springify().damping(30)}>
-        <TouchableOpacity
-          onPress={() => setFilterOpen(true)}
-          style={[styles.filterBtn, shadowBoxBlack()]}
-        >
-          <AdjustmentsVerticalIcon color="grey" size={22} />
-        </TouchableOpacity>
-      </Animated.View>
-    ) : null
+  const rightAction = (
+    <TouchableOpacity
+      onPress={() => !isDisabled && setFilterOpen(true)}
+      activeOpacity={isDisabled && 1}
+      style={[
+        styles.filterBtn,
+        shadowBoxBlack(),
+        isDisabled ? styles.btnDisabled : styles.btnEnabled,
+      ]}
+    >
+      <AdjustmentsVerticalIcon color="gray" size={22} />
+    </TouchableOpacity>
+  )
 
   return (
     <View style={styles.container}>
@@ -280,8 +283,12 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     // backgroundColor: 'red',
+  },
+  btnEnabled: { backgroundColor: 'white' },
+  btnDisabled: {
+    backgroundColor: 'rgba(113,113,113,0.9)',
   },
   modalOverlay: {
     flex: 1,

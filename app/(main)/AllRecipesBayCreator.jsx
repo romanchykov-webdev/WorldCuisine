@@ -44,26 +44,22 @@ function AllRecipesBayCreator() {
 
   return (
     <WrapperComponent scroll={false} marginTopAnd={Platform.OS === 'ios' ? 10 : 10}>
-      {isLoading || (isFetching && recipes.length === 0) ? (
-        <LoadingComponent color="green" />
-      ) : (
-        <RecipesList
-          title={isOwn ? i18n.t('Your recipes') : i18n.t('Recipes')}
-          data={recipes}
-          isLoading={isLoading}
-          showEmpty={isEmpty}
-          hasNextPage={hasNextPage}
-          fetchNextPage={fetchNextPage}
-          isFetching={isFetching}
-          isFetchingNextPage={isFetchingNextPage}
-          isRefetching={isRefetching}
-          refetch={refetch}
-          langApp={langApp}
-          sort={sort}
-          setSort={setSort}
-          contentTopPadding={HEADER_HEIGHT + 14}
-        />
-      )}
+      <RecipesList
+        title={isOwn ? i18n.t('Your recipes') : i18n.t('Recipes')}
+        data={recipes}
+        isLoading={isLoading}
+        showEmpty={isEmpty}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetching={isFetching}
+        isFetchingNextPage={isFetchingNextPage}
+        isRefetching={isRefetching}
+        refetch={refetch}
+        langApp={langApp}
+        sort={sort}
+        setSort={setSort}
+        contentTopPadding={HEADER_HEIGHT + 14}
+      />
     </WrapperComponent>
   )
 }

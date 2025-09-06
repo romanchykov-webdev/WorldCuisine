@@ -7,7 +7,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated'
 import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline'
 
 import { hp } from '../../constants/responsiveScreen'
-import { shadowBoxBlack } from '../../constants/shadow'
+import { shadowBoxBlack, shadowText } from '../../constants/shadow'
 import AvatarCustom from '../AvatarCustom'
 import { useThemeColors } from '../../stores/themeStore'
 import Shimmer from '../Skeleton/Shimmer'
@@ -57,9 +57,12 @@ const CategoryCard = React.memo(function CategoryCard({ item, index, onPress }) 
       <TouchableOpacity onPress={() => onPress?.(item)} activeOpacity={0.8}>
         <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
         <Text
-          className="absolute bottom-[20] text-white font-semibold text-lg"
-          numberOfLines={1}
-          style={{ textAlign: 'center', width: '100%' }}
+          className="absolute bottom-[20] text-white font-semibold text-2xl text-center w-full flex-wrap"
+          style={shadowText({
+            color: 'grey',
+            offset: { width: 1, height: 1 },
+            radius: 1,
+          })}
         >
           {item?.name}
         </Text>
@@ -85,9 +88,12 @@ const SubCategoryCard = React.memo(function SubCategoryCard({ item, index, onOpe
       <TouchableOpacity onPress={() => onOpen?.(item)} activeOpacity={0.8}>
         <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
         <Text
-          className="absolute bottom-[20] text-white font-semibold text-lg"
-          numberOfLines={1}
-          style={{ textAlign: 'center', width: '100%' }}
+          className="absolute bottom-[20] text-white font-semibold text-2xl text-center w-full flex-wrap"
+          style={shadowText({
+            color: 'grey',
+            offset: { width: 1, height: 1 },
+            radius: 1,
+          })}
         >
           {item?.name}
         </Text>
@@ -172,8 +178,15 @@ function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = fals
             </TouchableOpacity>
 
             <Text
-              className="flex-1 text-center font-semibold text-xl"
-              style={{ color: colors.textColor }}
+              className="flex-1 text-center  text-2xl font-bold"
+              style={[
+                shadowText({
+                  color: 'grey',
+                  offset: { width: 1, height: 1 },
+                  radius: 1,
+                }),
+                { color: colors.textColor },
+              ]}
               numberOfLines={1}
             >
               {selected?.name}
