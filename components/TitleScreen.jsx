@@ -8,8 +8,8 @@ function TitleScreen({ title, styleTitle }) {
   return (
     <Text
       style={[
-        { fontSize: hp(4), color: colors.textColor },
-        shadowText({ color: 'rgba(0,0,0,0.4)', offset: { width: 1.5, height: 1.5 }, radius: 1 }),
+        { fontSize: hp(4), color: colors.textColor, fontWeight: 'bold' },
+        shadowText({ color: 'grey', offset: { width: 1, height: 1 }, radius: 1 }),
         styleTitle,
       ]}
       className="font-semibold  "
