@@ -24,6 +24,7 @@ import { useAppFocus } from '../hooks/useAppFocus'
 import { useI18nLocale } from '../hooks/useI18nLocale'
 import { useAuthBootstrap } from '../hooks/useAuthBootstrap'
 import { View } from 'react-native'
+import Toast from 'react-native-toast-message'
 
 // SplashScreen.preventAutoHideAsync()
 
@@ -55,6 +56,7 @@ function _layout() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <QueryClientProvider client={queryClient}>
         <RootLayout fontsReady={fontsLoaded} />
+        <Toast topOffset={50} />
       </QueryClientProvider>
     </View>
   )
@@ -88,7 +90,6 @@ function RootLayout({ fontsReady }) {
       <Stack.Screen name="(auth)/RegistrationScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/editProfile" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/CreateRecipeScreen" options={{ headerShown: false }} />
-      <Stack.Screen name="(main)/RefactorRecipeScreen" options={{ headerShown: false }} />
       <Stack.Screen
         name="(main)/AllRecipesPointScreen"
         options={{ headerShown: false }}

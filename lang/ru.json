@@ -105,6 +105,16 @@
   "My recipes": "Мои рецепты",
   "Liked": "Избранные",
 
+  "Cooking time.": "Время приготовления.",
+  "Here you can specify the approximate time to cook the dish.": "Здесь вы можете указать примерное время приготовления блюда.",
+  "Select number of servings.": "Выберите количество порций.",
+  "Choose how many persons your recipe serves.": "Укажите, на сколько человек рассчитан ваш рецепт.",
+  "Select calories.": "Выберите калорийность.",
+  "Choose dish calories.": "Укажите калорийность блюда.",
+  "Select difficulty.": "Выберите сложность.",
+  "Choose cooking difficulty.": "Укажите сложность приготовления.",
+
+
   "---Profile-END--": "---Profile-END--",
 
   "---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -181,7 +191,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Здесь вы можете добавить ссылки на Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "Если вы хотите добавить ссылки на ваш Facebook, Instagram, TikTok",
   "Link to the author": "Ссылка на автора",
-  "If you have a link to a video stored on YouTube or Google Drive": "Если у вас есть ссылка на видео, сохранённое на YouTube или Google Drive.",
+  "If you have a link to a video stored on YouTube": "Если у вас есть ссылка на видео, сохранённое на YouTube",
   "If this recipe is available on another resource, you can add a link to it": "Если этот рецепт есть на другом ресурсе, вы можете добавить на него ссылку",
   "If you have a store": "Если у вас есть торговая точк",
   "You can add it to the map, and customers can find it": "Вы можете добавить её на карте, и клиенты смогут её найти.",

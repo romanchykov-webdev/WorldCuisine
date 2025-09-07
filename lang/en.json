@@ -109,6 +109,15 @@
   "My recipes": "My recipes",
   "Liked": "Liked",
 
+  "Cooking time.": "Cooking time.",
+  "Here you can specify the approximate time to cook the dish.": "Here you can specify the approximate time to cook the dish.",
+  "Select number of servings.": "Select number of servings.",
+  "Choose how many persons your recipe serves.": "Choose how many persons your recipe serves.",
+  "Select calories.": "Select calories.",
+  "Choose dish calories.": "Choose dish calories.",
+  "Select difficulty.": "Select difficulty.",
+  "Choose cooking difficulty.": "Choose cooking difficulty.",
+
   "---Profile-END--": "---Profile-END--",
 
   "---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -186,7 +195,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Here you can add links to Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "If you want to add links to your facebook instagram tiktok",
   "Link to the author": "Link to the author",
-  "If you have a link to a video stored on YouTube or Google Drive": "If you have a link to a video stored on YouTube or Google Drive.",
+  "If you have a link to a video stored on YouTube": "If you have a link to a video stored on YouTube.",
   "If this recipe is available on another resource, you can add a link to it": "If this recipe is available on another resource, you can add a link to it",
   "If you have a store": "If you have a store",
   "You can add it to the map, and customers can find it": "You can add it to the map, and customers can find it",

@@ -1,82 +1,66 @@
-import { useEffect, useRef, useState } from 'react'
-import { Text, TextInput, View } from 'react-native'
-import { useDebounce } from '../../constants/halperFunctions'
-import { themes } from '../../constants/themes'
-import StərɪskCustomComponent from '../StərɪskCustomComponent'
+// components/CreateRecipeScreen/InputCreateRecipeScreenCustom.jsx
+import React from 'react'
+import { View, Text } from 'react-native'
+import i18n from '../../lang/i18n'
+import { useDebounce } from '../../utils/useDebounce'
+import InputComponent from '../InputComponent'
 
-function InputCreateRecipeScreenCustom({
+export default function InputCreateRecipeScreenCustom({
+  langs = [],
+  value = {},
+  onChange,
+  label = i18n.t('Country of origin of the recipe'),
+  placeholder = i18n.t('Write the name of the country'),
   styleTextDesc,
   styleInput,
-  placeholderText,
-  placeholderColor,
-  totalLangRecipe,
-  setTotalRecipe,
-  currentTheme,
-  areaForUpdate = null,
 }) {
-  // локальное состояние: { en:'', ru:'', ... }
-  const hydratedFromUpdate = useRef(false) // чтобы не перезаписывать ввод пользователя
+  const [local, setLocal] = React.useState({ ...value })
+  console.log('langs', langs)
+  // Подхватываем внешние правки только если реально изменились
+  React.useEffect(() => {
+    const cur = JSON.stringify(local || {})
+    const inc = JSON.stringify(value || {})
+    if (cur !== inc) setLocal(value || {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(value)])
 
-  const [inputValues, setInputValues] = useState(() => {
-    const init = {}
-    totalLangRecipe?.forEach((lang) => {
-      init[lang] = ''
-    })
-    return init
-  })
-  console.log('areaForUpdate', areaForUpdate)
+  const debounced = useDebounce(local, 300)
+  React.useEffect(() => {
+    if (!onChange) return
+    const prev = JSON.stringify(value || {})
+    const next = JSON.stringify(debounced || {})
+    if (prev !== next) onChange(debounced)
+  }, [debounced, onChange, value])
 
-  // 1) Гидратация из areaForUpdate один раз (или когда areaForUpdate поменялся на валидный объект)
-  useEffect(() => {
-    if (areaForUpdate && typeof areaForUpdate === 'object' && !hydratedFromUpdate.current) {
-      setInputValues(areaForUpdate) // заполняем локальные инпуты
-      hydratedFromUpdate.current = true
-    }
-  }, [areaForUpdate])
-
-  // дебаунс чтобы не дёргать родителя каждую букву
-  const debouncedValues = useDebounce(inputValues, 500)
-
-  // обновляем родителя
-  useEffect(() => {
-    setTotalRecipe((prev) => ({
-      ...prev,
-      area: debouncedValues, // отдаём ровно { en:'', ru:'', ... }
-    }))
-  }, [debouncedValues, setTotalRecipe])
-
-  // обновление конкретного языка
-  const handleInputChange = (lang, value) => {
-    setInputValues((prev) => ({
-      ...prev,
-      [lang]: value,
-    }))
+  const update = (code, text) => {
+    setLocal((p) => ({ ...p, [code]: text }))
   }
 
   return (
-    <View className="mb-2">
-      {totalLangRecipe?.map((lang) => (
-        <View key={lang} className="mb-3">
-          <Text
-            style={[styleTextDesc, { fontSize: 12, color: themes[currentTheme]?.textColor }]}
-            className="mt-2"
-          >
-            {placeholderText} {lang}
-          </Text>
-          <View>
-            <StərɪskCustomComponent />
-            <TextInput
-              value={inputValues[lang]}
-              style={[styleInput, { color: themes[currentTheme]?.textColor }]}
-              onChangeText={(val) => handleInputChange(lang, val)}
-              placeholder={`${placeholderText} ${lang}`}
-              placeholderTextColor={placeholderColor}
-            />
-          </View>
+    <View>
+      {!!label && (
+        <Text
+          style={[
+            { fontSize: 16, fontWeight: 'bold', marginBottom: 6, paddingLeft: 5 },
+            styleTextDesc,
+          ]}
+        >
+          {label}
+        </Text>
+      )}
+
+      {langs.map((code) => (
+        <View key={code} style={{ marginBottom: 12 }}>
+          <InputComponent
+            label={`${placeholder} (${code})`}
+            placeholder={`${placeholder} ${code.toUpperCase()}`}
+            value={local[code] ?? ''}
+            onChangeText={(t) => update(code, t)}
+            inputStyle={styleInput}
+            returnKeyType="done"
+          />
         </View>
       ))}
     </View>
   )
 }
-
-export default InputCreateRecipeScreenCustom

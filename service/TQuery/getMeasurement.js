@@ -2,11 +2,11 @@ import { supabase } from '../../lib/supabase'
 
 /**
  *
- * @returns {Promise<GetResult<any, any, "measurement", R | unknown, "lang">[] extends infer ResultOne[] ? ResultOne : never>}
+ * @returns {Promise<*|{}>}
  */
 export async function getMeasurementTQ() {
   //
-  let { data, error } = await supabase.from('measurement').select('lang').maybeSingle()
+  let { data, error } = await supabase.from('measurement').select('lang').single() //.maybeSingle()
 
   if (error) {
     throw new Error(`getMeasurementTQ: ${error.message}`)

@@ -1,4 +1,3 @@
-// components/recipeDetails/SubscriptionsComponent.jsx
 import { TouchableOpacity, View, Text, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import i18n from '../../lang/i18n'
@@ -27,12 +26,15 @@ function SubscriptionsComponent({
   // preview: показываем данные автора = сам пользователь
   const subscriberId = user?.id
   const { data: creator } = useCreatorData(isPreview ? subscriberId : creatorId)
-  const { check, subscribe, unsubscribe } = useSubscription(subscriberId, creatorId)
+  const { check, subscribe, unsubscribe, isLoading } = useSubscription(
+    subscriberId,
+    creatorId,
+  )
 
   const isSelf = subscriberId && creatorId && subscriberId === creatorId
   const isSubscribed = check.data ?? false
 
-  const onToggle = () => {
+  const onToggleSubscribe = () => {
     if (isPreview || isSelf) return
     if (!subscriberId) {
       router.push('/(auth)/LogInScreen')
@@ -129,13 +131,14 @@ function SubscriptionsComponent({
         </View>
       ) : (
         <TouchableOpacity
-          onPress={onToggle}
+          onPress={onToggleSubscribe}
           className={`${allRecipeBayCreatore ? 'items-center flex-1' : 'flex-1 m-w-[50%]'}`}
           style={shadowBoxBlack()}
+          disabled={isLoading}
         >
           <ButtonSmallCustom
             title={isSubscribed ? i18n.t('Unsubscribe') : i18n.t('Subscribe')}
-            bg={isSubscribed ? 'red' : 'green'}
+            bg={isLoading ? 'gray' : isSubscribed ? 'red' : 'green'}
             w={allRecipeBayCreatore ? wp(80) : '100%'}
             h={60}
             buttonText

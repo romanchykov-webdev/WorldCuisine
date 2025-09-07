@@ -1,7 +1,14 @@
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { CameraIcon } from 'react-native-heroicons/mini'
 
 import AvatarCustom from '../../components/AvatarCustom'
@@ -55,7 +62,10 @@ function EditProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (status !== 'granted') {
-        Alert.alert(i18n.t('Permission'), i18n.t('Permission to access photos is required.'))
+        Alert.alert(
+          i18n.t('Permission'),
+          i18n.t('Permission to access photos is required.'),
+        )
         return
       }
 
@@ -128,10 +138,10 @@ function EditProfile() {
   }
 
   const onDeleteAccount = () => {
-    Alert.alert(i18n.t('Confirm'), i18n.t('Are you sure you want to DELETE ACCOUNT?'), [
+    Alert.alert(i18n.t('Confirm'), i18n.t('Delete your Profile'), [
       { text: i18n.t('Cancel'), style: 'cancel' },
       {
-        text: i18n.t('DELETE'),
+        text: i18n.t('Delete'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -157,7 +167,10 @@ function EditProfile() {
         <View className="absolute left-0" style={shadowBoxBlack()}>
           <ButtonBack />
         </View>
-        <TitleScreen title={`${i18n.t('Edit Profile')} !`} styleTitle={[{ fontSize: 20 }]} />
+        <TitleScreen
+          title={`${i18n.t('Edit Profile')} !`}
+          styleTitle={[{ fontSize: 20 }]}
+        />
       </View>
 
       {/* avatar */}

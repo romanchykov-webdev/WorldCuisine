@@ -1,232 +1,225 @@
-import { useEffect, useState } from 'react'
+// components/CreateRecipeScreen/SelectRecipeMetrics.jsx
+import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { ClockIcon, FireIcon, Square3Stack3DIcon, UsersIcon } from 'react-native-heroicons/mini'
-import { useDebounce } from '../../constants/halperFunctions'
+import {
+  ClockIcon,
+  FireIcon,
+  Square3Stack3DIcon,
+  UsersIcon,
+} from 'react-native-heroicons/mini'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
-import i18n from '../../lang/i18n'
-import StərɪskCustomComponent from '../StərɪskCustomComponent'
 import ModalCreateRecipe from './ModalCreateRecipe'
-import TitleDescriptionComponent from './TitleDescriptionComponent'
+import { useDebounce } from '../../utils/useDebounce'
+import { isEqualMetrics } from '../../helpers/isEqualMetrics'
+import i18n from '../../lang/i18n'
 
-function SelectCreateRecipeScreenCustom({
-  setTotalRecipe,
-  recipeDish = {},
-  reafctorScrean = false,
-  recipeMetricsForUpdate,
-}) {
-  const [modalTitle, setModalTitle] = useState('')
-  const [modalDescription, setModalDescription] = useState('')
-  const [modalArray, setModalArray] = useState([])
-  const [modalType, setModalType] = useState(undefined)
+// безопасные дефолты
+const DEFAULT_METRICS = { time: 0, serv: 0, cal: 0, level: 'easy' }
+const LEVELS = ['easy', 'medium', 'hard']
 
-  // правильные ключи
-  const [modalSelectItem, setModalSelectItem] = useState({
-    time: 1,
-    serv: 1,
-    cal: 1,
-    level: 'easy',
+function clamp(n, min, max) {
+  const x = Number(n) || 0
+  if (min != null && x < min) return min
+  if (max != null && x > max) return max
+  return x
+}
+
+/** маленькая карточка метрики */
+const MetricCard = React.memo(function MetricCard({ icon, label, value, unit, onPress }) {
+  return (
+    <TouchableOpacity onPress={onPress} className="relative">
+      <View
+        className="flex rounded-full bg-amber-300 p-1 items-center"
+        style={[{ height: 120 }, shadowBoxBlack()]}
+      >
+        <View className="justify-between flex-col pb-2 flex-1">
+          <View
+            className="bg-white rounded-full flex items-center justify-around"
+            style={{ width: hp(6.5), height: hp(6.5) }}
+          >
+            {icon}
+          </View>
+          <View className="flex items-center py-2 gap-y-1">
+            <Text className="font-bold text-neutral-700">{value}</Text>
+            {!!unit && (
+              <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
+                {unit}
+              </Text>
+            )}
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
+})
+
+/**
+ * Контролируемый компонент метрик рецепта
+ * props:
+ *  - value: { time, serv, cal, level }
+ *  - onChange: (next) => void
+ */
+export default function SelectRecipeMetrics({ value, onChange }) {
+  const debounced = useDebounce(value, 300)
+
+  const safe = React.useMemo(
+    () => ({
+      time: clamp(value?.time, 0, 10000),
+      serv: clamp(value?.serv, 0, 200),
+      cal: clamp(value?.cal, 0, 100000),
+      level: String(value?.level || DEFAULT_METRICS.level).toLowerCase(),
+    }),
+    [value],
+  )
+
+  const [state, setState] = React.useState(safe)
+
+  // подхватываем внешние правки (редактирование)
+  React.useEffect(() => {
+    if (!isEqualMetrics(state, safe)) {
+      setState(safe)
+    }
+  }, [safe])
+
+  React.useEffect(() => {
+    if (!isEqualMetrics(debounced, value)) {
+      onChange?.(debounced)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounced, value])
+
+  // модалка выбора
+  const [modal, setModal] = React.useState({
+    open: false,
+    title: '',
+    description: '',
+    range: [0, 0],
+    list: [],
+    type: null,
   })
 
-  // если редактирование
-  useEffect(() => {
-    if (reafctorScrean && recipeDish?.recipe_metrics) {
-      const { time, serv, cal, level } = recipeDish.recipe_metrics
-      setModalSelectItem({
-        time: Number(recipeMetricsForUpdate?.time ?? time) || 1,
-        serv: Number(recipeMetricsForUpdate?.serv ?? serv) || 1,
-        cal: Number(recipeMetricsForUpdate?.cal ?? cal) || 1,
-        level: String(recipeMetricsForUpdate?.cal ?? level ?? 'easy').toLowerCase(),
+  const openNumeric = React.useCallback((type, min, max, title, description) => {
+    setModal({ open: true, type, title, description, range: [min, max], list: [] })
+  }, [])
+  const openList = React.useCallback((type, list, title, description) => {
+    setModal({ open: true, type, title, description, list, range: [0, 0] })
+  }, [])
+
+  const closeModal = React.useCallback(() => setModal((m) => ({ ...m, open: false })), [])
+
+  // применить выбор из модалки
+  const applyFromModal = React.useCallback(
+    (nextValue) => {
+      setState((prev) => {
+        switch (modal.type) {
+          case 'time':
+            return { ...prev, time: clamp(nextValue, modal.range[0], modal.range[1]) }
+          case 'serv':
+            return { ...prev, serv: clamp(nextValue, 1, 200) }
+          case 'cal':
+            return { ...prev, cal: clamp(nextValue, modal.range[0], modal.range[1]) }
+          case 'level':
+            return { ...prev, level: String(nextValue || 'medium').toLowerCase() }
+          default:
+            return prev
+        }
       })
-    }
-  }, [reafctorScrean, recipeDish])
-
-  const [isModalVisible, setIsModalVisible] = useState(false)
-  const debouncedValue = useDebounce(modalSelectItem, 300)
-
-  const openModalLevel = ({ title, description, array, type }) => {
-    setModalTitle(title)
-    setModalDescription(description)
-    setModalArray(array)
-    setModalType(type)
-    setIsModalVisible(true)
-  }
-
-  // финальная передача наверх
-  useEffect(() => {
-    setTotalRecipe((prev) => ({
-      ...prev,
-      recipe_metrics: {
-        time: Number(debouncedValue.time) || 0,
-        serv: Number(debouncedValue.serv) || 0,
-        cal: Number(debouncedValue.cal) || 0,
-        level: String(debouncedValue.level || 'medium').toLowerCase(),
-      },
-    }))
-  }, [debouncedValue, setTotalRecipe])
+      // closeModal()
+    },
+    [modal, closeModal],
+  )
 
   return (
     <View>
-      <TitleDescriptionComponent
-        titleVisual
-        titleText={i18n.t('Short description')}
-        descriptionVisual
-        descriptionText={i18n.t('Mark how long it takes to prepare the recipe')}
-      />
+      <Text style={styles.title}>{i18n.t('Short description')}</Text>
+      <Text style={styles.caption}>
+        {i18n.t('Mark how long it takes to prepare the recipe')}
+      </Text>
 
-      <View className="flex-row justify-around ">
-        {/* time */}
-        <TouchableOpacity
+      <View className="flex-row justify-around">
+        <MetricCard
+          icon={<ClockIcon size={hp(4)} strokeWidth={2.5} color="gray" />}
+          label="time"
+          value={state.time}
+          unit={i18n.t('Mins')}
           onPress={() =>
-            openModalLevel({
-              title: 'Время приготовления.',
-              description: 'Здесь вы можете указать примерное время приготовления блюда.',
-              array: [1, 300],
-              type: 'time',
-            })
+            openNumeric(
+              'time',
+              1,
+              300,
+              'Cooking time.',
+              'Here you can specify the approximate time to cook the dish.',
+            )
           }
-          className="relative"
-        >
-          <View
-            className="flex rounded-full bg-amber-300 p-1 items-center"
-            style={[{ height: 120 }, shadowBoxBlack()]}
-          >
-            <View className="justify-between flex-col pb-2 flex-1">
-              <View
-                className="bg-white rounded-full flex items-center justify-around"
-                style={{ width: hp(6.5), height: hp(6.5) }}
-              >
-                <StərɪskCustomComponent top={-5} right={-5} />
-                <ClockIcon size={hp(4)} strokeWidth={2.5} color="gray" />
-              </View>
-              <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold text-neutral-700">{modalSelectItem.time}</Text>
-                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
-                  {i18n.t('Mins')}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+        />
 
-        {/* servings */}
-        <TouchableOpacity
+        <MetricCard
+          icon={<UsersIcon size={hp(4)} strokeWidth={2.5} color="gray" />}
+          label="serv"
+          value={state.serv}
+          unit={i18n.t('Person')}
           onPress={() =>
-            openModalLevel({
-              title: 'Выберите количество персон.',
-              description:
-                'Здесь вы можете выбрать на какое количество персон рассчитан ваш рецепт.',
-              array: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-              type: 'serv',
-            })
+            openList(
+              'serv',
+              Array.from({ length: 10 }, (_, i) => String(i + 1)),
+              'Select number of servings',
+              'Choose how many persons your recipe serves.',
+            )
           }
-        >
-          <View
-            className="flex rounded-full bg-amber-300 p-1 items-center"
-            style={[{ height: 120 }, shadowBoxBlack()]}
-          >
-            <View className="justify-between flex-col pb-2 flex-1">
-              <View
-                className="bg-white rounded-full flex items-center justify-around"
-                style={{ width: hp(6.5), height: hp(6.5) }}
-              >
-                <StərɪskCustomComponent top={-5} right={-5} />
-                <UsersIcon size={hp(4)} strokeWidth={2.5} color="gray" />
-              </View>
-              <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold text-neutral-700">{modalSelectItem.serv}</Text>
-                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
-                  {i18n.t('Person')}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+        />
 
-        {/* calories */}
-        <TouchableOpacity
+        <MetricCard
+          icon={<FireIcon size={hp(4)} strokeWidth={2.5} color="gray" />}
+          label="cal"
+          value={state.cal}
+          unit={i18n.t('Cal')}
           onPress={() =>
-            openModalLevel({
-              title: 'Выберите калорийность.',
-              description: 'Здесь вы можете выбрать уровень калорийности блюда.',
-              array: [1, 3000],
-              type: 'cal',
-            })
+            openNumeric('cal', 1, 3000, 'Select calories.', 'Choose dish calories.')
           }
-        >
-          <View
-            className="flex rounded-full bg-amber-300 p-1 items-center "
-            style={[{ height: 120 }, shadowBoxBlack()]}
-          >
-            <View className="justify-between flex-col pb-2 flex-1">
-              <View
-                className="bg-white rounded-full flex items-center justify-around"
-                style={{ width: hp(6.5), height: hp(6.5) }}
-              >
-                <StərɪskCustomComponent top={-5} right={-5} />
-                <FireIcon size={hp(4)} strokeWidth={2.5} color="gray" />
-              </View>
-              <View className="flex items-center py-2 gap-y-1">
-                <Text className="font-bold text-neutral-700">{modalSelectItem.cal}</Text>
-                <Text style={{ fontSize: hp(1.2) }} className="font-bold text-neutral-500">
-                  {i18n.t('Cal')}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
+        />
 
-        {/* level */}
-        <TouchableOpacity
+        <MetricCard
+          icon={<Square3Stack3DIcon size={hp(4)} strokeWidth={2.5} color="gray" />}
+          label="level"
+          value={state.level}
+          unit=""
           onPress={() =>
-            openModalLevel({
-              title: 'Выберите сложность.',
-              description: 'Здесь вы можете выбрать уровень сложности приготовления рецепта.',
-              array: ['Easy', 'Medium', 'Hard'],
-              type: 'level',
-            })
+            openList(
+              'level',
+              LEVELS.map((x) => x[0].toUpperCase() + x.slice(1)),
+              'Select difficulty.',
+              'Choose cooking difficulty.',
+            )
           }
-        >
-          <View
-            className="flex rounded-full bg-amber-300 p-1 items-center"
-            style={[{ height: 120 }, shadowBoxBlack()]}
-          >
-            <View className="justify-between flex-col pb-2 flex-1">
-              <View
-                className="bg-white rounded-full flex items-center justify-around"
-                style={{ width: hp(6.5), height: hp(6.5) }}
-              >
-                <StərɪskCustomComponent top={-5} right={-5} />
-                <Square3Stack3DIcon size={hp(4)} strokeWidth={2.5} color="gray" />
-              </View>
-              <View className="flex items-center py-2 gap-y-1">
-                <Text style={[styles.text, { fontSize: 8 }]} numberOfLines={1} ellipsizeMode="tail">
-                  {modalSelectItem.level}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        {isModalVisible && (
-          <ModalCreateRecipe
-            isModalVisible={isModalVisible}
-            setIsModalVisible={setIsModalVisible}
-            title={modalTitle}
-            description={modalDescription}
-            array={modalArray}
-            setModalSelectItem={setModalSelectItem}
-            modalSelectItem={modalSelectItem}
-            modalType={modalType}
-          />
-        )}
+        />
       </View>
+
+      {/*{modal.open && (*/}
+      <ModalCreateRecipe
+        open={modal.open}
+        onClose={closeModal}
+        title={modal.title}
+        description={modal.description}
+        mode={modal.list.length ? 'list' : 'numeric'}
+        value={state[modal.type]} // для numeric
+        min={modal.range[0]}
+        max={modal.range[1]}
+        step={modal.type === 'time' ? 5 : 5}
+        items={modal.list}
+        formatValue={
+          modal.type === 'time'
+            ? undefined
+            : (n) => `${n} ${modal.type === 'cal' ? i18n.t('Cal') || 'cal' : ''}`
+        }
+        onChange={(next) => applyFromModal(next)}
+      />
+      {/*)}*/}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  text: { fontWeight: '700', color: '#111827' },
+  title: { fontWeight: '700', color: '#111827', fontSize: hp(2.1), marginBottom: 4 },
+  caption: { color: '#6b7280', marginBottom: 12 },
 })
-
-export default SelectCreateRecipeScreenCustom

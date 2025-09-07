@@ -109,6 +109,15 @@
   "My recipes": "Mis recetas",
   "Liked": "Gustados",
 
+  "Cooking time.": "Tiempo de cocción.",
+  "Here you can specify the approximate time to cook the dish.": "Aquí puedes especificar el tiempo aproximado para cocinar el plato.",
+  "Select number of servings.": "Selecciona el número de porciones.",
+  "Choose how many persons your recipe serves.": "Elige para cuántas personas es tu receta.",
+  "Select calories.": "Selecciona las calorías.",
+  "Choose dish calories.": "Elige las calorías del plato.",
+  "Select difficulty.": "Selecciona la dificultad.",
+  "Choose cooking difficulty.": "Elige la dificultad de la preparación.",
+
   "---Profile-END--": "---Profile-END--",
 
   "---Profile-EditProfile---": "---Profile-EditProfile---",
@@ -187,7 +196,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Aquí puedes añadir enlaces a Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "Si quieres añadir enlaces a tu Facebook, Instagram, TikTok",
   "Link to the author": "Enlace al autor",
-  "If you have a link to a video stored on YouTube or Google Drive": "Si tienes un enlace a un video almacenado en YouTube o Google Drive.",
+  "If you have a link to a video stored on YouTube": "Si tienes un enlace a un video almacenado en YouTube",
   "If this recipe is available on another resource, you can add a link to it": "Si esta receta está disponible en otro recurso, puedes agregar un enlace a ella",
   "If you have a store": "Si tienes una tienda",
   "You can add it to the map, and customers can find it": "Puedes agregarla al mapa, y los clientes podrán encontrarla.",

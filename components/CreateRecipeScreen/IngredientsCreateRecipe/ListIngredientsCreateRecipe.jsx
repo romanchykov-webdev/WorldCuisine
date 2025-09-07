@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
-import { TrashIcon, PencilIcon } from 'react-native-heroicons/mini'
+import { TrashIcon } from 'react-native-heroicons/mini'
 import { shadowBoxBlack } from '../../../constants/shadow'
 import { themes } from '../../../constants/themes'
-import { useAuth } from '../../../contexts/AuthContext'
 import ButtonSmallCustom from '../../Buttons/ButtonSmallCustom'
 
 function ListIngredientsCreateRecipe({
-  ingredients, // <- объект вида { en:[{ingredient,quantity,unitLabel,sourceIndex}], ... }
+  ingredients,
   totalLangRecipe,
-  currentTheme,
+  colors,
   removeIngredient,
 }) {
   const [changeLang, setChangeLang] = useState(totalLangRecipe[0])
@@ -42,7 +41,7 @@ function ListIngredientsCreateRecipe({
                   <Text
                     style={{
                       textTransform: 'capitalize',
-                      color: item === changeLang ? 'black' : themes[currentTheme]?.textColor,
+                      color: item === changeLang ? 'black' : colors?.textColor,
                     }}
                   >
                     {item}
@@ -58,22 +57,25 @@ function ListIngredientsCreateRecipe({
         {Array.isArray(ingredients?.[changeLang]) ? (
           ingredients[changeLang].map((row, index) => (
             <View key={index} className="flex-row gap-x-4 items-center mb-2 ">
-              <View style={{ height: 20, width: 20 }} className="bg-amber-300 rounded-full" />
+              <View
+                style={{ height: 20, width: 20 }}
+                className="bg-amber-300 rounded-full"
+              />
               <View className="flex-row flex-1 gap-x-2">
                 <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.textColor }}
+                  style={{ fontSize: 16, color: colors?.textColor }}
                   className="font-extrabold"
                 >
                   {row.ingredient}
                 </Text>
                 <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.textColor }}
+                  style={{ fontSize: 16, color: colors?.textColor }}
                   className="font-medium"
                 >
                   - {row.quantity}
                 </Text>
                 <Text
-                  style={{ fontSize: 16, color: themes[currentTheme]?.textColor }}
+                  style={{ fontSize: 16, color: colors?.textColor }}
                   className="font-medium capitalize"
                 >
                   {row.unitLabel}
