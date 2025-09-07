@@ -207,7 +207,8 @@ export function validateRecipeStructure(recipe) {
   ) {
     return {
       isValid: false,
-      message: 'Поле title.strTitle должно быть непустой строкой после удаления пробелов.',
+      message:
+        'Поле title.strTitle должно быть непустой строкой после удаления пробелов.',
     }
   }
 
@@ -244,7 +245,8 @@ export function validateRecipeStructure(recipe) {
   ) {
     return {
       isValid: false,
-      message: 'Поле recipe_metrics должно содержать time, persons, calories, difficulty.',
+      message:
+        'Поле recipe_metrics должно содержать time, persons, calories, difficulty.',
     }
   }
 
@@ -302,7 +304,10 @@ export function validateRecipeStructure(recipe) {
         }
       }
 
-      if (typeof ingredient.ingredient === 'string' && ingredient.ingredient.trim() === '') {
+      if (
+        typeof ingredient.ingredient === 'string' &&
+        ingredient.ingredient.trim() === ''
+      ) {
         return {
           isValid: false,
           message: `${i18n.t('For the ingredient in the language')} "${lang}". ${i18n.t(
@@ -449,8 +454,8 @@ export function createCategoryPointObject(recipes) {
 // отфильтровать subcategories в categoryRecipes так, чтобы остались только те подкатегории, чьи point точно соответствуют значениям из массивов в obFilterCategory
 export function filterCategoryRecipesBySubcategories(categoryRecipes, obFilterCategory) {
   // Объединяем все значения из obFilterCategory в один массив
-  console.log('filterCategoryRecipesBySubcategories categoryRecipes', categoryRecipes)
-  console.log('filterCategoryRecipesBySubcategories obFilterCategory', obFilterCategory)
+  // console.log('filterCategoryRecipesBySubcategories categoryRecipes', categoryRecipes)
+  // console.log('filterCategoryRecipesBySubcategories obFilterCategory', obFilterCategory)
 
   const allowedPoints = Object.values(obFilterCategory).flat()
 

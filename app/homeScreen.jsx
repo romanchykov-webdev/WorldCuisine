@@ -1,6 +1,13 @@
 import { StatusBar } from 'expo-status-bar'
 
-import { Platform, RefreshControl, SafeAreaView, ScrollView, Text, View } from 'react-native'
+import {
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native'
 
 import HeaderComponent from '../components/HeaderComponent'
 import LoadingComponent from '../components/loadingComponent'
@@ -12,7 +19,7 @@ import TopRecipeComponent from '../components/topRecipe/TopRecipeComponent'
 import { hp, wp } from '../constants/responsiveScreen'
 
 import i18n from '../lang/i18n'
-import { useCategories } from '../queries/recipes'
+import { useCategories, useMeasurement } from '../queries/recipes'
 
 import { useAuthStore } from '../stores/authStore'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
@@ -38,6 +45,7 @@ function HomeScreen() {
   // Zustand
 
   const { data: categoryRecipes, isLoading, isFetching, refetch } = useCategories(lang)
+  // console.log('HomeScreen categoryRecipes', categoryRecipes)
 
   // if (__DEV__) useLogQueries('home')
   return (
@@ -104,7 +112,8 @@ function HomeScreen() {
                   }}
                   className="font-semibold"
                 >
-                  {i18n.t('stay at')} <Text className="text-amber-500">{i18n.t('home')}</Text>
+                  {i18n.t('stay at')}{' '}
+                  <Text className="text-amber-500">{i18n.t('home')}</Text>
                 </Text>
               </View>
             </View>

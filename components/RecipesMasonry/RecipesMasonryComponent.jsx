@@ -1,14 +1,13 @@
-// components/RecipesMasonry/RecipesMasonryComponent.jsx
 import React, { useCallback, useMemo, useState } from 'react'
 import MasonryList from '@react-native-seoul/masonry-list'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated'
+import Animated, { FadeInDown } from 'react-native-reanimated'
 import { ArrowUturnLeftIcon } from 'react-native-heroicons/outline'
 
 import { hp } from '../../constants/responsiveScreen'
-import { shadowBoxBlack } from '../../constants/shadow'
+import { shadowBoxBlack, shadowText } from '../../constants/shadow'
 import AvatarCustom from '../AvatarCustom'
 import { useThemeColors } from '../../stores/themeStore'
 import Shimmer from '../Skeleton/Shimmer'
@@ -18,7 +17,9 @@ const ShimmerCard = React.memo(function ShimmerCard({ index }) {
   const isEven = index % 3 === 0
   const h = isEven ? hp(25) : hp(35)
   return (
-    <View style={[styles.card, { marginHorizontal: 2.5 }, shadowBoxBlack({ opacity: 0.25 })]}>
+    <View
+      style={[styles.card, { marginHorizontal: 2.5 }, shadowBoxBlack({ opacity: 0.25 })]}
+    >
       <Shimmer width="100%" height={h} borderRadius={35} />
     </View>
   )
@@ -56,9 +57,12 @@ const CategoryCard = React.memo(function CategoryCard({ item, index, onPress }) 
       <TouchableOpacity onPress={() => onPress?.(item)} activeOpacity={0.8}>
         <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
         <Text
-          className="absolute bottom-[20] text-white font-semibold text-lg"
-          numberOfLines={1}
-          style={{ textAlign: 'center', width: '100%' }}
+          className="absolute bottom-[20] text-white font-semibold text-2xl text-center w-full flex-wrap"
+          style={shadowText({
+            color: 'grey',
+            offset: { width: 1, height: 1 },
+            radius: 1,
+          })}
         >
           {item?.name}
         </Text>
@@ -84,9 +88,12 @@ const SubCategoryCard = React.memo(function SubCategoryCard({ item, index, onOpe
       <TouchableOpacity onPress={() => onOpen?.(item)} activeOpacity={0.8}>
         <CardImageShell uri={item?.image} height={imageHeight} radius={35} />
         <Text
-          className="absolute bottom-[20] text-white font-semibold text-lg"
-          numberOfLines={1}
-          style={{ textAlign: 'center', width: '100%' }}
+          className="absolute bottom-[20] text-white font-semibold text-2xl text-center w-full flex-wrap"
+          style={shadowText({
+            color: 'grey',
+            offset: { width: 1, height: 1 },
+            radius: 1,
+          })}
         >
           {item?.name}
         </Text>
@@ -117,14 +124,6 @@ function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = fals
   const keyCat = useCallback((it, idx) => String(it?.point || it?.name || idx), [])
   const keySub = useCallback((it, idx) => String(it?.point || it?.name || idx), [])
 
-  // рендеры
-  const renderCategory = useCallback(
-    ({ item, i, index }) => (
-      <CategoryCard item={item} index={index ?? i} onPress={onPressCategory} />
-    ),
-    [onPressCategory],
-  )
-
   const router = useRouter()
   const openSub = useCallback(
     (sub) => {
@@ -136,12 +135,21 @@ function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = fals
     [router, langApp],
   )
 
+  const renderCategory = useCallback(
+    ({ item, i, index }) => (
+      <CategoryCard item={item} index={index ?? i} onPress={onPressCategory} />
+    ),
+    [onPressCategory],
+  )
+
   const renderSubcategory = useCallback(
-    ({ item, i, index }) => <SubCategoryCard item={item} index={index ?? i} onOpen={openSub} />,
+    ({ item, i, index }) => (
+      <SubCategoryCard item={item} index={index ?? i} onOpen={openSub} />
+    ),
     [openSub],
   )
 
-  // ---- FIX: сначала показываем КАТЕГОРИИ, а при selected — ПОДКАТЕГОРИИ
+  // скелетоны при первой загрузке категорий
   if (isLoading && !selected) {
     return <ShimmerGrid count={8} />
   }
@@ -170,8 +178,15 @@ function RecipesMasonryComponent({ categoryRecipes = [], langApp, loading = fals
             </TouchableOpacity>
 
             <Text
-              className="flex-1 text-center font-semibold text-xl"
-              style={{ color: colors.textColor }}
+              className="flex-1 text-center  text-2xl font-bold"
+              style={[
+                shadowText({
+                  color: 'grey',
+                  offset: { width: 1, height: 1 },
+                  radius: 1,
+                }),
+                { color: colors.textColor },
+              ]}
               numberOfLines={1}
             >
               {selected?.name}
@@ -216,12 +231,6 @@ function CardImageShell({ uri, height, radius = 35 }) {
         style={{ borderWidth: 0.2, width: '100%', height }}
         rounded={radius}
       />
-      {/*<View*/}
-      {/*  style={[*/}
-      {/*    StyleSheet.absoluteFill,*/}
-      {/*    { borderRadius: radius, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
-      {/*  ]}*/}
-      {/*></View>*/}
       <LinearGradient
         colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)']}
         locations={[0, 1]}

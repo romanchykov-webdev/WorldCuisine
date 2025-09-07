@@ -1,4 +1,4 @@
-import { LinearGradient } from 'expo-linear-gradient'
+import React from 'react'
 import { useRouter } from 'expo-router'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated'
@@ -9,10 +9,10 @@ import { shadowBoxBlack, shadowText } from '../../../constants/shadow'
 import AvatarCustom from '../../AvatarCustom'
 import { PlayCircleIcon } from 'react-native-heroicons/solid'
 import { formatNumber } from '../../../utils/numberFormat'
-import React from 'react' // если есть иконка play
 
 function RecipePointItemComponent({ item, index, langApp }) {
   const router = useRouter()
+
   // высоты  для "кладки"
   const heightBuckets = [hp(24), hp(35)]
 
@@ -24,8 +24,12 @@ function RecipePointItemComponent({ item, index, langApp }) {
   }
 
   const bucket = hashToBucket(item.full_recipe_id ?? item.id ?? index)
+
   const imageHeight = heightBuckets[bucket]
-  const categoryTitle = item.title?.[langApp] || item.title?.en || item.title[0]
+
+  const categoryTitle =
+    item.title?.[langApp] || item.title?.en || Object.values(item.title)[0]
+
   return (
     <Animated.View
       entering={FadeInDown.delay((index % 10) * 100)
@@ -93,23 +97,12 @@ function RecipePointItemComponent({ item, index, langApp }) {
         )}
 
         {/* Градиент */}
-        {/*<View*/}
-        {/*  style={[*/}
-        {/*    StyleSheet.absoluteFill,*/}
-        {/*    { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
-        {/*  ]}*/}
-        {/*></View>*/}
-        <LinearGradient
-          colors={['transparent', '#18181b']}
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            borderRadius: 35,
-          }}
-          start={{ x: 0.5, y: 0.2 }}
-          end={{ x: 0.5, y: 1 }}
-        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { borderRadius: 35, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
+          ]}
+        ></View>
 
         {/* Нижний блок с названием и иконками */}
         <View style={styles.bottomBlock}>
@@ -153,12 +146,12 @@ const styles = StyleSheet.create({
   },
   topInfo: {
     position: 'absolute',
-    top: 8,
+    top: 20,
     left: 0,
     right: 0,
     flexDirection: 'row',
     zIndex: 10,
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
     alignItems: 'flex-start',
   },
   topInfoWithVideo: {
@@ -189,7 +182,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
-    marginBottom: 4,
+    marginBottom: 5,
+    paddingHorizontal: 5,
   },
   iconsRow: {
     flexDirection: 'row',
