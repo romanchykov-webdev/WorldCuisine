@@ -2,14 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import { Animated, Modal, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { wp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
-import { getUserImageSrc } from '../../service/imageServices'
+// import { getUserImageSrc } from '../../service/imageServices'
 import AvatarCustom from '../AvatarCustom'
+import { getImageUrl } from '../../utils/storage'
 
 const width = wp(100)
 const ITEM_WIDTH = width * 0.9
 const ITEM_HEIGHT = ITEM_WIDTH * 1.47
 
-function ImageSliderCustom({ images, createRecipe = false }) {
+function ImageSliderCustom({ images }) {
   // console.log("ImageSliderCustom images", images);
   const [modalVisible, setModalVisible] = useState(false)
   const [modalImage, setModalImage] = useState(null)
@@ -123,8 +124,7 @@ function ImageSliderCustom({ images, createRecipe = false }) {
 
             const isLocalFile = uri?.startsWith('file://')
             const isFullUrl = uri?.startsWith('http://') || uri?.startsWith('https://')
-            const sourceUri =
-              isLocalFile || isFullUrl || isPreview || refactorScrean ? uri : getUserImageSrc(uri)
+            const sourceUri = isLocalFile || isFullUrl ? uri : getImageUrl(uri)
             // console.log("ImageSliderCustom item", item, "sourceUri", sourceUri);
 
             return (
@@ -145,7 +145,10 @@ function ImageSliderCustom({ images, createRecipe = false }) {
                   }}
                 >
                   {/* Картинка на экране */}
-                  <TouchableOpacity onPress={() => handlePress(sourceUri)} activeOpacity={1}>
+                  <TouchableOpacity
+                    onPress={() => handlePress(sourceUri)}
+                    activeOpacity={1}
+                  >
                     <Animated.Image
                       source={{ uri: sourceUri }}
                       style={{

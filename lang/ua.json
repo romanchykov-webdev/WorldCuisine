@@ -45,6 +45,18 @@
   "from Facebook, Instagram, or TikTok": "з Facebook, Instagram або TikTok",
   "Link already added": "Посилання вже додано",
   "If you want to update or change the link": "Якщо ви хочете оновити або змінити посилання, спочатку видаліть його, а потім можете додати нове",
+  "Recipe uploaded successfully!": "Рецепт успішно завантажено!",
+
+  "-Start-Create recipe":   "Create recipe",
+
+  "Please add a title": "Будь ласка, додайте заголовок",
+  "Please select a category": "Будь ласка, виберіть категорію",
+  "Please select a image": "Будь ласка, виберіть зображення",
+  "Please add at least one ingredient": "Будь ласка, додайте хоча б один інгредієнт",
+  "Please add at least one instruction step": "Будь ласка, додайте хоча б один крок інструкції",
+
+  "-end-Create recipe":   "Create recipe",
+
 
   "---Alert-END--": "---Alert-END--",
 

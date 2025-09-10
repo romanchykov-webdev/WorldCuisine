@@ -1,4 +1,3 @@
-// components/CreateRecipeScreen/SelectRecipeMetrics.jsx
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import {
@@ -15,7 +14,7 @@ import { isEqualMetrics } from '../../helpers/isEqualMetrics'
 import i18n from '../../lang/i18n'
 
 // безопасные дефолты
-const DEFAULT_METRICS = { time: 0, serv: 0, cal: 0, level: 'easy' }
+// const DEFAULT_METRICS = { time: 0, serv: 0, cal: 0, level: 'easy' }
 const LEVELS = ['easy', 'medium', 'hard']
 
 function clamp(n, min, max) {
@@ -24,6 +23,13 @@ function clamp(n, min, max) {
   if (max != null && x > max) return max
   return x
 }
+
+const normalize = (v) => ({
+  time: Number.isFinite(Number(v?.time)) ? Number(v.time) : 0,
+  serv: Number.isFinite(Number(v?.serv)) ? Number(v.serv) : 0,
+  cal: Number.isFinite(Number(v?.cal)) ? Number(v.cal) : 0,
+  level: typeof v?.level === 'string' ? v.level : 'easy',
+})
 
 /** маленькая карточка метрики */
 const MetricCard = React.memo(function MetricCard({ icon, label, value, unit, onPress }) {
@@ -61,33 +67,42 @@ const MetricCard = React.memo(function MetricCard({ icon, label, value, unit, on
  *  - onChange: (next) => void
  */
 export default function SelectRecipeMetrics({ value, onChange }) {
-  const debounced = useDebounce(value, 300)
+  // const safe = React.useMemo(
+  //   () => ({
+  //     time: clamp(value?.time ?? 0, 10000),
+  //     serv: clamp(value?.serv ?? 0, 200),
+  //     cal: clamp(value?.cal ?? 0, 100000),
+  //     level: String(value?.level ?? 'easy').toLowerCase(),
+  //   }),
+  //   [value],
+  // )
+  //
+  // const [state, setState] = React.useState(safe)
+  // const debounced = useDebounce(state, 300)
+  // // подхватываем внешние правки (редактирование)
+  // React.useEffect(() => {
+  //   if (!isEqualMetrics(state, safe)) {
+  //     setState(safe)
+  //   }
+  // }, [safe])
 
-  const safe = React.useMemo(
-    () => ({
-      time: clamp(value?.time, 0, 10000),
-      serv: clamp(value?.serv, 0, 200),
-      cal: clamp(value?.cal, 0, 100000),
-      level: String(value?.level || DEFAULT_METRICS.level).toLowerCase(),
-    }),
-    [value],
-  )
+  // 1) стартуем ровно с тем, что в рецепте
+  const [state, setState] = React.useState(() => normalize(value))
+  const debounced = useDebounce(state, 300)
 
-  const [state, setState] = React.useState(safe)
-
-  // подхватываем внешние правки (редактирование)
+  // 2) если родитель подал другое value (редактирование) — просто подставляем
   React.useEffect(() => {
-    if (!isEqualMetrics(state, safe)) {
-      setState(safe)
-    }
-  }, [safe])
+    const next = normalize(value)
+    if (!isEqualMetrics(state, next)) setState(next)
+  }, [value]) // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    if (!isEqualMetrics(debounced, value)) {
-      onChange?.(debounced)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounced, value])
+    //   if (!isEqualMetrics(debounced, value)) {
+    //     onChange?.(debounced)
+    //   }
+    // }, [debounced, value, onChange])
+    onChange?.(debounced)
+  }, [debounced]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // модалка выбора
   const [modal, setModal] = React.useState({
@@ -114,12 +129,16 @@ export default function SelectRecipeMetrics({ value, onChange }) {
       setState((prev) => {
         switch (modal.type) {
           case 'time':
+            // return { ...prev, time: clamp(nextValue, modal.range[0], modal.range[1]) }
             return { ...prev, time: clamp(nextValue, modal.range[0], modal.range[1]) }
           case 'serv':
+            // return { ...prev, serv: clamp(nextValue, 1, 200) }
             return { ...prev, serv: clamp(nextValue, 1, 200) }
           case 'cal':
+            // return { ...prev, cal: clamp(nextValue, modal.range[0], modal.range[1]) }
             return { ...prev, cal: clamp(nextValue, modal.range[0], modal.range[1]) }
           case 'level':
+            // return { ...prev, level: String(nextValue || 'medium').toLowerCase() }
             return { ...prev, level: String(nextValue || 'medium').toLowerCase() }
           default:
             return prev

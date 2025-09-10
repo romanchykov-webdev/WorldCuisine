@@ -15,7 +15,7 @@ function ListIngredientsCreateRecipe({
   const handleChangeLang = (item) => {
     setChangeLang(item)
   }
-  console.log('changeLang', changeLang)
+  // console.log('changeLang', changeLang)
   return (
     <View className="mb-5">
       {/* Блок выбора языка */}

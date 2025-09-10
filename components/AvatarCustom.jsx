@@ -1,7 +1,7 @@
 import { Image } from 'expo-image'
 import { StyleSheet } from 'react-native'
 import { hp } from '../constants/responsiveScreen'
-import { getUserImageSrc } from '../service/imageServices'
+import { getImageUrl } from '../utils/storage'
 
 function AvatarCustom({
   uri,
@@ -17,15 +17,16 @@ function AvatarCustom({
   const imageUri = typeof uri === 'string' ? uri : uri?.uri
 
   const isLocalFile = imageUri?.startsWith('file://')
-  const isFullUrl = imageUri?.startsWith('http://') || imageUri?.startsWith('https://')
+  const isFullUrl = /^https?:\/\//i.test(imageUri || '')
 
   const source =
-    isLocalFile || isFullUrl || RefactorImageHeader ? imageUri : getUserImageSrc(imageUri)
+    isLocalFile || isFullUrl || RefactorImageHeader ? imageUri : getImageUrl(imageUri)
 
   return (
     <Image
-      // source={isPreview || RefactorImageHeader ? uri : getUserImageSrc(uri)}
       source={source}
+      // cachePolicy="none" // ВАРИАНТ 1: Полностью отключить кэш
+      // recyclingKey={imageUri} // ВАРИАНТ 2: Или использовать ключ, чтобы принудительно перерисовывать
       transition={100}
       className="rounded-full"
       style={[

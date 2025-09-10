@@ -12,7 +12,6 @@ import { PaperAirplaneIcon, TrashIcon } from 'react-native-heroicons/mini'
 import { formatDateTime } from '../../constants/halperFunctions'
 import { hp } from '../../constants/responsiveScreen'
 import { themes } from '../../constants/themes'
-import { useAuth } from '../../contexts/AuthContext'
 // translate
 import i18n from '../../lang/i18n'
 
@@ -25,7 +24,13 @@ import {
 import AvatarCustom from '../AvatarCustom'
 import LoadingComponent from '../loadingComponent'
 
-function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId, currentTheme }) {
+function CommentsComponent({
+  recepId,
+  user,
+  updateLikeCommentCount,
+  publishedId,
+  currentTheme,
+}) {
   // console.log('CommentsComponent recepId',recepId)
   // console.log('CommentsComponent user',user)
 
@@ -233,7 +238,11 @@ function CommentsComponent({ recepId, user, updateLikeCommentCount, publishedId,
             className="bg-white rounded-full p-5 ml-2 к"
             style={{ transform: [{ rotate: '-45deg' }] }}
           >
-            {loading ? <ActivityIndicator /> : <PaperAirplaneIcon size={hp(2.5)} color="blue" />}
+            {loading ? (
+              <ActivityIndicator />
+            ) : (
+              <PaperAirplaneIcon size={hp(2.5)} color="blue" />
+            )}
           </TouchableOpacity>
         </View>
       )}

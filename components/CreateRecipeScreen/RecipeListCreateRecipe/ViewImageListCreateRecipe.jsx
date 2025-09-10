@@ -4,7 +4,7 @@ import { shadowBoxBlack } from '../../../constants/shadow'
 
 function ViewImageListCreateRecipe({ image }) {
   // image: строка URL ИЛИ массив вида [{ uri }]
-  console.log('image', image)
+  // console.log('image', image)
   let imageSource = null
 
   if (typeof image === 'string' && image) {

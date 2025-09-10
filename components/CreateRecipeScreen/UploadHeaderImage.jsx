@@ -1,5 +1,5 @@
 import React from 'react'
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { ArrowUpOnSquareStackIcon, TrashIcon } from 'react-native-heroicons/mini'
 import i18n from '../../lang/i18n'
 import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
@@ -18,12 +18,8 @@ export default function UploadHeaderImage({ colors, value, onChange }) {
   const { pickOne, isLoading } = useSingleImagePicker()
 
   const handlePick = async () => {
-    const result = await pickOne()
-    if (result?.uri) {
-      onChange?.(result.uri)
-      // если хочешь показать инфо прямо в UI — можешь сохранить результат в локальный стейт
-      // setInfo({ before: result.beforeMB, after: result.afterMB, pct: result.savedPct })
-    }
+    const res = await pickOne()
+    if (res?.uri) onChange(res.uri)
   }
 
   const handleRemove = () => onChange?.(null)
@@ -71,4 +67,3 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
 })
-// mb-5 relative border-2 border-neutral-400 rounded-[16px]

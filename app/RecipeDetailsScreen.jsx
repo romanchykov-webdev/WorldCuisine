@@ -32,10 +32,16 @@ import { TitleAreaRecipe } from '../components/recipeDetails/TitleAreaRecipe'
 import { MetricsRecipe } from '../components/recipeDetails/MetricsRecipe'
 import { hasSocialLinks } from '../utils/hasSocialLinks'
 import { useMeasurement } from '../queries/recipes'
+import colors from 'tailwindcss/colors'
 
 function RecipeDetailsScreen() {
   const { id, totalRecipe: totalRecipeString, preview } = useLocalSearchParams()
   const isPreview = preview === 'true' || preview === true
+
+  // console.log(
+  //   'RecipeDetailsScreen totalRecipeString',
+  //   JSON.stringify(totalRecipeString, null),
+  // )
 
   const user = useAuthStore((s) => s.user)
   const currentTheme = useThemeStore((s) => s.currentTheme)
@@ -49,6 +55,7 @@ function RecipeDetailsScreen() {
     if (!totalRecipeString) return null
     try {
       const parsed = JSON.parse(totalRecipeString)
+      // console.log('RecipeDetailsScreen parsed', JSON.stringify(parsed, null))
       return typeof parsed === 'object' && parsed ? parsed : null
     } catch {
       return null

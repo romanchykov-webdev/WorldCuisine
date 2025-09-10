@@ -16,6 +16,7 @@ import ImageCustom from '../../recipeDetails/ImageCustom'
 import ImageSliderCustom from '../../recipeDetails/ImageSliderCustom'
 import InputComponent from '../../InputComponent'
 import { toast } from '../../../lib/toast'
+import { useSingleImagePicker } from '../../../lib/useSingleImagePicker'
 
 // --- helpers ----------------------------------------------------------
 const makeLangMap = (langs, fill = '') =>
@@ -106,8 +107,8 @@ function RecipeListCreateRecipe({
   const emptyDraft = useMemo(() => makeLangMap(totalLangRecipe, ''), [totalLangRecipe])
   const [draft, setDraft] = useState(emptyDraft)
   const [draftImages, setDraftImages] = useState([])
-  const [loadingImages, setLoadingImages] = useState(false)
 
+  const { pickOne, isLoading } = useSingleImagePicker()
   const handleDraftChange = (lang, text) => setDraft((p) => ({ ...p, [lang]: text }))
 
   const addImage = async () => {
@@ -115,19 +116,10 @@ function RecipeListCreateRecipe({
       toast.info(null, i18n.t('You have reached the image limit for one item'))
       return
     }
-    setLoadingImages(true)
-    try {
-      const res = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      })
-      if (!res.canceled && res.assets?.[0]?.uri) {
-        setDraftImages((prev) => [...prev, res.assets[0].uri])
-      }
-    } finally {
-      setLoadingImages(false)
+
+    const res = await pickOne()
+    if (res?.uri) {
+      setDraftImages((prev) => [...prev, res.uri])
     }
   }
 
@@ -217,11 +209,11 @@ function RecipeListCreateRecipe({
       {/* кнопки */}
       <View className="flex-row gap-x-2 mt-2">
         <TouchableOpacity
-          onPress={loadingImages ? null : addImage}
+          onPress={isLoading ? null : addImage}
           style={[{ flex: 1 }, shadowBoxBlack()]}
           className="h-[60px] bg-violet-500 border-2 border-neutral-300 rounded-[10] justify-center items-center"
         >
-          {loadingImages ? (
+          {isLoading ? (
             <LoadingComponent color="green" size="small" />
           ) : (
             <PhotoIcon color="white" size={20} />

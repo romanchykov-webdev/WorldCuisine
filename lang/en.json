@@ -45,6 +45,16 @@
   "from Facebook, Instagram, or TikTok": "from Facebook, Instagram, or TikTok",
   "Link already added": "Link already added",
   "If you want to update or change the link": "If you want to update or change the link, delete it first, and then you can add a new one",
+  "Recipe uploaded successfully!": "Recipe uploaded successfully!",
+
+  "-Start-Create recipe":   "Create recipe",
+  "Please add a title": "Please add a title",
+  "Please select a category": "Please select a category",
+  "Please select a image": "Please select a image",
+  "Please add at least one ingredient": "Please add at least one ingredient",
+  "Please add at least one instruction step": "Please add at least one instruction step",
+  "-end-Create recipe":   "Create recipe",
+
 
   "---Alert-END--": "---Alert-END--",
 

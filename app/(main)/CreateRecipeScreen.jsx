@@ -26,14 +26,12 @@ import { useAuthStore } from '../../stores/authStore'
 import { useLangStore } from '../../stores/langStore'
 import { useThemeColors } from '../../stores/themeStore'
 
-import { uploadRecipeToTheServer } from '../../service/uploadDataToTheDB'
 import { useMeasurement } from '../../queries/recipes'
 import { useMutation } from '@tanstack/react-query'
 import UploadHeaderImage from '../../components/CreateRecipeScreen/UploadHeaderImage'
 import InputCustomComponent from '../../components/CreateRecipeScreen/InputCustomComponent'
 import { validateRecipeStructure } from '../../utils/validateRecipe'
 import InputCreateRecipeScreenCustom from '../../components/CreateRecipeScreen/InputCreateRecipeScreenCustom'
-import TitleDescriptionComponent from '../../components/CreateRecipeScreen/TitleDescriptionComponent'
 import TagsCustom from '../../components/CreateRecipeScreen/TagsCustom'
 import SelectCreateRecipeScreenCustom from '../../components/CreateRecipeScreen/SelectCreateRecipeScreenCustom'
 import { isEqualMetrics } from '../../helpers/isEqualMetrics'
@@ -43,6 +41,8 @@ import AddLinkVideo from '../../components/CreateRecipeScreen/AddLinkVideo'
 import AddLinkSocialComponent from '../../components/CreateRecipeScreen/AddLinkSocialComponent'
 import LinkToTheCopyright from '../../components/CreateRecipeScreen/LinkToTheCopyright'
 import AddPintGoogleMaps from '../../components/CreateRecipeScreen/AddPintGoogleMaps'
+import { uploadRecipeToTheServerTQ } from '../../service/TQuery/uploadRecipeToTheServer'
+import { updateRecipeTQ } from '../../service/TQuery/updateRecipeTQ'
 
 function CreateRecipeScreen() {
   const router = useRouter()
@@ -71,7 +71,11 @@ function CreateRecipeScreen() {
     }
   }, [recipeDishParam])
 
-  const isEdit = isRefactorRecipe === 'true' || isRefactorRecipe === true
+  const isEdit =
+    isRefactorRecipe === true ||
+    isRefactorRecipe === 'true' ||
+    !!parsedRecipe?.id || // если пришёл рецепт с id — точно редактируем
+    !!totalRecipe?.id
 
   // Заготовка (blank)
   const blank = useMemo(
@@ -142,17 +146,19 @@ function CreateRecipeScreen() {
 
   // мутация публикации
 
-  // публикация
+  // публикация/обновление
   const publishMutation = useMutation({
-    mutationFn: uploadRecipeToTheServer,
-    onSuccess: (res) => {
-      if (res?.success) {
-        Alert.alert(i18n.t('Success'), i18n.t('Recipe uploaded successfully!'))
-        router.back()
-        setPreviewOpened(false)
-      } else {
-        Alert.alert(i18n.t('Error'), res?.msg || 'Upload error')
-      }
+    mutationFn: (payload) =>
+      isEdit ? updateRecipeTQ(payload) : uploadRecipeToTheServerTQ(payload),
+    onSuccess: () => {
+      Alert.alert(
+        i18n.t('Success'),
+        isEdit
+          ? i18n.t('Recipe updated successfully!')
+          : i18n.t('Recipe uploaded successfully!'),
+      )
+      router.back()
+      setPreviewOpened(false)
     },
     onError: (e) => {
       Alert.alert(i18n.t('Error'), e?.message || 'Upload error')
@@ -160,6 +166,7 @@ function CreateRecipeScreen() {
   })
 
   const handlePreview = () => {
+    // console.log('totalRecipe', JSON.stringify(totalRecipe, null))
     if (!isValid) {
       Alert.alert(i18n.t('Preview error'), formValidation.msg)
       return
@@ -176,6 +183,11 @@ function CreateRecipeScreen() {
   }
 
   const handlePublish = () => {
+    if (isEdit && !totalRecipe?.id) {
+      Alert.alert(i18n.t('Error'), 'Missing recipe id for update')
+      return
+    }
+
     if (!isValid) {
       Alert.alert(i18n.t('Validation error'), formValidation.msg)
       return
@@ -381,7 +393,7 @@ function CreateRecipeScreen() {
                 ) : (
                   <ButtonSmallCustom
                     buttonText
-                    title={i18n.t('Publish')}
+                    title={isRefactorRecipe ? i18n.t('Refactor') : i18n.t('Publish')}
                     bg="green"
                     w="100%"
                     h={60}

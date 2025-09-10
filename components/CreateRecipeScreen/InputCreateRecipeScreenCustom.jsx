@@ -15,7 +15,7 @@ export default function InputCreateRecipeScreenCustom({
   styleInput,
 }) {
   const [local, setLocal] = React.useState({ ...value })
-  console.log('langs', langs)
+  // console.log('langs', langs)
   // Подхватываем внешние правки только если реально изменились
   React.useEffect(() => {
     const cur = JSON.stringify(local || {})

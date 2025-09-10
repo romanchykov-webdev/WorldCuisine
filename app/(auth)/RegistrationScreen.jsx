@@ -1,8 +1,12 @@
-// app/(auth)/RegistrationScreen.jsx
 import { useRouter } from 'expo-router'
 import { useRef, useState } from 'react'
 import { ActivityIndicator, Alert, Text, TouchableOpacity, View } from 'react-native'
-import { EnvelopeIcon, EyeIcon, EyeSlashIcon, UserCircleIcon } from 'react-native-heroicons/outline'
+import {
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  UserCircleIcon,
+} from 'react-native-heroicons/outline'
 
 import ButtonBack from '../../components/ButtonBack'
 import InputComponent from '../../components/InputComponent'
@@ -231,7 +235,9 @@ function RegistrationScreen() {
             {loading ? (
               <ActivityIndicator size={30} color="white" />
             ) : (
-              <Text className="text-xl font-bold text-neutral-700">{i18n.t('Sign Up')}</Text>
+              <Text className="text-xl font-bold text-neutral-700">
+                {i18n.t('Sign Up')}
+              </Text>
             )}
           </TouchableOpacity>
 
