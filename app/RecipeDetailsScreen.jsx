@@ -253,7 +253,7 @@ function RecipeDetailsScreen() {
               user={user ?? null}
               updateLikeCommentCount={() => afterCommentAdded()}
               publishedId={recipeDish?.published_id}
-              currentTheme={currentTheme}
+              colors={colors}
             />
           )}
         </View>
