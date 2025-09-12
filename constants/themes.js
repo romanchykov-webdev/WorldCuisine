@@ -24,6 +24,9 @@ export const themes = {
     shadowTextColor: 'rgba(0,0,0,0.75)',
     shadowBoxColor: 'rgba(0,0,0,0.3)',
     isActiveColorText: '#f59e0b',
+    borderColor: '#A3A3A3',
+    radiusSM: 8,
+    radiusMD: 16,
   },
   dark: {
     backgroundColor: '#1C2526',
@@ -32,6 +35,9 @@ export const themes = {
     shadowTextColor: 'rgba(255,255,255,0.5)',
     shadowBoxColor: 'rgba(255,255,255,0.5)',
     isActiveColorText: '#f59e0b',
+    borderColor: '#A3A3A3',
+    radiusSM: 8,
+    radiusMD: 16,
   },
 }
 

@@ -45,6 +45,16 @@
   "from Facebook, Instagram, or TikTok": "from Facebook, Instagram, or TikTok",
   "Link already added": "Link already added",
   "If you want to update or change the link": "If you want to update or change the link, delete it first, and then you can add a new one",
+  "Recipe uploaded successfully!": "Recipe uploaded successfully!",
+
+  "-Start-Create recipe":   "Create recipe",
+  "Please add a title": "Please add a title",
+  "Please select a category": "Please select a category",
+  "Please select a image": "Please select a image",
+  "Please add at least one ingredient": "Please add at least one ingredient",
+  "Please add at least one instruction step": "Please add at least one instruction step",
+  "-end-Create recipe":   "Create recipe",
+
 
   "---Alert-END--": "---Alert-END--",
 
@@ -108,6 +118,15 @@
   "Select Language": "Select Language",
   "My recipes": "My recipes",
   "Liked": "Liked",
+
+  "Cooking time.": "Cooking time.",
+  "Here you can specify the approximate time to cook the dish.": "Here you can specify the approximate time to cook the dish.",
+  "Select number of servings.": "Select number of servings.",
+  "Choose how many persons your recipe serves.": "Choose how many persons your recipe serves.",
+  "Select calories.": "Select calories.",
+  "Choose dish calories.": "Choose dish calories.",
+  "Select difficulty.": "Select difficulty.",
+  "Choose cooking difficulty.": "Choose cooking difficulty.",
 
   "---Profile-END--": "---Profile-END--",
 
@@ -186,7 +205,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Here you can add links to Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "If you want to add links to your facebook instagram tiktok",
   "Link to the author": "Link to the author",
-  "If you have a link to a video stored on YouTube or Google Drive": "If you have a link to a video stored on YouTube or Google Drive.",
+  "If you have a link to a video stored on YouTube": "If you have a link to a video stored on YouTube.",
   "If this recipe is available on another resource, you can add a link to it": "If this recipe is available on another resource, you can add a link to it",
   "If you have a store": "If you have a store",
   "You can add it to the map, and customers can find it": "You can add it to the map, and customers can find it",

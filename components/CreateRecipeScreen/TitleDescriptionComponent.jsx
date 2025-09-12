@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { hp } from '../../constants/responsiveScreen'
-import { themes } from '../../constants/themes'
-import { useAuth } from '../../contexts/AuthContext'
+import { useThemeColors } from '../../stores/themeStore'
 
 function TitleDescriptionComponent({
   slyleWrapper,
@@ -11,13 +10,12 @@ function TitleDescriptionComponent({
   descriptionVisual = false,
   stileDescripton,
   descriptionText,
-  currentTheme,
 }) {
-  // const { currentTheme } = useAuth()
+  const colors = useThemeColors()
   return (
     <View style={[styles.wrapper, slyleWrapper]}>
       {titleVisual && (
-        <Text style={[styles.title, styleTitle, { color: themes[currentTheme]?.textColor }]}>
+        <Text style={[styles.title, styleTitle, { color: colors.textColor }]}>
           {titleText}
         </Text>
       )}
@@ -27,7 +25,7 @@ function TitleDescriptionComponent({
           style={[
             styles.description,
             stileDescripton,
-            { color: themes[currentTheme]?.secondaryTextColor },
+            { color: colors.secondaryTextColor },
           ]}
         >
           {descriptionText}

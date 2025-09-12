@@ -1,7 +1,14 @@
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useState } from 'react'
-import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { CameraIcon } from 'react-native-heroicons/mini'
 
 import AvatarCustom from '../../components/AvatarCustom'
@@ -17,12 +24,13 @@ import { themes } from '../../constants/themes'
 import i18n from '../../lang/i18n'
 
 import { compressImage } from '../../lib/imageUtils'
-import { getUserImageSrc, uploadFile } from '../../service/imageServices'
 
 import { useAuthStore } from '../../stores/authStore'
 import { useThemeStore } from '../../stores/themeStore'
 import { useLangStore } from '../../stores/langStore'
 import { useUpdateUser, useDeleteUser, useLogout } from '../../queries/users'
+import { uploadAvatarSupabase } from '../../service/TQuery/uploadAvatarSupabase'
+import { getImageUrl, normalizeToStoragePath } from '../../utils/storage'
 
 function EditProfile() {
   const router = useRouter()
@@ -33,14 +41,19 @@ function EditProfile() {
   const signOutLocal = useAuthStore((s) => s.signOutLocal)
   const currentTheme = useThemeStore((s) => s.currentTheme)
   const appLang = useLangStore((s) => s.lang)
-
+  console.log('currentUser id', currentUser.id)
   // Локальный стейт формы
   const [form, setForm] = useState(() => ({
     user_name: currentUser?.user_name,
     app_lang: currentUser?.app_lang,
     theme: currentUser?.theme,
-    avatar: currentUser?.avatar,
+    avatar: normalizeToStoragePath(currentUser?.avatar) || currentUser?.avatar || null,
   }))
+  // превью: если выбрали локальную — показываем file://, иначе строим URL
+  const previewSrc =
+    form.avatar && typeof form.avatar === 'object' && form.avatar.uri
+      ? form.avatar.uri
+      : getImageUrl(form.avatar) || require('../../assets/img/user_icon.png')
 
   // мутации
   const updateMutation = useUpdateUser()
@@ -55,7 +68,10 @@ function EditProfile() {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
       if (status !== 'granted') {
-        Alert.alert(i18n.t('Permission'), i18n.t('Permission to access photos is required.'))
+        Alert.alert(
+          i18n.t('Permission'),
+          i18n.t('Permission to access photos is required.'),
+        )
         return
       }
 
@@ -79,27 +95,76 @@ function EditProfile() {
     }
   }
 
+  // const onSubmit = async () => {
+  //   if (!currentUser?.id) return
+  //   try {
+  //     let avatarField = form.avatar
+  //
+  //     // Если пришёл объект {uri} — грузим и заменяем на строку пути
+  //     if (avatarField && typeof avatarField === 'object' && avatarField.uri) {
+  //       const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.jpg`
+  //       const uploaded = await uploadFile(
+  //         uniqueFilePath,
+  //         avatarField.uri,
+  //         true,
+  //         currentUser?.avatar,
+  //       )
+  //       if (!uploaded?.success) {
+  //         Alert.alert(i18n.t('Error'), i18n.t('Failed to upload avatar.'))
+  //         // оставляем старый avatar
+  //         avatarField = currentUser?.avatar ?? null
+  //       } else {
+  //         avatarField = uploaded.data // строка пути/URL
+  //       }
+  //     }
+  //
+  //     const payload = {
+  //       userId: currentUser.id,
+  //       data: {
+  //         user_name: form.user_name?.trim() || currentUser.user_name,
+  //         app_lang: form.app_lang,
+  //         theme: form.theme,
+  //         avatar: form.avatar,
+  //       },
+  //     }
+  //
+  //     await updateMutation.mutateAsync(payload)
+  //
+  //     // Обновим Zustand (если мутация не сделала этого сама onSuccess)
+  //     if (typeof setUserData === 'function') {
+  //       setUserData(payload.data)
+  //     }
+  //
+  //     Alert.alert(i18n.t('Success'), i18n.t('Profile updated'))
+  //     router.back()
+  //   } catch (e) {
+  //     console.error('update profile error', e)
+  //     Alert.alert(i18n.t('Error'), e?.message ?? 'Failed to update profile')
+  //   }
+  // }
+
+  // upload avatar to supabase store
   const onSubmit = async () => {
     if (!currentUser?.id) return
+
     try {
       let avatarField = form.avatar
 
-      // Если пришёл объект {uri} — грузим и заменяем на строку пути
       if (avatarField && typeof avatarField === 'object' && avatarField.uri) {
-        const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.jpg`
-        const uploaded = await uploadFile(
-          uniqueFilePath,
-          avatarField.uri,
-          true,
-          currentUser?.avatar,
-        )
-        if (!uploaded?.success) {
-          Alert.alert(i18n.t('Error'), i18n.t('Failed to upload avatar.'))
-          // оставляем старый avatar
-          avatarField = currentUser?.avatar ?? null
+        // передаём старое значение (что было в БД) — чтобы удалить
+        const oldValue = currentUser?.avatar ?? null
+
+        const up = await uploadAvatarSupabase(currentUser.id, avatarField.uri, oldValue)
+        if (!up.success) {
+          Alert.alert(i18n.t('Error'), up.msg || i18n.t('Failed to upload avatar.'))
+          avatarField = normalizeToStoragePath(oldValue) // откатимся к старому
         } else {
-          avatarField = uploaded.data // строка пути/URL
+          // сохраняем ТОЛЬКО относительный путь
+          avatarField = up.path
         }
+      } else if (typeof avatarField === 'string') {
+        // нормализуем на всякий случай
+        avatarField = normalizeToStoragePath(avatarField)
       }
 
       const payload = {
@@ -108,16 +173,15 @@ function EditProfile() {
           user_name: form.user_name?.trim() || currentUser.user_name,
           app_lang: form.app_lang,
           theme: form.theme,
-          avatar: form.avatar,
+          avatar: avatarField ?? null,
         },
       }
 
       await updateMutation.mutateAsync(payload)
 
-      // Обновим Zustand (если мутация не сделала этого сама onSuccess)
-      if (typeof setUserData === 'function') {
-        setUserData(payload.data)
-      }
+      // локально обновим Zustand + форму, чтобы UI сразу увидел новый путь
+      setUserData?.(payload.data)
+      setForm((p) => ({ ...p, avatar: payload.data.avatar }))
 
       Alert.alert(i18n.t('Success'), i18n.t('Profile updated'))
       router.back()
@@ -128,10 +192,10 @@ function EditProfile() {
   }
 
   const onDeleteAccount = () => {
-    Alert.alert(i18n.t('Confirm'), i18n.t('Are you sure you want to DELETE ACCOUNT?'), [
+    Alert.alert(i18n.t('Confirm'), i18n.t('Delete your Profile'), [
       { text: i18n.t('Cancel'), style: 'cancel' },
       {
-        text: i18n.t('DELETE'),
+        text: i18n.t('Delete'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -157,13 +221,21 @@ function EditProfile() {
         <View className="absolute left-0" style={shadowBoxBlack()}>
           <ButtonBack />
         </View>
-        <TitleScreen title={`${i18n.t('Edit Profile')} !`} styleTitle={[{ fontSize: 20 }]} />
+        <TitleScreen
+          title={`${i18n.t('Edit Profile')} !`}
+          styleTitle={[{ fontSize: 20 }]}
+        />
       </View>
 
       {/* avatar */}
       <View className="gap-y-5 items-center mb-5 ">
         <View style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}>
-          <AvatarCustom uri={form?.avatar} size={wp(50)} style={{ borderRadius: 100 }} />
+          <AvatarCustom
+            uri={previewSrc}
+            // uri={form?.avatar}
+            size={wp(50)}
+            style={{ borderRadius: 100 }}
+          />
           <View
             className="absolute bottom-5 right-5"
             style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}

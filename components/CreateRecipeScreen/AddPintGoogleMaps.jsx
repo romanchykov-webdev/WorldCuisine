@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { MapPinIcon, TrashIcon } from 'react-native-heroicons/mini'
 import MapView, { Marker } from 'react-native-maps'
@@ -8,12 +8,12 @@ import i18n from '../../lang/i18n'
 import ButtonSmallCustom from '../Buttons/ButtonSmallCustom'
 import TitleDescriptionComponent from './TitleDescriptionComponent'
 
-/** Сборка обычной карты-ссылки из координат */
+// Собираем обычную карту-ссылку из координат
 const coordsToLink = ({ latitude, longitude }) =>
   `https://www.google.com/maps?q=${latitude},${longitude}`
 
-/** Пытаемся вытащить lat/lng из популярных вариаций ссылок Google Maps */
-async function extractCoordsFromUrl(url) {
+// Пытаемся вытащить lat/lng из популярных вариаций ссылок Google Maps (без fetch)
+function extractCoordsFromUrl(url) {
   try {
     // 1) ?q=lat,lng
     const qMatch = url.match(/[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/i)
@@ -22,14 +22,6 @@ async function extractCoordsFromUrl(url) {
     // 2) .../@lat,lng,zoom
     const atMatch = url.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)(?:,|$)/)
     if (atMatch) return { latitude: Number(atMatch[1]), longitude: Number(atMatch[2]) }
-
-    // 3) короткая maps.app.goo.gl — пытаемся получить финальный URL после редиректа
-    if (/maps\.app\.goo\.gl/i.test(url)) {
-      const res = await fetch(url, { method: 'GET' })
-      if (res?.url && res.url !== url) {
-        return await extractCoordsFromUrl(res.url)
-      }
-    }
   } catch {}
   return null
 }
@@ -38,82 +30,76 @@ function AddPointGoogleMaps({
   setTotalRecipe,
   refactorRecipescrean = false,
   mapCoordinatesLinksForUpdate,
-  updateCoordinates, // оставим для совместимости (будет получать coords или null)
+  updateCoordinates, // опционально: вернём ещё и coords (или null)
 }) {
   const [marker, setMarker] = useState(null) // { latitude, longitude } | null
   const [mapVisible, setMapVisible] = useState(false)
-  const [mapLink, setMapLink] = useState(mapCoordinatesLinksForUpdate || '') // ССЫЛКА, которую поднимем наверх
+  const [mapLink, setMapLink] = useState(mapCoordinatesLinksForUpdate || '')
 
-  // Инициализация из ссылки (редактирование)
+  // Инициализация из строки ссылки (редактирование)
   useEffect(() => {
-    ;(async () => {
-      if (
-        refactorRecipescrean &&
-        typeof mapCoordinatesLinksForUpdate === 'string' &&
-        mapCoordinatesLinksForUpdate.length > 0
-      ) {
-        setMapLink(mapCoordinatesLinksForUpdate)
-        const parsed = await extractCoordsFromUrl(mapCoordinatesLinksForUpdate)
-        if (parsed) setMarker(parsed)
-      }
-    })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (
+      typeof mapCoordinatesLinksForUpdate === 'string' &&
+      mapCoordinatesLinksForUpdate.length
+    ) {
+      setMapLink(mapCoordinatesLinksForUpdate)
+      const parsed = extractCoordsFromUrl(mapCoordinatesLinksForUpdate)
+      if (parsed) setMarker(parsed)
+    }
+  }, []) // один раз
 
-  // Клик по карте — ставим маркер и сразу создаём ссылку
+  // Клик по карте — ставим маркер и создаём ссылку
   const handleMapPress = (event) => {
     const coords = event.nativeEvent.coordinate
     setMarker(coords)
-    setMapLink(coordsToLink(coords)) // формируем нормальную карту-ссылку
+    setMapLink(coordsToLink(coords))
   }
 
   // Открыть внешние карты
   const openMap = () => {
-    if (mapLink) {
-      Linking.openURL(mapLink)
-    } else if (marker) {
-      Linking.openURL(coordsToLink(marker))
-    }
+    const link = mapLink || (marker ? coordsToLink(marker) : '')
+    if (link) Linking.openURL(link)
   }
 
-  // Поднимаем наверх только map_coordinates (строка). Для обратной совместимости кидаем и coords в коллбек.
+  // Пробрасываем наверх строку map_coordinates, опционально — coords в коллбек
   useEffect(() => {
     setTotalRecipe((prev) => ({
       ...prev,
       map_coordinates: mapLink || null,
     }))
     if (refactorRecipescrean && typeof updateCoordinates === 'function') {
-      updateCoordinates(marker) // если нужно, родитель может сохранить ещё и coords
+      updateCoordinates(marker)
     }
   }, [mapLink, marker, refactorRecipescrean, setTotalRecipe, updateCoordinates])
 
-  const initialRegion = marker
-    ? {
-        latitude: marker.latitude,
-        longitude: marker.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      }
-    : { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 10, longitudeDelta: 10 }
+  const initialRegion = useMemo(
+    () =>
+      marker
+        ? {
+            latitude: marker.latitude,
+            longitude: marker.longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }
+        : { latitude: 48.8566, longitude: 2.3522, latitudeDelta: 10, longitudeDelta: 10 },
+    [marker],
+  )
 
   return (
-    <View className="mb-5">
+    <View style={{ marginBottom: 20 }}>
       {(marker || mapLink) && (
-        <Animated.View
-          entering={FadeInDown.delay(100).springify()}
-          className="flex-row items-center justify-between mb-3"
-        >
-          <View className="flex-row items-center flex-1">
+        <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.row}>
+          <View style={styles.rowLeft}>
             <TouchableOpacity onPress={openMap}>
               <MapPinIcon size={50} color="blue" />
             </TouchableOpacity>
-            <Text>{i18n.t('There is a stores here')}</Text>
+            <Text style={{ marginLeft: 8 }}>{i18n.t('There is a store here')}</Text>
           </View>
 
           <TouchableOpacity
             onPress={() => {
               setMarker(null)
-              setMapLink('') // очищаем ссылку
+              setMapLink('')
             }}
           >
             <ButtonSmallCustom tupeButton="remove" icon={TrashIcon} w={60} h={60} />
@@ -122,7 +108,7 @@ function AddPointGoogleMaps({
       )}
 
       <TitleDescriptionComponent
-        titleText={i18n.t('If you have a stores')}
+        titleText={i18n.t('If you have a store')}
         titleVisual
         descriptionVisual
         descriptionText={i18n.t('You can add it to the map, and customers can find it')}
@@ -162,6 +148,17 @@ const styles = StyleSheet.create({
     height: 300,
     marginTop: 10,
     borderRadius: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  rowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
 })
 
