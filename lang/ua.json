@@ -45,6 +45,18 @@
   "from Facebook, Instagram, or TikTok": "з Facebook, Instagram або TikTok",
   "Link already added": "Посилання вже додано",
   "If you want to update or change the link": "Якщо ви хочете оновити або змінити посилання, спочатку видаліть його, а потім можете додати нове",
+  "Recipe uploaded successfully!": "Рецепт успішно завантажено!",
+
+  "-Start-Create recipe":   "Create recipe",
+
+  "Please add a title": "Будь ласка, додайте заголовок",
+  "Please select a category": "Будь ласка, виберіть категорію",
+  "Please select a image": "Будь ласка, виберіть зображення",
+  "Please add at least one ingredient": "Будь ласка, додайте хоча б один інгредієнт",
+  "Please add at least one instruction step": "Будь ласка, додайте хоча б один крок інструкції",
+
+  "-end-Create recipe":   "Create recipe",
+
 
   "---Alert-END--": "---Alert-END--",
 
@@ -108,6 +120,16 @@
   "Select Language": "Вибрати мову",
   "My recipes": "Мої рецепти",
   "Liked": "Сподобалися",
+
+  "Cooking time.": "Час приготування.",
+  "Here you can specify the approximate time to cook the dish.": "Тут ви можете вказати приблизний час приготування страви.",
+  "Select number of servings.": "Виберіть кількість порцій.",
+  "Choose how many persons your recipe serves.": "Вкажіть, на скільки осіб розрахований ваш рецепт.",
+  "Select calories.": "Виберіть калорійність.",
+  "Choose dish calories.": "Вкажіть калорійність страви.",
+  "Select difficulty.": "Виберіть складність.",
+  "Choose cooking difficulty.": "Вкажіть складність приготування.",
+
 
   "---Profile-END--": "---Profile-END--",
 
@@ -187,7 +209,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Тут ви можете додати посилання на Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "Якщо ви хочете додати посилання на ваш Facebook, Instagram, TikTok",
   "Link to the author": "Посилання на автора",
-  "If you have a link to a video stored on YouTube or Google Drive": "Якщо у вас є посилання на відео, збережене на YouTube або Google Drive.",
+  "If you have a link to a video stored on YouTube": "Якщо у вас є посилання на відео, збережене на YouTube",
   "If this recipe is available on another resource, you can add a link to it": "Якщо цей рецепт є на іншому ресурсі, ви можете додати на нього посилання",
   "If you have a store": "Якщо у вас є торговельна точка",
   "You can add it to the map, and customers can find it": "Ви можете додати її на карті, і клієнти зможуть її знайти.",

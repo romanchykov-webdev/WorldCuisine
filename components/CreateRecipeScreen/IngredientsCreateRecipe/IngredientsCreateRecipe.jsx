@@ -1,28 +1,30 @@
-import { useEffect, useRef, useState } from 'react'
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+// components/CreateRecipeScreen/IngredientsCreateRecipe/IngredientsCreateRecipe.jsx
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { Alert, View, TouchableOpacity } from 'react-native'
 import { PlusIcon, ScaleIcon } from 'react-native-heroicons/mini'
 import { useDebounce } from '../../../constants/halperFunctions'
 import { shadowBoxBlack } from '../../../constants/shadow'
-import { themes } from '../../../constants/themes'
-import { useAuth } from '../../../contexts/AuthContext'
 import i18n from '../../../lang/i18n'
 
 import ButtonSmallCustom from '../../Buttons/ButtonSmallCustom'
 import ModalCustom from '../../ModalCustom'
-import StərɪskCustomComponent from '../../StərɪskCustomComponent'
 import TitleDescriptionComponent from '../TitleDescriptionComponent'
 import ListIngredientsCreateRecipe from './ListIngredientsCreateRecipe'
+import InputComponent from '../../InputComponent'
+import { toast } from '../../../lib/toast' // ← используем общий инпут
 
-/// …импорты те же
-
+// --- helpers ----------------------------------------------------------
 const getMeasurementByLang = (measurement, lang) => {
   const data = Array.isArray(measurement) ? measurement[0] : measurement
   return data?.[lang] ?? {}
 }
+const makeLangMap = (langs, fill = '') =>
+  langs.reduce((acc, l) => ((acc[l] = fill), acc), {})
 
+// --- component --------------------------------------------------------
 function IngredientsCreateRecipe({
-  currentTheme,
-  styleInput,
+  colors, // { textColor, radiusSM, ... }
+  styleInput, // базовый стиль поля
   placeholderText,
   placeholderColor,
   langApp,
@@ -33,58 +35,52 @@ function IngredientsCreateRecipe({
 }) {
   const [isModalVisible, setIsModalVisible] = useState(false)
 
-  // список единиц текущего языка (для модалки выбора)
-  const [measurementLangApp, setMeasurementLangApp] = useState([])
-
-  // ====== ИСТОЧНИК ПРАВДЫ: НОВЫЙ ФОРМАТ ======
+  // ====== SOURCE OF TRUTH: items (новый формат) =======================
   const [items, setItems] = useState([])
-  const debouncedItems = useDebounce(items, 400)
+  const debouncedItems = useDebounce(items, 350)
 
-  // ====== DERIVED STATE ДЛЯ ОТОБРАЖЕНИЯ: byLang ======
-  const [byLang, setByLang] = useState({})
+  // языки (с фолбэком)
+  const langs = useMemo(
+    () => (totalLangRecipe?.length ? totalLangRecipe : ['en', 'es', 'it', 'ru', 'ua']),
+    [totalLangRecipe],
+  )
 
-  // форма добавления нового ингредиента
-  const [ingredient, setIngredient] = useState({
-    unit: totalLangRecipe.reduce((acc, l) => ({ ...acc, [l]: '' }), {}),
-    quantity: '1',
-    ingredient: totalLangRecipe.reduce((acc, l) => ({ ...acc, [l]: '' }), {}),
-  })
+  // ====== форма добавления ===========================================
+  const blankIngredient = useMemo(
+    () => ({
+      unit: makeLangMap(langs, ''),
+      quantity: '1',
+      ingredient: makeLangMap(langs, ''),
+    }),
+    [langs],
+  )
+  const [ingredient, setIngredient] = useState(blankIngredient)
   const [unitKey, setUnitKey] = useState('')
 
-  // локализация списка мер
+  // синхронизация формы при изменении набора языков
   useEffect(() => {
+    setIngredient((prev) => ({
+      unit: { ...makeLangMap(langs, ''), ...prev.unit },
+      quantity: prev.quantity ?? '1',
+      ingredient: { ...makeLangMap(langs, ''), ...prev.ingredient },
+    }))
+  }, [langs])
+
+  // список единиц для текущего языка (для модалки)
+  const measurementLangApp = useMemo(() => {
     const dict = getMeasurementByLang(measurement, langApp)
-    setMeasurementLangApp(Object.entries(dict).map(([key, val]) => ({ key, val })))
+    return Object.entries(dict).map(([key, val]) => ({ key, val }))
   }, [measurement, langApp])
 
-  // гидратация из props (ОДИН РАЗ)
-  const hydratedOnce = useRef(false)
-  useEffect(() => {
-    if (hydratedOnce.current) return
-    if (Array.isArray(ingredientsForUpdate) && ingredientsForUpdate.length > 0) {
-      setItems(ingredientsForUpdate) // уже правильный формат
-      hydratedOnce.current = true
-    }
-  }, [ingredientsForUpdate])
-
-  // пробрасываем в родителя только новый формат
-  useEffect(() => {
-    setTotalRecipe((prev) => ({ ...prev, ingredients: debouncedItems }))
-  }, [debouncedItems, setTotalRecipe])
-
-  // пересобираем byLang каждый раз, когда меняются items/языки/measurement
-  useEffect(() => {
-    const langs = totalLangRecipe?.length ? totalLangRecipe : ['en', 'es', 'it', 'ru', 'ua']
+  // представление для UI “по языкам”
+  const byLang = useMemo(() => {
     const dictByLang = Object.fromEntries(
       langs.map((l) => [l, getMeasurementByLang(measurement, l)]),
     )
-
-    const nextByLang = {}
-    langs.forEach((l) => (nextByLang[l] = []))
-
+    const result = langs.reduce((acc, l) => ((acc[l] = []), acc), {})
     items.forEach((it, idx) => {
       langs.forEach((l) => {
-        nextByLang[l].push({
+        result[l].push({
           ingredient: it.value?.[l] ?? '',
           quantity: String(it.ves ?? ''),
           unitLabel: dictByLang[l]?.[it.mera] || it.mera,
@@ -93,26 +89,78 @@ function IngredientsCreateRecipe({
         })
       })
     })
+    return result
+  }, [items, langs, measurement])
 
-    setByLang(nextByLang)
-  }, [items, totalLangRecipe, measurement])
+  // гидратация из props (один раз)
+  const hydratedOnce = useRef(false)
+  useEffect(() => {
+    if (hydratedOnce.current) return
+    if (Array.isArray(ingredientsForUpdate) && ingredientsForUpdate.length > 0) {
+      setItems(ingredientsForUpdate)
+      hydratedOnce.current = true
+    }
+  }, [ingredientsForUpdate])
 
-  // добавление нового
-  const addIngredient = () => {
+  // проброс в родителя (после debounce)
+  useEffect(() => {
+    setTotalRecipe((prev) =>
+      prev.ingredients === debouncedItems
+        ? prev
+        : { ...prev, ingredients: debouncedItems },
+    )
+  }, [debouncedItems, setTotalRecipe])
+
+  // ====== handlers ====================================================
+  const handleInputChange = useCallback((lang, value) => {
+    setIngredient((prev) => ({
+      ...prev,
+      ingredient: { ...prev.ingredient, [lang]: value },
+    }))
+  }, [])
+
+  const handleSelectUnit = useCallback(
+    (key) => {
+      const updatedUnit = langs.reduce((acc, l) => {
+        const dict = getMeasurementByLang(measurement, l)
+        acc[l] = dict[key] || ''
+        return acc
+      }, {})
+      setIngredient((prev) => ({ ...prev, unit: updatedUnit }))
+      setUnitKey(key)
+    },
+    [langs, measurement],
+  )
+
+  const addIngredient = useCallback(() => {
     const hasEmptyName = Object.values(ingredient.ingredient).some((v) => v.trim() === '')
     if (hasEmptyName) {
-      Alert.alert(i18n.t('You forgot') + '!', i18n.t('Write the name of the ingredient'))
+      // Alert.alert(i18n.t('You forgot') + '!', i18n.t('Write the name of the ingredient'))
+      toast.info(i18n.t('You forgot') + '!', i18n.t('Write the name of the ingredient'))
+
       return
     }
-    if (!ingredient.quantity.trim()) {
-      Alert.alert(i18n.t('You forgot') + '!', i18n.t('Choose the quantity of the ingredient'))
+    if (!String(ingredient.quantity).trim()) {
+      // Alert.alert(
+      //   i18n.t('You forgot') + '!',
+      //   i18n.t('Choose the quantity of the ingredient'),
+      // )
+      toast.info(
+        i18n.t('You forgot') + '!',
+        i18n.t('Choose the quantity of the ingredient'),
+      )
       return
     }
     if (!unitKey) {
-      Alert.alert(
+      // Alert.alert(
+      //   i18n.t('You forgot') + '!',
+      //   i18n.t('Select the measurement unit for the ingredient'),
+      // )
+      toast.info(
         i18n.t('You forgot') + '!',
         i18n.t('Select the measurement unit for the ingredient'),
       )
+
       return
     }
 
@@ -124,38 +172,20 @@ function IngredientsCreateRecipe({
     }
     setItems((prev) => [...prev, newItem])
 
-    // сбрасываем форму
-    setIngredient({
-      unit: totalLangRecipe.reduce((acc, l) => ({ ...acc, [l]: '' }), {}),
-      quantity: '1',
-      ingredient: totalLangRecipe.reduce((acc, l) => ({ ...acc, [l]: '' }), {}),
-    })
+    setIngredient(blankIngredient)
     setUnitKey('')
-  }
+  }, [ingredient, unitKey, langApp, blankIngredient])
 
-  const handleInputChange = (lang, value) => {
-    setIngredient((prev) => ({ ...prev, ingredient: { ...prev.ingredient, [lang]: value } }))
-  }
+  const removeIngredient = useCallback(
+    (lang, index) => {
+      const row = byLang?.[lang]?.[index]
+      if (!row) return
+      setItems((prev) => prev.filter((_, i) => i !== row.sourceIndex))
+    },
+    [byLang],
+  )
 
-  const handleSelectUnit = (key) => {
-    const updatedUnit = totalLangRecipe.reduce((acc, l) => {
-      const dict = getMeasurementByLang(measurement, l)
-      acc[l] = dict[key] || ''
-      return acc
-    }, {})
-    setIngredient((prev) => ({ ...prev, unit: updatedUnit }))
-    setUnitKey(key)
-  }
-
-  // УДАЛЕНИЕ: на вход приходит язык и индекс в списке этого языка.
-  // Берём sourceIndex — и удаляем по нему из items.
-  const removeIngredient = (lang, index) => {
-    const row = byLang?.[lang]?.[index]
-    if (!row) return
-    const idx = row.sourceIndex
-    setItems((prev) => prev.filter((_, i) => i !== idx))
-  }
-
+  // ====== render ======================================================
   return (
     <View>
       <TitleDescriptionComponent
@@ -170,9 +200,9 @@ function IngredientsCreateRecipe({
       {Object.keys(byLang).length > 0 && (
         <View>
           <ListIngredientsCreateRecipe
-            ingredients={byLang} // <- передаём уже БЕЗ .lang
-            totalLangRecipe={totalLangRecipe}
-            currentTheme={currentTheme}
+            ingredients={byLang}
+            totalLangRecipe={langs}
+            currentTheme={colors}
             removeIngredient={removeIngredient}
           />
         </View>
@@ -180,15 +210,15 @@ function IngredientsCreateRecipe({
 
       <View className="flex-col gap-2 mb-5">
         <View className="flex-1 gap-y-2 mb-3">
-          {totalLangRecipe.map((l) => (
+          {langs.map((l) => (
             <View key={l}>
-              <StərɪskCustomComponent />
-              <TextInput
-                style={[styleInput, { color: themes[currentTheme]?.textColor }]}
+              <InputComponent
                 value={ingredient.ingredient[l] || ''}
-                onChangeText={(v) => handleInputChange(l, v)}
+                onChangeText={(v) => handleInputChange(l, v)} // ← API InputComponent
                 placeholder={`${placeholderText} ${l}`}
                 placeholderTextColor={placeholderColor}
+                // на всякий случай совместимость:
+                onChange={(v) => handleInputChange(l, v?.target?.value ?? v)}
               />
             </View>
           ))}
@@ -200,11 +230,27 @@ function IngredientsCreateRecipe({
             style={shadowBoxBlack()}
             className="flex-1"
           >
-            <ButtonSmallCustom w="100%" h={60} icon={ScaleIcon} size={20} tupeButton="refactor" />
+            <ButtonSmallCustom
+              w="100%"
+              h={60}
+              icon={ScaleIcon}
+              size={20}
+              tupeButton="refactor"
+            />
           </TouchableOpacity>
 
-          <TouchableOpacity style={shadowBoxBlack()} onPress={addIngredient} className="flex-1">
-            <ButtonSmallCustom w="100%" h={60} icon={PlusIcon} size={20} tupeButton="add" />
+          <TouchableOpacity
+            style={shadowBoxBlack()}
+            onPress={addIngredient}
+            className="flex-1"
+          >
+            <ButtonSmallCustom
+              w="100%"
+              h={60}
+              icon={PlusIcon}
+              size={20}
+              tupeButton="add"
+            />
           </TouchableOpacity>
         </View>
       </View>

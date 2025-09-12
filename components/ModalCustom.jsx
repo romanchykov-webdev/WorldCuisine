@@ -1,4 +1,4 @@
-import Slider from '@react-native-community/slider'
+import React, { useMemo } from 'react'
 import {
   FlatList,
   Modal,
@@ -8,10 +8,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import { themes } from '../constants/themes'
-import { useAuth } from '../contexts/AuthContext'
+import Slider from '@react-native-community/slider'
 import i18n from '../lang/i18n'
 import TitleDescriptionComponent from './CreateRecipeScreen/TitleDescriptionComponent'
+import { useThemeColors } from '../stores/themeStore'
 
 function ModalCustom({
   isModalVisible,
@@ -19,160 +19,149 @@ function ModalCustom({
   animationType = 'fade',
   ingredient,
   setIngredient,
-  array, // [{key,val}]
-  onPressHandler, // (key) => void
+  array,
+  onPressHandler,
   langApp = '',
-  // новое:
-  showNameInput = false,
-  nameLabelLang = '', // какой язык редактируем по имени
-  onSave, // сохранить (кастомный хендлер)
+  closeOnOverlayPress = true,
 }) {
-  const { currentTheme } = useAuth()
+  const colors = useThemeColors()
+
+  const selectedLabel = useMemo(
+    () => ingredient?.unit?.[langApp] ?? '',
+    [ingredient?.unit, langApp],
+  )
+
+  const close = () => setIsModalVisible(false)
+
   return (
     <Modal
       animationType={animationType}
-      transparent={true}
+      transparent
       visible={isModalVisible}
-      // onRequestClose={() => setIsModalVisible(false)}
-      // onRequestClose={closeModal}
+      onRequestClose={close} // Android back
     >
-      {/*<TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>*/}
-      <TouchableWithoutFeedback onPress={() => {}}>
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalContent,
-              { backgroundColor: themes[currentTheme]?.backgroundColor },
-            ]}
-          >
-            <View>
+      {/* ВНЕШНИЙ слой – клик по оверлею закрывает */}
+      <TouchableWithoutFeedback onPress={closeOnOverlayPress ? close : undefined}>
+        <View style={styles.overlay}>
+          {/* ВНУТРЕННИЙ слой – перехватывает тапы, чтобы не закрывать модалку */}
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <View style={[styles.card, { backgroundColor: colors.backgroundColor }]}>
               <TitleDescriptionComponent
-                titleVisual={true}
+                titleVisual
                 styleTitle={{ textAlign: 'center' }}
                 titleText={i18n.t('Choose')}
-                descriptionVisual={true}
+                descriptionVisual
                 stileDescripton={{ textAlign: 'center' }}
                 descriptionText={i18n.t('Select the unit of measurement')}
               />
 
-              <Text
-                className="text-xl text-center mb-2"
-                style={{ color: themes[currentTheme]?.textColor }}
-              >
-                {ingredient.quantity}
-              </Text>
-              <Slider
-                style={{ width: '100%', height: 40 }}
-                minimumValue={1}
-                maximumValue={1000}
-                step={1} // Шаг перемещения
-                value={Number.parseInt(ingredient.quantity, 1)} // Текущее значение
-                minimumTrackTintColor="#000000"
-                maximumTrackTintColor="#CCCCCC"
-                onValueChange={(value) =>
-                  setIngredient((prev) => ({
-                    ...prev,
-                    quantity: value.toString(),
-                  }))
-                }
-              />
-            </View>
+              {/* Слайдер количества */}
+              <View style={{ marginTop: 8 }}>
+                <Text
+                  style={{
+                    color: colors.textColor,
+                    textAlign: 'center',
+                    marginBottom: 8,
+                    fontSize: 18,
+                    fontWeight: '600',
+                  }}
+                >
+                  {ingredient.quantity}
+                </Text>
 
-            <FlatList
-              data={array}
-              keyExtractor={(item) => item.key}
-              renderItem={({ item, index }) => {
-                return (
-                  <TouchableOpacity
-                    style={[
-                      styles.langOption,
-                      index === array.length - 1 && { borderBottomColor: 'transparent' },
-                    ]}
-                    onPress={() => onPressHandler(item.key)}
-                  >
-                    <Text
+                <Slider
+                  style={{ width: '100%', height: 40 }}
+                  minimumValue={1}
+                  maximumValue={1000}
+                  step={1}
+                  value={Number.parseInt(String(ingredient.quantity || 1), 10)}
+                  minimumTrackTintColor={colors.textColor || '#111827'}
+                  maximumTrackTintColor={colors.secondaryTextColor || '#d1d5db'}
+                  onValueChange={(v) =>
+                    setIngredient((prev) => ({
+                      ...prev,
+                      quantity: String(Math.round(v)),
+                    }))
+                  }
+                />
+              </View>
+
+              {/* Список единиц */}
+              <FlatList
+                data={array}
+                keyExtractor={(item) => item.key}
+                contentContainerStyle={{ paddingTop: 8 }}
+                renderItem={({ item, index }) => {
+                  const isSelected = selectedLabel === item.val
+                  return (
+                    <TouchableOpacity
                       style={[
-                        styles.langText,
-                        {
-                          color:
-                            ingredient.unit?.[langApp] === item.val
-                              ? '#f59e0b' // amber-500
-                              : themes[currentTheme]?.textColor,
+                        styles.row,
+                        index === array.length - 1 && {
+                          borderBottomColor: 'transparent',
                         },
                       ]}
+                      onPress={() => onPressHandler?.(item.key)}
                     >
-                      {item.val}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              }}
-            />
+                      <Text
+                        style={[
+                          styles.rowText,
+                          {
+                            color: isSelected
+                              ? '#f59e0b' /* amber-500 */
+                              : colors.textColor,
+                            fontWeight: isSelected ? '700' : '500',
+                          },
+                        ]}
+                      >
+                        {item.val}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                }}
+              />
 
-            <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.cancelText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+              {/* Кнопка закрытия */}
+              <TouchableOpacity style={styles.closeBtn} onPress={close}>
+                <Text style={styles.closeText}>{i18n.t('Save')}</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
   )
 }
 
+export default ModalCustom
+
 const styles = StyleSheet.create({
-  modalOverlay: {
+  overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
-    borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 12,
+    padding: 16,
     elevation: 5,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  modalDescription: {
-    fontSize: 12,
-    color: 'gray',
-  },
-  langOption: {
-    padding: 15,
-    borderBottomWidth: 1,
+  row: {
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#ddd',
   },
-  langText: {
-    fontSize: 16,
-  },
-  cancelButton: {
-    marginTop: 15,
-    padding: 10,
-    backgroundColor: '#f44336',
-    borderRadius: 5,
+  rowText: { fontSize: 16 },
+  closeBtn: {
+    marginTop: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
     alignItems: 'center',
+    backgroundColor: '#ef4444',
   },
-  cancelText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  selectedLangText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
+  closeText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 })
-
-export default ModalCustom

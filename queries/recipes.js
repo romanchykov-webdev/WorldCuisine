@@ -16,11 +16,22 @@ export function useCategories(lang) {
 }
 
 // useMeasurement рецепты по текущему языку
+// export function useMeasurement() {
+//   return useQuery({
+//     queryKey: ['measurement'],
+//     queryFn: () => getMeasurementTQ(),
+//     initialData: {},
+//   })
+// }
 export function useMeasurement() {
   return useQuery({
     queryKey: ['measurement'],
-    queryFn: () => getMeasurementTQ(),
-    initialData: {},
+    queryFn: getMeasurementTQ,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   })
 }
 

@@ -1,149 +1,98 @@
-import { useEffect, useState } from 'react'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { TrashIcon } from 'react-native-heroicons/mini'
-import { useDebounce } from '../../constants/halperFunctions'
-import { langArray } from '../../constants/langArray'
 import i18n from '../../lang/i18n'
-import StərɪskCustomComponent from '../StərɪskCustomComponent'
+import { useDebounce } from '../../utils/useDebounce'
+import { langArray } from '../../constants/langArray'
 import AddLangComponent from './AddLangComponent'
+import InputComponent from '../InputComponent'
+import { deepEqual } from '../../helpers/deepEqual'
 
-function InputCustomComponent({
+export default function InputCustomComponent({
+  colors,
+  appLang,
+  value = {},
+  onChange,
+  selectedLangs = [],
+  onLangsChange,
   styleTextDesc,
   styleInput,
-  langDev,
-  setTotalLangRecipe,
-  totalLangRecipe,
-  setTotalRecipe,
-  totalRecipe,
-  themes,
-  currentTheme,
-  initialTitle = {},
-  titleForUpdate = null,
 }) {
-  console.log('titleForUpdate', titleForUpdate)
-  console.log('totalLangRecipe', totalLangRecipe)
+  const [languages] = React.useState(() => langArray)
+  const [translations, setTranslations] = React.useState({ ...value })
+  const [modalVisible, setModalVisible] = React.useState(false)
 
-  const [languages, setLanguages] = useState([])
-  // отображаемые в UI названия языков (чипсы)
-  const [totLang, setTotLang] = useState([]) // ['Русский','English',...]
-  // сами переводы: { en: 'Asado', ru: 'Асадо', ... }
-  const [translations, setTranslations] = useState(initialTitle || {})
-  const [modalVisible, setModalVisible] = useState(false)
-
-  // дебаунсим объект переводов
-  const debouncedTranslations = useDebounce(translations, 500)
-
-  // 1) поднимаем список всех языков (code+name)
-  useEffect(() => {
-    setLanguages(langArray) // [{ code:'ru', name:'Русский' }, ...]
-  }, [])
-
-  // 2) инициализируем выбранные языки (чипсы) и коды
-  useEffect(() => {
-    if (!languages.length) return
-    // показать в чипсах язык dev первым
-    const devLangObj = languages.find((l) => l.code.toLowerCase() === (langDev || '').toLowerCase())
-    const initialNames = devLangObj ? [devLangObj.name] : []
-    // если уже есть totalLangRecipe, добавим их видимые имена
-    const more = (totalLangRecipe || [])
-      .map((code) => languages.find((l) => l.code === code)?.name)
-      .filter(Boolean)
-      .filter((name) => !initialNames.includes(name))
-    setTotLang([...initialNames, ...more])
-    // гарантируем, что в codes есть dev-язык
-    if (devLangObj && !totalLangRecipe?.includes(devLangObj.code)) {
-      setTotalLangRecipe((prev) => [...(prev || []), devLangObj.code])
+  // подхватываем внешние правки value только при реальном изменении
+  React.useEffect(() => {
+    if (!deepEqual(value || {}, translations || {})) {
+      setTranslations(value || {})
     }
-    // гарантируем, что translations имеет ключ dev
-    if (devLangObj && translations[devLangObj.code] == null) {
-      setTranslations((prev) => ({ ...prev, [devLangObj.code]: '' }))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [languages])
+  }, [value])
 
-  // 1) При монтировании или при изменении titleForUpdate — один раз заливаем его в локальный state
-  useEffect(() => {
-    if (titleForUpdate && Object.keys(titleForUpdate).length > 0) {
-      setTranslations(titleForUpdate)
-    }
-  }, [titleForUpdate])
+  // репортим родителю с debounce
+  const debounced = useDebounce(translations, 300)
+  React.useEffect(() => {
+    if (!onChange) return
+    if (!deepEqual(debounced || {}, value || {})) onChange(debounced)
+  }, [debounced, value, onChange])
 
-  // 2) Синхронизируем translations с totalRecipe (только после debounce)
-  useEffect(() => {
-    setTotalRecipe((prev) => ({
-      ...prev,
-      title: debouncedTranslations,
-    }))
-  }, [debouncedTranslations, setTotalRecipe])
-
-  // выбор нового языка из модалки
-  const selectLanguage = (lang) => {
-    // lang = { code, name }
-    if (!totLang.some((n) => n.toLowerCase() === lang.name.toLowerCase())) {
-      setTotLang((prev) => [...prev, lang.name])
+  // добавить язык
+  const addLang = (obj) => {
+    if (!obj?.code) return
+    const code = obj.code
+    if (!selectedLangs.includes(code)) {
+      onLangsChange?.([...selectedLangs, code])
     }
-    if (!totalLangRecipe.includes(lang.code)) {
-      setTotalLangRecipe((prev) => [...prev, lang.code])
-    }
-    if (translations[lang.code] == null) {
-      setTranslations((prev) => ({ ...prev, [lang.code]: '' }))
+    if (translations[code] == null) {
+      setTranslations((p) => ({ ...p, [code]: '' }))
     }
     setModalVisible(false)
   }
 
-  // удаление языка
-  const removeLang = (langName) => {
-    // убрать из видимых имён
-    setTotLang((prev) => prev.filter((n) => n !== langName))
-    // найти код и убрать из codes + translations
-    const langObj = languages.find((l) => l.name === langName)
-    if (!langObj) return
-    setTotalLangRecipe((prev) => prev.filter((code) => code !== langObj.code))
-    setTranslations((prev) => {
-      const copy = { ...prev }
-      delete copy[langObj.code]
-      return copy
+  // удалить язык (кроме первого — базового appLang)
+  const removeLang = (code) => {
+    if (selectedLangs[0] === code) return
+    onLangsChange?.(selectedLangs.filter((c) => c !== code))
+    setTranslations((p) => {
+      if (p[code] == null) return p
+      const next = { ...p }
+      delete next[code]
+      return next
     })
   }
 
-  // изменение текста
-  const handleTextChange = (langCode, value) => {
-    setTranslations((prev) => ({ ...prev, [langCode]: value }))
-  }
-
+  // отрисовываем в порядке selectedLangs
   return (
     <View>
-      <Text style={[styleTextDesc, { color: themes[currentTheme]?.textColor }]}>
+      <Text style={[styleTextDesc, { color: colors.textColor }]}>
         {i18n.t('Dish Name')}
       </Text>
 
-      {totLang.map((langName) => {
-        const langCode = languages.find((l) => l.name === langName)?.code
-        if (!langCode) return null
+      {selectedLangs.map((code) => {
+        const langName =
+          languages.find((l) => l.code === code)?.name || code.toUpperCase()
         return (
-          <View key={langName} className="mb-5">
+          <View key={code} className="mb-5">
             <Text
-              style={[styleTextDesc, { fontSize: 12, color: themes[currentTheme]?.textColor }]}
+              style={[styleTextDesc, { fontSize: 12, color: colors.textColor }]}
               className="mt-2"
             >
               {langName}
             </Text>
             <View className="flex-row items-center">
               <View className="relative flex-1">
-                <StərɪskCustomComponent />
-                <TextInput
-                  value={translations[langCode] ?? ''}
-                  onChangeText={(value) => handleTextChange(langCode, value)}
-                  style={[styleInput, { color: themes[currentTheme]?.textColor }]}
+                <InputComponent
                   placeholder={i18n.t('Enter recipe name')}
-                  placeholderTextColor="grey"
+                  value={translations[code] ?? ''}
+                  onChangeText={(t) => setTranslations((p) => ({ ...p, [code]: t }))}
+                  inputStyle={styleInput}
+                  returnKeyType="done"
                 />
               </View>
 
-              {/* кнопку удаления прячем для первого (дефолтного) языка */}
-              {totLang[0] !== langName && (
+              {selectedLangs[0] !== code && (
                 <TouchableOpacity
-                  onPress={() => removeLang(langName)}
+                  onPress={() => removeLang(code)}
                   className="w-[60] h-[60] ml-2 bg-red-500 border-[1px] border-neutral-300 rounded-[10] justify-center items-center"
                 >
                   <TrashIcon color="white" size={30} />
@@ -155,15 +104,16 @@ function InputCustomComponent({
       })}
 
       <AddLangComponent
+        colors={colors}
         languages={languages}
-        selectLanguage={selectLanguage}
+        selectedNames={selectedLangs.map(
+          (c) => languages.find((l) => l.code === c)?.name ?? c,
+        )}
+        devLangCode={appLang}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        totLang={totLang}
-        langDev={langDev}
+        onSelect={addLang}
       />
     </View>
   )
 }
-
-export default InputCustomComponent

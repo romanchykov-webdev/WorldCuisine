@@ -45,6 +45,18 @@
   "from Facebook, Instagram, or TikTok": "da Facebook, Instagram o TikTok",
   "Link already added": "Link già aggiunto",
   "If you want to update or change the link": "Se vuoi aggiornare o modificare il link, eliminalo prima e poi puoi aggiungerne uno nuovo",
+  "Recipe uploaded successfully!": "Ricetta caricata con successo!",
+
+  "-Start-Create recipe":   "Create recipe",
+
+  "Please add a title": "Per favore aggiungi un titolo",
+  "Please select a category": "Per favore seleziona una categoria",
+  "Please select a image": "Per favore seleziona un'immagine",
+  "Please add at least one ingredient": "Per favore aggiungi almeno un ingrediente",
+  "Please add at least one instruction step": "Per favore aggiungi almeno un passaggio di istruzioni",
+
+  "-end-Create recipe":   "Create recipe",
+
 
   "---Alert-END--": "---Alert-END--",
 
@@ -106,6 +118,16 @@
   "Select Language": "Seleziona la lingua",
   "My recipes": "Le mie ricette",
   "Liked": "Piaciuti",
+
+  "Cooking time.": "Tempo di cottura.",
+  "Here you can specify the approximate time to cook the dish.": "Qui puoi specificare il tempo approssimativo per cucinare il piatto.",
+  "Select number of servings.": "Seleziona il numero di porzioni.",
+  "Choose how many persons your recipe serves.": "Scegli per quante persone è la tua ricetta.",
+  "Select calories.": "Seleziona le calorie.",
+  "Choose dish calories.": "Scegli le calorie del piatto.",
+  "Select difficulty.": "Seleziona la difficoltà.",
+  "Choose cooking difficulty.": "Scegli la difficoltà di preparazione.",
+
 
   "---Profile-END--": "---Profile-END--",
 
@@ -185,7 +207,7 @@
   "Here you can add links to Facebook, Instagram, TikTok": "Qui puoi aggiungere link a Facebook, Instagram, TikTok",
   "If you want to add links to your facebook instagram tiktok": "Se vuoi aggiungere link al tuo Facebook, Instagram, TikTok",
   "Link to the author": "Link all'autore",
-  "If you have a link to a video stored on YouTube or Google Drive": "Se hai un link a un video salvato su YouTube o Google Drive.",
+  "If you have a link to a video stored on YouTube": "Se hai un link a un video salvato su YouTube",
   "If this recipe is available on another resource, you can add a link to it": "Se questa ricetta è disponibile su un'altra risorsa, puoi aggiungere un link ad essa",
   "If you have a store": "Se hai un negozio",
   "You can add it to the map, and customers can find it": "puoi aggiungerlo sulla mappa, e i clienti potranno trovarlo.",

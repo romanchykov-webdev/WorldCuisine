@@ -1,220 +1,140 @@
+import React from 'react'
+import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import Slider from '@react-native-community/slider'
-import {
-  FlatList,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native'
-import { themes } from '../../constants/themes'
-import { useAuth } from '../../contexts/AuthContext'
+import i18n from '../../lang/i18n'
+import { useThemeColors } from '../../stores/themeStore'
 
-function ModalCreateRecipe({
-  isModalVisible,
-  setIsModalVisible,
+export default function ModalCreateRecipe({
+  open,
+  onClose,
   title,
   description,
-  array,
-  modalSelectItem,
-  setModalSelectItem,
-  modalType,
+  mode = 'numeric',
+  value = 0,
+  min = 0,
+  max = 100,
+  step = 1,
+  items = [],
+  onChange,
+  formatValue,
 }) {
-  const { currentTheme } = useAuth()
+  const colors = useThemeColors()
 
-  const changeTime = (time) => {
-    if (time < 60) {
-      return `${time} минут`
-    } else {
-      const hours = Math.floor(time / 60) // Целое количество часов
-      const minutes = time % 60 // Оставшиеся минуты
-      return `${hours} час${hours > 1 ? 'а' : ''} ${minutes > 0 ? `${minutes} минут` : ''}`.trim()
-    }
-  }
+  const defaultFormat = React.useCallback((n) => {
+    const v = Number(n) || 0
+    if (v < 60) return `${v} ${i18n.t('Mins')}`
+    const h = Math.floor(v / 60)
+    const m = v % 60
+    const hoursLabel = i18n.t('Hours') || 'h'
+    const minsLabel = i18n.t('Mins') || 'min'
+    return `${h} ${hoursLabel}${m ? ` ${m} ${minsLabel}` : ''}`
+  }, [])
 
-  const handleSelect = (item) => {
-    switch (modalType) {
-      case 'time':
-        setModalSelectItem((prev) => ({ ...prev, time: item }))
-        break
-      case 'serv':
-        setModalSelectItem((prev) => ({ ...prev, serv: item }))
-        break
-      case 'cal':
-        setModalSelectItem((prev) => ({ ...prev, cal: item }))
-        break
-      case 'level':
-        setModalSelectItem((prev) => ({ ...prev, level: item }))
-        break
-    }
-    setIsModalVisible(false)
-  }
+  const showValue = mode === 'numeric' ? (formatValue || defaultFormat)(value) : undefined
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isModalVisible}
-      onRequestClose={() => setIsModalVisible(false)}
-      // onRequestClose={closeModal}
-    >
-      <TouchableWithoutFeedback onPress={() => setIsModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalContent,
-              { backgroundColor: themes[currentTheme]?.backgroundColor },
-            ]}
-          >
-            <View>
-              <Text style={[styles.modalTitle, { color: themes[currentTheme]?.textColor }]}>
-                {title}
-              </Text>
-              <Text
-                className=" text-xs text-center mb-2"
-                style={{ color: themes[currentTheme]?.secondaryTextColor }}
-              >
-                {description}
-              </Text>
-            </View>
+    <Modal animationType="slide" transparent visible={open} onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        {/* Карточка — перехватывает тапы, чтобы они не падали на подложку */}
+        <View style={[styles.card, { backgroundColor: colors.backgroundColor }]}>
+          {!!title && (
+            <Text style={[styles.title, { color: colors.textColor }]}>{title}</Text>
+          )}
+          {!!description && (
+            <Text style={[styles.desc, { color: colors.textColor }]}>{description}</Text>
+          )}
 
-            {modalType === 'time' || modalType === 'cal' ? (
-              <>
-                {modalType === 'time' ? (
-                  <View>
+          {mode === 'numeric' ? (
+            <View style={{ marginTop: 6 }}>
+              <Text
+                style={[
+                  styles.valueText,
+                  { color: colors.textColor, textAlign: 'center', marginBottom: 8 },
+                ]}
+              >
+                {showValue}
+              </Text>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                minimumValue={min}
+                maximumValue={max}
+                step={step}
+                value={Number(value) || 0}
+                minimumTrackTintColor={colors.accent || '#10b981'}
+                maximumTrackTintColor={colors.border || '#d1d5db'}
+                onValueChange={(v) => onChange?.(Math.round(v))}
+              />
+            </View>
+          ) : (
+            <FlatList
+              data={items}
+              keyExtractor={(item, idx) => `${item}-${idx}`}
+              contentContainerStyle={{ paddingVertical: 4 }}
+              renderItem={({ item }) => {
+                const isSelected =
+                  String(item).toLowerCase() === String(value).toLowerCase()
+
+                return (
+                  <TouchableOpacity style={styles.row} onPress={() => onChange?.(item)}>
                     <Text
-                      className="text-xl text-center mb-2"
-                      style={{ color: themes[currentTheme]?.textColor }}
+                      style={[
+                        styles.rowText,
+                        {
+                          color: isSelected ? '#fcd34d' : colors.textColor, // amber-300
+                          fontWeight: isSelected ? '700' : '400',
+                        },
+                      ]}
                     >
-                      {changeTime(modalSelectItem.time)}
-                    </Text>
-                    <Slider
-                      style={{ width: '100%', height: 40 }}
-                      minimumValue={array[0]}
-                      maximumValue={array[1]}
-                      step={5} // Шаг перемещения
-                      value={Number.parseInt(modalSelectItem.time, 10)} // Текущее значение
-                      minimumTrackTintColor="#000000"
-                      maximumTrackTintColor="#CCCCCC"
-                      onValueChange={(value) =>
-                        setModalSelectItem((prev) => ({
-                          ...prev,
-                          time: value.toString(),
-                        }))
-                      }
-                    />
-                  </View>
-                ) : (
-                  <View>
-                    <Text
-                      className="text-xl text-center mb-2"
-                      style={{ color: themes[currentTheme]?.textColor }}
-                    >
-                      {modalSelectItem.cal} calories
-                    </Text>
-                    <Slider
-                      style={{ width: '100%', height: 40 }}
-                      minimumValue={array[0]}
-                      maximumValue={array[1]}
-                      step={5} // Шаг перемещения
-                      value={Number.parseInt(modalSelectItem.cal, 10)} // Текущее значение
-                      minimumTrackTintColor="#000000"
-                      maximumTrackTintColor="#CCCCCC"
-                      onValueChange={(value) =>
-                        setModalSelectItem((prev) => ({
-                          ...prev,
-                          cal: value.toString(),
-                        }))
-                      }
-                    />
-                  </View>
-                )}
-              </>
-            ) : (
-              <FlatList
-                data={array}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.langOption} onPress={() => handleSelect(item)}>
-                    <Text style={[styles.langText, { color: themes[currentTheme]?.textColor }]}>
-                      {item}
+                      {String(item)}
                     </Text>
                   </TouchableOpacity>
-                )}
-              />
-            )}
+                )
+              }}
+            />
+          )}
 
-            <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.cancelText}>Close</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Кнопка закрытия */}
+          <TouchableOpacity
+            style={[styles.closeBtn, { backgroundColor: '#ef4444' }]}
+            onPress={onClose}
+          >
+            <Text style={styles.closeText}>{'Close'}</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </Modal>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  overlay: {
     flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '80%',
-    // backgroundColor: '#fff',
-    borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 12,
+    padding: 16,
     elevation: 5,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  modalDescription: {
-    fontSize: 12,
-    // color: 'gray',
-  },
-  langOption: {
-    padding: 15,
-    borderBottomWidth: 1,
+  title: { fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 6 },
+  desc: { fontSize: 12, textAlign: 'center', marginBottom: 10 },
+  valueText: { fontSize: 16, fontWeight: '600' },
+  row: {
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#ddd',
   },
-  langText: {
-    fontSize: 16,
-  },
-  cancelButton: {
-    marginTop: 15,
-    padding: 10,
-    backgroundColor: '#f44336',
-    borderRadius: 5,
+  rowText: { fontSize: 16 },
+  closeBtn: {
+    marginTop: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  cancelText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  selectedLangText: {
-    marginTop: 20,
-    fontSize: 16,
-    fontStyle: 'italic',
-  },
+  closeText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 })
-
-export default ModalCreateRecipe

@@ -1,8 +1,12 @@
-// app/(main)/SearchRecipeScreen.jsx
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
-import { FolderOpenIcon, HeartIcon, ListBulletIcon, StarIcon } from 'react-native-heroicons/mini'
+import {
+  FolderOpenIcon,
+  HeartIcon,
+  ListBulletIcon,
+  StarIcon,
+} from 'react-native-heroicons/mini'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 
 import ButtonBack from '../../components/ButtonBack'
@@ -79,14 +83,20 @@ function SearchRecipeScreen() {
       {/* header section */}
       <View className="mb-5 justify-center p-2">
         {/* back to home screen */}
-        <Animated.View entering={customFadeIn(FadeInUp, 500, 100)} className="absolute z-10">
+        <Animated.View
+          entering={customFadeIn(FadeInUp, 500, 100)}
+          className="absolute z-10"
+        >
           <TouchableOpacity onPress={() => router.replace('homeScreen')}>
             <ButtonBack />
           </TouchableOpacity>
         </Animated.View>
 
         {/* title screen */}
-        <Animated.View entering={customFadeIn(FadeInUp, 500, 200)} className="flex-1 items-center">
+        <Animated.View
+          entering={customFadeIn(FadeInUp, 500, 200)}
+          className="flex-1 items-center"
+        >
           <TitleScreen title={i18n.t('Search')} />
         </Animated.View>
       </View>
@@ -150,7 +160,11 @@ function SearchRecipeScreen() {
         {/* rating */}
         <TouchableOpacity
           onPress={() =>
-            setFilterRatingFavorite((prev) => ({ ...prev, rating: !prev.rating, favorite: false }))
+            setFilterRatingFavorite((prev) => ({
+              ...prev,
+              rating: !prev.rating,
+              favorite: false,
+            }))
           }
           style={
             displayFilters === 'list'
@@ -159,7 +173,14 @@ function SearchRecipeScreen() {
               : { opacity: 0.3 }
           }
         >
-          <ButtonSmallCustom w={60} h={60} size={40} icon={StarIcon} color="gold" bg="white" />
+          <ButtonSmallCustom
+            w={60}
+            h={60}
+            size={40}
+            icon={StarIcon}
+            color="gold"
+            bg="white"
+          />
         </TouchableOpacity>
 
         {/* likes */}
@@ -178,7 +199,14 @@ function SearchRecipeScreen() {
               : { opacity: 0.3 }
           }
         >
-          <ButtonSmallCustom w={60} h={60} size={40} icon={HeartIcon} color="red" bg="white" />
+          <ButtonSmallCustom
+            w={60}
+            h={60}
+            size={40}
+            icon={HeartIcon}
+            color="red"
+            bg="white"
+          />
         </TouchableOpacity>
       </Animated.View>
 
