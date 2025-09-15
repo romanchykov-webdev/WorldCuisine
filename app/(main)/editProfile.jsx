@@ -32,6 +32,33 @@ import { useUpdateUser, useDeleteUser, useLogout } from '../../queries/users'
 import { uploadAvatarSupabase } from '../../service/TQuery/uploadAvatarSupabase'
 import { getImageUrl, normalizeToStoragePath } from '../../utils/storage'
 
+function pickProfileFields(u) {
+  if (!u)
+    return {
+      user_name: '',
+      app_lang: 'en',
+      theme: 'auto',
+      avatar: null,
+    }
+
+  // берём из public.users, если есть, иначе из user_metadata
+  const user_name =
+    u.user_name ?? u.user_metadata?.user_name ?? u.user_metadata?.name ?? ''
+
+  const app_lang = u.app_lang ?? u.user_metadata?.lang ?? 'en'
+
+  const theme = u.theme ?? u.user_metadata?.theme ?? 'auto'
+
+  const rawAvatar = u.avatar ?? u.user_metadata?.avatar ?? null
+
+  return {
+    user_name,
+    app_lang,
+    theme,
+    avatar: normalizeToStoragePath(rawAvatar) || rawAvatar || null,
+  }
+}
+
 function EditProfile() {
   const router = useRouter()
 
@@ -41,14 +68,9 @@ function EditProfile() {
   const signOutLocal = useAuthStore((s) => s.signOutLocal)
   const currentTheme = useThemeStore((s) => s.currentTheme)
   const appLang = useLangStore((s) => s.lang)
-  console.log('currentUser id', currentUser.id)
-  // Локальный стейт формы
-  const [form, setForm] = useState(() => ({
-    user_name: currentUser?.user_name,
-    app_lang: currentUser?.app_lang,
-    theme: currentUser?.theme,
-    avatar: normalizeToStoragePath(currentUser?.avatar) || currentUser?.avatar || null,
-  }))
+
+  const [form, setForm] = useState(() => pickProfileFields(currentUser))
+  console.log('currentUser id', form)
   // превью: если выбрали локальную — показываем file://, иначе строим URL
   const previewSrc =
     form.avatar && typeof form.avatar === 'object' && form.avatar.uri
@@ -94,54 +116,6 @@ function EditProfile() {
       Alert.alert(i18n.t('Error'), i18n.t('Failed to pick image.'))
     }
   }
-
-  // const onSubmit = async () => {
-  //   if (!currentUser?.id) return
-  //   try {
-  //     let avatarField = form.avatar
-  //
-  //     // Если пришёл объект {uri} — грузим и заменяем на строку пути
-  //     if (avatarField && typeof avatarField === 'object' && avatarField.uri) {
-  //       const uniqueFilePath = `profiles/${currentUser.id}/${Date.now()}.jpg`
-  //       const uploaded = await uploadFile(
-  //         uniqueFilePath,
-  //         avatarField.uri,
-  //         true,
-  //         currentUser?.avatar,
-  //       )
-  //       if (!uploaded?.success) {
-  //         Alert.alert(i18n.t('Error'), i18n.t('Failed to upload avatar.'))
-  //         // оставляем старый avatar
-  //         avatarField = currentUser?.avatar ?? null
-  //       } else {
-  //         avatarField = uploaded.data // строка пути/URL
-  //       }
-  //     }
-  //
-  //     const payload = {
-  //       userId: currentUser.id,
-  //       data: {
-  //         user_name: form.user_name?.trim() || currentUser.user_name,
-  //         app_lang: form.app_lang,
-  //         theme: form.theme,
-  //         avatar: form.avatar,
-  //       },
-  //     }
-  //
-  //     await updateMutation.mutateAsync(payload)
-  //
-  //     // Обновим Zustand (если мутация не сделала этого сама onSuccess)
-  //     if (typeof setUserData === 'function') {
-  //       setUserData(payload.data)
-  //     }
-  //
-  //     Alert.alert(i18n.t('Success'), i18n.t('Profile updated'))
-  //     router.back()
-  //   } catch (e) {
-  //     console.error('update profile error', e)
-  //     Alert.alert(i18n.t('Error'), e?.message ?? 'Failed to update profile')
-  //   }
-  // }
 
   // upload avatar to supabase store
   const onSubmit = async () => {
@@ -204,7 +178,7 @@ function EditProfile() {
             // после удаления выходим из сессии
             await logoutMutation.mutateAsync()
             signOutLocal()
-            router.replace('/homeScreen')
+            router.replace('/')
           } catch (e) {
             console.error('delete account error', e)
             Alert.alert(i18n.t('Error'), e?.message ?? 'Failed to delete account')

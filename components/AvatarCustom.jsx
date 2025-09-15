@@ -21,12 +21,10 @@ function AvatarCustom({
 
   const source =
     isLocalFile || isFullUrl || RefactorImageHeader ? imageUri : getImageUrl(imageUri)
-
+  // console.log('AvatarCustom uri: ', uri)
   return (
     <Image
-      source={source}
-      // cachePolicy="none" // ВАРИАНТ 1: Полностью отключить кэш
-      // recyclingKey={imageUri} // ВАРИАНТ 2: Или использовать ключ, чтобы принудительно перерисовывать
+      source={source ?? require('../assets/img/user_icon.png')}
       transition={100}
       className="rounded-full"
       style={[

@@ -11,15 +11,16 @@ import Animated, {
   FadeInRight,
   useSharedValue,
   withRepeat,
-  withSequence,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { hp } from '../constants/responsiveScreen'
 import { shadowText } from '../constants/shadow'
+import { useAuthStore } from '../stores/authStore'
 
 function Index() {
   const router = useRouter()
+
+  const user = useAuthStore((s) => s.user)
 
   // // reanimated shared values
   const ring1Padding = useSharedValue(0)
@@ -62,7 +63,7 @@ function Index() {
       if (t2Ref.current) clearTimeout(t2Ref.current)
       if (navRef.current) clearTimeout(navRef.current)
     }
-  }, [])
+  }, [user])
 
   return (
     <View className="flex-1 bg-amber-500 pb-36">
@@ -89,7 +90,6 @@ function Index() {
       </View>
 
       {/*  title and punchline */}
-
       <View className="items-center justify-end ">
         <Animated.Text
           entering={FadeInRight.delay(1200).duration(300).springify()}

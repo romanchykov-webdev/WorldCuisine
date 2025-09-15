@@ -65,7 +65,10 @@ function CategoryView({ item, index, onCategorySelect }) {
         {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
-          <Text className="text-white font-medium text-center mb-2" style={shadowText()}>
+          <Text
+            className="text-white font-bold text-2xl text-center mb-2 z-10"
+            style={shadowText()}
+          >
             {item.name}
           </Text>
         </View>
@@ -113,7 +116,10 @@ function SubCategoryView({ item, index, onSubcategorySelect }) {
         {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
-          <Text className="text-white font-medium text-center mb-2" style={shadowText()}>
+          <Text
+            className="text-white font-bold text-2xl text-center mb-2 z-10"
+            style={shadowText()}
+          >
             {item.name}
           </Text>
         </View>
@@ -169,7 +175,12 @@ function RecipePointItem({ item, index, langApp }) {
                 rounded={50}
               />
               <Text
-                style={{ fontSize: 6, maxWidth: 20, overflow: 'hidden', textAlign: 'center' }}
+                style={{
+                  fontSize: 6,
+                  maxWidth: 20,
+                  overflow: 'hidden',
+                  textAlign: 'center',
+                }}
                 numberOfLines={1}
               >
                 {item?.published_user?.user_name}
@@ -208,7 +219,12 @@ function RecipePointItem({ item, index, langApp }) {
               <View className="items-center">
                 <HeartIcon size={25} color="gray" />
                 <Text
-                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  style={{
+                    fontSize: 8,
+                    maxWidth: 25,
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                  }}
                   className="text-white"
                   numberOfLines={1}
                 >
@@ -221,7 +237,12 @@ function RecipePointItem({ item, index, langApp }) {
               <View className="items-center">
                 <ChatBubbleOvalLeftEllipsisIcon size={25} color="gray" />
                 <Text
-                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  style={{
+                    fontSize: 8,
+                    maxWidth: 25,
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                  }}
                   className="text-white"
                   numberOfLines={1}
                 >
@@ -264,14 +285,16 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
   // заголовки
   const selectedCategoryName =
     selectedCategory && categoryRecipes.length > 0
-      ? categoryRecipes.find((cat) => cat.point === selectedCategory)?.name || 'Unknown Category'
+      ? categoryRecipes.find((cat) => cat.point === selectedCategory)?.name ||
+        'Unknown Category'
       : null
 
   const selectedSubcategoryName =
     selectedSubcategory && categoryRecipes.length > 0
       ? categoryRecipes
           .flatMap((cat) => cat.subcategories || [])
-          .find((subcat) => subcat.point === selectedSubcategory)?.name || 'Unknown Subcategory'
+          .find((subcat) => subcat.point === selectedSubcategory)?.name ||
+        'Unknown Subcategory'
       : null
 
   if (isLoading) {
@@ -311,7 +334,9 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
               onEndReachedThreshold={0.1}
             />
           ) : (
-            <Text className="text-center mt-5">No recipes found for this subcategory</Text>
+            <Text className="text-center mt-5">
+              No recipes found for this subcategory
+            </Text>
           )}
         </Animated.View>
       ) : selectedCategory ? (
@@ -333,10 +358,12 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
             </Text>
           </View>
 
-          {(categoryRecipes.find((c) => c.point === selectedCategory)?.subcategories?.length ?? 0) >
-          0 ? (
+          {(categoryRecipes.find((c) => c.point === selectedCategory)?.subcategories
+            ?.length ?? 0) > 0 ? (
             <MasonryList
-              data={categoryRecipes.find((c) => c.point === selectedCategory).subcategories}
+              data={
+                categoryRecipes.find((c) => c.point === selectedCategory).subcategories
+              }
               keyExtractor={(item, index) => `${item.point}-${index}`}
               numColumns={numColumns}
               showsVerticalScrollIndicator={false}
@@ -365,7 +392,9 @@ function RecipesMasonrySearchScreenComponent({ recipes, langApp }) {
           onEndReachedThreshold={0.1}
         />
       ) : (
-        <Text className="text-center mt-5">No categories found for the search results</Text>
+        <Text className="text-center mt-5">
+          No categories found for the search results
+        </Text>
       )}
     </View>
   )
