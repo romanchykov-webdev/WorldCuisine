@@ -1,6 +1,4 @@
-//TQuery
 import { supabase } from '../../lib/supabase'
-import { getUserData } from '../userService'
 
 /**
  * Логин через Supabase Auth + (опционально) подкачка профиля.
@@ -16,7 +14,7 @@ export async function loginUserTQ({ email, password, withProfile = true }) {
   if (!withProfile) return user
 
   try {
-    const res = await getUserData(user.id)
+    const res = await getUserDataTQ(user.id)
     return res?.success ? { ...user, ...res.data } : user
   } catch {
     // даже если профиль не подтянули — всё равно логинимся
@@ -31,6 +29,7 @@ export async function loginUserTQ({ email, password, withProfile = true }) {
  * NB: если в Supabase включено подтверждение e-mail — session=null до подтверждения.
  */
 export async function signUpUserTQ({ email, password, userName, lang, theme }) {
+  // console.log('[signUpUserTQ] sending', { email, userName, lang, theme })
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -60,5 +59,29 @@ export async function logoutTQ() {
     return { success: true }
   } catch (e) {
     return { success: false, message: e?.message ?? 'Logout failed' }
+  }
+}
+
+/**
+ * Получает данные пользователя из базы данных по его идентификатору
+ * @param {string} userId - Идентификатор пользователя
+ * @returns {Promise<{success: boolean, data?: object, msg?: string}>} - Результат запроса с данными пользователя или сообщением об ошибке
+ */
+export async function getUserDataTQ(userId) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select()
+      .eq('id', userId)
+      .single()
+
+    if (error) {
+      return { success: false, msg: error?.message }
+    }
+
+    return { success: true, data }
+  } catch (error) {
+    console.log('error', error)
+    return { success: false, msg: error.message }
   }
 }

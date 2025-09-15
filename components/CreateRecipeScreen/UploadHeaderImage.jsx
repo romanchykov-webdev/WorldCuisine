@@ -7,6 +7,7 @@ import LoadingComponent from '../loadingComponent'
 import ViewImageListCreateRecipe from './RecipeListCreateRecipe/ViewImageListCreateRecipe'
 import { useSingleImagePicker } from '../../lib/useSingleImagePicker'
 import { shadowBoxBlack } from '../../constants/shadow'
+import ImageCustom from '../recipeDetails/ImageCustom'
 
 /**
  * props:
@@ -16,6 +17,7 @@ import { shadowBoxBlack } from '../../constants/shadow'
  */
 export default function UploadHeaderImage({ colors, value, onChange }) {
   const { pickOne, isLoading } = useSingleImagePicker()
+  console.log('UploadHeaderImage value', value)
 
   const handlePick = async () => {
     const res = await pickOne()
@@ -36,7 +38,8 @@ export default function UploadHeaderImage({ colors, value, onChange }) {
           >
             <ButtonSmallCustom icon={TrashIcon} tupeButton="remove" />
           </TouchableOpacity>
-          <ViewImageListCreateRecipe image={value} />
+          {/*<ViewImageListCreateRecipe image={value} />*/}
+          <ImageCustom image={value} />
         </View>
       ) : (
         <TouchableOpacity

@@ -53,8 +53,7 @@
 //       const deleteResult = await deleteFile(image)
 //       if (!deleteResult.success) {
 //         console.error('deleteRecipeFromMyDB: Error deleting image:', deleteResult.msg)
-//       }
-//       else {
+//       } else {
 //         console.log('deleteRecipeFromMyDB: Image deleted successfully:', image)
 //       }
 //     }
@@ -72,8 +71,7 @@
 //
 //     console.log('deleteRecipeFromMyDB: Recipe deleted successfully:', recipeId)
 //     return { success: true, msg: 'Recipe deleted successfully' }
-//   }
-//   catch (error) {
+//   } catch (error) {
 //     console.error('deleteRecipeFromMyDB: Error:', error)
 //     return { success: false, msg: error.message || 'An unexpected error occurred' }
 //   }

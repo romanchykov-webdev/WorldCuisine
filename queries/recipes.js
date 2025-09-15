@@ -7,6 +7,11 @@ import { getRecipesByPointTQ } from '../service/TQuery/getRecipesByPoint'
 import { getMeasurementTQ } from '../service/TQuery/getMeasurement'
 
 // categoryMasonry рецепты по текущему языку
+/**
+ *
+ * @param lang
+ * @returns {UseQueryResult<NoInfer<Object>, DefaultError>}
+ */
 export function useCategories(lang) {
   return useQuery({
     queryKey: ['categoryMasonry', lang],
@@ -15,14 +20,10 @@ export function useCategories(lang) {
   })
 }
 
-// useMeasurement рецепты по текущему языку
-// export function useMeasurement() {
-//   return useQuery({
-//     queryKey: ['measurement'],
-//     queryFn: () => getMeasurementTQ(),
-//     initialData: {},
-//   })
-// }
+/**
+ *
+ * @returns {UseQueryResult<NoInfer<*|{}>, DefaultError>}
+ */
 export function useMeasurement() {
   return useQuery({
     queryKey: ['measurement'],
@@ -36,6 +37,11 @@ export function useMeasurement() {
 }
 
 // поиск рецептов по запросу
+/**
+ *
+ * @param query
+ * @returns {UseQueryResult<NoInfer<Array>, DefaultError>}
+ */
 export function useSearchRecipes(query) {
   const q = (query || '').trim()
 
@@ -47,6 +53,11 @@ export function useSearchRecipes(query) {
   })
 }
 //  топ рецептов
+/**
+ *
+ * @param limit
+ * @returns {UseQueryResult<NoInfer<Array>, DefaultError>}
+ */
 export function useTopRecipes(limit = 50) {
   return useQuery({
     queryKey: ['topRecipes', limit],

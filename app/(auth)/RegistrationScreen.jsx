@@ -73,10 +73,9 @@ function RegistrationScreen() {
         lang,
         theme: preferredTheme ?? 'auto',
       })
+      console.log('regicterr user', user)
 
-      // Если проект Supabase требует подтверждение email — session === null
       if (!session) {
-        // Попробуем авто-логин (сработает, если подтверждение не требуется)
         try {
           const loggedIn = await login({ email, password, withProfile: false })
           // применяем тему/язык из metadata

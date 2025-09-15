@@ -1,8 +1,16 @@
 import { supabase } from '../../lib/supabase'
 
 /** Описание рецепта по id */
+/**
+ *
+ * @param id
+ * @returns {Promise<{error: true}|"Received a generic string"|null>}
+ */
 export async function getRecipeDetailsTQ({ id }) {
-  const { data, error } = await supabase.from('all_recipes_description').select('*').eq('id', id)
+  const { data, error } = await supabase
+    .from('all_recipes_description')
+    .select('*')
+    .eq('id', id)
 
   if (error) throw new Error(error.message)
   return data?.[0] ?? null
