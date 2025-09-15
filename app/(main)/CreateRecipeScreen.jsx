@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
@@ -19,12 +18,12 @@ import AddCategory from '../../components/CreateRecipeScreen/AddCategory'
 import LoadingComponent from '../../components/loadingComponent'
 import TitleScreen from '../../components/TitleScreen'
 
-import { shadowBoxBlack } from '../../constants/shadow'
+import { shadowBoxBlack, shadowBoxWhite } from '../../constants/shadow'
 import i18n from '../../lang/i18n'
 
 import { useAuthStore } from '../../stores/authStore'
 import { useLangStore } from '../../stores/langStore'
-import { useThemeColors } from '../../stores/themeStore'
+import { useThemeColors, useThemeStore } from '../../stores/themeStore'
 
 import { useMeasurement } from '../../queries/recipes'
 import { useMutation } from '@tanstack/react-query'
@@ -43,6 +42,8 @@ import LinkToTheCopyright from '../../components/CreateRecipeScreen/LinkToTheCop
 import AddPintGoogleMaps from '../../components/CreateRecipeScreen/AddPintGoogleMaps'
 import { uploadRecipeToTheServerTQ } from '../../service/TQuery/uploadRecipeToTheServer'
 import { updateRecipeTQ } from '../../service/TQuery/updateRecipeTQ'
+import { TrashIcon } from 'react-native-heroicons/outline'
+import { deleteRecipeImages_sbTq } from '../../service/TQuery/deleteRecipeImagesSupabase'
 
 function CreateRecipeScreen() {
   const router = useRouter()
@@ -52,6 +53,7 @@ function CreateRecipeScreen() {
   const user = useAuthStore((s) => s.user)
   const langApp = useLangStore((s) => s.lang) // язык приложения
   const colors = useThemeColors()
+  const currentTheme = useThemeStore((s) => s.currentTheme)
 
   // measurement из React Query (кэш вечный)
   // const { data: measurement } = useMeasurement()
@@ -195,6 +197,37 @@ function CreateRecipeScreen() {
     if (!publishMutation.isPending) publishMutation.mutate(totalRecipe)
   }
 
+  const deleteMutation = useMutation({
+    mutationFn: (recipeObj) => deleteRecipeImages_sbTq(recipeObj),
+
+    onSuccess: () => {
+      Alert.alert(i18n.t('Success'), i18n.t('Recipe deleted successfully'))
+      router.replace('/(main)/AllRecipesBayCreator')
+    },
+    onError: (e) => {
+      Alert.alert(i18n.t('Error'), e?.message || 'Delete error')
+    },
+  })
+
+  const handleDeleteRecipe = () => {
+    if (!isEdit || !totalRecipe?.id) return
+    Alert.alert(
+      i18n.t('Delete recipe'),
+      `${i18n.t('Are you sure you want to DELETE this recipe?')}`,
+      [
+        { text: i18n.t('Cancel'), style: 'cancel' },
+        {
+          text: i18n.t('Delete'),
+          style: 'destructive',
+          onPress: () => deleteMutation.mutate(totalRecipe),
+        },
+      ],
+      { cancelable: true },
+    )
+  }
+
+  console.log('totalRecipeid', totalRecipe.id)
+
   return (
     <SafeAreaView
       style={{
@@ -214,7 +247,7 @@ function CreateRecipeScreen() {
           key={totalRecipe?.id || 'create-new'}
         >
           {/* загрузка-плашка при публикации */}
-          {publishMutation.isPending && (
+          {(publishMutation.isPending || deleteMutation.isPending) && (
             <View style={styles.overlay} pointerEvents="auto">
               <LoadingComponent color="green" />
             </View>
@@ -222,8 +255,25 @@ function CreateRecipeScreen() {
 
           {/* Заголовок */}
           <View className="pt-5">
-            <View className=" flex-1 mb-5">
+            <View className=" flex-1 flex-row items-center justify-between mb-5">
               <ButtonBack />
+
+              {isRefactorRecipe && (
+                <TouchableOpacity
+                  onPress={handleDeleteRecipe}
+                  className="w-[50] h-[50] justify-center items-center bg-white rounded-full"
+                  style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                >
+                  <ButtonSmallCustom
+                    icon={TrashIcon}
+                    tupeButton="remove"
+                    size={40}
+                    w={50}
+                    h={50}
+                    styleWrapperButton={{ borderRadius: 50 }}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             <View className="items-center mb-5">
               <TitleScreen title={i18n.t(isRefactorRecipe ? 'Edit' : 'Create Recipe')} />

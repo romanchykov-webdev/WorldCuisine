@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'expo-router'
 import { supabase } from '../lib/supabase'
-import { getUserData } from '../service/userService'
 import { getDeviceLang, useLangStore } from '../stores/langStore'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
+import { getUserDataTQ } from '../service/TQuery/auth'
 
 /**
  * Инициализирует сессию, подтягивает профиль, ставит тему/язык,
@@ -40,16 +40,31 @@ export function useAuthBootstrap() {
         if (!isMounted) return
 
         if (session) {
-          const res = await getUserData(session.user.id)
-          const authData = res?.success ? { ...session.user, ...res.data } : session.user
+          const res = await getUserDataTQ(session.user.id)
+          const row = res?.success ? res.data : null
+
+          // 1) данные из public.users (если уже есть строка)
+          const fromDbTheme = row?.theme
+          const fromDbLang = row?.app_lang
+
+          // 2) резерв — из auth.user_metadata
+          const meta = session.user?.user_metadata ?? {}
+          const fromMetaTheme = meta?.theme
+          const fromMetaLang = meta?.lang
+
+          // 3) итоговые значения
+          const finalTheme = fromDbTheme ?? fromMetaTheme ?? 'auto'
+          const finalLang = fromDbLang ?? fromMetaLang ?? getDeviceLang()
+
+          const authData = row ? { ...session.user, ...row } : session.user
 
           setAuth(authData)
           setUserData(authData)
 
-          setPreferredTheme(authData?.theme || 'auto')
+          setPreferredTheme(finalTheme)
           applyTheme()
 
-          setLang(authData?.app_lang || getDeviceLang())
+          setLang(finalLang)
         } else {
           setAuth(null)
           setLang(getDeviceLang())
@@ -75,23 +90,31 @@ export function useAuthBootstrap() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
-
+      // console.log('[auth] event=', event, 'pathname=', pathname)
       if (event === 'SIGNED_IN' && session && event !== 'INITIAL_SESSION') {
         try {
-          const res = await getUserData(session.user.id)
-          const authData = res?.success ? { ...session.user, ...res.data } : session.user
+          const res = await getUserDataTQ(session.user.id)
+          const row = res?.success ? res.data : null
+
+          const fromDbTheme = row?.theme
+          const fromDbLang = row?.app_lang
+
+          const meta = session.user?.user_metadata ?? {}
+          const fromMetaTheme = meta?.theme
+          const fromMetaLang = meta?.lang
+
+          const finalTheme = fromDbTheme ?? fromMetaTheme ?? 'auto'
+          const finalLang = fromDbLang ?? fromMetaLang ?? getDeviceLang()
+
+          const authData = row ? { ...session.user, ...row } : session.user
 
           setAuth(authData)
           setUserData(authData)
 
-          setPreferredTheme(authData?.theme || 'auto')
+          setPreferredTheme(finalTheme)
           applyTheme()
 
-          setLang(authData?.app_lang || getDeviceLang())
-
-          if (pathname === '/' || pathname === '/(main)/welcome') {
-            router.replace('/homeScreen')
-          }
+          setLang(finalLang)
         } catch (err) {
           console.error('onAuthStateChange SIGNED_IN error:', err)
         }
@@ -102,8 +125,8 @@ export function useAuthBootstrap() {
         setLang(getDeviceLang())
         setPreferredTheme('auto')
         applyTheme()
-        if (pathname !== '/(main)/welcome') {
-          router.replace('/(main)/welcome')
+        if (pathname !== '/') {
+          router.replace('/')
         }
       }
     })

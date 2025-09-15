@@ -46,7 +46,7 @@ function ProfileScreen() {
         onPress: async () => {
           await logoutTQ()
           resetAuth()
-          router.replace('/(auth)/LogInScreen')
+          // router.replace('/homeScreen')
         },
       },
     ])
@@ -87,7 +87,9 @@ function ProfileScreen() {
           {/* avatar + name */}
           <View className="gap-y-5 items-center mb-5">
             <View className="relative">
-              <View style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}>
+              <View
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+              >
                 <AvatarCustom
                   uri={user?.avatar}
                   size={wp(50)}
@@ -107,7 +109,9 @@ function ProfileScreen() {
                 </TouchableOpacity>
               </View>
             </View>
-            <Text style={{ color: themes[currentTheme]?.textColor }}>{user?.user_name}</Text>
+            <Text style={{ color: themes[currentTheme]?.textColor }}>
+              {user?.user_name}
+            </Text>
           </View>
 
           {/* actions */}
