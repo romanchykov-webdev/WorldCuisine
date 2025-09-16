@@ -124,6 +124,7 @@ function RecipesList({
           {rightAction}
         </Animated.View>
       </BlurView>
+
       {/* оверлей под хедером во время refresh */}
       {refreshing && !isFetchingNextPage && (
         <View style={[styles.refreshOverlay, { top: topPad }]}>

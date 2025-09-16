@@ -9,7 +9,13 @@ import AvatarCustom from './AvatarCustom'
 import { useRouter } from 'expo-router'
 import { truncateText } from '../utils/truncateText'
 
-function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLikesCount }) {
+function HeaderComponent({
+  isAuth,
+  user,
+  colors,
+  unreadCommentsCount,
+  unreadLikesCount,
+}) {
   const router = useRouter()
 
   const hasUnread = (unreadCommentsCount ?? 0) > 0 || (unreadLikesCount ?? 0) > 0
@@ -44,8 +50,12 @@ function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLike
                 />
                 {hasUnread && (
                   <View className="absolute left-[-10] top-[-5px] gap-y-5">
-                    {unreadCommentsCount > 0 && <EvilIcon name="comment" size={20} color="red" />}
-                    {unreadLikesCount > 0 && <EvilIcon name="heart" size={20} color="red" />}
+                    {unreadCommentsCount > 0 && (
+                      <EvilIcon name="comment" size={20} color="red" />
+                    )}
+                    {unreadLikesCount > 0 && (
+                      <EvilIcon name="heart" size={20} color="red" />
+                    )}
                   </View>
                 )}
               </View>
@@ -53,7 +63,10 @@ function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLike
           ) : (
             <View className="flex-row">
               {/*    sign to settings */}
-              <TouchableOpacity onPress={() => router.push('/ProfileScreen')} className="p-2">
+              <TouchableOpacity
+                onPress={() => router.push('/ProfileScreen')}
+                className="p-2"
+              >
                 <Cog6ToothIcon size={hp(3)} color="gray" />
               </TouchableOpacity>
             </View>
@@ -62,9 +75,14 @@ function HeaderComponent({ isAuth, user, colors, unreadCommentsCount, unreadLike
       </View>
       {isAuth && (
         <View className="flex-row">
-          <Text style={{ fontSize: hp(1.7), color: colors.textColor }}>{i18n.t('Hello')}, </Text>
-          <Text style={{ fontSize: hp(1.7), color: colors.textColor }} className=" capitalize">
-            {truncateText(user?.user_name, 7, true)}
+          <Text style={{ fontSize: hp(1.7), color: colors.textColor }}>
+            {i18n.t('Hello')},{' '}
+          </Text>
+          <Text
+            style={{ fontSize: hp(1.7), color: colors.textColor }}
+            className=" capitalize"
+          >
+            {truncateText(user?.user_name, 15, true)}
           </Text>
         </View>
       )}

@@ -6,6 +6,8 @@ import {
   CreditCardIcon,
   HeartIcon,
   PencilSquareIcon,
+  ChatBubbleOvalLeftIcon,
+  HandThumbUpIcon,
 } from 'react-native-heroicons/mini'
 import Icon from 'react-native-vector-icons/EvilIcons'
 import AvatarCustom from '../components/AvatarCustom'
@@ -20,11 +22,19 @@ import i18n from '../lang/i18n'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { logoutTQ } from '../service/TQuery/auth'
+import { formatNumber } from '../utils/numberFormat'
+import Animated, {
+  FadeInDown,
+  FadeInLeft,
+  FadeInRight,
+  FadeInUp,
+  FadeOutDown,
+} from 'react-native-reanimated'
 
 function ProfileScreen() {
   const router = useRouter()
   const user = useAuthStore((s) => s.user)
-  const resetAuth = useAuthStore((s) => s.resetAuth)
+  const signOutLocal = useAuthStore((s) => s.signOutLocal)
   const currentTheme = useThemeStore((s) => s.currentTheme)
 
   // демо-данные; лучше вынести в notificationsStore
@@ -44,9 +54,12 @@ function ProfileScreen() {
         text: 'LogOut',
         style: 'destructive',
         onPress: async () => {
-          await logoutTQ()
-          resetAuth()
-          // router.replace('/homeScreen')
+          try {
+            await logoutTQ()
+          } finally {
+            signOutLocal()
+            router.replace('/')
+          }
         },
       },
     ])
@@ -67,91 +80,162 @@ function ProfileScreen() {
     router.push('/(main)/editProfile')
   }
 
+  const goToLikesScreen = () => {
+    router.push('/(main)/NewLikesScreen')
+  }
+  const goToCommentsScreen = () => {
+    router.push('/(main)/NewCommentsScreen')
+  }
+
   return (
     <WrapperComponent>
       {isAuth ? (
         <>
           {/* header */}
           <View className="flex-row justify-between items-center">
-            <ButtonBack />
-            <TitleScreen title={i18n.t('Profile')} />
-            <TouchableOpacity
-              onPress={handleLogOut}
-              style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              className="bg-white p-3 border border-neutral-300 rounded-full"
-            >
-              <ArrowLeftEndOnRectangleIcon size={30} color="red" />
-            </TouchableOpacity>
+            {/*button back*/}
+            <Animated.View entering={FadeInLeft.delay(200).springify()}>
+              <ButtonBack />
+            </Animated.View>
+
+            {/*title*/}
+            <Animated.View entering={FadeInDown.delay(300).springify()}>
+              <TitleScreen title={i18n.t('Profile')} />
+            </Animated.View>
+
+            {/*log out*/}
+            <Animated.View entering={FadeInRight.delay(400).springify()}>
+              <TouchableOpacity
+                onPress={handleLogOut}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="bg-white p-3 border border-neutral-300 rounded-full"
+              >
+                <ArrowLeftEndOnRectangleIcon size={30} color="red" />
+              </TouchableOpacity>
+            </Animated.View>
           </View>
 
           {/* avatar + name */}
-          <View className="gap-y-5 items-center mb-5">
-            <View className="relative">
-              <View
-                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              >
-                <AvatarCustom
-                  uri={user?.avatar}
-                  size={wp(50)}
-                  style={{ borderWidth: 0.2 }}
-                  rounded={150}
-                />
-              </View>
-              <View
-                className="absolute bottom-5 right-5"
-                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              >
-                <TouchableOpacity
-                  onPress={updateProfile}
-                  className="bg-white p-2 border border-neutral-300 rounded-full"
+          <Animated.View entering={FadeInUp.delay(500).springify()}>
+            <View className="gap-y-5 items-center mb-5">
+              <View className="relative">
+                <View
+                  style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
                 >
-                  <PencilSquareIcon size={30} color="grey" />
-                </TouchableOpacity>
+                  <AvatarCustom
+                    uri={user?.avatar}
+                    size={wp(50)}
+                    style={{ borderWidth: 0.2 }}
+                    rounded={150}
+                  />
+                </View>
+                <View
+                  className="absolute bottom-5 right-5"
+                  style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                >
+                  <TouchableOpacity
+                    onPress={updateProfile}
+                    className="bg-white p-2 border border-neutral-300 rounded-full"
+                  >
+                    <PencilSquareIcon size={30} color="grey" />
+                  </TouchableOpacity>
+                </View>
               </View>
+              <Text style={{ color: themes[currentTheme]?.textColor }}>
+                {user?.user_name}
+              </Text>
             </View>
-            <Text style={{ color: themes[currentTheme]?.textColor }}>
-              {user?.user_name}
-            </Text>
-          </View>
+          </Animated.View>
 
           {/* actions */}
-          <View className="flex-row mb-5 items-center justify-around">
-            <TouchableOpacity
-              onPress={handleMyRecipes}
-              style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
-            >
-              <CreditCardIcon size={45} color="green" />
-              <Text numberOfLines={1} style={{ fontSize: 8 }}>
-                {i18n.t('My recipes')}
-              </Text>
-              <View className="absolute top-[-10] flex-row w-full items-center justify-between">
-                {unreadCommentsCount > 0 && <Icon name="comment" size={25} color="red" />}
-                {unreadLikesCount > 0 && <Icon name="heart" size={25} color="red" />}
-              </View>
-            </TouchableOpacity>
+          <View className="flex-row flex-wrap gap-8 mb-5 items-center justify-around">
+            {/*'My recipes'*/}
+            <Animated.View entering={FadeInDown.delay(1000).springify()}>
+              <TouchableOpacity
+                onPress={handleMyRecipes}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
+              >
+                <CreditCardIcon size={45} color="green" />
+                <Text numberOfLines={1} style={{ fontSize: 8 }}>
+                  {i18n.t('My recipes')}
+                </Text>
+                <View className="absolute top-[-10] flex-row w-full items-center justify-between">
+                  {unreadCommentsCount > 0 && (
+                    <Icon name="comment" size={25} color="red" />
+                  )}
+                  {unreadLikesCount > 0 && <Icon name="heart" size={25} color="red" />}
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
 
-            <TouchableOpacity
-              onPress={() => router.push('(main)/CreateRecipeScreen')}
-              style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
-            >
-              <PencilSquareIcon size={45} color="gold" />
-              <Text numberOfLines={1} style={{ fontSize: 8 }}>
-                {i18n.t('Create recipe')}
-              </Text>
-            </TouchableOpacity>
+            {/*'Create recipe'*/}
+            <Animated.View entering={FadeInDown.delay(1200).springify()}>
+              <TouchableOpacity
+                onPress={() => router.push('(main)/CreateRecipeScreen')}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+              >
+                <PencilSquareIcon size={45} color="gold" />
+                <Text numberOfLines={1} style={{ fontSize: 8 }}>
+                  {i18n.t('Create recipe')}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
 
-            <TouchableOpacity
-              onPress={handleMyLiked}
-              style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-              className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
-            >
-              <HeartIcon size={45} color="red" />
-              <Text numberOfLines={1} style={{ fontSize: 8 }}>
-                {i18n.t('Liked')}
-              </Text>
-            </TouchableOpacity>
+            {/*'Liked'*/}
+            <Animated.View entering={FadeInDown.delay(1400).springify()}>
+              <TouchableOpacity
+                onPress={handleMyLiked}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around"
+              >
+                <HeartIcon size={45} color="red" />
+                <Text numberOfLines={1} style={{ fontSize: 8 }}>
+                  {i18n.t('Liked')}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/*'Comments'*/}
+            <Animated.View entering={FadeInDown.delay(1600).springify()}>
+              <TouchableOpacity
+                onPress={goToLikesScreen}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
+              >
+                <ChatBubbleOvalLeftIcon size={45} color="gray" />
+                <Text numberOfLines={1} style={{ fontSize: 8 }}>
+                  {i18n.t('Comments')}
+                </Text>
+                <View
+                  style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                  className=" w-[30px] h-[30px] bg-violet-500 rounded-full absolute left-0 -top-1 flex items-center justify-center"
+                >
+                  <Text className="text-sm"> {formatNumber(10000)}</Text>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/*'likes'*/}
+            <Animated.View entering={FadeInDown.delay(1800).springify()}>
+              <TouchableOpacity
+                onPress={goToLikesScreen}
+                style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
+              >
+                <HandThumbUpIcon size={45} color="blue" />
+                <Text numberOfLines={1} style={{ fontSize: 8 }}>
+                  {i18n.t('likes')}
+                </Text>
+                <View
+                  style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
+                  className=" w-[30px] h-[30px] bg-violet-500 rounded-full absolute left-0 -top-1 flex items-center justify-center"
+                >
+                  <Text className="text-sm"> {formatNumber(10000)}</Text>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </>
       ) : (

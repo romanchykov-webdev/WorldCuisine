@@ -32,7 +32,7 @@ function ButtonClearInputCustomComponent({
   return (
     <View style={{ position: 'absolute', top, left, right, bottom }}>
       <Animated.View
-        style={animatedStyle} // ✅ исправлено
+        style={animatedStyle}
         entering={FadeInDown.springify()}
         exiting={FadeOutDown}
       >
