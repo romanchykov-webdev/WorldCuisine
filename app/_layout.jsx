@@ -12,7 +12,6 @@ async function prepareSplashOnce() {
 prepareSplashOnce()
 
 import { Stack } from 'expo-router'
-import { QueryClientProvider } from '@tanstack/react-query'
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito'
 import React from 'react'
 
@@ -25,6 +24,9 @@ import { useI18nLocale } from '../hooks/useI18nLocale'
 import { useAuthBootstrap } from '../hooks/useAuthBootstrap'
 import { View } from 'react-native'
 import Toast from 'react-native-toast-message'
+import Providers from './providers'
+import { useAuthStore } from '../stores/authStore'
+import { useUnreadCounters } from '../queries/notifications'
 
 // SplashScreen.preventAutoHideAsync()
 
@@ -54,15 +56,18 @@ function _layout() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <QueryClientProvider client={queryClient}>
+      <Providers client={queryClient}>
         <RootLayout fontsReady={fontsLoaded} />
         <Toast topOffset={50} />
-      </QueryClientProvider>
+      </Providers>
     </View>
   )
 }
 
 function RootLayout({ fontsReady }) {
+  const user = useAuthStore((s) => s.user)
+  useUnreadCounters(user?.id)
+
   // 2) Фокус React Query
   useAppFocus()
 
@@ -96,7 +101,7 @@ function RootLayout({ fontsReady }) {
       />
       <Stack.Screen name="(main)/AllRecipesBayCreator" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/FavoriteScreen" options={{ headerShown: false }} />
-      {/*<Stack.Screen name="(main)/NewCommentsScreen" options={{ headerShown: false }} />*/}
+      <Stack.Screen name="(main)/NewCommentsScreen" options={{ headerShown: false }} />
       {/*<Stack.Screen name="(main)/NewLikesScreen" options={{ headerShown: false }} />*/}
       <Stack.Screen name="(main)/SearchRecipeScreen" options={{ headerShown: false }} />
     </Stack>
