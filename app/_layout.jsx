@@ -102,7 +102,7 @@ function RootLayout({ fontsReady }) {
       <Stack.Screen name="(main)/AllRecipesBayCreator" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/FavoriteScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/NewCommentsScreen" options={{ headerShown: false }} />
-      {/*<Stack.Screen name="(main)/NewLikesScreen" options={{ headerShown: false }} />*/}
+      <Stack.Screen name="(main)/NewLikesScreen" options={{ headerShown: false }} />
       <Stack.Screen name="(main)/SearchRecipeScreen" options={{ headerShown: false }} />
     </Stack>
   )

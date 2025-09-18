@@ -23,8 +23,9 @@ const makeLangMap = (langs, fill = '') =>
 
 // --- component --------------------------------------------------------
 function IngredientsCreateRecipe({
-  colors, // { textColor, radiusSM, ... }
-  styleInput, // базовый стиль поля
+  colors,
+  currentTheme,
+  styleInput,
   placeholderText,
   placeholderColor,
   langApp,
@@ -202,7 +203,8 @@ function IngredientsCreateRecipe({
           <ListIngredientsCreateRecipe
             ingredients={byLang}
             totalLangRecipe={langs}
-            currentTheme={colors}
+            currentTheme={currentTheme}
+            colors={colors}
             removeIngredient={removeIngredient}
           />
         </View>

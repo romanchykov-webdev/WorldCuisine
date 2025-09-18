@@ -361,6 +361,7 @@ function CreateRecipeScreen() {
           <View style={styles.mb20}>
             <IngredientsCreateRecipe
               colors={colors}
+              currentTheme={currentTheme}
               styleInput={styles.input}
               placeholderText={i18n.t('Name of the ingredient')}
               placeholderColor="grey"

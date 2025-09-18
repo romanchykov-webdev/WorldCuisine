@@ -1,61 +1,62 @@
-import { useEffect, useRef } from 'react'
-import { Animated, Switch, Text, TouchableOpacity, View } from 'react-native'
+import { useEffect } from 'react'
+import { Switch, Text, TouchableOpacity, View } from 'react-native'
 import Icon from 'react-native-vector-icons/Entypo'
 import { shadowBoxBlack } from '../../constants/shadow'
 import i18n from '../../lang/i18n'
-import { createPulseAnimation } from '../../utils/animations'
 import AvatarCustom from '../AvatarCustom'
+import Animated, {
+  FadeInLeft,
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  FadeInUp,
+  FadeInDown,
+} from 'react-native-reanimated'
 
 function NotificationItem({
   item,
-  animatedHeights,
-  fadeAnim,
+  index,
   switchStates,
   onToggleRead,
   onNavigate,
   isLiked = false,
 }) {
-  // console.log("NotificationItem isLiked ", isLiked);
-  // console.log("NotificationItem isLiked:", isLiked);
-  // console.log("NotificationItem item.type:", item.type);
-  // console.log("NotificationItem item:", item);
+  // Пульсация сердца через Reanimated
+  const scale = useSharedValue(1)
 
-  // Инициализируем pulseAnim как Animated.Value напрямую
-  const pulseAnim = useRef(new Animated.Value(1)).current
-
-  // Запускаем анимацию пульсации, когда компонент монтируется
   useEffect(() => {
-    // console.log("useEffect triggered for item.id:", item.id);
-    if (item.type !== 'comment') {
-      // console.log("NotificationItem item.type", item.type);
-      // console.log("Starting pulse animation for item.id:", item.id);
-      createPulseAnimation({
-        id: item.id,
-        animationRef: { current: { [item.id]: pulseAnim } }, // Передаем pulseAnim как объект
-        duration: 1400,
-        scaleFrom: 1,
-        escalateTo: 1.5,
-        useNativeDriver: true,
-      })
-      // console.log("pulseAnim after createPulseAnimation:", pulseAnim);
+    if (isLiked || item.type === 'like') {
+      scale.value = withRepeat(
+        withSequence(
+          withTiming(1.5, { duration: 700 }),
+          withTiming(1, { duration: 700 }),
+        ),
+        -1, // бесконечно
+        true,
+      )
     }
-  }, [item.id, item.type])
+  }, [isLiked, item.type])
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }))
 
   return (
     <View style={{ overflow: 'hidden' }}>
       <Animated.View
-        key={item.id}
+        entering={FadeInDown.delay(200 * index).springify()}
         style={{
-          height: animatedHeights.current[item.id] || 150,
+          height: 150, // если не используешь collapse-анимацию — фиксируем
           ...shadowBoxBlack({ offset: { width: 1, height: 1 }, opacity: 0.5 }),
         }}
       >
-        <Animated.View
+        <View
           style={{
-            opacity: fadeAnim.current[item.id]?.opacity || 1,
-            transform: [{ translateY: fadeAnim.current[item.id]?.translate || 0 }],
             backgroundColor: 'transparent',
             position: 'relative',
+            flex: 1,
           }}
         >
           <View className="w-auto border-2 p-2 h-[130px] bg-transparent border-neutral-500 rounded-[12] gap-x-2 relative overflow-hidden">
@@ -73,20 +74,23 @@ function NotificationItem({
                 opacity: 0.5,
               }}
             />
+
+            {/* Верхняя строка */}
             <View className="flex-row justify-between items-center">
               <View className="flex-row items-center">
                 <Text className="text-xl text-neutral-700">User : </Text>
                 <Text className="text-xl">{item.users?.user_name || 'Unknown User'}</Text>
               </View>
               <Switch
-                value={switchStates[item.id]}
+                value={switchStates[item.id] ?? true}
                 onValueChange={() => onToggleRead(item.id, item.recipe_id)}
-                thumbColor={switchStates[item.id] ? '#B2AC88' : 'red'}
+                thumbColor={(switchStates[item.id] ?? true) ? '#B2AC88' : 'red'}
                 trackColor={{ false: 'rgba(0,0,0,0.2)', true: 'rgba(0,0,0,0.3)' }}
               />
             </View>
+
+            {/* Тело */}
             {item.type === 'comment' ? (
-            // Для комментариев показываем текст сообщения
               <View className="flex-row items-center gap-x-2">
                 <AvatarCustom uri={item.users?.avatar} size={60} />
                 <View className="flex-1">
@@ -96,28 +100,27 @@ function NotificationItem({
                 </View>
               </View>
             ) : (
-            // Для лайков показываем только аватар и пустое место
               <View className="flex-row items-center gap-x-2 relative">
                 <AvatarCustom uri={item.users?.avatar} size={60} />
                 <View className="flex-1 items-center absolute left-[40%] ">
-                  <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                    <Icon name="heart" size={80} color="red" className="mr-[60px]" />
+                  <Animated.View style={pulseStyle}>
+                    <Icon name="heart" size={80} color="red" />
                   </Animated.View>
                 </View>
               </View>
             )}
+
+            {/* Низ */}
             <View className="flex-row flex-1 justify-between items-center mt-1">
-              <Text style={{ fontSize: 12 }}>{new Date(item.created_at).toLocaleString()}</Text>
+              <Text style={{ fontSize: 12 }}>
+                {new Date(item.created_at).toLocaleString()}
+              </Text>
               <TouchableOpacity onPress={() => onNavigate(item.recipe_id)}>
-                <Text style={{ fontSize: 12 }}>
-                  {i18n.t('Open recipe')}
-                  {' '}
-                  ...
-                </Text>
+                <Text style={{ fontSize: 12 }}>{i18n.t('Open recipe')} ...</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </Animated.View>
+        </View>
       </Animated.View>
     </View>
   )
