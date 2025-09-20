@@ -1,22 +1,3 @@
-// utils/categoryFilters.js
-
-/**
- * Безопасно достаёт массив .point из массива рецептов.
- * Работает быстро и без лишних аллокаций.
- * @param {Array<any>} recipes
- * @returns {Set<string>} множество разрешённых point
- */
-export function createAllowedPointSet(recipes) {
-  const set = new Set()
-  if (!Array.isArray(recipes) || recipes.length === 0) return set
-
-  for (let i = 0; i < recipes.length; i++) {
-    const p = recipes[i]?.point
-    if (typeof p === 'string' && p.length) set.add(p)
-  }
-  return set
-}
-
 /**
  * ЛЕГАСИ: возвращает объект вида { <key>: string[] } — чтобы не сломать старый вызов.
  * На самом деле ключи не важны — важны только значения массивов (points).

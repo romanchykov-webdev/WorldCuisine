@@ -1,4 +1,3 @@
-// queries/recipes.js
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getCategoriesTQ } from '../service/TQuery/getCategories'
 import { searchRecipesByTagTQ } from '../service/TQuery/search'

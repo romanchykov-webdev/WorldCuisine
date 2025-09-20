@@ -1,5 +1,4 @@
 import { supabase } from '../../lib/supabase'
-import { uploadImageTQ } from './uploadImageTQ'
 import { uploadImageSupabase } from './uploadImageSupabase'
 import { basePathForRecipe } from '../../helpers/pathFileHelpers'
 import { normalizeToStoragePath } from '../../utils/storage'

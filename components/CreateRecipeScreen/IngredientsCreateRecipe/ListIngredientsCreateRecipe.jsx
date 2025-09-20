@@ -4,13 +4,17 @@ import { TrashIcon } from 'react-native-heroicons/mini'
 import { shadowBoxBlack } from '../../../constants/shadow'
 import { themes } from '../../../constants/themes'
 import ButtonSmallCustom from '../../Buttons/ButtonSmallCustom'
+import { useThemeColors, useThemeStore } from '../../../stores/themeStore'
 
 function ListIngredientsCreateRecipe({
   ingredients,
   totalLangRecipe,
   colors,
+  currentTheme,
   removeIngredient,
 }) {
+  // const colors = useThemeColors()
+  // const currentTheme = useThemeStore((s) => s.currentTheme)
   const [changeLang, setChangeLang] = useState(totalLangRecipe[0])
   const handleChangeLang = (item) => {
     setChangeLang(item)
@@ -63,19 +67,28 @@ function ListIngredientsCreateRecipe({
               />
               <View className="flex-row flex-1 gap-x-2">
                 <Text
-                  style={{ fontSize: 16, color: colors?.textColor }}
+                  style={{
+                    fontSize: 16,
+                    color: themes[currentTheme]?.secondaryTextColor,
+                  }}
                   className="font-extrabold"
                 >
                   {row.ingredient}
                 </Text>
                 <Text
-                  style={{ fontSize: 16, color: colors?.textColor }}
+                  style={{
+                    fontSize: 16,
+                    color: themes[currentTheme]?.secondaryTextColor,
+                  }}
                   className="font-medium"
                 >
                   - {row.quantity}
                 </Text>
                 <Text
-                  style={{ fontSize: 16, color: colors?.textColor }}
+                  style={{
+                    fontSize: 16,
+                    color: themes[currentTheme]?.secondaryTextColor,
+                  }}
                   className="font-medium capitalize"
                 >
                   {row.unitLabel}

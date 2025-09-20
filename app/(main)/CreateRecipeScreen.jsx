@@ -51,16 +51,13 @@ function CreateRecipeScreen() {
   const { recipeDish: recipeDishParam, isRefactorRecipe } = params
 
   const user = useAuthStore((s) => s.user)
-  const langApp = useLangStore((s) => s.lang) // язык приложения
+  const langApp = useLangStore((s) => s.lang)
   const colors = useThemeColors()
   const currentTheme = useThemeStore((s) => s.currentTheme)
 
-  // measurement из React Query (кэш вечный)
-  // const { data: measurement } = useMeasurement()
   // measurement кэшируется навсегда
   const { data: measurement } = useMeasurement()
 
-  // входной рецепт (если редактирование)
   // входной рецепт (если редактирование)
   const parsedRecipe = useMemo(() => {
     if (!recipeDishParam) return null
@@ -76,7 +73,7 @@ function CreateRecipeScreen() {
   const isEdit =
     isRefactorRecipe === true ||
     isRefactorRecipe === 'true' ||
-    !!parsedRecipe?.id || // если пришёл рецепт с id — точно редактируем
+    !!parsedRecipe?.id ||
     !!totalRecipe?.id
 
   // Заготовка (blank)
@@ -119,7 +116,6 @@ function CreateRecipeScreen() {
     [],
   )
 
-  // Итоговый editable объект
   // если приходят входные данные во время жизни экрана — обновим
   useEffect(() => {
     if (isEdit && parsedRecipe) setTotalRecipe(parsedRecipe)
@@ -226,7 +222,7 @@ function CreateRecipeScreen() {
     )
   }
 
-  console.log('totalRecipeid', totalRecipe.id)
+  // console.log('totalRecipeid', totalRecipe.id)
 
   return (
     <SafeAreaView
@@ -239,7 +235,7 @@ function CreateRecipeScreen() {
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 20,
-            marginBottom: 20,
+            paddingBottom: Platform.OS === 'ios' ? 20 : 60,
             marginTop: Platform.OS === 'ios' ? 10 : 60,
           }}
           showsVerticalScrollIndicator={false}
@@ -280,7 +276,7 @@ function CreateRecipeScreen() {
             </View>
           </View>
 
-          {/* Категория + поинт (обновлённый компонент ниже) */}
+          {/* Категория + поинт  */}
           <AddCategory
             colors={colors}
             langApp={langApp}
@@ -317,7 +313,6 @@ function CreateRecipeScreen() {
               }
               styleTextDesc={styles.label}
               styleInput={styles.input}
-              //управляемые языки
               selectedLangs={titleLangs}
               onLangsChange={setTitleLangs}
             />
@@ -361,6 +356,7 @@ function CreateRecipeScreen() {
           <View style={styles.mb20}>
             <IngredientsCreateRecipe
               colors={colors}
+              currentTheme={currentTheme}
               styleInput={styles.input}
               placeholderText={i18n.t('Name of the ingredient')}
               placeholderColor="grey"
@@ -452,7 +448,6 @@ function CreateRecipeScreen() {
               </TouchableOpacity>
             )}
           </View>
-          {/*  */}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -470,7 +465,6 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 10 : 60,
   },
   label: { fontSize: 16, fontWeight: 'bold', marginBottom: 5, paddingLeft: 5 },
-  // input: { fontSize: 16, flex: 1, borderWidth: 1, borderColor: 'grey', padding: 20 },
   header: { paddingTop: 20, marginBottom: 20 },
   headerTitle: { alignItems: 'center', marginTop: 10 },
   buttonsWrap: { gap: 16, marginTop: 24, marginBottom: 24 },

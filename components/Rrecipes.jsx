@@ -55,28 +55,26 @@ function Recipes({ recipes, langApp }) {
       </Text>
 
       {/*    masonry */}
-      {
-        // categories === 0 ? null : (
-        // categories.lenght === 0 ||
-        recipes.length == 0 ? (
-          <LoadingComponent size="large" color="gray" />
-        ) : (
-          <MasonryList
-            // data={mealData}
-            data={recipes}
-            keyExtractor={(item) => item.idMeal}
-            // numColumns={2}
-            numColumns={column}
-            style={{ gap: 10 }}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item, i }) => <CardItem item={item} index={i} langApp={langApp} />}
-            // refreshing={isLoadingNext}
-            // onRefresh={() => refetch({first: ITEM_CNT})}
-            onEndReachedThreshold={0.1}
-            // onEndReached={() => loadNext(ITEM_CNT)}
-          />
-        )
-      }
+      {recipes.length == 0 ? (
+        <LoadingComponent size="large" color="gray" />
+      ) : (
+        <MasonryList
+          // data={mealData}
+          data={recipes}
+          keyExtractor={(item) => item.idMeal}
+          // numColumns={2}
+          numColumns={column}
+          style={{ gap: 10 }}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, i }) => (
+            <CardItem item={item} index={i} langApp={langApp} />
+          )}
+          // refreshing={isLoadingNext}
+          // onRefresh={() => refetch({first: ITEM_CNT})}
+          onEndReachedThreshold={0.1}
+          // onEndReached={() => loadNext(ITEM_CNT)}
+        />
+      )}
     </View>
   )
 }
@@ -139,7 +137,12 @@ function CardItem({ item, index, langApp }) {
               rounded={50}
             />
             <Text
-              style={{ fontSize: 6, maxWidth: 20, overflow: 'hidden', textAlign: 'center' }}
+              style={{
+                fontSize: 6,
+                maxWidth: 20,
+                overflow: 'hidden',
+                textAlign: 'center',
+              }}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -155,16 +158,15 @@ function CardItem({ item, index, langApp }) {
         />
         <LinearGradient
           colors={['transparent', '#18181b']}
-          style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            borderRadius: 35,
+          }}
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 0.5, y: 1 }}
         />
-        {/*<View*/}
-        {/*  style={[*/}
-        {/*    StyleSheet.absoluteFill,*/}
-        {/*    { borderRadius: radius, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },*/}
-        {/*  ]}*/}
-        {/*></View>*/}
 
         {/*    icons like comments rating */}
         <View className=" absolute bottom-[20] items-center justify-around">
@@ -175,7 +177,6 @@ function CardItem({ item, index, langApp }) {
           {/* icons */}
           <View
             className="flex-row items-center justify-around  w-full min-h-[25px]
-                    {/*bg-red-500*/}
                     "
           >
             {/*    like */}
@@ -184,7 +185,12 @@ function CardItem({ item, index, langApp }) {
                 <HeartIcon size={25} color="gray" />
                 {/* <HeartIcon size={30} color='gray' fill='red'/> */}
                 <Text
-                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  style={{
+                    fontSize: 8,
+                    maxWidth: 25,
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                  }}
                   className="text-white"
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -200,7 +206,12 @@ function CardItem({ item, index, langApp }) {
               <View className="items-center ">
                 <ChatBubbleOvalLeftEllipsisIcon size={25} color="gray" />
                 <Text
-                  style={{ fontSize: 8, maxWidth: 25, overflow: 'hidden', textAlign: 'center' }}
+                  style={{
+                    fontSize: 8,
+                    maxWidth: 25,
+                    overflow: 'hidden',
+                    textAlign: 'center',
+                  }}
                   className="text-white"
                   numberOfLines={1}
                   ellipsizeMode="tail"

@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useMemo, useState } from 'react'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import {
   FolderOpenIcon,
   HeartIcon,
@@ -53,11 +53,11 @@ function SearchRecipeScreen() {
   const customFadeIn = (typeAnimation, numDuration, delayMs) =>
     typeAnimation.duration(numDuration).delay(delayMs)
 
-  // мемоизированная сортировка — без лишних setState/useEffect
+  // мемоизированная сортировка
   const filteredRecipes = useMemo(() => {
     if (displayFilters !== 'list') return recipes
 
-    // clone один раз
+    // clone
     let arr = [...recipes]
 
     if (filterRatingFavorite.rating) {
