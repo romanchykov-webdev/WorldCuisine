@@ -1,0 +1,20 @@
+{
+  "---Profile---": "---Profile---",
+  "Profile": "Профиль",
+  "Log In": "Авторизоваться",
+  "Sign Up": "Зарегистрироваться",
+  "Create recipe": "Создать рецепт",
+  "Category": "Категория",
+  "Select Language": "Выбрать язык",
+  "My recipes": "Мои рецепты",
+  "Liked": "Избранные",
+  "Cooking time.": "Время приготовления.",
+  "Here you can specify the approximate time to cook the dish.": "Здесь вы можете указать примерное время приготовления блюда.",
+  "Select number of servings.": "Выберите количество порций.",
+  "Choose how many persons your recipe serves.": "Укажите, на сколько человек рассчитан ваш рецепт.",
+  "Select calories.": "Выберите калорийность.",
+  "Choose dish calories.": "Укажите калорийность блюда.",
+  "Select difficulty.": "Выберите сложность.",
+  "Choose cooking difficulty.": "Укажите сложность приготовления.",
+  "---Profile-END--": "---Profile-END--"
+}
