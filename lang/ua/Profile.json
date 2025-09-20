@@ -1,0 +1,18 @@
+{
+  "Profile": "Профіль",
+  "Log In": "Увійти",
+  "Sign Up": "Зареєструватися",
+  "Create recipe": "Створити рецепт",
+  "Category": "Категорія",
+  "Select Language": "Вибрати мову",
+  "My recipes": "Мої рецепти",
+  "Liked": "Сподобалися",
+  "Cooking time.": "Час приготування.",
+  "Here you can specify the approximate time to cook the dish.": "Тут ви можете вказати приблизний час приготування страви.",
+  "Select number of servings.": "Виберіть кількість порцій.",
+  "Choose how many persons your recipe serves.": "Вкажіть, на скільки осіб розрахований ваш рецепт.",
+  "Select calories.": "Виберіть калорійність.",
+  "Choose dish calories.": "Вкажіть калорійність страви.",
+  "Select difficulty.": "Виберіть складність.",
+  "Choose cooking difficulty.": "Вкажіть складність приготування."
+}
