@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar'
 import { useLocalSearchParams } from 'expo-router'
 import React, { useMemo, useRef, useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import { ScrollView, Text, View } from 'react-native'
+import Animated, { FadeInDown } from 'react-native-reanimated'
 import LoadingComponent from '../components/loadingComponent'
 import RatingComponents from '../components/RatingComponents'
 import CommentsComponent from '../components/recipeDetails/CommentsComponent'
@@ -37,11 +37,6 @@ import colors from 'tailwindcss/colors'
 function RecipeDetailsScreen() {
   const { id, totalRecipe: totalRecipeString, preview } = useLocalSearchParams()
   const isPreview = preview === 'true' || preview === true
-
-  // console.log(
-  //   'RecipeDetailsScreen totalRecipeString',
-  //   JSON.stringify(totalRecipeString, null),
-  // )
 
   const user = useAuthStore((s) => s.user)
   const currentTheme = useThemeStore((s) => s.currentTheme)
@@ -146,7 +141,7 @@ function RecipeDetailsScreen() {
           totalCountLike={recipeDish?.likes}
         />
 
-        {/* rating stars (интерактивные) */}
+        {/* rating stars  */}
         <RatingComponents
           isPreview={isPreview}
           rating={rating}

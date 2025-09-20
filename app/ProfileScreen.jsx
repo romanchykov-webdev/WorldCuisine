@@ -9,7 +9,6 @@ import {
   ChatBubbleOvalLeftIcon,
   HandThumbUpIcon,
 } from 'react-native-heroicons/mini'
-import Icon from 'react-native-vector-icons/EvilIcons'
 import AvatarCustom from '../components/AvatarCustom'
 import ButtonBack from '../components/ButtonBack'
 import TitleScreen from '../components/TitleScreen'
@@ -28,7 +27,6 @@ import Animated, {
   FadeInLeft,
   FadeInRight,
   FadeInUp,
-  FadeOutDown,
 } from 'react-native-reanimated'
 import { useNotificationsStore } from '../stores/notificationsStore'
 
@@ -41,10 +39,6 @@ function ProfileScreen() {
   const unreadCommentsCount = useNotificationsStore((s) => s.unreadCommentsCount)
   // counter likes
   const unreadLikesCount = useNotificationsStore((s) => s.unreadLikesCount)
-
-  // демо-данные; лучше вынести в notificationsStore
-  // const unreadCommentsCount = 0
-  // const unreadLikesCount = 0
 
   const [isAuth, setIsAuth] = useState(false)
 
@@ -165,12 +159,6 @@ function ProfileScreen() {
                 <Text numberOfLines={1} style={{ fontSize: 8 }}>
                   {i18n.t('My recipes')}
                 </Text>
-                {/*<View className="absolute top-[-10] flex-row w-full items-center justify-between">*/}
-                {/*  {unreadCommentsCount > 0 && (*/}
-                {/*    <Icon name="comment" size={25} color="red" />*/}
-                {/*  )}*/}
-                {/*  {unreadLikesCount > 0 && <Icon name="heart" size={25} color="red" />}*/}
-                {/*</View>*/}
               </TouchableOpacity>
             </Animated.View>
 

@@ -1,278 +1,142 @@
+import { useEffect } from 'react'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchNotificationsPage,
+  fetchUnreadCount,
   markNotificationAsRead,
   subscribeToNotifications,
-  fetchUnreadCount,
 } from '../service/TQuery/notifications'
-import { useEffect } from 'react'
 import { useNotificationsStore } from '../stores/notificationsStore'
 
-// ключи
-const key = (userId, type) => ['notifications', userId || 'nouser', type || 'all']
-
-/**
- *
- * @param userId
- * @param type
- * @returns {UseInfiniteQueryResult<unknown[], DefaultError>}
- */
-// export function useNotificationsInfinite(userId, type) {
-//   return useInfiniteQuery({
-//     queryKey: key(userId, type),
-//     enabled: !!userId,
-//     initialPageParam: null, // after cursor (created_at)
-//     queryFn: async ({ pageParam }) => {
-//       const page = await fetchNotificationsPage({
-//         userId,
-//         after: pageParam || undefined,
-//         type,
-//       })
-//       const nextCursor = page.length ? page[page.length - 1].created_at : null
-//       return { page, nextCursor }
-//     },
-//     // getNextPageParam: (last) => last.nextCursor,
-//     // getNextPageParam: (last) => last.nextCursor ?? undefined,
-//     // select: (data) => data.pages.flatMap((p) => p.page),
-//     getNextPageParam: (last) => last.nextCursor ?? undefined,
-//   })
-// }
+/** Бесконечный список уведомлений (в кэше храним плоский массив). */
 export function useNotificationsInfinite(userId, type) {
   return useInfiniteQuery({
-    queryKey: key(userId, type),
+    queryKey: ['notifications', userId || 'nouser', type || 'all'],
     enabled: !!userId,
     initialPageParam: null,
     queryFn: async ({ pageParam }) => {
-      const page = await fetchNotificationsPage({
+      const res = await fetchNotificationsPage({
         userId,
         after: pageParam || undefined,
         type,
       })
+      const page = Array.isArray(res) ? res : []
       const nextCursor = page.length ? page[page.length - 1].created_at : null
       return { page, nextCursor }
     },
-    getNextPageParam: (last) => last.nextCursor ?? undefined,
-
-    //возвращаем плоский массив!
-    select: (data) => data.pages.flatMap((p) => p.page),
+    getNextPageParam: (last) => last?.nextCursor ?? undefined,
+    // В КОМПОНЕНТ отдаем плоский массив, но в кэше остаётся {pages, pageParams}
+    select: (data) => (data?.pages ?? []).flatMap((p) => p?.page ?? []),
   })
 }
 
-/**
- *
- * @param userId
- * @param type
- * @returns {UseMutationResult<void, DefaultError, void, {prev: unknown}>}
- */
-// export function useMarkAsReadMutation(userId, type) {
-//   const qc = useQueryClient()
-//   const k = key(userId, type)
-//   const dec = useNotificationsStore((s) => s.setUnread)
-//
-//   return useMutation({
-//     mutationFn: (id) => markNotificationAsRead(id, userId),
-//     onMutate: async (id) => {
-//       await qc.cancelQueries({ queryKey: k })
-//       const prev = qc.getQueryData(k)
-//
-//       if (Array.isArray(prev)) {
-//         qc.setQueryData(
-//           k,
-//           prev.filter((n) => String(n.id) !== String(id)),
-//         )
-//       }
-//       qc.setQueryData(k, (old) => {
-//         if (!old || !old.pages) return old
-//         return {
-//           ...old,
-//           pages: old.pages.map((pg) => ({
-//             ...pg,
-//             page: Array.isArray(pg.page)
-//               ? pg.page.filter((n) => String(n.id) !== String(id))
-//               : pg.page,
-//           })),
-//         }
-//       })
-//
-//       // оптимистично уменьшаем счётчик (если хочешь)
-//       if (type === 'comment')
-//         dec(
-//           'comment',
-//           Math.max(0, useNotificationsStore.getState().unreadCommentsCount - 1),
-//         )
-//       if (type === 'like')
-//         dec('like', Math.max(0, useNotificationsStore.getState().unreadLikesCount - 1))
-//
-//       return { prev }
-//     },
-//     onError: (_e, _id, ctx) => {
-//       if (ctx?.prev !== undefined) qc.setQueryData(k, ctx.prev)
-//     },
-//     onSettled: () => {
-//       qc.invalidateQueries({ queryKey: k })
-//     },
-//   })
-// }
 export function useMarkAsReadMutation(userId, type) {
   const qc = useQueryClient()
-  const k = key(userId, type)
+  const k = ['notifications', userId || 'nouser', type || 'all']
+
+  // методы стора
+  const { decUnread, incUnread } = useNotificationsStore.getState()
+
   return useMutation({
     mutationFn: (id) => markNotificationAsRead(id, userId),
+
     onMutate: async (id) => {
       await qc.cancelQueries({ queryKey: k })
-      const prev = qc.getQueryData(k) // здесь prev — уже ПЛОСКИЙ массив
-      if (Array.isArray(prev)) {
-        qc.setQueryData(
-          k,
-          prev.filter((n) => n.id !== id),
-        )
-      }
+      const prev = qc.getQueryData(k)
+
+      // вычищаем из страниц
+      qc.setQueryData(k, (old) => {
+        if (!old || !Array.isArray(old.pages)) return old
+        return {
+          ...old,
+          pages: old.pages.map((p) => ({
+            ...p,
+            page: (p.page ?? []).filter((n) => String(n.id) !== String(id)),
+          })),
+        }
+      })
+
+      // уменьшаем счётчик
+      decUnread(type, 1)
+
       return { prev }
     },
+
     onError: (_e, _id, ctx) => {
       if (ctx?.prev !== undefined) qc.setQueryData(k, ctx.prev)
+      // откат счётчика
+      incUnread(type, 1)
     },
+
     onSettled: () => {
       qc.invalidateQueries({ queryKey: k })
     },
   })
 }
 
-// Реалтайм мост: аккуратный merge без лишних refetch
-/**
- *
- * @param userId
- * @param type
- */
-
-// export function useNotificationsRealtime(userId, type) {
-//   const qc = useQueryClient()
-//   useEffect(() => {
-//     if (!userId) return
-//     const unsub = subscribeToNotifications(userId, async (payload) => {
-//       const { eventType, new: newRow, old: oldRow } = payload
-//       const k = key(userId, type)
-//
-//       const inScope = (row) => {
-//         if (!row) return false
-//         return type ? row.type === type : true
-//       }
-//
-//       if (eventType === 'INSERT' && newRow && !newRow.is_read && inScope(newRow)) {
-//         qc.setQueryData(k, (old) => {
-//           if (!old || !old.pages) return old
-//           // добавим во вторую (последнюю) страницу или в первую — реши сам.
-//           // Здесь добавим в первую страницу (начало списка).
-//           const first = old.pages[0]
-//           const exists = old.pages
-//             .flatMap((p) => p.page || [])
-//             .some((n) => n.id === newRow.id)
-//           if (exists) return old
-//           const newFirst = {
-//             ...first,
-//             page: [newRow, ...(first?.page || [])],
-//           }
-//           return { ...old, pages: [newFirst, ...old.pages.slice(1)] }
-//         })
-//       }
-//
-//       if (eventType === 'UPDATE') {
-//         const row = newRow || oldRow
-//         if (!row) return
-//         if (row.is_read && inScope(row)) {
-//           qc.setQueryData(k, (old) => {
-//             if (!old || !old.pages) return old
-//             return {
-//               ...old,
-//               pages: old.pages.map((pg) => ({
-//                 ...pg,
-//                 page: Array.isArray(pg.page)
-//                   ? pg.page.filter((n) => n.id !== row.id)
-//                   : pg.page,
-//               })),
-//             }
-//           })
-//         } else if (newRow && !newRow.is_read && inScope(newRow)) {
-//           qc.setQueryData(k, (old) => {
-//             if (!old || !old.pages) return old
-//             return {
-//               ...old,
-//               pages: old.pages.map((pg) => ({
-//                 ...pg,
-//                 page: Array.isArray(pg.page)
-//                   ? pg.page.map((n) => (n.id === newRow.id ? { ...n, ...newRow } : n))
-//                   : pg.page,
-//               })),
-//             }
-//           })
-//         }
-//       }
-//
-//       if (eventType === 'DELETE' && oldRow && inScope(oldRow)) {
-//         qc.setQueryData(k, (old) => {
-//           if (!old || !old.pages) return old
-//           return {
-//             ...old,
-//             pages: old.pages.map((pg) => ({
-//               ...pg,
-//               page: Array.isArray(pg.page)
-//                 ? pg.page.filter((n) => n.id !== oldRow.id)
-//                 : pg.page,
-//             })),
-//           }
-//         })
-//       }
-//     })
-//     return unsub
-//   }, [userId, type, qc])
-// }
+/** Реалтайм-мост: аккуратный merge без лишних refetch. */
 export function useNotificationsRealtime(userId, type) {
   const qc = useQueryClient()
-  const k = key(userId, type)
+  const k = ['notifications', userId || 'nouser', type || 'all']
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userId) return
-    const unsub = subscribeToNotifications(userId, (payload) => {
-      const { eventType, new: newRow, old: oldRow } = payload
-      const list = qc.getQueryData(k) || []
 
-      const inScope = (row) => (!row ? false : !type || row.type === type)
+    const unsub = subscribeToNotifications(
+      userId,
+      ({ eventType, new: newRow, old: oldRow }) => {
+        const inScope = (row) => !!row && (!type || row.type === type)
 
-      if (eventType === 'INSERT' && newRow && !newRow.is_read && inScope(newRow)) {
-        const exists = list.some((n) => n.id === newRow.id)
-        if (!exists) qc.setQueryData(k, [...list, newRow])
-      }
+        // helper’ы
+        const pushIfNotExists = (arr, item) =>
+          arr.some((n) => String(n.id) === String(item.id)) ? arr : [...arr, item]
 
-      if (eventType === 'UPDATE') {
-        const row = newRow || oldRow
-        if (row && row.is_read && inScope(row)) {
-          qc.setQueryData(
-            k,
-            list.filter((n) => n.id !== row.id),
-          )
-        } else if (newRow && !newRow.is_read && inScope(newRow)) {
-          qc.setQueryData(
-            k,
-            list.map((n) => (n.id === newRow.id ? { ...n, ...newRow } : n)),
-          )
-        }
-      }
+        qc.setQueryData(k, (old) => {
+          if (!old || !Array.isArray(old.pages)) return old
+          const pages = old.pages.map((p) => ({ ...p, page: [...(p.page ?? [])] }))
 
-      if (eventType === 'DELETE' && oldRow && inScope(oldRow)) {
-        qc.setQueryData(
-          k,
-          list.filter((n) => n.id !== oldRow.id),
-        )
-      }
-    })
+          if (eventType === 'INSERT' && newRow && !newRow.is_read && inScope(newRow)) {
+            // добавим в первую страницу (или последнюю — как вам удобнее)
+            pages[0] = {
+              ...pages[0],
+              page: pushIfNotExists(pages[0]?.page ?? [], newRow),
+            }
+          }
+
+          if (eventType === 'UPDATE') {
+            const row = newRow || oldRow
+            if (!row || !inScope(row)) return { ...old, pages }
+
+            if (row.is_read) {
+              // удалить из всех страниц
+              for (const p of pages) {
+                p.page = p.page.filter((n) => String(n.id) !== String(row.id))
+              }
+            } else if (newRow) {
+              // обновить на месте
+              for (const p of pages) {
+                p.page = p.page.map((n) =>
+                  String(n.id) === String(newRow.id) ? { ...n, ...newRow } : n,
+                )
+              }
+            }
+          }
+
+          if (eventType === 'DELETE' && oldRow && inScope(oldRow)) {
+            for (const p of pages) {
+              p.page = p.page.filter((n) => String(n.id) !== String(oldRow.id))
+            }
+          }
+
+          return { ...old, pages }
+        })
+      },
+    )
+
     return unsub
   }, [userId, type, qc])
 }
-
-/**
- *
- * @param userId
- */
+/** Счётчики непрочитанных (комменты/лайки) + realtime обновление. */
 export function useUnreadCounters(userId) {
   const setUnread = useNotificationsStore((s) => s.setUnread)
 
@@ -280,7 +144,6 @@ export function useUnreadCounters(userId) {
     let isMounted = true
     if (!userId) return
 
-    // первичная загрузка
     Promise.all([
       fetchUnreadCount(userId, 'comment').then(
         (c) => isMounted && setUnread('comment', c),
@@ -288,7 +151,6 @@ export function useUnreadCounters(userId) {
       fetchUnreadCount(userId, 'like').then((c) => isMounted && setUnread('like', c)),
     ]).catch(() => {})
 
-    // realtime обновление (любой INSERT/UPDATE/DELETE)
     const unsub = subscribeToNotifications(userId, async () => {
       try {
         const [c1, c2] = await Promise.all([

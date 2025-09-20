@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { getCreatorRecipesPageTQ } from '../service/TQuery/creator'
 
 /**
@@ -28,14 +28,4 @@ export function useCreatorRecipesInfinite(
     },
     refetchOnWindowFocus: false,
   })
-}
-
-/** категории для “папок” — обёртка в стиле TQ.
- *  Если у вас уже есть рабочая функция getCategoryRecipeMasonryMyDB(lang),
- *  можно временно вызвать её внутри, а потом заменить прямым SQL/РС.
- */
-export async function getCategoryRecipeMasonryTQ(fetcherFn, lang) {
-  const res = await fetcherFn(lang)
-  if (!res?.data) return []
-  return res.data
 }

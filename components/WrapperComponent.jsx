@@ -4,6 +4,7 @@ import React from 'react'
 import { Platform, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
+import { commonPadding } from '../constants/constants'
 
 function WrapperComponent({
   children,
@@ -15,13 +16,13 @@ function WrapperComponent({
   const colors = useThemeColors()
   const currentTheme = useThemeStore((s) => s.currentTheme)
 
-  const commonPadding = {
-    paddingHorizontal: 20,
-    paddingBottom: Platform.OS === 'ios' ? marginTopIos : marginTopAnd + 60,
-    marginBottom: 20,
-    marginTop: Platform.OS === 'ios' ? marginTopIos : marginTopAnd,
-    flexGrow: 1,
-  }
+  // const commonPadding = {
+  //   paddingHorizontal: 20,
+  //   paddingBottom: Platform.OS === 'ios' ? marginTopIos : marginTopAnd + 60,
+  //   marginBottom: 20,
+  //   marginTop: Platform.OS === 'ios' ? marginTopIos : marginTopAnd,
+  //   flexGrow: 1,
+  // }
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.backgroundColor }}>

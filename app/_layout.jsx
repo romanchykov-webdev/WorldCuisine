@@ -18,7 +18,7 @@ import React from 'react'
 import { queryClient } from '../lib/queryClient'
 import '../global.css'
 
-// наши новые хуки
+// хуки
 import { useAppFocus } from '../hooks/useAppFocus'
 import { useI18nLocale } from '../hooks/useI18nLocale'
 import { useAuthBootstrap } from '../hooks/useAuthBootstrap'
@@ -28,8 +28,6 @@ import Providers from './providers'
 import { useAuthStore } from '../stores/authStore'
 import { useUnreadCounters } from '../queries/notifications'
 
-// SplashScreen.preventAutoHideAsync()
-
 function _layout() {
   // 1) Шрифты
   const [fontsLoaded] = useFonts({
@@ -37,14 +35,13 @@ function _layout() {
     Nunito_700Bold,
   })
 
-  // safety: если шрифты не загрузились за N сек, всё равно спрячь сплэш
   const safetyRef = React.useRef(false)
   React.useEffect(() => {
     if (safetyRef.current) return
     safetyRef.current = true
     const t = setTimeout(() => {
       SplashScreen.hideAsync().catch(() => {})
-    }, 4000) // 4s таймаут
+    }, 4000)
     return () => clearTimeout(t)
   }, [])
 

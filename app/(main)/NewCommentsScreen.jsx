@@ -1,13 +1,12 @@
 import { useRouter } from 'expo-router'
-import { useRef } from 'react'
-import { FlatList, SafeAreaView, Text, View } from 'react-native'
+import React, { useRef } from 'react'
+import { FlatList, Text, View } from 'react-native'
 import ButtonBack from '../../components/ButtonBack'
 import LoadingComponent from '../../components/loadingComponent'
 import NotificationItem from '../../components/NotificationComponent/NotificationItem'
 import TitleScreen from '../../components/TitleScreen'
 import { hp } from '../../constants/responsiveScreen'
 import { shadowBoxBlack } from '../../constants/shadow'
-import { themes } from '../../constants/themes'
 import i18n from '../../lang/i18n'
 import { useAuthStore } from '../../stores/authStore'
 import {
@@ -16,16 +15,17 @@ import {
   useNotificationsRealtime,
 } from '../../queries/notifications'
 import { useNotificationsStore } from '../../stores/notificationsStore'
-import { useThemeStore } from '../../stores/themeStore'
+import { useThemeColors } from '../../stores/themeStore'
 
 //
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import WrapperComponent from '../../components/WrapperComponent'
 
 function NewCommentsScreen() {
   const router = useRouter()
   const user = useAuthStore((s) => s.user)
   const language = useAuthStore((s) => s.language)
-  const currentTheme = useThemeStore((s) => s.currentTheme)
+  const colors = useThemeColors()
 
   const unreadCommentsCount = useNotificationsStore((s) => s.unreadCommentsCount)
 
@@ -35,28 +35,6 @@ function NewCommentsScreen() {
   const fadeAnim = useRef({})
 
   const [switchStates, setSwitchStates] = useState({})
-
-  // React Query: список
-  // const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-  //   useNotificationsInfinite(user?.id, 'comment')
-  //
-  // const notifications = data?.pages?.flatMap((p) => p.page) ?? []
-  // const notificationIds = notifications.map((n) => n.id).join(',')
-
-  // useEffect(() => {
-  //   setSwitchStates((prev) => {
-  //     const next = { ...prev }
-  //     notifications.forEach((n) => {
-  //       if (next[n.id] === undefined) next[n.id] = true
-  //     })
-  //     Object.keys(next).forEach((id) => {
-  //       if (!notifications.some((n) => String(n.id) === String(id))) {
-  //         delete next[id]
-  //       }
-  //     })
-  //     return next
-  //   })
-  // }, [notificationIds])
 
   // комменты
   const {
@@ -73,18 +51,6 @@ function NewCommentsScreen() {
   // Мутация "прочитано"
   const markAsReadMutation = useMarkAsReadMutation(user?.id, 'comment')
 
-  // const toggleReadStatus = async (notificationId, recipeId) => {
-  //   setSwitchStates((s) => ({ ...s, [notificationId]: false }))
-  //   try {
-  //     await markAsReadMutation.mutateAsync(notificationId)
-  //     // уменьшаем локальный zustand-счётчик
-  //     setUnread('comment', Math.max(unreadCommentsCount - 1, 0))
-  //   } catch (e) {
-  //     // откат свитч, если ошибка
-  //     setSwitchStates((s) => ({ ...s, [notificationId]: true }))
-  //     console.warn('markAsRead error:', e?.message || e)
-  //   }
-  // }
   const toggleReadStatus = async (id) => {
     setSwitchStates((s) => ({ ...s, [id]: false }))
     try {
@@ -105,9 +71,7 @@ function NewCommentsScreen() {
     if (hasNextPage && !isFetchingNextPage) fetchNextPage()
   }
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: themes[currentTheme]?.backgroundColor }}
-    >
+    <WrapperComponent scroll={false} marginTopAnd={20}>
       <View className="px-[20] border-b border-b-neutral-300 mb-5 pb-5">
         <View style={shadowBoxBlack()} className="mb-5">
           <ButtonBack />
@@ -124,7 +88,8 @@ function NewCommentsScreen() {
         <LoadingComponent color="green" />
       ) : (
         <FlatList
-          data={notifications}
+          // data={notifications}
+          data={Array.isArray(notifications) ? notifications : []}
           renderItem={({ item, index }) => (
             <NotificationItem
               item={item}
@@ -136,7 +101,6 @@ function NewCommentsScreen() {
               onNavigate={navigateToRecipe}
             />
           )}
-          // keyExtractor={(item) => item.id}
           keyExtractor={(item) => String(item.id)}
           contentContainerStyle={{
             paddingHorizontal: 20,
@@ -145,7 +109,12 @@ function NewCommentsScreen() {
           }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text className="text-center text-lg mt-5">No new comments</Text>
+            <Text
+              className="text-center text-lg mt-5"
+              style={{ color: colors.textColor }}
+            >
+              No new comments
+            </Text>
           }
           onEndReached={loadMore}
           onEndReachedThreshold={0.1}
@@ -154,7 +123,7 @@ function NewCommentsScreen() {
           }
         />
       )}
-    </SafeAreaView>
+    </WrapperComponent>
   )
 }
 

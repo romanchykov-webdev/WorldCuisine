@@ -20,6 +20,16 @@ function HeaderComponent({
 
   const hasUnread = (unreadCommentsCount ?? 0) > 0 || (unreadLikesCount ?? 0) > 0
 
+  console.log('HeaderComponent hasUnread ', hasUnread + 'user,name' + user.user_name)
+  console.log(
+    'HeaderComponent unreadCommentsCount',
+    unreadCommentsCount + 'user,name' + user.user_name,
+  )
+  console.log(
+    'HeaderComponent unreadLikesCount',
+    unreadLikesCount + 'user,name' + user.user_name,
+  )
+
   return (
     <View>
       <View className="flex-row  justify-between items-center mb-5">
