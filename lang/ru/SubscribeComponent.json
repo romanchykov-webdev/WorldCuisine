@@ -1,0 +1,10 @@
+{
+  "---SubscribeComponent---": "---SubscribeComponent---",
+  "Subscribe": "Подписаться",
+  "Unsubscribe": "Отменить подписку",
+  "Your recipe": "Ваш рецепт",
+  "Edit recipe": "Редактировать рецепт",
+  "Do you want to edit?": "Вы хотите редактировать?",
+  "Do you really want to edit your recipe?": "Вы действительно хотите отредактировать свой рецепт?",
+  "---SubscribeComponent-END--": "---SubscribeComponent-END--"
+}

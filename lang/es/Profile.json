@@ -1,0 +1,18 @@
+{
+  "Profile": "Profile",
+  "Log In": "Acceso",
+  "Sign Up": "Inscribirse",
+  "Create recipe": "Crear receta",
+  "Category": "Categoría",
+  "Select Language": "Seleccionar idioma",
+  "My recipes": "Mis recetas",
+  "Liked": "Gustados",
+  "Cooking time.": "Tiempo de cocción.",
+  "Here you can specify the approximate time to cook the dish.": "Aquí puedes especificar el tiempo aproximado para cocinar el plato.",
+  "Select number of servings.": "Selecciona el número de porciones.",
+  "Choose how many persons your recipe serves.": "Elige para cuántas personas es tu receta.",
+  "Select calories.": "Selecciona las calorías.",
+  "Choose dish calories.": "Elige las calorías del plato.",
+  "Select difficulty.": "Selecciona la dificultad.",
+  "Choose cooking difficulty.": "Elige la dificultad de la preparación."
+}
