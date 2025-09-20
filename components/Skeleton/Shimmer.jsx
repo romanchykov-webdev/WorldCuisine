@@ -63,11 +63,14 @@ export default function Shimmer({
         style,
       ]}
     >
-      {/* бегущая полоса */}
+      {/*  */}
       {containerW > 0 && (
         <Animated.View
           pointerEvents="none"
-          style={[StyleSheet.absoluteFill, { width: stripeW, transform: [{ translateX }] }]}
+          style={[
+            StyleSheet.absoluteFill,
+            { width: stripeW, transform: [{ translateX }] },
+          ]}
         >
           <LinearGradient
             colors={['rgba(255,255,255,0.0)', highlightColor, 'rgba(255,255,255,0.0)']}

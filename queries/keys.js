@@ -1,5 +1,4 @@
 export const keys = {
-  // ...
   favorites: {
     ids: (userId) => ['favorites', 'ids', userId],
     recipes: (ids) => ['favorites', 'recipes', ids?.length || 0],

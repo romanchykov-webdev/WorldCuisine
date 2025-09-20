@@ -9,7 +9,6 @@ import {
   ChatBubbleOvalLeftIcon,
   HandThumbUpIcon,
 } from 'react-native-heroicons/mini'
-import Icon from 'react-native-vector-icons/EvilIcons'
 import AvatarCustom from '../components/AvatarCustom'
 import ButtonBack from '../components/ButtonBack'
 import TitleScreen from '../components/TitleScreen'
@@ -28,18 +27,18 @@ import Animated, {
   FadeInLeft,
   FadeInRight,
   FadeInUp,
-  FadeOutDown,
 } from 'react-native-reanimated'
+import { useNotificationsStore } from '../stores/notificationsStore'
 
 function ProfileScreen() {
   const router = useRouter()
   const user = useAuthStore((s) => s.user)
   const signOutLocal = useAuthStore((s) => s.signOutLocal)
   const currentTheme = useThemeStore((s) => s.currentTheme)
-
-  // демо-данные; лучше вынести в notificationsStore
-  const unreadCommentsCount = 0
-  const unreadLikesCount = 0
+  // counter comments
+  const unreadCommentsCount = useNotificationsStore((s) => s.unreadCommentsCount)
+  // counter likes
+  const unreadLikesCount = useNotificationsStore((s) => s.unreadLikesCount)
 
   const [isAuth, setIsAuth] = useState(false)
 
@@ -160,12 +159,6 @@ function ProfileScreen() {
                 <Text numberOfLines={1} style={{ fontSize: 8 }}>
                   {i18n.t('My recipes')}
                 </Text>
-                <View className="absolute top-[-10] flex-row w-full items-center justify-between">
-                  {unreadCommentsCount > 0 && (
-                    <Icon name="comment" size={25} color="red" />
-                  )}
-                  {unreadLikesCount > 0 && <Icon name="heart" size={25} color="red" />}
-                </View>
               </TouchableOpacity>
             </Animated.View>
 
@@ -200,19 +193,21 @@ function ProfileScreen() {
             {/*'Comments'*/}
             <Animated.View entering={FadeInDown.delay(1600).springify()}>
               <TouchableOpacity
-                onPress={goToLikesScreen}
+                onPress={goToCommentsScreen}
                 style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
                 className="items-center p-2 bg-neutral-200 rounded-[15] w-[80] h-[80] justify-around relative"
               >
                 <ChatBubbleOvalLeftIcon size={45} color="gray" />
                 <Text numberOfLines={1} style={{ fontSize: 8 }}>
-                  {i18n.t('Comments')}
+                  {i18n.t('Last Comments')}
                 </Text>
                 <View
                   style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
-                  className=" w-[30px] h-[30px] bg-violet-500 rounded-full absolute left-0 -top-1 flex items-center justify-center"
+                  className=" w-[30px] h-[30px] bg-violet-500 rounded-full absolute left-0 -top-1 flex items-center justify-center "
                 >
-                  <Text className="text-sm"> {formatNumber(10000)}</Text>
+                  <Text style={{ fontSize: 12, lineHeight: 14 }}>
+                    {formatNumber(unreadCommentsCount)}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </Animated.View>
@@ -226,13 +221,15 @@ function ProfileScreen() {
               >
                 <HandThumbUpIcon size={45} color="blue" />
                 <Text numberOfLines={1} style={{ fontSize: 8 }}>
-                  {i18n.t('likes')}
+                  {i18n.t('Last_likes')}
                 </Text>
                 <View
                   style={currentTheme === 'light' ? shadowBoxBlack() : shadowBoxWhite()}
                   className=" w-[30px] h-[30px] bg-violet-500 rounded-full absolute left-0 -top-1 flex items-center justify-center"
                 >
-                  <Text className="text-sm"> {formatNumber(10000)}</Text>
+                  <Text style={{ fontSize: 12, lineHeight: 14 }}>
+                    {formatNumber(unreadLikesCount)}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </Animated.View>

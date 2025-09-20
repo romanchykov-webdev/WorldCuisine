@@ -57,12 +57,6 @@ function CategoryView({ item, index, onCategorySelect }) {
             { borderRadius: 35, zIndex: 1, backgroundColor: 'rgba(0, 0, 0, 0.6)' },
           ]}
         ></View>
-        {/*<LinearGradient*/}
-        {/*  colors={['transparent', '#18181b']}*/}
-        {/*  style={{ width: '100%', height: '100%', position: 'absolute', borderRadius: 35 }}*/}
-        {/*  start={{ x: 0.5, y: 0.2 }}*/}
-        {/*  end={{ x: 0.5, y: 1 }}*/}
-        {/*/>*/}
 
         <View className="absolute bottom-[20] items-center justify-around">
           <Text

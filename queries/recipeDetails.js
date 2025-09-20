@@ -19,16 +19,6 @@ export function useRecipeDetails(id, opts = {}) {
   })
 }
 
-/** Счётчик комментариев (легкий запрос, по требованию) */
-export function useRecipeCommentsCount(id, enabled) {
-  return useQuery({
-    queryKey: ['recipeComments', id],
-    queryFn: () => getRecipeCommentsCountTQ({ id }),
-    enabled: !!id && !!enabled,
-    staleTime: 15_000,
-  })
-}
-
 /** Лайк: проверка */
 export function useIsLiked(recipeId, userId, enabled = true) {
   return useQuery({

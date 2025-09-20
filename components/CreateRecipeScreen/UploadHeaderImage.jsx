@@ -17,7 +17,7 @@ import ImageCustom from '../recipeDetails/ImageCustom'
  */
 export default function UploadHeaderImage({ colors, value, onChange }) {
   const { pickOne, isLoading } = useSingleImagePicker()
-  console.log('UploadHeaderImage value', value)
+  // console.log('UploadHeaderImage value', value)
 
   const handlePick = async () => {
     const res = await pickOne()

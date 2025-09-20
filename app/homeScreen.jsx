@@ -19,11 +19,12 @@ import TopRecipeComponent from '../components/topRecipe/TopRecipeComponent'
 import { hp, wp } from '../constants/responsiveScreen'
 
 import i18n from '../lang/i18n'
-import { useCategories, useMeasurement } from '../queries/recipes'
+import { useCategories } from '../queries/recipes'
 
 import { useAuthStore } from '../stores/authStore'
 import { useThemeColors, useThemeStore } from '../stores/themeStore'
 import { useLangStore } from '../stores/langStore'
+import { useNotificationsStore } from '../stores/notificationsStore'
 
 function HomeScreen() {
   const colors = useThemeColors()
@@ -36,18 +37,16 @@ function HomeScreen() {
 
   const lang = useLangStore((s) => s.lang)
 
-  const unreadCommentsCount = 0
-
-  const unreadLikesCount = 0
-
   const isAuth = !!user
+
+  // counter comments
+  const unreadCommentsCount = useNotificationsStore((s) => s.unreadCommentsCount)
+  // counter likes
+  const unreadLikesCount = useNotificationsStore((s) => s.unreadLikesCount)
 
   // Zustand
 
   const { data: categoryRecipes, isLoading, isFetching, refetch } = useCategories(lang)
-  // console.log('HomeScreen categoryRecipes', categoryRecipes)
-
-  // if (__DEV__) useLogQueries('home')
   return (
     <SafeAreaView style={{ backgroundColor: colors.backgroundColor, flex: 1 }}>
       <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
